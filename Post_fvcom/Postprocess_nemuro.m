@@ -311,12 +311,12 @@ function Postprocess_nemuro(conf_file, interval, yyyymmdd, day_length, varargin)
         netcdf_nemuro.wrnc_no3(ncid,Lon,Lat,Depth,time,No3,start_date_gb)
         clear filename_no3 No3 ncid file
 
-        file = fullfile(OutputDir_sand,['zooplankton',OutputRes,'.nc']);
+        file = fullfile(OutputDir_zp,['zooplankton',OutputRes,'.nc']);
         ncid = netcdf_fvcom.create_nc(file,'NETCDF4');
         netcdf_nemuro.wrnc_zooplankton(ncid,Lon,Lat,Depth,time,Zp,start_date_gb)
         clear filename_zp Zp ncid file
 
-        file = fullfile(OutputDir_zp,['phytoplankton',OutputRes,'.nc']);
+        file = fullfile(OutputDir_pp,['phytoplankton',OutputRes,'.nc']);
         ncid = netcdf_fvcom.create_nc(file,'NETCDF4');
         netcdf_nemuro.wrnc_phytoplankton(ncid,Lon,Lat,Depth,time,Pp,start_date_gb)
         clear filename_pp Pp ncid file
@@ -337,4 +337,3 @@ function Postprocess_nemuro(conf_file, interval, yyyymmdd, day_length, varargin)
     clear getdate    % 基准天
     toc % 计时终止
 end
-

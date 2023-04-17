@@ -145,6 +145,13 @@
 %    matFVCOM                            -  FVCOM toolbox         ||  https://github.com/SiqiLiOcean/matFVCOM
 %    matFigure                           -  Figure toolbox        ||  https://github.com/SiqiLiOcean/matFigure
 %    CDT                                 -  Climate Data Toolbox  ||  https://github.com/chadagreene/CDT
+%
+%                                  Extend  Exfunctions
+%    matFVCOM                            -  Extend FVCOM toolbox  
+%        calc_rh2.m                       -  Calculate relative humidity from temperature and dew point at 2m
+%                            
+%
+%
 %                                    Py  -  Python scripts for toolbox
 % =================================================================================================================
 %    Postprocess_fvcom.py                -  Postprocess fvcom triangle data, contains daily/hourly

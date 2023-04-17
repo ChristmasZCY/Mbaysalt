@@ -24,7 +24,9 @@ function Mainpath
     FunE = path + division + [
         "Exfunctions/cprintf"
         "Exfunctions/matFVCOM"
+        "Exfunctions/matFVCOM/Extend/matFVCOM"
         "Exfunctions/matFigure"
+        "Exfunctions/matWRF"
         "Exfunctions/CDT"
         ];
 
