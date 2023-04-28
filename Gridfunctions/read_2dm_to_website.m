@@ -32,12 +32,8 @@ function read_2dm_to_website(varargin)
     else
         f_h = f_2d_mesh(f,'Global');
 
-        for i = 1 : length(f_h.Faces)
-            for j = 1 : 3
-                F.Lon(i,j) = f_h.XData(f_h.Faces(i,j));
-                F.Lat(i,j) = f_h.YData(f_h.Faces(i,j));
-            end
-        end
+        F.Lon = f_h.XData';
+        F.Lat = f_h.YData';
         clf;close
     end
 
@@ -48,5 +44,7 @@ function read_2dm_to_website(varargin)
     Outputfile = [save_path,filesep,name,'.web'];
     osprints('INFO',Outputfile);
     fid = fopen(Outputfile,'w');
-    fprintf(fid,['%12.8f',',', '%11.8f','%13.8f',',', '%11.8f','%13.8f',',', '%11.8f', '\n'],LL');
+    fprintf(fid,['%12.8f',',', '%12.8f','%14.8f',',', '%12.8f','%14.8f',',', '%12.8f', '\n'],LL');
     fclose(fid);
+
+end

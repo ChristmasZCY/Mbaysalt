@@ -10,6 +10,7 @@ function jdata = json_load(file,varargin)
     % =================================================================================================================
     % example:
     %       jdata = json_load('file.json');
+    %       jdata = json_load('file.json','Method_load','MATLAB');
     %       jdata = json_load('file.json','Method_load','jsonlab');
     % =================================================================================================================
 

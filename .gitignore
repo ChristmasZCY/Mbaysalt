@@ -1,2 +1,6 @@
 ../../.git
 ./.Ds_Store
+./Exfunctions/matFigure
+./Exfunctions/matNC
+./Exfunctions/matWRF
+./Exfunctions/matFVCOM

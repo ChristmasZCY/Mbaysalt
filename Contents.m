@@ -15,6 +15,7 @@
 %    grep.m                              -  Grep something from a file
 %    split_dir.m                         -  Split directory from a file
 %    makedirs.m                          -  Check and make directories
+%    rmfiles.m                           -  Delete files or directories
 %    char_to_logical.m                   -  Convert char to logical
 %    osprint.m                           -  YYYY-MM-DD HH:MM:SS --> string
 %    osprints.m                          -  YYYY-MM-DD HH:MM:SS --> INFO: string
@@ -29,6 +30,7 @@
 %    split_path.m                        -  Delete the last '/' from a path
 %    nr.m                                -  Read netcdf, the same as ncread
 %    isexist_var.m                       -  Check whether assigned variable, if not, assign default value
+%    replacd_para.m                      -  Replace parameters in a string or struct
 %
 %
 %                          Prefunctions  -  Prefunctions for drawing pictures
@@ -61,21 +63,7 @@
 %                            Post_fvcom  -  Functions for handling FVCOM triangle data
 % =================================================================================================================
 %    Postprocess_fvcom.m                 -  Read and postprocess fvcom triangle data, contains daily/hourly
-%    +netcdf_fvcom                       -  Packages of functions for handling FVCOM netcdf file
-%       create_nc.m                      -  Create NETCDF4 file
-%       wrnc_current.m                   -  Write current netcdf file, auto select u/v/w or u/v
-%       wrnc_current_uvw.m               -  Write current netcdf file u/v/w
-%       wrnc_current_uv.m                -  Write current netcdf file u/v
-%       wrnc_temp.m                      -  Write sea temperature netcdf file
-%       wrnc_salt.m                      -  Write sea salinity netcdf file
-%       wrnc_adt.m                       -  Write adt netcdf file
 %    Postprocess_nemuro.m                -  Read and postprocess nemuro triangle data, contains daily/hourly
-%    +netcdf_nemuro                      -  Packages of functions for handling NEMURO netcdf file
-%       wrnc_chlorophyll.m               -  Write numuro chlorophyll netcdf file
-%       wrnc_no3.m                       -  Write numuro NO3 netcdf file
-%       wrnc_phytoplankton.m             -  Write numuro phytoplankton netcdf file
-%       wrnc_zooplankton.m               -  Write numuro zooplankton netcdf file
-%       wrnc_sand.m                      -  Write numuro sand netcdf file
 %    +griddata_fvcom                     -  Packages of functions for handling FVCOM griddata by Christmas
 %       griddata_node.m                  -  Griddata node triangle data
 %       griddata_nele.m                  -  Griddata nele triangle data
@@ -96,6 +84,16 @@
 % =================================================================================================================
 %    erosion_coast_cal_id.m              -  Calculate the erosion of the coast id
 %    erosion_coast_via_id.m              -  Erosion of the coast via id
+%    read_msh.m                          -  Read msh file for ww3
+%    write_msh.m                         -  Write msh file for ww3
+%
+%
+%                            Post_tpxo   -  Functions for handling tpxo data
+% =================================================================================================================
+%    uvhap.m                             -  Calculate the u/v of the tidal harmonic analysis
+%    preuvh.m                            -  Predict the tide u/v/h with tpxo and t_tide
+%    make_tpxo_fixed_coordinate.m        -  Fixed the coordinate of TPX09_atlas to lon_u, lat_u
+%    get_tpxo_filepath.m                 -  Get the tpxo filepath json file
 %
 %
 %                         Mainfunctions  -  Functions for drawing pictures
@@ -115,6 +113,26 @@
 %     read_ncfile.m                      -  Read netcdf file
 %     read_ncfile_lltdv.m                -  Read netcdf file contains lat/lon/time/depth, several variables
     %     read_ncfile_att.m                  -  Read netcdf file attributes
+%
+%
+%                            Ncfunctions  -  Functions for netcdf
+% =================================================================================================================
+%    +netcdf_fvcom                       -  Packages of functions for handling FVCOM netcdf file
+%       create_nc.m                      -  Create NETCDF4 file
+%       wrnc_current.m                   -  Write current netcdf file, auto select u/v/w or u/v
+%       wrnc_current_uvw.m               -  Write current netcdf file u/v/w
+%       wrnc_current_uv.m                -  Write current netcdf file u/v
+%       wrnc_temp.m                      -  Write sea temperature netcdf file
+%       wrnc_salt.m                      -  Write sea salinity netcdf file
+%       wrnc_adt.m                       -  Write adt netcdf file
+%    +netcdf_nemuro                      -  Packages of functions for handling NEMURO netcdf file
+%       wrnc_chlorophyll.m               -  Write numuro chlorophyll netcdf file
+%       wrnc_no3.m                       -  Write numuro NO3 netcdf file
+%       wrnc_phytoplankton.m             -  Write numuro phytoplankton netcdf file
+%       wrnc_zooplankton.m               -  Write numuro zooplankton netcdf file
+%       wrnc_sand.m                      -  Write numuro sand netcdf file
+%    +netcdf_tpxo                        -  Packages of functions for handling TPXO netcdf file
+%       wrnc_tpxo.m                      -  Write tpxo netcdf file
 %
 %
 %                            Inputfiles  -  Input files for toolbox
