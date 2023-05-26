@@ -12,7 +12,7 @@
 % layer-层心  siglev kbm1
 
 %%
-ncfile = '/data/ForecastSystem/Output/FVCOM_Global/20230313/forecast/forecast_0001.nc'
+ncfile = '/data/ForecastSystem/Output/FVCOM_Global/20230313/forecast/forecast_0001.nc';
 % msh = '/home/ocean/ForecastSystem/FVCOM_Global/Postprocess/Global-FVCOM_v1.1.2dm'
 
 u = double(ncread(ncfile, 'u'));
@@ -53,7 +53,7 @@ end
 figure
 f_2d_mesh(f);
 f_2d_boundary(f);
-2_2d_range(f);
+f_2d_range(f);
 f_2d_image(f,temp(:,1));
 f_2d_contourf(f,temp(:,1));
 f_2d_mask_boundary(f);
