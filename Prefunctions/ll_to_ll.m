@@ -19,13 +19,13 @@ function [Lon,varargout] = ll_to_ll(lon,varargin)
     end
 
     % check lon and lat
-    if ~isnumeric(lon) || ~isnumeric(varargin{1})
-        error('ll_to_ll:input','lon and lat must be numeric.');
+    if ~isvector(lon)
+        error('ll_to_ll:input','lon must be numeric.');
     end
 
     % check lon and lat format
     if max(lon) > 360 or min(lon) < -180
-        error('ll_to_ll:input','lon and lat must be 0-360 or -180-180.');
+        error('ll_to_ll:input','lon must be 0-360 or -180-180.');
     end
 
     % check varargin

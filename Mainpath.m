@@ -56,12 +56,16 @@ function [FunctionPath,path] = Cmakepath
     FunE = path + division + [
         "Exfunctions/cprintf"
         "Exfunctions/matFVCOM"
-        "Exfunctions/Extend/matFVCOM"
+        "Exfunctions/Extend/matWRF"
         "Exfunctions/matFigure"
         "Exfunctions/matWRF"
         "Exfunctions/cdt"
         "Exfunctions/matNC"
         "Exfunctions/t_tide"
+        "Exfunctions/INI"
+        "Exfunctions/struct2ini"
+        "Exfunctions/inifile"
+        "Exfunctions/iniconfig"
         ];
     FunE = cellstr(FunE);
     FunE = cellfun(@genpath2,FunE,repmat({".git"},length(FunE),1),'UniformOutput', false);

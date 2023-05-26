@@ -12,38 +12,37 @@
 %
 %                           Infunctions  -  Internal functions for drawing pictures
 % =================================================================================================================
-%    grep.m                              -  Grep something from a file
-%    split_dir.m                         -  Split directory from a file
-%    makedirs.m                          -  Check and make directories
-%    rmfiles.m                           -  Delete files or directories
+%    cell_del_empty.m                    -  Delete empty cell
 %    char_to_logical.m                   -  Convert char to logical
-%    osprint.m                           -  YYYY-MM-DD HH:MM:SS --> string
-%    osprints.m                          -  YYYY-MM-DD HH:MM:SS --> INFO: string
-%    read_conf.m                         -  Read config file from Configfiles
+%    del_quotation.m                     -  Delete quotation from a string
+%    grep.m                              -  Grep something from a file
+%    is_number.m                         -  Check if a string is a number with regexp
+%    isexist_var.m                       -  Check whether assigned variable, if not, assign default value
+%    json_load.m                         -  Load json file with matlab builtin function or jsonlab
 %    json_to_struct.m                    -  Convert json to struct
 %    KeyValue2Struct.m                   -  Convert key-value to struct
 %    list_to_cell.m                      -  Convert list to cell
-%    cell_del_empty.m                    -  Delete empty cell
-%    json_load.m                         -  Load json file with matlab builtin function or jsonlab
-%    del_quotation.m                     -  Delete quotation from a string
-%    is_number.m                         -  Check if a string is a number with regexp
-%    split_path.m                        -  Delete the last '/' from a path
+%    makedirs.m                          -  Check and make directories
 %    nr.m                                -  Read netcdf, the same as ncread
-%    isexist_var.m                       -  Check whether assigned variable, if not, assign default value
-%    replacd_para.m                      -  Replace parameters in a string or struct
+%    osprint.m                           -  YYYY-MM-DD HH:MM:SS --> string
+%    osprints.m                          -  YYYY-MM-DD HH:MM:SS --> INFO: string
+%    read_conf.m                         -  Read config file from Configfiles
+%    replace_para.m                      -  Replace parameters in a string or struct
+%    rmfiles.m                           -  Delete files or directories
+%    split_dir.m                         -  Split directory from a file
+%    split_path.m                        -  Delete the last '/' from a path
 %
 %
 %                          Prefunctions  -  Prefunctions for drawing pictures
 % =================================================================================================================
-%    make_colormap.m                     -  Make colormap for drawing
-%    make_typhoon_warningline.m          -  Make typhoon warning line
-%    ncread_llt_v.m                      -  Read netcdf file contains lat/lon/time, several variables
-%    ncread_lltd_v.m                     -  Read netcdf file contains lat/lon/time/depth, several variables
-%    region_cutout.m                     -  Cutout region from a matrix
-%    select_proj_s_ll.m                  -  Select projection/lat/lon
-%    ll_to_ll.m                          -  Convert lat/lon to lat/lon 0-360/-180-180, auto select
+%    interp_colormap.m                   -  Interpolate colormap || By Jiaqi Dou
 %    ll_to_ll_180.m                      -  Convert lat/lon to lat/lon -180-180
 %    ll_to_ll_360.m                      -  Convert lat/lon to lat/lon 0-360
+%    ll_to_ll.m                          -  Convert lat/lon to lat/lon 0-360/-180-180, auto select
+%    make_colormap.m                     -  Make colormap for drawing
+%    make_typhoon_warningline.m          -  Make typhoon warning line
+%    region_cutout.m                     -  Cutout region from a matrix
+%    select_proj_s_ll.m                  -  Select projection/lat/lon
 %
 %
 %                          Picfunctions  -  Functions for drawing pictures
@@ -62,22 +61,23 @@
 %
 %                            Post_fvcom  -  Functions for handling FVCOM triangle data
 % =================================================================================================================
+%    make_mask_depth_data.m              -  Make mask to mask the data which is deeper than the grid depth(for 'mask_depth_data.m')
+%    mask_depth_data.m                   -  mask the data with the Standard_depth_mask(from the function of "make_mask_depth_data.m")
+%    mask_maskmat.m                      -  make mask mat file from gebco nc file(for 'mask2data.m')
+%    mask2data.m                         -  mask the data with the mask(from the function of "mask_maskmat,m")
 %    Postprocess_fvcom.m                 -  Read and postprocess fvcom triangle data, contains daily/hourly
 %    Postprocess_nemuro.m                -  Read and postprocess nemuro triangle data, contains daily/hourly
-%    +griddata_fvcom                     -  Packages of functions for handling FVCOM griddata by Christmas
-%       griddata_node.m                  -  Griddata node triangle data
-%       griddata_nele.m                  -  Griddata nele triangle data
-%       griddata_current.m               -  Griddata current triangle data, auto select u/v/w or u/v
-%       griddata_current_uvw.m           -  Griddata current triangle data, contains u/v/w
-%       griddata_current_uv.m            -  Griddata current triangle data, contains u/v
-%       griddata_node.m                  -  Griddata several kinds of node triangle data without zeta
-%       griddata_tsz.m                   -  Griddata temperature/salinity/zeta triangle data
 %    read_conf_fvcom.m                   -  Read config file for Post_fvcom (not recommend)
-%    make_maskmat.m                      -  Make mask matrix for griddata land
-%    mask2data.m                         -  Mask the data with the mask
+%    siglay_to_3d.m                      -  Convert sigma layer to 3d depth for fvcom
 %    standard_filename.m                 -  Standard filename from variable matrix
 %    time_to_TIME.m                      -  To get TIME from time
-%    siglay_to_3d.m                      -  Convert sigma layer to 3d depth for fvcom
+%    +griddata_fvcom                     -  Packages of functions for handling FVCOM griddata by Christmas
+%       griddata_current_uv.m            -  Griddata current triangle data, contains u/v
+%       griddata_current_uvw.m           -  Griddata current triangle data, contains u/v/w
+%       griddata_current.m               -  Griddata current triangle data, auto select u/v/w or u/v
+%       griddata_nele.m                  -  Griddata nele triangle data
+%       griddata_node.m                  -  Griddata several kinds of node triangle data without zeta
+%       griddata_tsz.m                   -  Griddata temperature/salinity/zeta triangle data
 %
 %
 %                            Post_ww3    -  Functions for handling ww3 data
@@ -90,10 +90,13 @@
 %
 %                            Post_tpxo   -  Functions for handling tpxo data
 % =================================================================================================================
-%    uvhap.m                             -  Calculate the u/v of the tidal harmonic analysis
-%    preuvh.m                            -  Predict the tide u/v/h with tpxo and t_tide
-%    make_tpxo_fixed_coordinate.m        -  Fixed the coordinate of TPX09_atlas to lon_u, lat_u
 %    get_tpxo_filepath.m                 -  Get the tpxo filepath json file
+%    make_tide_from_tpxo.m               -  Make tide current u/v/h from TPXO9-atlas, and write to nc file.
+%    make_tpxo_fixed_coordinate.m        -  Fixed the coordinate of TPX09_atlas to lon_u, lat_u
+%    preuvh.m                            -  Predict the tide u/v/h with tpxo and t_tide
+%    tpxo_file.json                      -  Json file for tpxo file path
+%    tpxo.conf                           -  Config file for tpxo
+%    uvhap.m                             -  Calculate the u/v of the tidal harmonic analysis
 %
 %
 %                         Mainfunctions  -  Functions for drawing pictures
@@ -103,34 +106,36 @@
 %
 %                         Gridfunctions  -  Functions for model grid
 % =================================================================================================================
-%    read_gebco_to_sms.m                 -  Read gebco bathymetry to sms format
 %    read_2dm_to_msh.m                   -  Read 2dm mesh to msh format for Wave Watch III
 %    read_2dm_to_website.m               -  Read 2dm mesh to website format for www.iocean.cn
+%    read_gebco_to_sms.m                 -  Read gebco bathymetry to sms format
 %
 %
 %                         Readfunctions  -  Functions for reading data
 % =================================================================================================================
-%     read_ncfile.m                      -  Read netcdf file
-%     read_ncfile_lltdv.m                -  Read netcdf file contains lat/lon/time/depth, several variables
-    %     read_ncfile_att.m                  -  Read netcdf file attributes
+%    ncread_llt_v.m                      -  Read netcdf file contains lat/lon/time, several variables
+%    ncread_lltd_v.m                     -  Read netcdf file contains lat/lon/time/depth, several variables
+%%%%%%%%%%     read_ncfile.m                      -  Read netcdf file
+%%%%%%%%%%     read_ncfile_lltdv.m                -  Read netcdf file contains lat/lon/time/depth, several variables
+%%%%%%%%%%     read_ncfile_att.m                  -  Read netcdf file attributes
 %
 %
 %                            Ncfunctions  -  Functions for netcdf
 % =================================================================================================================
 %    +netcdf_fvcom                       -  Packages of functions for handling FVCOM netcdf file
 %       create_nc.m                      -  Create NETCDF4 file
-%       wrnc_current.m                   -  Write current netcdf file, auto select u/v/w or u/v
-%       wrnc_current_uvw.m               -  Write current netcdf file u/v/w
-%       wrnc_current_uv.m                -  Write current netcdf file u/v
-%       wrnc_temp.m                      -  Write sea temperature netcdf file
-%       wrnc_salt.m                      -  Write sea salinity netcdf file
 %       wrnc_adt.m                       -  Write adt netcdf file
+%       wrnc_current.m                   -  Write current netcdf file, auto select u/v/w or u/v
+%       wrnc_current_uv.m                -  Write current netcdf file u/v
+%       wrnc_current_uvw.m               -  Write current netcdf file u/v/w
+%       wrnc_salt.m                      -  Write sea salinity netcdf file
+%       wrnc_temp.m                      -  Write sea temperature netcdf file
 %    +netcdf_nemuro                      -  Packages of functions for handling NEMURO netcdf file
 %       wrnc_chlorophyll.m               -  Write numuro chlorophyll netcdf file
 %       wrnc_no3.m                       -  Write numuro NO3 netcdf file
 %       wrnc_phytoplankton.m             -  Write numuro phytoplankton netcdf file
-%       wrnc_zooplankton.m               -  Write numuro zooplankton netcdf file
 %       wrnc_sand.m                      -  Write numuro sand netcdf file
+%       wrnc_zooplankton.m               -  Write numuro zooplankton netcdf file
 %    +netcdf_tpxo                        -  Packages of functions for handling TPXO netcdf file
 %       wrnc_tpxo.m                      -  Write tpxo netcdf file
 %
@@ -142,30 +147,39 @@
 %
 %                           Configfiles  -  Config files for toolbox
 % =================================================================================================================
+%    Grid_functions.conf                 -  Config file for Gridfunctions
 %    Pic_draw.conf                       -  Config file for Picfunctions
 %    Post_fvcom.conf                     -  Config file for Post_fvcom/Postprocess_fvcom
 %    Post_nemuro.conf                    -  Config file for Post_fvcom/Postprocess_nemuro
-%    Grid_functions.conf                 -  Config file for Gridfunctions
+%    Read_file.conf                      -  Config file for Readfunctions/read_ncfile_lltdv
 %
 %
 %                              Examples  -  Examples for toolbox
 % =================================================================================================================
+%    Example_erosion_coast_cal_id.m      -  Example for erosion coast cal id
+%    Example_matFigure.m                 -  Example for matFigure
 %    Example_matFVCOM_interp_ESMF.m      -  Example for matFVCOM interp ESMF
 %    Example_matFVCOM_interp_MATLAB.m    -  Example for matFVCOM interp MATLAB
-%    Example_matFigure.m                 -  Example for matFigure
+%    Example_read_nc_lldtv.m             -  Example for read nc lldtv
 %
 %
 %                           Exfunctions  -  External functions for toolbox
 % =================================================================================================================
 %    git_clone.sh                        -  Clone git repository
-%    m_map                               -  Mapping toolbox       ||  https://www.eoas.ubc.ca/~rich/map.html
 %    cprintf                             -  Color printf          ||  https://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window
-%    matFVCOM                            -  FVCOM toolbox         ||  https://github.com/SiqiLiOcean/matFVCOM
+%    INI                                 -  INI toolbox           ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/55766-ini
+%    iniconfig                           -  INI Config toolbox    ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/24992-ini-config
+%    inifile                             -  INFILE toolbox        ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/2976-inifile
 %    matFigure                           -  Figure toolbox        ||  https://github.com/SiqiLiOcean/matFigure
+%    matFVCOM                            -  FVCOM toolbox         ||  https://github.com/SiqiLiOcean/matFVCOM
+%    matNC                               -  NetCDF toolbox        ||  https://github.com/SiqiLiOcean/matNC
+%    matWRF                              -  WRF toolbox           ||  https://github.com/SiqiLiOcean/matWRF
+%    struct2ini                          -  struct2ini toolbox    ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/22079-struct2ini
+%    m_map                               -  Mapping toolbox       ||  https://www.eoas.ubc.ca/~rich/map.html
 %    CDT                                 -  Climate Data Toolbox  ||  https://github.com/chadagreene/CDT
 %
 %                                  Extend  Exfunctions
-%    matFVCOM                            -  Extend FVCOM toolbox  
+%    matWRF                               -  Extend matWRF toolbox
 %        calc_rh2.m                       -  Calculate relative humidity from temperature and dew point at 2m
 %                            
 %

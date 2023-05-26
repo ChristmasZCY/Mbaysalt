@@ -43,7 +43,10 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     switch_change_maxlon = para_conf.Switch_change_MaxLon;
     switch_daily_1hour = para_conf.Switch_daily_1hour;
     switch_read_ll_from_nc = para_conf.Switch_read_ll_from_nc;
+    switch_make_erosion = para_conf.Switch_make_erosion;
+    switch_erosion = para_conf.Switch_erosion;
     ll_file = para_conf.LLFile;
+    switch_vertical_mask = para_conf.Switch_vertical_mask;
     makedirs(para_conf.TemporaryDir)
 
     if switch_warning;warning('on');else; warning('off');end
@@ -122,9 +125,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
         % temp salt zeta u_int v_int w_int
 
-        switch Method_interpn
+        switch Method_interpn 
             case {'Siqi_interp', 'Siqi_ESMF'}
-                if switch_to_std_level
+                if switch_to_std_level  % 是否转换到标准层
 
                     %weight
                     file_weight_vertical = para_conf.WeightFile_vertical;
@@ -194,6 +197,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 Depth = interp_2d_via_weight(f_nc.deplay,Weight_2d);
                 U = interp_2d_via_weight(u_int,Weight_2d);
                 V = interp_2d_via_weight(v_int,Weight_2d);
+                Depth_origin_to_wrf_grid =  interp_2d_via_weight(f_nc.h,Weight_2d);
                 clear temp salt zeta u_int v_int
 
                 if switch_ww
@@ -230,8 +234,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     Weight_2d = load(file_weight).Weight_2d;
                 end
 
-                    for iz = 1 : size(temp,2)
-                        for it = 1: size(temp,3)
+                    for iz = 1 : size(temp,2) % depth
+                        for it = 1: size(temp,3) % time
                             Temp(:,:,iz,it) =  esmf_regrid(temp(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                             Salt(:,:,iz,it) =  esmf_regrid(salt(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                             Zeta(:,:,it) =  esmf_regrid(zeta(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
@@ -243,6 +247,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                             end
                         end
                     end
+                    Depth_origin_to_wrf_grid =  esmf_regrid(f_nc.h,Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     clear temp salt zeta u_int v_int w_int
 
             case 'Christmas_interp'
@@ -287,7 +292,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             [~,Depth] = ll_to_ll(Lon,Depth);
         end
 
-         %% change 0-360 to -180-180
+        %% change 0-360 to -180-180
+        lon_bak = Lon;  % backup
         if switch_change_maxlon
             [~,Zeta] = ll_to_ll(Lon,Zeta);
             if switch_ww
@@ -304,6 +310,63 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
         %% global attribute start
         start_date_gb = [char(datetime("now","Format","yyyy-MM-dd")), '_00:00:00'];
+
+        %% mask vertical data
+        if switch_to_std_level
+            switch_make_mask = para_conf.Switch_make_mask;
+            file_mask = para_conf.MaskVerticalmatFile;
+            if switch_make_mask
+                Standard_depth_mask = make_mask_depth_data(Depth_origin_to_wrf_grid, Depth_std);
+                [Lon, Standard_depth_mask] = ll_to_ll(lon_bak, Standard_depth_mask);
+                delete (file_mask)
+                save(file_mask,'Standard_depth_mask','-v7.3');
+            else
+                Standard_depth_mask = load(file_mask,'Standard_depth_mask');
+            end
+
+            if switch_vertical_mask
+                osprints('INFO','Masking vertical data --> TRUE')
+                if switch_ww
+                    [Temp,Salt,U,V,W] = mask_depth_data(Standard_depth_mask, Temp,Salt,U,V,W);
+                else
+                    [Temp,Salt,U,V] = mask_depth_data(Standard_depth_mask,Temp,Salt,U,V);
+                end
+            else
+                osprints('INFO','Masking vertical data --> FALSE')
+            end
+        end
+
+        %% 岸线侵蚀
+        if switch_erosion
+            osprint('Erosion --> TRUE')
+            file_erosion = para_conf.ErosionFile;
+            if switch_make_erosion
+                I_D_1 = erosion_coast_cal_id(Lon, Lat, Temp, 16, 5);
+                save(file_erosion, 'I_D_1', '-v7.3');
+            else
+                I_D_1 = load(file_erosion).I_D_1;
+            end
+            if switch_ww
+                [Temp, Salt, U, V, W, Zeta] = erosion_coast_via_id(I_D_1, Temp, Salt, U, V, W, Zeta);
+            else
+                [Temp, Salt, U, V, Zeta] = erosion_coast_via_id(I_D_1, Temp, Salt, U, V, Zeta);
+            end
+            if switch_make_erosion
+                I_D_2 = erosion_coast_cal_id(Lon, Lat, Temp, 16, 5);
+                save(file_erosion, 'I_D_2', '-append');
+            else
+                I_D_2 = load(file_erosion).I_D_2;
+            end
+            if switch_ww
+                [Temp, Salt, U, V, W, Zeta] = erosion_coast_via_id(I_D_2, Temp, Salt, U, V, W, Zeta);
+            else
+                [Temp, Salt, U, V, Zeta] = erosion_coast_via_id(I_D_2, Temp, Salt, U, V, Zeta);
+            end
+        else
+            osprint('Erosion --> FALSE')
+
+        end
+
 
         %% 写入
         file = fullfile(OutputDir_curr,['current',OutputRes,'.nc']);

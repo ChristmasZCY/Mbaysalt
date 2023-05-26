@@ -27,8 +27,8 @@ function make_maskmat(mask_ncfile,LON,LAT,file_matmask)
     clear i_inx j_inx n_lon n_lat
 
     Elevation = interpn(lon_gebco,lat_gebco,elevation,LON,LAT','makima');
-    Elevation(Elevation>0)=0;
-    Elevation(Elevation<0)=1;
+    Elevation(Elevation>0) = 0;  % 陆地为0,被mask
+    Elevation(Elevation<0) = 1;  % 海洋为1,不被mask
     Elevation=logical(Elevation);
     clearvars -except Elevation file_matmask
     

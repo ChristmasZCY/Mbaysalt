@@ -1,5 +1,17 @@
-function make_typhoon_warning_line(varargin)
-    % 生成台风警戒线
+function make_typhoon_warningline(varargin)
+    % =================================================================================================================
+    % discription:
+    %       make typhoon warning line
+    % =================================================================================================================
+    % parameter:
+    %       varargin{1}: 24 or 48 hours || required: True || type: double || format: martix
+    %       varargin{2}: 24 or 48 hours || required: True || type: double || format: martix
+    % =================================================================================================================
+    % example:
+    %       make_typhoon_warningline(24)
+    %       make_typhoon_warningline(24,48)
+    %       make_typhoon_warningline(48)
+    % =================================================================================================================
 
 %% 24小时和48小时警戒线部分
 

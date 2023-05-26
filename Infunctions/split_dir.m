@@ -13,7 +13,7 @@ function f4 = split_dir(dir)
 
     f1 = strip(dir);
     if endsWith(f1,",")
-        f1 = split(dir,',')
+        f1 = split(dir,',');
         f1 = f1{1};
     end
 

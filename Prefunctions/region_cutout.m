@@ -1,27 +1,43 @@
-function varargout = region_cutout(lon_range,lat_range,varargin)
+function [lon,lat,varargout] = region_cutout(lon_range,lat_range,lon,lat,varargin)
+    % =================================================================================================================
+    % discription:
+    %       Cut out a region from a map
+    % =================================================================================================================
+    % parameter:
+    %       lon: longitude               || required: True || type: double || format: -180-180
+    %       varargin{n}: value to change || required: True || type: char   || format: martix
+    %       Lon: changed longitude       || required: True || type: double || format: martix
+    %       varargout{n}: changed value  || required: True || type: double || format: martix
+    % =================================================================================================================
+    % example:
+    %       [lon,lat,U10] = region_cutout(lon_range,lat_range,lon,lat,U10);
+    %       [lon,lat,U10,V10] = region_cutout(lon_range,lat_range,lon,lat,U10,V10);
+    % =================================================================================================================
+
 % REGION_CUTOUT  Cut out a region from a map
 
-lon = varargin{1};
-lat = varargin{2};
+    size_lon = size(lon);
+    size_lat = size(lat);
+    if min(size_lon) ~= 1 || min(size_lat) ~= 1
+        error('lon and lat must be 1D array')
+    end
 
-Fx = find(lon<lon_range(1) | lon>lon_range(2));
-lon(Fx) = [];
-varargout{1} = lon;
+    Fx = find(lon<lon_range(1) | lon>lon_range(end));
+    lon(Fx) = [];
 
-for num = 3:length(varargin)
-    tm{num-2} = varargin{num};
-    tm{num-2}(Fx,:,:) = [];
-end
+    for num = 1:length(varargin)
+        tm{num} = varargin{num};
+        tm{num}(Fx,:,:) = [];
+    end
 
-Fy = find(lat<lat_range(1) | lat>lat_range(2));
-lat(Fy) = [];
-varargout{2} = lat;
+    Fy = find(lat<lat_range(1) | lat>lat_range(end));
+    lat(Fy) = [];
 
-for num = 3:length(varargin)
-    tm{num-2}(:,Fy,:) = [];
-    varargout{num} = tm{num-2};
-end
+    for num = 1:length(varargin)
+        tm{num}(:,Fy,:) = [];
+        varargout{num} = tm{num};
+    end
 
-clear Fx Fy
+    clear Fx Fy
 
 end
