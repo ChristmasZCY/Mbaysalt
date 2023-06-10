@@ -20,6 +20,9 @@ function I_D = erosion_coast_cal_id(lon, lat, value, K, judge_num)
         lon=reshape(lon,[],1);
         lat=reshape(lat,[],1);
     end
+    if ndims(value) > 2
+        value = value(:,:,1,1,1,1);
+    end
     % Find the nearest K points in the two-dimensional grid data to the grid point 
     [Idx,D] = knnsearch([lon,lat],[lon,lat],"K",K+1);
     judge_nan=~isnan(value(Idx));

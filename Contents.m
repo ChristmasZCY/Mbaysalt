@@ -125,11 +125,10 @@
 %    +netcdf_fvcom                       -  Packages of functions for handling FVCOM netcdf file
 %       create_nc.m                      -  Create NETCDF4 file
 %       wrnc_adt.m                       -  Write adt netcdf file
-%       wrnc_current.m                   -  Write current netcdf file, auto select u/v/w or u/v
-%       wrnc_current_uv.m                -  Write current netcdf file u/v
-%       wrnc_current_uvw.m               -  Write current netcdf file u/v/w
-%       wrnc_salt.m                      -  Write sea salinity netcdf file
-%       wrnc_temp.m                      -  Write sea temperature netcdf file
+%       wrnc_current.m                   -  Write current netcdf file at standard level or sigma level
+%       wrnc_ice.m                       -  Write ice netcdf file
+%       wrnc_salt.m                      -  Write sea salinity netcdf file at standard level or sigma level
+%       wrnc_temp.m                      -  Write sea temperature netcdf file at standard level or sigma level
 %    +netcdf_nemuro                      -  Packages of functions for handling NEMURO netcdf file
 %       wrnc_chlorophyll.m               -  Write numuro chlorophyll netcdf file
 %       wrnc_no3.m                       -  Write numuro NO3 netcdf file

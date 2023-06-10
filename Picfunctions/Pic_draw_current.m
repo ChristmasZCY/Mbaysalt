@@ -102,6 +102,6 @@ function Pic_draw_current(varargin)
             end
         txt=[folder_name,'/P_southchinasea_current',char(varargin{4}),'_level_' , num2str(d_level) ,'@',time_name,'.png'];
         export_fig(txt,'-r300','-transparent'); %保存图片
-    end
+        end
 
 end

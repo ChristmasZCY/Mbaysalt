@@ -13,7 +13,7 @@ function Pic_draw_wind(date, day_length, region, varargin)
     % =================================================================================================================
     % example:
     %       Pic_draw_wind(str2double(char(datetime("now","Format","yyyyMMdd"))),7,"scs_project")
-    %       Pic_draw_wind(20230305,1,'ecs','Pic_draw.conf')
+    %       Pic_draw_wind(20230305,1,'ecs','conf_file','Pic_draw.conf')
     %       Pic_draw_wind(20230305,1,"scs_project")
     %
     % =================================================================================================================
@@ -26,11 +26,13 @@ function Pic_draw_wind(date, day_length, region, varargin)
     InputDir = split_path(conf_para.Wind_Dir);
     OutputDir = split_path(conf_para.Output_Dir);
     %% 区域
-    [projection,lon_select,lat_select,gshhs,title_area,Fname_section] = select_proj_s_ll(region);
+    Sproj = select_proj_s_ll(region);
+    projection = Sproj.projection; lon_select = Sproj.lon_select; lat_select = Sproj.lat_select; 
+    gshhs = Sproj.gshhs; title_area = Sproj.title_area; Fname_section = Sproj.Fname_section;
     %% 日期
     nowday = datetime(num2str(date),"Format","yyyyMMdd");
     nowday = char(nowday);
-    day_length = str2num(day_length);
+    day_length = str2num(num2str(day_length));
     DAY_LENGTH = day_length;% 当天开始向后处理的天数
 
     %% main
@@ -91,12 +93,11 @@ function Pic_draw_wind(date, day_length, region, varargin)
             start_date = char(datetime(start_date,"format","yyyy-MM-dd  HH:mm:ss"));
             time_title = char(datetime(time(hour),'format','yyyy-MM-dd  HH:mm'));
 
-            [t,s]=title("    " + time_title,"  ", ...
-                 'FontWeight','Normal','FontName','Microsoft YaHei UI');
+            [t,s]=title("    " + time_title,"  ", 'FontWeight','Normal','FontName','Microsoft YaHei UI');
             t.FontSize = 8;
             s.FontSize = 5;
 
-            ax=gca;
+            ax = gca;
             ax.TitleHorizontalAlignment = 'left';
 
             % make_typhoon_warningline(24,48) % 画24 48小时台风警戒线

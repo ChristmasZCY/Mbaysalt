@@ -31,23 +31,17 @@ function varargout = mask_depth_data(Standard_depth_mask, varargin)
     % =====
 
     ele = reshape(ele, size_varargin_var);
-    ele_dims = ndims(ele);
-    size_ele = size(ele); % 获取 ele 的大小
+    if length(varargin) > 1
+        ele_dims = ndims(ele);
+        size_ele = size(ele); % 获取 ele 的大小
 
-    ele_2dims = reshape(ele, [], size_ele(end));
-    for i = 1 : size_ele(end)
-        varargout{i} = reshape(ele_2dims(:,i), size_ele(1:end-1));
+        ele_2dims = reshape(ele, [], size_ele(end));
+        for i = 1 : size_ele(end)
+            varargout{i} = reshape(ele_2dims(:,i), size_ele(1:end-1));
+        end
+    else
+        varargout{1} = ele;
     end
     % <-----
-
-    % for num = 1 : val_num
-    %     val = varargin{num};
-    %     val(not(val_mask)) = NaN;
-    %     Viss(:,:,:,num) = val;
-    % end
-
-    % for num = 1 : val_num
-    %     varargout{num} = Viss(:,:,:,num);
-    % end
 
 end

@@ -1,44 +1,52 @@
-function Pic_draw_mwp(varargin)
+function Pic_draw_mwp(date, day_length, region, varargin)
     % =================================================================================================================
     % discription:
     %       draw picture of mwp and mwd from netcdf file
     %       netcdf file: wave_5.nc(from standard WW3 output)
     % =================================================================================================================
     % parameter:
-    %       varargin{1}: date        || required: True || type: number || format: yyyymmdd
-    %       varargin{2}: day length  || required: True || type: number || format: 1,2,3,4,5,6,7
-    %       varargin{3}: region      || required: True || type: string || format: "scs_project","scs","ecs","global"
+    %       date: date                            || required: True || type: number || format: yyyymmdd
+    %       day_length: day length                || required: True || type: number || format: 1,2,3,4,5,6,7
+    %       region: region                        || required: True || type: string || format: "scs_project","scs","ecs","global"
+    %       varargin:
+    %           conf_file: path of configure file || required: False|| type: string || format: "Pic_draw.conf"
     % =================================================================================================================
     % example:
     %       Pic_draw_mwp(str2double(char(datetime("now","Format","yyyyMMdd"))),7,"scs_project")
+    %       Pic_draw_mwp(20230305,1,'ecs','conf_file','Pic_draw.conf')
     %       Pic_draw_mwp(20230305,1,"scs_project")
     % =================================================================================================================
+    warning('off');
     %% colorbar
-    cc = make_colormap();
+    cc = make_colormap('2');
     %% 文件夹
-    InputDir = split_dir(grep("Pic_draw.conf","Wave_Dir"));
-    OutputDir = split_dir(grep("Pic_draw.conf","Output_Dir"));
+    varargin = read_varargin(varargin, {'conf_file'},{'Pic_draw.conf'});
+    conf_para = read_conf(conf_file);
+    InputDir = split_path(conf_para.Wave_Dir);
+    OutputDir = split_path(conf_para.Output_Dir);
     %% 区域
-    [projection,lon_select,lat_select,gshhs] = select_proj_s_ll(varargin{3});
+    Sproj = select_proj_s_ll(region);
+    projection = Sproj.projection; lon_select = Sproj.lon_select; lat_select = Sproj.lat_select; 
+    gshhs = Sproj.gshhs; title_area = Sproj.title_area; Fname_section = Sproj.Fname_section;
     %% 日期
-    nowday=datetime(num2str(varargin{1}),"Format","yyyyMMdd");
-    nowday_2=string(datetime(nowday,"Format","yyyy-MM-dd"));
-    nowday=char(nowday);
-    DAY_LENGTH = varargin{2};% 当天开始向后处理的天数
+    nowday = datetime(num2str(date),"Format","yyyyMMdd");
+    nowday = char(nowday);
+    day_length = str2num(num2str(day_length));
+    DAY_LENGTH = day_length;% 当天开始向后处理的天数
 
     %% main
-    for k=0:(DAY_LENGTH-1)
-        nd=char(datetime(nowday, "Format", 'yyyyMMdd') + k);
-        [nd_year,nd_month,nd_day]=datevec(datetime(nd,"Format","yyyyMMdd"));
-        nd_year=num2str(nd_year,'%04d');
+    for k = 0:(DAY_LENGTH-1)
+        nd = char(datetime(nowday, "Format", 'yyyyMMdd') + k);
+        [nd_year,nd_month,nd_day] = datevec(datetime(nd,"Format","yyyyMMdd"));
+        nd_year = num2str(nd_year,'%04d');
         nd_month = num2str(nd_month,'%02d');
         nd_day = num2str(nd_day,'%02d');
-        folder_name=[OutputDir, 'mwp/', nd];
+        folder_name = [OutputDir, filesep, Fname_section, filesep, 'mwp/', nd_year, nd_month];
         makedirs(folder_name)
-        ncfile = [InputDir, nd, '/wave_5.nc'];
+        ncfile = [InputDir, filesep, nd, '/wave_5.nc'];
 
         [lon,lat,time,Mwp,Mwd] = ncread_llt_v(ncfile,'longitude','latitude','time',[1 24],'mwp','mwd');
-        disp(['预测数据的时间 --> ',char(time(1))]);
+        osprints('INFO', ['预测数据的时间 --> ',char(time(1))]);
 
         [lon,lat,Mwp,Mwd] = region_cutout(lon_select,lat_select,lon,lat,Mwp,Mwd);
 
@@ -55,41 +63,44 @@ function Pic_draw_mwp(varargin)
             u = sin(deg2rad(mwd+180)); % U 表示风浪的去向 (U,V)=(1,0)表示风从西往东吹，浪从西往东流
             v = cos(deg2rad(mwd+180)); % V 表示风浪的去向 (U,V)=(1,0)表示风从西往东吹，浪从西往东流
 
-            levels=20;
+            levels_contour = 0:2:8;
             figure('visible','off');
             clf
 
             % m_map
             m_proj(projection,'lon',lon_select,'lat',lat_select);%确定投影方式和绘图界线
-            m_contourf(lon,lat,mwp',levels,'linestyle','none'); %绘制等高线
+            m_pcolor(lon,lat,mwp'); %绘制等值线
+            shading('interp');
             hold on;
-            m_quiver(Lon,Lat,u(1:8:end,1:8:end)',v(1:8:end,1:8:end)',0.6,'color','k');
-            m_grid;
-            m_gshhs(gshhs,'linewidth',0.8,'color','black');
+            [C,h] = m_contour(lon,lat,mwp',levels_contour,'color','k','showtext','on');
+            clabel(C,h,'FontSize',8)
+            m_gshhs(gshhs,'patch',[0.8 0.8 0.8],'EdgeColor','k');
+            m_grid('box','fancy','tickdir','out','fontsize',6);
+            hold off;
 
             % colorbar
-            h = colorbar; colormap(cc);
-            caxis([caxis_min caxis_max]);  
-            %load('color.mat');
-            %colormap(CustomColormap);
+            h = colorbar; colormap(cc); 
+            clim([0.1 8.3])
+            h.FontSize = 6;
+            set(get(h, 'Title'), 'string', '[s]');
+            set(h,'YTick',[0.2:1:8.2]);
+            set(h,'YTickLabel',{'<0.1','1','2','3','4','5','6','7','>8'});
 
             % 标题部分
             start_date = datetime(ncreadatt(ncfile,'/','start'),"format","yyyy-MM-dd_HH:mm:ss");
             start_date = char(datetime(start_date,"format","yyyy-MM-dd HH:mm:ss"));
             time_title = char(datetime(time(hour),'format','yyyy-MM-dd HH:mm:ss'));
-            
-            title("South China Sea Wave Mean Period   Unit: s "+...
-                    newline+...
-                    "Start: "+ start_date + " (UTC)"+ ...
-                    "    Forecast: " + time_title +" " + " (UTC)", ...
-                    'FontWeight','Normal','FontName','Microsoft YaHei UI'  );
 
-            ax=gca;
-            ax.TitleHorizontalAlignment = 'center';
-            set(gca,'TitleHorizontalAlignment','center');
+            [t,s]=title("    " + time_title,"  ", 'FontWeight','Normal','FontName','Microsoft YaHei UI');
+            t.FontSize = 8;
+            s.FontSize = 5;
+
+            ax = gca;
+            ax.TitleHorizontalAlignment = 'left';
+            % set(gca,'TitleHorizontalAlignment','center');
 
             time_name = char(datetime(time(hour),'format','yyyy-MM-dd''T''HHmmss'));
-            txt=[folder_name,'/P_southchinasea_mwp_level_1@',time_name,'.png'];
+            txt=[folder_name, '/P_',Fname_section,'_mwp_level_1@',time_name,'.png'];
             export_fig(txt,'-r300','-transparent'); %保存图片
 
         end

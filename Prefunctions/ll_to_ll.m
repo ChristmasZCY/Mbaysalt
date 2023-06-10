@@ -14,17 +14,17 @@ function [Lon,varargout] = ll_to_ll(lon,varargin)
     % =================================================================================================================
 
     % check input
-    if nargin < 2
+    if nargin < 1
         error('ll_to_ll:input','Not enough input arguments.');
     end
 
     % check lon and lat
     if ~isvector(lon)
-        error('ll_to_ll:input','lon must be numeric.');
+        error('ll_to_ll:input','lon must be vector.');
     end
 
     % check lon and lat format
-    if max(lon) > 360 or min(lon) < -180
+    if max(lon) > 360 || min(lon) < -180
         error('ll_to_ll:input','lon must be 0-360 or -180-180.');
     end
 
@@ -48,58 +48,32 @@ function [Lon,varargout] = ll_to_ll(lon,varargin)
         return
     end
 
+    % change only lon
+    if nargin == 1
+        if max(lon) > 180
+            Lon = ll_to_ll_180(lon);
+        elseif min(lon) < 0
+            Lon = ll_to_ll_360(lon);
+        end
+        return
+    end
+
     dims_var = ndims(varargin{1});
     varargin_var = cat(dims_var + 1, varargin{:});
-    varargin_var = squeeze(varargin_var);
+    % varargin_var = squeeze(varargin_var);
 
     size_varargin_var = size(varargin_var);
     ele = reshape(varargin_var, size_varargin_var(1), size_varargin_var(2), []);
 
     % change lon and lat
     if max(lon) > 180
-        % disp('change lon and lat to -180-180')
-        % if length(varargin) == 1
-        %     [Lon,varargout{1}] = ll_to_ll_180(lon,varargin{:});
-        % elseif length(varargin) == 2
-        %     [Lon,varargout{1},varargout{2}] = ll_to_ll_180(lon,varargin{:});
-        % elseif length(varargin) == 3
-        %     [Lon,varargout{1},varargout{2},varargout{3}] = ll_to_ll_180(lon,varargin{:});
-        % elseif length(varargin) == 4
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4}] = ll_to_ll_180(lon,varargin{:});
-        % elseif length(varargin) == 5
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = ll_to_ll_180(lon,varargin{:});
-        % elseif length(varargin) == 6
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4},varargout{5},varargout{6}] = ll_to_ll_180(lon,varargin{:});
-        % elseif length(varargin) == 7
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4},varargout{5},varargout{6},varargout{7}] = ll_to_ll_180(lon,varargin{:});
-        % elseif length(varargin) == 8
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4},varargout{5},varargout{6},varargout{7},varargout{8}] = ll_to_ll_180(lon,varargin{:});
-        % ends
         [Lon,ele] = ll_to_ll_180(lon,ele);
 
     elseif min(lon) < 0
-        % disp('change lon and lat to 0-360')
-        % if length(varargin) == 1
-        %     [Lon,varargout{1}] = ll_to_ll_360(lon,varargin{:});
-        % elseif length(varargin) == 2
-        %     [Lon,varargout{1},varargout{2}] = ll_to_ll_360(lon,varargin{:});
-        % elseif length(varargin) == 3
-        %     [Lon,varargout{1},varargout{2},varargout{3}] = ll_to_ll_360(lon,varargin{:});
-        % elseif length(varargin) == 4
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4}] = ll_to_ll_360(lon,varargin{:});
-        % elseif length(varargin) == 5
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4},varargout{5}] = ll_to_ll_360(lon,varargin{:});
-        % elseif length(varargin) == 6
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4},varargout{5},varargout{6}] = ll_to_ll_360(lon,varargin{:});
-        % elseif length(varargin) == 7
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4},varargout{5},varargout{6},varargout{7}] = ll_to_ll_360(lon,varargin{:});
-        % elseif length(varargin) == 8
-        %     [Lon,varargout{1},varargout{2},varargout{3},varargout{4},varargout{5},varargout{6},varargout{7},varargout{8}] = ll_to_ll_360(lon,varargin{:});
-        % end
         [Lon,ele] = ll_to_ll_360(lon,ele);
     end
 
-    [M,F,C] = mode(Lon);
+    [M,F,~] = mode(Lon);
     if F > 1
         FF = find(Lon == M,1);
         Lon(FF) = [];

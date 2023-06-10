@@ -1,4 +1,4 @@
-function wrnc_adt(ncid,Lon,Lat,time,Zeta,start_date_gb)
+function wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,varargin)
     % =================================================================================================================
     % discription:
     %       This function is used to write the adt data to the netcdf file
@@ -9,21 +9,24 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,start_date_gb)
     %       Lat:             latitude                || required: True || type: double || format: [30.5, 31.5]
     %       time:            time                    || required: True || type: double || format: posixtime
     %       Zeta:            adt                     || required: True || type: double || format: matrix
-    %       start_date_gb:   time of forecast start  || required: True || type: string || format: '20221110'
+    %       GA_start_date:   time of forecast start  || required: True || type: string || format: '20221110'
+    %       varargin:        optional parameters     
+    %           conf:        configuration struct    || required: False || type: struct || format: struct
     % =================================================================================================================
     % example:
-    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,start_date_gb)
+    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date)
+    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,'conf',conf)
     % =================================================================================================================
 
-    % version
-    Version = '2.1';
+    varargin = read_varargin(varargin,{'conf'},{false});
+
     % time && TIME
     [TIME,TIME_reference,TIME_start_date,TIME_end_date,time_filename] = time_to_TIME(time);
 
     % standard_name
-    ResName = num2str(1/nanmean(diff(Lon)), '%2.f');
+    ResName = num2str(1/mean(diff(Lon),'omitnan'), '%2.f');
     S_name = standard_filename('adt',Lon,Lat,time_filename,ResName); % 标准文件名
-    osprint(['Transfor --> ',S_name])
+    osprints('INFO',['Transfor --> ',S_name])
 
     % 定义维度
     londimID = netcdf.defDim(ncid, 'longitude',length(Lon));                        % 定义lon维度
@@ -82,10 +85,14 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,start_date_gb)
 
     % 写入global attribute
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'product_name',   S_name);         % 文件名
-    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'source',         '147-FVCOM_SCS'); % 数据源
-    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'start',          start_date_gb);               % 起报时间
+    if class(conf) == "struct"
+        netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'source',         conf.P_Source); % 数据源
+    end
+    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'start',          GA_start_date);               % 起报时间
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'history',        ['Created by Matlab at ' char(datetime("now","Inputformat","yyyy-MM-dd HH:mm:SS"))]); % 操作历史记录
-    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'program_version',['V',Version]);    % 程序版本号
+    if class(conf) == "struct"
+        netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'program_version',['V',num2str(conf.P_Version)]);    % 程序版本号
+    end
     netcdf.close(ncid);    % 关闭nc文件
-
+    return 
 end

@@ -43,45 +43,48 @@ function varargout = read_conf(conf_file, varargin)
     %-str2mat: 将字符串转换为矩阵
     [key,value] = cellfun(@parse_line, kv_conf, 'UniformOutput', false);
     [varargout{1}, varargout{2}] = KeyValue2Struct(key,value);
+    varargout{1} = make_DEFAULT(varargout{1});
     if nargin > 1
         varargout{3} = varargout{2};
         varargout{2} = varargout{1};
         varargout{1} = varargout{1}.(varargin{1});
     end
-
-
-
-    function [key, value] = parse_line(line)
-        str = strsplit(line, '=');
-        key = strip(str{1});
-        value = strip(str{2});
-
-        if size(key,1) == 0
-            key = 'NaN';
-        end
-        value = del_quotation(value);
-        if isstrprop(key(1), 'digit')
-            key = ['f' , key];
-        elseif strcmpi(value, '.True.')
-            value = true;
-        elseif strcmpi(value, '.False.')
-            value = false;
-        elseif startsWith(value,'[')
-            if ~ isnan(str2num(value))
-                value = str2num(value);
-            else
-                value = list_to_cell(value);
-            end
-        elseif startsWith(value,'{')
-            value = json_to_struct(value);
-        elseif is_number(value)
-            value = str2double(value);
-        end
-        if size(value,1) == 0
-            value = NaN;
-        end
-
-    end
-
 end
+
+function [key, value] = parse_line(line)
+    str = strsplit(line, '=');
+    key = strip(str{1});
+    value = strip(str{2});
+
+    if size(key,1) == 0
+        key = 'NaN';
+    end
+    value = del_quotation(value);
+    if isstrprop(key(1), 'digit')
+        key = ['f' , key];
+    elseif strcmpi(value, '.True.')
+        value = true;
+    elseif strcmpi(value, '.False.')
+        value = false;
+    elseif startsWith(value,'[')
+        if ~ isnan(str2num(value))
+            value = str2num(value);
+        else
+            value = list_to_cell(value);
+        end
+    elseif startsWith(value,'{')
+        value = json_to_struct(value);
+    elseif is_number(value)
+        value = str2double(value);
+    end
+    if size(value,1) == 0
+        value = NaN;
+    end
+end
+
+function Struct = make_DEFAULT(structIn)
+    Struct = structIn;
+    Struct.DEFAULT = structIn;
+end
+
 

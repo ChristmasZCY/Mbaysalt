@@ -26,6 +26,10 @@ function [Lon,varargout] = ll_to_ll_360(lon,varargin)
     [F,~] = find(lon>180);
     Lon = cat(1,lon(F(end)+1:end,:),lon(F(1:end),:));
 
+    if nargin == 1
+        return
+    end
+
     for i = 1:length(varargin)
         ele = varargin{i};
         % 将ele向量化

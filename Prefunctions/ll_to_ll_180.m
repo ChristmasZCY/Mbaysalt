@@ -25,6 +25,10 @@ function [Lon,varargout] = ll_to_ll_180(lon,varargin)
     F = find(lon<0,1,'first');
     Lon = cat(1,lon(F:end,:),lon(1:F-1,:));
 
+    if nargin == 1
+        return
+    end
+
     varargout{length(varargin)} = zeros(size(varargin{1}));
 
     for i = 1:length(varargin)
