@@ -1,4 +1,4 @@
-function [Vars] = get_Variables_from_nc(fin,varargin)
+function [Vars_name, Vars] = get_Variables_from_nc(fin,varargin)
     % TODO: need to write
     % =================================================================================================================
     % discription:
@@ -28,15 +28,16 @@ function [Vars] = get_Variables_from_nc(fin,varargin)
     Dims_keys = fieldnames(Dims);
 
     % 获取变量名
-    Vars_name = cell(length(vars),1);
-    t = 1
+    Vars_name = cell(length(vars)-length(Dims_len),1);
+    t = 1;
     for i = 1:length(vars)
-        if ~strncmp(vars(i).Name, Dims_keys, 1)
-            Vars{t} = vars(i).Name;
+        if ~strncmp(vars(i).Name, Dims_keys, 5)
+            Vars_name{t} = vars(i).Name;
+            Vars.(Vars_name{t}) = ncread(fin,Vars_name{t});
+            
             t = t + 1;
         end
     end
-
 end
     
 
