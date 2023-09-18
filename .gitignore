@@ -1,8 +1,8 @@
+**/.idea
 **/.DS_Store
 .Ds_Store
 ../../.git
-./Exfunctions/matFigure
-./Exfunctions/matNC
-./Exfunctions/matWRF
-./Exfunctions/matFVCOM
+Exfunctions/matFigure
+Exfunctions/matNC
+Exfunctions/matWRF
 Exfunctions/matFVCOM

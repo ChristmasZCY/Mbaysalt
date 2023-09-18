@@ -170,17 +170,18 @@
 %                           Exfunctions  -  External functions for toolbox
 % =================================================================================================================
 %    git_clone.sh                        -  Clone git repository
-%    cprintf                             -  Color printf          ||  https://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window
-%    INI                                 -  INI toolbox           ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/55766-ini
-%    iniconfig                           -  INI Config toolbox    ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/24992-ini-config
-%    inifile                             -  INFILE toolbox        ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/2976-inifile
-%    matFigure                           -  Figure toolbox        ||  https://github.com/SiqiLiOcean/matFigure
-%    matFVCOM                            -  FVCOM toolbox         ||  https://github.com/SiqiLiOcean/matFVCOM
-%    matNC                               -  NetCDF toolbox        ||  https://github.com/SiqiLiOcean/matNC
-%    matWRF                              -  WRF toolbox           ||  https://github.com/SiqiLiOcean/matWRF
-%    struct2ini                          -  struct2ini toolbox    ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/22079-struct2ini
-%    m_map                               -  Mapping toolbox       ||  https://www.eoas.ubc.ca/~rich/map.html
-%    CDT                                 -  Climate Data Toolbox  ||  https://github.com/chadagreene/CDT
+%    cprintf                             -  Color printf                      ||  https://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window
+%    INI                                 -  INI toolbox                       ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/55766-ini
+%    iniconfig                           -  INI Config toolbox                ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/24992-ini-config
+%    inifile                             -  INFILE toolbox                    ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/2976-inifile
+%    matFigure                           -  Figure toolbox                    ||  https://github.com/SiqiLiOcean/matFigure
+%    matFVCOM                            -  FVCOM toolbox                     ||  https://github.com/SiqiLiOcean/matFVCOM
+%    matNC                               -  NetCDF toolbox                    ||  https://github.com/SiqiLiOcean/matNC
+%    matWRF                              -  WRF toolbox                       ||  https://github.com/SiqiLiOcean/matWRF
+%    struct2ini                          -  struct2ini toolbox                ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/22079-struct2ini
+%    m_map                               -  m_map toolbox                     ||  https://www.eoas.ubc.ca/~rich/map.html
+%    CDT                                 -  Climate Data Toolbox              ||  https://github.com/chadagreene/CDT
+%    t_tide                              -  T_Tide Harmonic Analysis Toolbox  || https://www.eoas.ubc.ca/~rich/#T_Tide
 %
 %                                  Extend  Exfunctions
 %    matWRF                               -  Extend matWRF toolbox
