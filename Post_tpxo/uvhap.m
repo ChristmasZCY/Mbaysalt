@@ -1,13 +1,13 @@
-function [ua,up,va,vp,ha,hp,lat,lon] = uvhap(lon_range,lat_range, res, varargin)
+function [ua,up,va,vp,ha,hp,lat,lon] = uvhap(lon_range, lat_range, res, varargin)
     % =================================================================================================================
     % discription:
     %       read tpxo9_atlas data and get ua,up,va,vp,ha,hp,lat,lon
     % =================================================================================================================
     % parameter:
-    %       lon_range: longitude range        || required: True || type: double || format: [100:114]
-    %       lat_range: latitude range         || required: True || type: double || format: [20:30]
-    %       res: res/30 resolution            || required: True || type: double || format: 1
-    %       varargin:                         || required: False|| None
+    %       lon_range: longitude range         || required: True || type: double || format: [100:114]
+    %       lat_range: latitude range          || required: True || type: double || format: [20:30]
+    %       res: res/30 resolution             || required: True || type: double || format: 1
+    %       varargin:                          || required: False|| None
     %       ua: u amplitude                    || required: True || type: double || format: matrix
     %       up: u phase                        || required: True || type: double || format: matrix
     %       va: v amplitude                    || required: True || type: double || format: matrix

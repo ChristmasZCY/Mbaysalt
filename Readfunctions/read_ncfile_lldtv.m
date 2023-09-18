@@ -16,6 +16,7 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     %                Var_Name: var name                     || required: False || type: dell   || format: {{'swh'},{'mpts'}}
     %                Switch_log: switch log                 || required: False || type: bool   || format: (optional)
     %                Log_file: log file                     || required: False || type: string || format: 'log.txt'
+    %                'INFO': whether run osprints           || required: False || type: bool   || format: '(optional)
     % =================================================================================================================
     % example:
     %       [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc);
@@ -33,15 +34,23 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     varargin = read_varargin(varargin,{'Lat_Name'},{false});
     varargin = read_varargin(varargin,{'Depth_Name'},{false});
     varargin = read_varargin(varargin,{'Time_Name'},{false});
-    varargin = read_varargin(varargin,{'Time_type','Time_format'},{false,false});
+    varargin = read_varargin(varargin,{'Time_type'},{false});
+    varargin = read_varargin(varargin,{'Time_format'},{false});
     varargin = read_varargin(varargin,{'Var_Name'},{false});
     varargin = read_varargin2(varargin,{'Switch_log'});
     varargin = read_varargin(varargin,{'Log_file'},{false});
+    varargin = read_varargin2(varargin,{'INFO'});
 
     if ~isempty(Switch_log)
         Switch_log = true;
     else
         Switch_log = false;
+    end
+
+    if ~isempty(INFO)
+        INFO = true;
+    else
+        INFO = false;
     end
 
     if ~iscell(Var_Name)
@@ -62,7 +71,7 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     lldt_name_var = {Lon_Name, Lat_Name,Depth_Name,Time_Name,Var_Name,Switch_log};
 
     % var_name_of_read
-    var_name_of_read = cell2struct(lldt_name_var,lldt_name,2)
+    var_name_of_read = cell2struct(lldt_name_var,lldt_name,2);
     clear lldt_name lldt_name_var
 
     % nc_contains_var_name
@@ -154,15 +163,17 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     end
 
     % log
-    if Switch_log
-        if ~Log_file
-            Log_file = para_conf.Log_file;
+    if INFO
+        if Switch_log
+            if ~Log_file
+                Log_file = para_conf.Log_file;
+            end
+            osprints('INFO','Reading from nc','new_line',1,'ddt_log',1,'wrfile',Log_file)
+            osprints('INFO',var_of_read,'new_line',0,'ddt_log',0,'wrfile',Log_file)
+        else
+            osprints('INFO','Reading from nc','new_line',0,'ddt_log',1)
+            osprints('INFO',var_of_read,'new_line',1,'ddt_log',0)
         end
-        osprints('INFO','Reading from nc','new_line',1,'ddt_log',1,'wrfile',Log_file)
-        osprints('INFO',var_of_read,'new_line',0,'ddt_log',0,'wrfile',Log_file)
-    else
-        osprints('INFO','Reading from nc','new_line',0,'ddt_log',1)
-        osprints('INFO',var_of_read,'new_line',1,'ddt_log',0)
     end
 
     % varargout{1} = cell(varargin);

@@ -34,7 +34,7 @@ function write_msh(fout, x, y, nv, h, ns)
     
     lon = x;
     lat = y;
-    dep = -h;
+    dep = h;
     
     fid=fopen(fout,'w');
     fprintf(fid,'$MeshFormat\n');

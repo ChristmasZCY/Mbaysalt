@@ -22,6 +22,9 @@ function make_tpxo_fixed_coordinate(file_json)
     %  v v v v v      -->  v v v v v
     % u u u u u       -->  u u u u u  v插值到u的坐标
     %  v v v v v      -->  v v v v v 
+
+    % lonh = lonv 
+    % lath = latu
     
     lonv = [lonv(end)-360;lonv];  % 经度v要拼接
     % isequaln(lon_v,lon_z) == 1
@@ -29,7 +32,7 @@ function make_tpxo_fixed_coordinate(file_json)
     [coord.latv, coord.lonv] = ndgrid(latv, lonv);
     [coord.lath, coord.lonh] = ndgrid(latu, lonv);
     [coord.latu, coord.lonu] = ndgrid(latu, lonu);
-    coord.lon = lonu; coord.lat = latu;
+    coord.lon = lonu; coord.lat = latu; % 插值到lonu和latu
     
     fixed_grid(grid_file_old, grid_file_new, lonu, latu)
     fixed_tide_uv(tide_uv_file_old, tide_uv_file_new, coord)

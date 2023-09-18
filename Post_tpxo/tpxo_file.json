@@ -1,5 +1,5 @@
 {
-    "tpxo_path": "/Users/christmas/Documents/Code/MATLAB/TPXO/tpxo",
+    "tpxo_path": "/Users/christmas/Documents/Code/MATLAB/TPXO/tpxo9_atlas",
     "tpxo_fixed_coordinate_path": "/Users/christmas/Documents/Code/MATLAB/TPXO/fixed",
     "tpxo_grid_uvh_coordinate": "grid_tpxo9_atlas.nc",
     "tpxo_grid_fixed_coordinate": "grid_tpxo9_atlas_fixed_coordinate.nc",

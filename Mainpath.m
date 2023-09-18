@@ -45,6 +45,7 @@ function [FunctionPath,path] = Cmakepath
         "Ncfunctions"
         "Examples"
         "Py"
+        "Matesetfunctions"
         ];
     FunI = cellstr(FunI);
     
