@@ -14,12 +14,12 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin
     %           .Siglay:     levels of siglay        || required: False || type: double || format: matrix
     %       time:            time                    || required: True  || type: double || format: posixtime
     %       Velement:        value struct            || required: True  || type: struct || format: struct
-    %           U:           u                       || required: True  || type: double || format: matrix
-    %           V:           v                       || required: True  || type: double || format: matrix
-    %           W:           w                       || required: False || type: double || format: matrix
-    %           U_sgm:       u at sigma levels       || required: False || type: double || format: matrix
-    %           V_sgm:       v at sigma levels       || required: False || type: double || format: matrix
-    %           W_sgm:       w at sigma levels       || required: False || type: double || format: matrix
+    %           .U:          u                       || required: True  || type: double || format: matrix
+    %           .V:          v                       || required: True  || type: double || format: matrix
+    %           .W:          w                       || required: False || type: double || format: matrix
+    %           .U_sgm:      u at sigma levels       || required: False || type: double || format: matrix
+    %           .V_sgm:      v at sigma levels       || required: False || type: double || format: matrix
+    %           .W_sgm:      w at sigma levels       || required: False || type: double || format: matrix
     %       GA_start_date:   time of forecast start  || required: True  || type: string || format: '2023-05-30_00:00:00'
     %       varargin:        optional parameters     
     %           conf:        configuration struct    || required: False || type: struct || format: struct
@@ -103,6 +103,7 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin
     end
 
     % time && TIME
+    % Ttimes = Mateset.Mdatetime(time)
     [TIME,TIME_reference,TIME_start_date,TIME_end_date,time_filename] = time_to_TIME(time);
 
     % standard_name

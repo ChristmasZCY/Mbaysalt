@@ -1,4 +1,19 @@
 classdef Mateset < dynamicprops
+    % =================================================================================================================
+    % discription:
+    %       Mateset is a class for storing the data from netcdf file or matrix
+    % =================================================================================================================
+    % parameter:
+    %       varargin:        optional parameters     || required: False|| type: char string double single || format: None
+    % =================================================================================================================
+    % example:
+    %       Ms = Mateset(file)
+    %       Ms = Mateset(x.lon,x.lat)
+    %       Ms = Mateset(x.lon,x.lat,x.element)
+    %       Ms = Mateset(x.lon,x.lat,x.Ttimes)
+    %       Ms = Mateset(x.lon,x.lat,x.Ttimes,x.element)
+    % =================================================================================================================
+
     properties
         lon
         lat
@@ -25,7 +40,6 @@ classdef Mateset < dynamicprops
                     obj.Ttimes = Mateset.Mdatetime(time, units);
                 end
             case {'single', 'double'}
-                % TODO:
                 % lon lat
                 obj.lon = varargin{1};
                 obj.lat = varargin{2};

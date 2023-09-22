@@ -1,17 +1,16 @@
 function [Vars_name, Vars] = get_Variables_from_nc(fin,varargin)
-    % TODO: need to write
     % =================================================================================================================
     % discription:
-    %       Make tide current u/v/h from TPXO9-atlas, and write to nc file.
+    %       Get the variables from the netCDF file
     % =================================================================================================================
     % parameter:
-    %       yyyy: year                             || required: True || type: double         ||  format: 2019 or '2019'
-    %       mm: month                              || required: True || type: double         ||  format: 1 or '1'
-    %       varargin{1}: day_length                || required: False|| type: double         ||  format: 1:31
+    %       fin:        input NC file name                || required: True || type: string  ||  format: 'test.nc'
+    %       varargin:   optional parameters     
+   %           INFO:    whether to print the information  || required: False|| type: char    ||  format: 'INFO'
     % =================================================================================================================
     % example:
-    %       make_tide_from_tpxo(2023,5)
-    %       make_tide_from_tpxo(2023,5,[1,3,5])
+    %       [Vars_name, Vars] = get_Variables_from_nc('test.nc');
+    %       [Vars_name, Vars] = get_Variables_from_nc('test.nc','INFO');
     % =================================================================================================================
 
     varargin  = read_varargin2(varargin,{'INFO'});  % 是否打印信息, 默认不打印

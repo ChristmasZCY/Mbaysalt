@@ -54,10 +54,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
     osprints('INFO', ['Date parameter --> ',char(getdate),' total transfor ',num2str(Length),' days'])  % 输出处理的日期信息
     osprints('INFO', ['Method --> ',Method_interpn])  % 输出插值方法
-    osprints('INFO', ['Transfor ',interval,' variable -->',double(SWITCH.temp)*' temp',double(SWITCH.salt)*' salt', ...
-        double(SWITCH.adt)*' zeta',double(SWITCH.u)*' u',double(SWITCH.v)*' v', double(SWITCH.w)*' w', ...
-        double(SWITCH.aice)*' aice', double(SWITCH.ph)*' ph', double(SWITCH.no3)*' no3', double(SWITCH.pco2)*' pco2', ...
-        double(SWITCH.aice)*' chlo'])  % 打印处理的变量
+    osprints('INFO', ['Transfor ', interval ,' variable --> temp salt zeta u v', double(SWITCH.ww)*' w', double(SWITCH.ww)*' ice'])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
@@ -69,15 +66,11 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             ncfile = fullfile(Inputpath,[char(getdate),'/forecast/',file_Mcasename,'_',num2str(dr,'%04d'),'.nc']); % 输入文件
         end
 
-        OutputDir.curr = fullfile(Outputpath,'current',interval,deal_date);  % current输出路径
-        OutputDir.salt = fullfile(Outputpath,'sea_salinity',interval,deal_date);  % salinity输出路径
-        OutputDir.temp = fullfile(Outputpath,'sea_temperature',interval,deal_date);  % temperature输出路径
-        OutputDir.adt = fullfile(Outputpath,'adt',interval,deal_date);  % adt输出路径
-        OutputDir.ice = fullfile(Outputpath,'aice',interval,deal_date);  % aice输出路径
-        OutputDir.ph = fullfile(Outputpath,'ph',interval,deal_date);  % ph输出路径
-        OutputDir.no3 = fullfile(Outputpath,'no3',interval,deal_date);  % no3输出路径
-        OutputDir.pco2 = fullfile(Outputpath,'pco2',interval,deal_date);  % pco2输出路径
-        OutputDir.chlo = fullfile(Outputpath,'chlorophyll',interval,deal_date);  % chlorophyll输出路径
+        OutputDir.curr = fullfile(Outputpath,'current',interval,deal_date); % current输出路径
+        OutputDir.salt = fullfile(Outputpath,'sea_salinity',interval,deal_date); % salinity输出路径
+        OutputDir.temp = fullfile(Outputpath,'sea_temperature',interval,deal_date); % temperature输出路径
+        OutputDir.adt = fullfile(Outputpath,'adt',interval,deal_date); % adt输出路径
+        OutputDir.ice = fullfile(Outputpath,'ice',interval,deal_date); % aice输出路径
         structfun(@(x) makedirs(x),OutputDir); % 创建文件夹
 
         clear deal_date_dt deal_date % 日期处理中间变量
@@ -87,7 +80,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             ll_file = para_conf.LLFile; % 经纬度文件  --> 'll.mat'
             if SWITCH.read_ll_from_nc
                 f_nc = f_load_grid(ncfile,'Coordinate',para_conf.Load_Coordinate,'MaxLon',para_conf.MaxLon);  % read grid
-                makedirs(fileparts(ll_file));
                 save(ll_file, 'f_nc', '-v7.3', '-nocompression');
             else
                 f_nc = load(ll_file).f_nc;
@@ -109,70 +101,40 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         Lat = lat_dst;
 
         % read nc file
-        if SWITCH.temp
-            temp = double(ncread(ncfile,'temp'));
-        end
-        if SWITCH.salt
-            salt = double(ncread(ncfile,'salinity'));
-        end
-        if SWITCH.u
-            u = double(ncread(ncfile, 'u'));
-        end
-        if SWITCH.v
-            v = double(ncread(ncfile, 'v'));
-        end
-        if SWITCH.w
+        u = double(ncread(ncfile, 'u'));
+        v = double(ncread(ncfile, 'v'));
+        temp = double(ncread(ncfile,'temp'));
+        salt = double(ncread(ncfile,'salinity'));
+        zeta = double(ncread(ncfile,'zeta'));
+
+        if SWITCH.ww
             w = double(ncread(ncfile, 'ww'));
-        end
-        if SWITCH.adt
-            zeta = double(ncread(ncfile,'zeta'));
         end
         if SWITCH.aice % 是否包含海冰密集度
             aice = double(ncread(ncfile,'aice'));
         end
-        if SWITCH.ph % 是否包含ph
-            ph = double(ncread(ncfile,'O3_pH'));
-        end
-        if SWITCH.no3 % 是否包含海no3
-            no3 = double(ncread(ncfile,'N3_n'));
-        end
-        if SWITCH.pco2 % 是否包含pco2
-            pco2 = double(ncread(ncfile,'O3_pCO2'));
-        end
-        if SWITCH.chlo % 是否包含chlorophyll
-            chlo_p1 = double(ncread(ncfile,'P1_Chl'));
-            chlo_p2 = double(ncread(ncfile,'P2_Chl'));
-            chlo_p3 = double(ncread(ncfile,'P3_Chl'));
-            chlo_p4 = double(ncread(ncfile,'P4_Chl'));
-            chlo = chlo_p1 + chlo_p2 + chlo_p3 + chlo_p4;
-            clear chlo_p1 chlo_p2 chlo_p3 chlo_p4
-        end
 
-        %% time
-        % TIME = datetime(1858,11,17)+ hours(Itime*24 + Itime2/(3600*1000));
-        TIME = ncread(ncfile,'Times')';
-        if strcmp(interval,"daily")
-            Times = datetime(TIME,'Format','yyyy-MM-dd''T''HH:mm:ssSSSSSS') - double(SWITCH.daily_1hour);
-        elseif strcmp(interval,"hourly")
-            Times = datetime(TIME,'Format','yyyy-MM-dd''T''HH:mm:ssSSSSSS');
-        end
-        Ttimes = Mateset.Mdatetime(Times);
-        clear TIME Times
-        time = Ttimes.time; % POSIX时间 1970 01 01 shell的date +%s
+        Time = ncread(ncfile,'Times')';
+        % Time = datetime(1858,11,17)+ hours(Itime*24 + Itime2/(3600*1000));
 
-
-        if SWITCH.u
-            u_int = f_interp_cell2node(f_nc, u);
+        switch Method_interpn
+            case {'Siqi_interp', 'Siqi_ESMF'}
+                u_int = f_interp_cell2node(f_nc, u);
+                v_int = f_interp_cell2node(f_nc, v);
+                if SWITCH.ww
+                    w_int = f_interp_cell2node(f_nc, w);
+                end
+                clear u v w
         end
-        if SWITCH.v
-            v_int = f_interp_cell2node(f_nc, v);
-        end
-        if SWITCH.w
-            w_int = f_interp_cell2node(f_nc, w);
-        end
-        clear u v w
-
         % temp salt zeta u_int v_int w_int
+
+        if strcmp(interval,"daily")
+            Time = datetime(Time,'Format','yyyy-MM-dd''T''HH:mm:ssSSSSSS') - double(SWITCH.daily_1hour);
+        elseif strcmp(interval,"hourly")
+            Time = datetime(Time,'Format','yyyy-MM-dd''T''HH:mm:ssSSSSSS');
+        end
+
+        time = posixtime(Time); % POSIX时间 1970 01 01 shell的date +%s
 
         switch Method_interpn
             case 'Siqi_interp'
@@ -191,45 +153,22 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     Weight_2d = load(file_weight).Weight_2d;
                 end
 
-                if SWITCH.temp
-                    Temp = interp_2d_via_weight(temp,Weight_2d);
-                end
-                if SWITCH.salt
-                    Salt = interp_2d_via_weight(salt,Weight_2d);
-                end
-                if SWITCH.adt
-                    Zeta = interp_2d_via_weight(zeta,Weight_2d);
-                end
-                if SWITCH.u
-                    U = interp_2d_via_weight(u_int,Weight_2d);
-                end
-                if SWITCH.v
-                    V = interp_2d_via_weight(v_int,Weight_2d);
-                end
-                if SWITCH.w
+                Temp = interp_2d_via_weight(temp,Weight_2d);
+                Salt = interp_2d_via_weight(salt,Weight_2d);
+                Zeta = interp_2d_via_weight(zeta,Weight_2d);
+                Depth = interp_2d_via_weight(f_nc.deplay,Weight_2d);
+                Siglay = interp_2d_via_weight(f_nc.siglay,Weight_2d);
+                U = interp_2d_via_weight(u_int,Weight_2d);
+                V = interp_2d_via_weight(v_int,Weight_2d);
+                Depth_origin_to_wrf_grid =  interp_2d_via_weight(f_nc.h,Weight_2d);
+
+                if SWITCH.ww
                     W = interp_2d_via_weight(w_int,Weight_2d);
                 end
                 if SWITCH.aice
                     Aice = interp_2d_via_weight(aice,Weight_2d);
                 end
-                if SWITCH.ph
-                    Ph = interp_2d_via_weight(ph,Weight_2d);
-                end
-                if SWITCH.no3
-                    No3 = interp_2d_via_weight(no3,Weight_2d);
-                end
-                if SWITCH.pco2
-                    Pco2 = interp_2d_via_weight(pco2,Weight_2d);
-                end
-                if SWITCH.chlo
-                    Chlo = interp_2d_via_weight(chlo,Weight_2d);
-                end
-                Depth = interp_2d_via_weight(f_nc.deplay,Weight_2d);
-                Siglay = interp_2d_via_weight(f_nc.siglay,Weight_2d);
-                Depth_origin_to_wrf_grid =  interp_2d_via_weight(f_nc.h,Weight_2d);
-
-
-                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo
+                clear temp salt zeta u_int v_int w_int aice
                 clear file_weight Weight_2d
 
             case 'Siqi_ESMF'
@@ -261,50 +200,60 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
                 for it = 1: size(temp,3) % time
                     for iz = 1 : size(temp,2) % depth
-                        if SWITCH.temp
-                            Temp(:,:,iz,it) =  esmf_regrid(temp(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                        end
-                        if SWITCH.salt
-                            Salt(:,:,iz,it) =  esmf_regrid(salt(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                        end
-                        if SWITCH.u
-                            U(:,:,iz,it) =  esmf_regrid(u_int(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                        end
-                        if SWITCH.v
-                            V(:,:,iz,it) =  esmf_regrid(v_int(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                        end
-                        if SWITCH.w
+                        Temp(:,:,iz,it) =  esmf_regrid(temp(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                        Salt(:,:,iz,it) =  esmf_regrid(salt(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                        U(:,:,iz,it) =  esmf_regrid(u_int(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                        V(:,:,iz,it) =  esmf_regrid(v_int(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                        if SWITCH.ww
                             W(:,:,iz,it) =  esmf_regrid(w_int(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                        end
-                        if SWITCH.ph
-                            Ph(:,:,iz,it) =  esmf_regrid(ph(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                        end
-                        if SWITCH.no3
-                            No3(:,:,iz,it) =  esmf_regrid(no3(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                        end
-                        if SWITCH.pco2
-                            Pco2(:,:,iz,it) =  esmf_regrid(pco2(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                        end
-                        if SWITCH.chlo
-                            Chlo(:,:,iz,it) =  esmf_regrid(chlo(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                         end
                         if it == 1  % 不随time变化，只需要计算一次
                             Depth(:,:,iz) =  esmf_regrid(f_nc.deplay(:,iz),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                             Siglay(:,:,iz) =  esmf_regrid(f_nc.siglay(:,iz),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                         end
                     end
-                    % 不随深度变化
-                    if SWITCH.adt
-                        Zeta(:,:,it) =  esmf_regrid(zeta(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                    end
+                    Zeta(:,:,it) =  esmf_regrid(zeta(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     if SWITCH.aice
                         Aice(:,:,it) =  esmf_regrid(aice(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     end
                 end
                 Depth_origin_to_wrf_grid =  esmf_regrid(f_nc.h,Weight_2d,'Dims',[length(Lon),length(Lat)]); % depth of WRF grid
-                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo it iz Weight_2d
+                clear temp salt zeta u_int v_int w_int aice it iz Weight_2d
+
+            case 'Christmas_interp'
+                warning('Not Recommend! Need parpool, extremely slow, only can interp depth as sigma level')
+                YN = input('Are you sure to continue? Y/N [N]:','s');
+                if lower(YN) ~= 'y'
+                    error('stop')
+                end
+                % parpool(20)
+
+                % read grid
+                lonc = f_nc.xc; latc = f_nc.yc;
+                lon = f_nc.x; lat = f_nc.y;
+                h = f_nc.h; siglay = double(ncread(ncfile,'siglay',[1,1],[1,Inf]));
+
+                % mask
+                SWITCH.make_mask = para_conf.Switch_make_mask;
+                file_ncmask = para_conf.MaskncFile;  % Christmas_interp mask地形文件 gebco_2022.nc
+                file_matmask = para_conf.MaskmatFile;  % Christmas_interp 海洋为1，陆地为0的mask文件
+                if SWITCH.make_mask
+                    make_maskmat(file_ncmask,Lon,Lat,file_matmask);
+                end
+
+                [Temp,Salt,Zeta,Depth] = griddata_fvcom.griddata_tsz(lon,lat,time,temp,salt,zeta,h,siglay,Lon,Lat);
+
+                if SWITCH.ww
+                    [U,V,W] = griddata_fvcom.griddata_nele(lonc, latc, siglay, time, Lon, Lat, u, v, w);
+                    clear lonc latc u v w lon lat temp salt zeta h siglay
+                    [Temp,Salt,Zeta,Depth,U,V,W] = mask2data(file_matmask,Temp,Salt,Zeta,Depth,U,V,W);
+                else
+                    [U,V] = griddata_fvcom.griddata_nele(lonc, latc, siglay, time, Lon, Lat, u, v);
+                    clear lonc latc u v lon lat temp salt zeta h siglay
+                    [Temp,Salt,Zeta,Depth,U,V] = mask2data(file_matmask,Temp,Salt,Zeta,Depth,U,V);
+                end
             otherwise
-                error('Method_interpn must be Siqi_interp or Siqi_ESMF!')
+                error('Method_interpn error')
         end
         % lon                      --> 1*lon                                --- wrnc(function) lon
         % lat                      --> 1*lat                                --- wrnc(function) lat
@@ -318,39 +267,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % W                        --> lon*lat*sigma_orig*time (w of fvcom vertical grid)
         % Zeta                     --> lon*lat*time (zeta of fvcom vertical grid)
         % Aice                     --> lon*lat*time (aice of fvcom vertical grid)
-        % Ph                       --> lon*lat*sigma_orig*time (ph of fvcom vertical grid)
-        % No3                      --> lon*lat*sigma_orig*time (no3 of fvcom vertical grid)
-        % Pco2                     --> lon*lat*sigma_orig*time (pco2 of fvcom vertical grid)
-        % Chlo                     --> lon*lat*sigma_orig*time (chlorophyll of fvcom vertical grid)
 
         if SWITCH.out_sgm_level % 是否输出sigma层
-            if SWITCH.temp
-                VAelement.Temp_sgm = Temp;
-            end
-            if SWITCH.salt
-                VAelement.Salt_sgm = Salt;
-            end
-            if SWITCH.u
-                VAelement.U_sgm = U;
-            end
-            if SWITCH.v
-                VAelement.V_sgm = V;
-            end
-            if SWITCH.w
+            VAelement.U_sgm = U;
+            VAelement.V_sgm = V;
+            if SWITCH.ww
                 VAelement.W_sgm = W;
             end
-            if SWITCH.ph
-                VAelement.Ph_sgm = Ph;
-            end
-            if SWITCH.no3
-                VAelement.No3_sgm = No3;
-            end
-            if SWITCH.pco2
-                VAelement.Pco2_sgm = Pco2;
-            end
-            if SWITCH.chlo
-                VAelement.Chlo_sgm = Chlo;
-            end
+            VAelement.Temp_sgm = Temp;
+            VAelement.Salt_sgm = Salt;
         end
 
         switch Method_interpn 
@@ -382,166 +307,63 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     clear file_weight_vertical
 
                     % WRF grid --> FVCOM grid
-                    if SWITCH.temp
-                        Temp1 = reshape(Temp,[size_2d_to_1d_ll,size(Temp,[3,4])]);clear Temp
-                    end
-                    if SWITCH.salt
-                        Salt1 = reshape(Salt,[size_2d_to_1d_ll,size(Salt,[3,4])]);clear Salt
-                    end
-                    if SWITCH.u
-                        U1 = reshape(U,[size_2d_to_1d_ll,size(U,[3,4])]);clear U
-                    end
-                    if SWITCH.v
-                        V1 = reshape(V,[size_2d_to_1d_ll,size(V,[3,4])]);clear V
-                    end
-                    if SWITCH.w
+                    Temp1 = reshape(Temp,[size_2d_to_1d_ll,size(Temp,[3,4])]);clear Temp
+                    Salt1 = reshape(Salt,[size_2d_to_1d_ll,size(Salt,[3,4])]);clear Salt
+                    U1 = reshape(U,[size_2d_to_1d_ll,size(U,[3,4])]);clear U
+                    V1 = reshape(V,[size_2d_to_1d_ll,size(V,[3,4])]);clear V
+                    if SWITCH.ww
                         W1 = reshape(W,[size_2d_to_1d_ll,size(W,[3,4])]);clear W
-                    end
-                    if SWITCH.ph
-                        Ph1 = reshape(Ph,[size_2d_to_1d_ll,size(Ph,[3,4])]);clear Ph
-                    end
-                    if SWITCH.no3
-                        No31 = reshape(No3,[size_2d_to_1d_ll,size(No3,[3,4])]);clear No3
-                    end
-                    if SWITCH.pco2
-                        Pco21 = reshape(Pco2,[size_2d_to_1d_ll,size(Pco2,[3,4])]);clear Pco2
-                    end
-                    if SWITCH.chlo
-                        Chlo1 = reshape(Chlo,[size_2d_to_1d_ll,size(Chlo,[3,4])]);clear Chlo
                     end
 
                     % make empty matrix
-                    if SWITCH.temp
-                        Temp = zeros(size_2d_to_1d_ll,length(Depth_std),size(Temp1,3));
-                    end
-                    if SWITCH.salt
-                        Salt = zeros(size_2d_to_1d_ll,length(Depth_std),size(Salt1,3));
-                    end
-                    if SWITCH.u
-                        U = zeros(size_2d_to_1d_ll,length(Depth_std),size(U1,3));
-                    end
-                    if SWITCH.v
-                        V = zeros(size_2d_to_1d_ll,length(Depth_std),size(V1,3));
-                    end
-                    if SWITCH.w
+                    Temp = zeros(size_2d_to_1d_ll,length(Depth_std),size(Temp1,3));
+                    Salt = zeros(size_2d_to_1d_ll,length(Depth_std),size(Salt1,3));
+                    U = zeros(size_2d_to_1d_ll,length(Depth_std),size(U1,3));
+                    V = zeros(size_2d_to_1d_ll,length(Depth_std),size(V1,3));
+                    if SWITCH.ww
                         W = zeros(size_2d_to_1d_ll,length(Depth_std),size(W1,3));
-                    end
-                    if SWITCH.ph
-                        Ph = zeros(size_2d_to_1d_ll,length(Depth_std),size(Ph1,3));
-                    end
-                    if SWITCH.no3
-                        No3 = zeros(size_2d_to_1d_ll,length(Depth_std),size(No31,3));
-                    end
-                    if SWITCH.pco2
-                        Pco2 = zeros(size_2d_to_1d_ll,length(Depth_std),size(Pco21,3));
-                    end
-                    if SWITCH.chlo
-                        Chlo = zeros(size_2d_to_1d_ll,length(Depth_std),size(Chlo1,3));
                     end
                     clear size_2d_to_1d_ll
 
                     % interp with FVCOM grid
-                    % for it = 1:size(Temp1,3) % size(Temp1,3) -- time
-                    for it = 1:length(time) 
-                        if SWITCH.temp
-                            Temp(:,:,it) = interp_vertical_via_weight(Temp1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.salt
-                            Salt(:,:,it) = interp_vertical_via_weight(Salt1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.u
-                            U(:,:,it) = interp_vertical_via_weight(U1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.v
-                            V(:,:,it) = interp_vertical_via_weight(V1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.w
+                    for it = 1:size(Temp1,3) % size(Temp1,3) -- time
+                        Temp(:,:,it) = interp_vertical_via_weight(Temp1(:,:,it),Weight_vertical);
+                        Salt(:,:,it) = interp_vertical_via_weight(Salt1(:,:,it),Weight_vertical);
+                        U(:,:,it) = interp_vertical_via_weight(U1(:,:,it),Weight_vertical);
+                        V(:,:,it) = interp_vertical_via_weight(V1(:,:,it),Weight_vertical);
+                        if SWITCH.ww
                             W(:,:,it) = interp_vertical_via_weight(W1(:,:,it),Weight_vertical);
                         end
-                        if SWITCH.ph
-                            Ph(:,:,it) = interp_vertical_via_weight(Ph1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.no3
-                            No3(:,:,it) = interp_vertical_via_weight(No31(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.pco2
-                            Pco2(:,:,it) = interp_vertical_via_weight(Pco21(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.chlo
-                            Chlo(:,:,it) = interp_vertical_via_weight(Chlo1(:,:,it),Weight_vertical);
-                        end
                     end
-                    clear Temp1 Salt1 U1 V1 W1 Ph1 No31 Pco21 Chlo1 it
+                    clear Temp1 Salt1 U1 V1 W1 it
                     clear Weight_vertical
 
-                    if SWITCH.temp
-                        Temp = reshape(Temp,[size(Depth,[1,2]),size(Temp,[2,3,4])]);
-                    end
-                    if SWITCH.salt
-                        Salt = reshape(Salt,[size(Depth,[1,2]),size(Salt,[2,3,4])]);
-                    end
-                    if SWITCH.u
-                        U = reshape(U,[size(Depth,[1,2]),size(U,[2,3,4])]);
-                    end
-                    if SWITCH.v
-                        V = reshape(V,[size(Depth,[1,2]),size(V,[2,3,4])]);
-                    end
-                    if SWITCH.w
-                        W = reshape(W,[size(Depth,[1,2]),size(W,[2,3,4])]);
-                    end
-                    if SWITCH.ph
-                        Ph = reshape(Ph,[size(Depth,[1,2]),size(Ph,[2,3,4])]);
-                    end
-                    if SWITCH.no3
-                        No3 = reshape(No3,[size(Depth,[1,2]),size(No3,[2,3,4])]);
-                    end
-                    if SWITCH.pco2
-                        Pco2 = reshape(Pco2,[size(Depth,[1, 2]),size(Pco2,[2,3,4])]);
-                    end
-                    if SWITCH.chlo
-                        Chlo = reshape(Chlo,[size(Depth,[1,2]),size(Chlo,[2,3,4])]);
+                    Temp = reshape(Temp,[size(Depth,[1, 2]),size(Temp,[2,3,4])]);
+                    Salt = reshape(Salt,[size(Depth,[1, 2]),size(Salt,[2,3,4])]);
+                    U = reshape(U,[size(Depth,[1, 2]),size(U,[2,3,4])]);
+                    V = reshape(V,[size(Depth,[1, 2]),size(V,[2,3,4])]);
+                    if SWITCH.ww
+                        W = reshape(W,[size(Depth,[1, 2]),size(W,[2,3,4])]);
                     end
                 end
         end
-        % Temp Salt U V W Zeta Depth Aice Ph No3 Pco2 Chlo --> std_level
-        if SWITCH.adt
-            Velement.Zeta = Zeta;
-        end
+        % Temp Salt U V W Zeta Depth Aice --> std_level
+        Velement.Zeta = Zeta;
         if SWITCH.aice
             Velement.Aice = Aice;
         end
         % -----> std_level
         if SWITCH.out_std_level
-            if SWITCH.temp
-                Velement.Temp = Temp; 
-            end
-            if SWITCH.salt
-                Velement.Salt = Salt;
-            end
-            if SWITCH.u
-                Velement.U = U; 
-            end
-            if SWITCH.v
-                Velement.V = V;
-            end
-            if SWITCH.w
+            Velement.Temp = Temp; 
+            Velement.Salt = Salt;
+            Velement.U = U; 
+            Velement.V = V;
+            if SWITCH.ww
                 Velement.W = W; 
-            end
-            if SWITCH.ph
-                Velement.Ph = Ph;
-            end
-            if SWITCH.no3
-                Velement.No3 = No3;
-            end
-            if SWITCH.pco2
-                Velement.Pco2 = Pco2;
-            end
-            if SWITCH.chlo
-                Velement.Chlo = Chlo;
             end
             Delement.Depth_std = Depth_std;
         end
-        clear Temp Salt U V W Zeta Aice Ph No3 Pco2 Chlo
+        clear Temp Salt U V W Zeta Aice
         % <----- std_level
         % -----> sgm_level
         if SWITCH.out_sgm_level
@@ -549,35 +371,14 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             if min(Level_sgm) < 1 || max(Level_sgm) > size(Depth,3)
                 error('Level_sgm exceed the range of sigma level')
             end
-            if SWITCH.temp
-                Velement.Temp_sgm = VAelement.Temp_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.salt
-                Velement.Salt_sgm = VAelement.Salt_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.u
-                Velement.U_sgm = VAelement.U_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.v
-                Velement.V_sgm = VAelement.V_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.w
+            Velement.Temp_sgm = VAelement.Temp_sgm(:,:,Level_sgm,:);
+            Velement.Salt_sgm = VAelement.Salt_sgm(:,:,Level_sgm,:);
+            Velement.U_sgm = VAelement.U_sgm(:,:,Level_sgm,:);
+            Velement.V_sgm = VAelement.V_sgm(:,:,Level_sgm,:);
+            Delement.Siglay = Siglay(:,:,Level_sgm); clear Siglay
+            if SWITCH.ww
                 Velement.W_sgm = VAelement.W_sgm(:,:,Level_sgm,:);
             end
-            if SWITCH.ph
-                Velement.Ph_sgm = VAelement.Ph_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.no3
-                Velement.No3_sgm = VAelement.No3_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.pco2
-                Velement.Pco2_sgm = VAelement.Pco2_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.chlo
-                Velement.Chlo_sgm = VAelement.Chlo_sgm(:,:,Level_sgm,:);
-            end
-            Delement.Siglay = Siglay(:,:,Level_sgm); clear Siglay
-
             Delement.Bathy = Depth_origin_to_wrf_grid;
             Delement.Sigma = Level_sgm;
         end
@@ -666,77 +467,39 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         GA_start_date = [char(datetime("now","Format","yyyy-MM-dd")), '_00:00:00'];
 
         %% 写入
-        if SWITCH.u || SWITCH.v || SWITCH.v
-            file = fullfile(OutputDir.curr,['current',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
-            [Velement_current,Velement] = rmfields_key_from_struct(Velement,{'Temp','Temp_sgm','Salt','Salt_sgm','Zeta','Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
-            netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement_current,GA_start_date,'conf',para_conf);
-            clear Velement_current ncid file
-        end
+        file = fullfile(OutputDir.curr,['current',OutputRes,'.nc']);
+        ncid = netcdf_fvcom.create_nc(file, 'NETCDF4');
+        [Velement_current,Velement] = rmfields_key_from_struct(Velement,{'Temp','Temp_sgm','Salt','Salt_sgm','Zeta','Aice'});
+        netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement_current,GA_start_date,'conf',para_conf);
+        clear Velement_current ncid file
 
-        if SWITCH.temp
-            file = fullfile(OutputDir.temp,['temperature',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
-            [Velement_temperature,Velement] = rmfields_key_from_struct(Velement,{'Salt','Salt_sgm','Zeta','Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
-            netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement_temperature,GA_start_date,'conf',para_conf)
-            clear Velement_temperature ncid file
-        end
+        file = fullfile(OutputDir.temp,['temperature',OutputRes,'.nc']);
+        ncid = netcdf_fvcom.create_nc(file, 'NETCDF4');
+        [Velement_temperature,Velement] = rmfields_key_from_struct(Velement,{'Salt','Salt_sgm','Zeta','Aice'});
+        netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement_temperature,GA_start_date,'conf',para_conf)
+        clear Velement_temperature ncid file
 
-        if SWITCH.salt
-            file = fullfile(OutputDir.salt,['salinity',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
-            [Velement_salt,Velement] = rmfields_key_from_struct(Velement,{'Zeta','Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
-            netcdf_fvcom.wrnc_salt(ncid,Lon,Lat,Delement,time,Velement_salt,GA_start_date,'conf',para_conf);
-            clear Velement_salt ncid file
-        end
+        file = fullfile(OutputDir.salt,['salinity',OutputRes,'.nc']);
+        ncid = netcdf_fvcom.create_nc(file, 'NETCDF4');
+        [Velement_salt,Velement] = rmfields_key_from_struct(Velement,{'Zeta','Aice'});
+        netcdf_fvcom.wrnc_salt(ncid,Lon,Lat,Delement,time,Velement_salt,GA_start_date,'conf',para_conf);
+        clear Velement_salt ncid file
 
-        if SWITCH.adt
-            file = fullfile(OutputDir.adt,['adt',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
-            [Velement_adt,Velement] = rmfields_key_from_struct(Velement,{'Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
-            netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Velement_adt.Zeta,GA_start_date,'conf',para_conf);
-            clear Velement_adt ncid file
-        end
+        file = fullfile(OutputDir.adt,['adt',OutputRes,'.nc']);
+        ncid = netcdf_fvcom.create_nc(file, 'NETCDF4');
+        [Velement_adt,Velement] = rmfields_key_from_struct(Velement,{'Aice'});
+        netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Velement_adt.Zeta,GA_start_date,'conf',para_conf);
+        clear Velement_adt ncid file
 
         if SWITCH.aice
             file = fullfile(OutputDir.ice,['ice',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
-            [Velement_ice,Velement] = rmfields_key_from_struct(Velement,{'Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
+            ncid = netcdf_fvcom.create_nc(file, 'NETCDF4');
+            [Velement_ice,Velement] = rmfields_key_from_struct(Velement,{''});
             netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Velement_ice.Aice,GA_start_date,'conf',para_conf);
             clear Velement_ice ncid file
         end
 
-        if SWITCH.ph
-            file = fullfile(OutputDir.ph,['ph',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
-            [Velement_ph,Velement] = rmfields_key_from_struct(Velement,{'No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
-            netcdf_fvcom.wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,Velement_ph,GA_start_date,'conf',para_conf);
-            clear Velement_ph ncid file
-        end
-        if SWITCH.no3
-            file = fullfile(OutputDir.no3,['no3',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
-            [Velement_no3,Velement] = rmfields_key_from_struct(Velement,{'Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
-            netcdf_fvcom.wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,Velement_no3,GA_start_date,'conf',para_conf);
-            clear Velement_no3 ncid file
-        end
-        if SWITCH.pco2
-            file = fullfile(OutputDir.pco2,['pco2',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
-            [Velement_pco2,Velement] = rmfields_key_from_struct(Velement,{'Chlo','Chlo_sgm'});
-            netcdf_fvcom.wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,Velement_pco2,GA_start_date,'conf',para_conf);
-            clear Velement_pco2 ncid file
-        end
-        if SWITCH.chlo
-            file = fullfile(OutputDir.chlo,['chlorophyll',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
-            [Velement_chlo,Velement] = rmfields_key_from_struct(Velement,{''});
-            netcdf_fvcom.wrnc_chlo_ersem(ncid,Lon,Lat,Delement,time,Velement_chlo,GA_start_date,'conf',para_conf);
-            clear Velement_chlo ncid file
-        end
-
-
-        clear Lon Lat Depth time TIME TIME_* Ttimes Velement
+        clear Lon Lat Depth time TIME TIME_* Time Velement
         clear time_filename
         clear OutputDir_*
         clear GA_start_date

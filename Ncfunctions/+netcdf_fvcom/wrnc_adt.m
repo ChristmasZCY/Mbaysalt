@@ -56,7 +56,7 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,varargin)
     netcdf.putVar(ncid,lat_id,                                                 Lat);         % 纬度
     netcdf.putVar(ncid,time_id,  0,      length(time),                          time);       % 时间
     netcdf.putVar(ncid,TIME_id, [0,0],  [size(char(TIME),2),size(char(TIME),1)],char(TIME)');% 时间char
-    netcdf.putVar(ncid,adt_id,  [0,0,0],[size(Zeta,1), size(Zeta,2), size(Zeta,3)],  Zeta);     % 盐度
+    netcdf.putVar(ncid,adt_id,  [0,0,0],[size(Zeta,1), size(Zeta,2), size(Zeta,3)],  Zeta);     % 海平面高度
 
     % -----
     netcdf.reDef(ncid);    % 使打开的nc文件重新进入定义模式

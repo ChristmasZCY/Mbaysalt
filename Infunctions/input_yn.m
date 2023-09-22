@@ -1,17 +1,13 @@
 function yn = input_yn(prompt)
-    % TODO: add description
     % =================================================================================================================
     % discription:
-    %       Make tide current u/v/h from TPXO9-atlas, and write to nc file.
+    %       Check if the input is yes or no
     % =================================================================================================================
     % parameter:
-    %       yyyy: year                             || required: True || type: double         ||  format: 2019 or '2019'
-    %       mm: month                              || required: True || type: double         ||  format: 1 or '1'
-    %       varargin{1}: day_length                || required: False|| type: double         ||  format: 1:31
+    %       prompt: the prompt to show in the input || required: True || type: string  ||  format: 'prompt'
     % =================================================================================================================
     % example:
-    %       make_tide_from_tpxo(2023,5)
-    %       make_tide_from_tpxo(2023,5,[1,3,5])
+    %       yn = input_yn('Are you sure you want to do this?')
     % =================================================================================================================
 
     yn = input(prompt, 's');

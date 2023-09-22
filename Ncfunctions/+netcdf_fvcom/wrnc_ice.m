@@ -56,7 +56,7 @@ function wrnc_ice(ncid,Lon,Lat,time,Aice,GA_start_date,varargin)
     netcdf.putVar(ncid,lat_id,                                                 Lat);         % 纬度
     netcdf.putVar(ncid,time_id,  0,      length(time),                          time);       % 时间
     netcdf.putVar(ncid,TIME_id, [0,0],  [size(char(TIME),2),size(char(TIME),1)],char(TIME)');% 时间char
-    netcdf.putVar(ncid,ice_id,  [0,0,0],[size(Aice,1), size(Aice,2), size(Aice,3)],  Aice);     % 盐度
+    netcdf.putVar(ncid,ice_id,  [0,0,0],[size(Aice,1), size(Aice,2), size(Aice,3)],  Aice);     % ice
 
     % -----
     netcdf.reDef(ncid);    % 使打开的nc文件重新进入定义模式

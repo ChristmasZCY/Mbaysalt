@@ -8,7 +8,7 @@ function ncid = create_nc(fin, mode, varargin)
     %       mode:            file mode               || required: True || type: string || format: 'NETCDF4'
     % =================================================================================================================
     % example:
-    %       ncid = netcdf_fvcom.create_nc('test.nc', 'NETCDF4')
+    %       ncid = create_nc('test.nc', 'NETCDF4')
     % =================================================================================================================
     
     path = fileparts(fin);  % get the path of the file

@@ -4,7 +4,6 @@ function wrnc_salt(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
     %       This function is used to write the salinity data to the netcdf file
     % =================================================================================================================
     % parameter:
-
     %       ncid:            netcdf file id                   || required: True  || type: int    || format: 1
     %       Lon:             longitude                        || required: True  || type: double || format: [120.5, 121.5]
     %       Lat:             latitude                         || required: True  || type: double || format: [30.5, 31.5]
@@ -15,10 +14,8 @@ function wrnc_salt(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
     %           .Siglay:     levels of siglay                 || required: False || type: double || format: matrix
     %       time:            time                             || required: True  || type: double || format: posixtime
     %       Velement:        value struct                     || required: True  || type: struct || format: struct
-    %           Salt:        sea salinity                     || required: True  || type: double || format: matrix
-    %           V:           v                                || required: True  || type: double || format: matrix
-    %           W:           w                                || required: False || type: double || format: matrix
-    %           Salt_sgm:    sea salinity at sigma levels     || required: False || type: double || format: matrix
+    %           .Salt:       sea salinity                     || required: True  || type: double || format: matrix
+    %           .Salt_sgm:   sea salinity at sigma levels     || required: False || type: double || format: matrix
     %       GA_start_date:   time of forecast start           || required: True  || type: string || format: '2023-05-30_00:00:00'
     %       varargin:        optional parameters     
     %           conf:        configuration struct    || required: False || type: struct || format: struct
@@ -95,7 +92,7 @@ function wrnc_salt(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
 
     if SWITCH.std
         dep_id  =  netcdf.defVar(ncid,  'depth',     'NC_FLOAT', [depdimID]);  % 深度
-        salt_id =  netcdf.defVar(ncid, 'salinity',    'NC_FLOAT', [londimID, latdimID,depdimID,timedimID]); % 温度
+        salt_id =  netcdf.defVar(ncid, 'salinity',    'NC_FLOAT', [londimID, latdimID,depdimID,timedimID]); % 盐度
         netcdf.defVarFill(ncid,      salt_id,      false,      9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_id, true, true, 5)
         netcdf.defVarDeflate(ncid, salt_id, true, true, 5)
@@ -125,7 +122,7 @@ function wrnc_salt(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
 
     if SWITCH.std
         netcdf.putVar(ncid,dep_id,                                                Depth);       % 深度
-        netcdf.putVar(ncid,salt_id,  [0,0,0,0],[size(Salt,1), size(Salt,2), size(Salt,3),size(Salt,4)],  Salt);     % 温度
+        netcdf.putVar(ncid,salt_id,  [0,0,0,0],[size(Salt,1), size(Salt,2), size(Salt,3),size(Salt,4)],  Salt);     % 盐度
     end
 
     if SWITCH.sgm
@@ -175,9 +172,9 @@ function wrnc_salt(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
         netcdf.putAtt(ncid,siglay_id, 'positive',     'down');                              % Siglay
         netcdf.putAtt(ncid,siglay_id, 'standard_name','ocean_sigma_coordinate');            % Siglay
 
-        netcdf.putAtt(ncid,salt_sgm_id, 'units',        'psu');                                 % u_sgm
-        netcdf.putAtt(ncid,salt_sgm_id, 'long_name',    'sea water salinity at sigma levels');             % u_sgm
-        netcdf.putAtt(ncid,salt_sgm_id, 'coordinates',  'sigma_levels');                     % u_sgm
+        netcdf.putAtt(ncid,salt_sgm_id, 'units',        'psu');                                 % salt_sgm
+        netcdf.putAtt(ncid,salt_sgm_id, 'long_name',    'sea water salinity at sigma levels');             % salt_sgm
+        netcdf.putAtt(ncid,salt_sgm_id, 'coordinates',  'sigma_levels');                     % salt_sgm
     end
 
     % 写入global attribute

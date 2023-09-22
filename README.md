@@ -26,6 +26,6 @@ git clone https://github.com/ChristmasZCY/Mbaysalt.git
 * [matFigure](https://github.com/SiqiLiOcean/matFigure)
 * [matNC](https://github.com/SiqiLiOcean/matNC)
 * [struct2ini](https://ww2.mathworks.cn/matlabcentral/fileexchange/22079-struct2ini)
-* [m_map](ttps://www.eoas.ubc.ca/~rich/map.html)
+* [m_map](https://www.eoas.ubc.ca/~rich/map.html)
 * [t_tide]()
 * [CDT](https://github.com/chadagreene/CDT)

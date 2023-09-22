@@ -1,7 +1,7 @@
 function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     % =================================================================================================================
     % discription:
-    %       read nc file
+    %       Read nc file
     % =================================================================================================================
     % parameter:
     %       fnc: nc file name                               || required: True  || type: string || format: 'wave.nc'

@@ -1,9 +1,23 @@
 classdef Mdatetime 
-% Ttime = Mateset.Mdatetime(Times)
-% Ttime = Mateset.Mdatetime(time)
-% Ttime = Mateset.Mdatetime(time,'seconds since 1970-01-01 00:00:00')
-% Ttime = Mateset.Mdatetime(TIME,'yyyy-MM-dd HH:mm:ss')
-% Ttime = Mateset.Mdatetime(string(TIME),'yyyy-MM-dd HH:mm:ss')
+    % =================================================================================================================
+    % discription:
+    %       Mdatetime is a class for time conversion among datetime and posixtime and char and string 
+    % =================================================================================================================
+    % parameter:
+    %      ttime:            time                    || required: True || type: datetime or posixtime or char or string
+    %       varargin:        optional parameters     
+    %           fmt:         format of datetime      || required: False|| type: char      || default: 'yyyy-MM-dd HH:mm:ss'
+    %           units:       units of posixtime      || required: False|| type: char      || default: 'seconds since 1970-01-01 00:00:00'
+    %           units_datetime: units of datetime    || required: False|| type: datetime  || default: datetime(1970,1,1,0,0,0)
+    % =================================================================================================================
+    % example:
+    %       Ttime = Mateset.Mdatetime(Times)
+    %       Ttime = Mateset.Mdatetime(time)
+    %       Ttime = Mateset.Mdatetime(time,'units','seconds since 1970-01-01 00:00:00')
+    %       Ttime = Mateset.Mdatetime(TIME,'fmt','yyyy-MM-dd HH:mm:ss')
+    %       Ttime = Mateset.Mdatetime(string(TIME),'fmt','yyyy-MM-dd HH:mm:ss')
+    % =================================================================================================================
+
     properties
         time
         Times
@@ -49,7 +63,7 @@ classdef Mdatetime
             obj.TIME_char = char(obj.TIME);
         end
 
-        %% 当某一个属性被更改，其余一起更改
+        %% 当某一个属性被更改，其余一起更改(已废弃)
         % Times被更改
         function obj = set.Times(obj,value)
             obj.Times = value;

@@ -1,7 +1,7 @@
-function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
+function wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
     % =================================================================================================================
     % discription:
-    %       This function is used to write the sea temperature data to the netcdf file
+    %       This function is used to write the pH data to the netcdf file
     % =================================================================================================================
     % parameter:
     %       ncid:            netcdf file id                   || required: True  || type: int    || format: 1
@@ -14,15 +14,15 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
     %           .Siglay:     levels of siglay                 || required: False || type: double || format: matrix
     %       time:            time                             || required: True  || type: double || format: posixtime
     %       Velement:        value struct                     || required: True  || type: struct || format: struct
-    %           .Temp:       sea temperature                  || required: True  || type: double || format: matrix
-    %           .Temp_sgm:   sea temperature at sigma levels  || required: False || type: double || format: matrix
+    %           .Ph:         pH                               || required: True  || type: double || format: matrix
+    %           .Ph_sgm:     pH at sigma levels               || required: False || type: double || format: matrix
     %       GA_start_date:   time of forecast start           || required: True  || type: string || format: '2023-05-30_00:00:00'
     %       varargin:        optional parameters     
-    %           conf:        configuration struct    || required: False || type: struct || format: struct
+    %           conf:        configuration struct             || required: False || type: struct || format: struct
     % =================================================================================================================
     % example:
-    %       netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date)
-    %       netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,'conf',conf)
+    %       netcdf_fvcom.wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date)
+    %       netcdf_fvcom.wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,'conf',conf)
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'conf'},{false});
@@ -31,18 +31,18 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
         SWITCH.std = true;
         SWITCH.sgm = false;
         Depth = Delement.Depth_std;
-        Temp = Velement.Temp;
+        Ph = Velement.Ph;
     elseif length(fieldnames(Delement)) == 3  % Delement --> Bathy Sigma Siglay
         SWITCH.std = false;
         SWITCH.sgm = true;
         Sigma = Delement.Sigma; Bathy = Delement.Bathy; Siglay = Delement.Siglay;
-        Temp_sgm = Velement.Temp_sgm;
+        Ph_sgm = Velement.Ph_sgm;
     elseif length(fieldnames(Delement)) == 4  % Delement --> Depth_std Bathy Sigma Siglay
         SWITCH.std = true;
         SWITCH.sgm = true;
         Depth = Delement.Depth_std;
         Sigma = Delement.Sigma; Bathy = Delement.Bathy; Siglay = Delement.Siglay;
-        Temp = Velement.Temp; Temp_sgm = Velement.Temp_sgm;
+        Ph = Velement.Ph; Ph_sgm = Velement.Ph_sgm;
     else
         error('The number of input parameters is wrong!')
     end
@@ -55,8 +55,8 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
         if ndims(Bathy) ~= 2
             error('Bathy must be a matrix 2D!')
         end
-        if ndims(Temp_sgm) > 4 || isvector(Temp_sgm)
-            error('Temp_sgm must be a matrix 2D, 3D or 4D!')
+        if ndims(Ph_sgm) > 4 || isvector(Ph_sgm)
+            error('Ph_sgm must be a matrix 2D, 3D or 4D!')
         end
     end
 
@@ -65,7 +65,7 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
 
     % standard_name
     ResName = num2str(1/nanmean(diff(Lon)), '%2.f');
-    S_name = standard_filename('temperature',Lon,Lat,time_filename,ResName); % 标准文件名
+    S_name = standard_filename('ph',Lon,Lat,time_filename,ResName); % 标准文件名
     osprints('INFO',['Transfor --> ',S_name])
 
     % 定义维度
@@ -92,24 +92,24 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
 
     if SWITCH.std
         dep_id  =  netcdf.defVar(ncid,  'depth',     'NC_FLOAT', [depdimID]);  % 深度
-        temp_id =  netcdf.defVar(ncid, 'temperature',    'NC_FLOAT', [londimID, latdimID,depdimID,timedimID]); % 温度
-        netcdf.defVarFill(ncid,      temp_id,      false,      9.9692100e+36); % 设置缺省值
+        Ph_id =  netcdf.defVar(ncid, 'pH',    'NC_FLOAT', [londimID, latdimID,depdimID,timedimID]); % pH
+        netcdf.defVarFill(ncid,      Ph_id,      false,      9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_id, true, true, 5)
-        netcdf.defVarDeflate(ncid, temp_id, true, true, 5)
+        netcdf.defVarDeflate(ncid, Ph_id, true, true, 5)
     end
 
     if SWITCH.sgm
         bathy_id = netcdf.defVar(ncid, 'bathy',     'NC_FLOAT', [londimID, latdimID]);  % 深度
         siglay_id = netcdf.defVar(ncid, 'siglay',    'NC_FLOAT', [londimID, latdimID,sigdimID]);  % 深度
-        temp_sgm_id = netcdf.defVar(ncid, 'temperature_sgm',     'NC_FLOAT', [londimID, latdimID,sigdimID,timedimID]);  % 深度
+        Ph_sgm_id = netcdf.defVar(ncid, 'pH_sgm',     'NC_FLOAT', [londimID, latdimID,sigdimID,timedimID]);  % 深度
 
         netcdf.defVarFill(ncid,      bathy_id,      false,      9.9692100e+36); % 设置缺省值
         netcdf.defVarFill(ncid,      siglay_id,     false,      9.9692100e+36); % 设置缺省值
-        netcdf.defVarFill(ncid,      temp_sgm_id,   false,      9.9692100e+36); % 设置缺省值
+        netcdf.defVarFill(ncid,      Ph_sgm_id,   false,      9.9692100e+36); % 设置缺省值
 
         netcdf.defVarDeflate(ncid, bathy_id, true, true, 5)
         netcdf.defVarDeflate(ncid, siglay_id, true, true, 5)
-        netcdf.defVarDeflate(ncid, temp_sgm_id, true, true, 5)
+        netcdf.defVarDeflate(ncid, Ph_sgm_id, true, true, 5)
     end
 
     % -----
@@ -122,13 +122,13 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
 
     if SWITCH.std
         netcdf.putVar(ncid,dep_id,                                                Depth);       % 深度
-        netcdf.putVar(ncid,temp_id,  [0,0,0,0],[size(Temp,1), size(Temp,2), size(Temp,3),size(Temp,4)],  Temp);     % 温度
+        netcdf.putVar(ncid,Ph_id,  [0,0,0,0],[size(Ph,1), size(Ph,2), size(Ph,3),size(Ph,4)],  Ph);     % pH
     end
 
     if SWITCH.sgm
         netcdf.putVar(ncid,bathy_id,Bathy);        % bathy
         netcdf.putVar(ncid,siglay_id,Siglay);        % Siglay
-        netcdf.putVar(ncid,temp_sgm_id,  [0,0,0,0],[size(Temp_sgm,1), size(Temp_sgm,2), size(Temp_sgm,3),size(Temp_sgm,4)],  Temp_sgm);        % temp_sgm
+        netcdf.putVar(ncid,Ph_sgm_id,  [0,0,0,0],[size(Ph_sgm,1), size(Ph_sgm,2), size(Ph_sgm,3),size(Ph_sgm,4)],  Ph_sgm);        % Ph_sgm
     end
 
     % -----
@@ -154,27 +154,27 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
     netcdf.putAtt(ncid,TIME_id,'end_date',      TIME_end_date);   % 时间char
 
     if SWITCH.std
-        netcdf.putAtt(ncid,dep_id, 'units',        'm');                                 % 深度
-        netcdf.putAtt(ncid,dep_id, 'long_name',    'depth');                             % 深度
-        netcdf.putAtt(ncid,dep_id, 'positive',     'down');                              % 深度
+        netcdf.putAtt(ncid,dep_id, 'units',        'm');                                 % pH
+        netcdf.putAtt(ncid,dep_id, 'long_name',    'depth');                             % pH
+        netcdf.putAtt(ncid,dep_id, 'positive',     'down');                              % pH
 
-        netcdf.putAtt(ncid,temp_id, 'units',        'Celsius');                           % 温度
-        netcdf.putAtt(ncid,temp_id, 'long_name',    'sea water temperature');             % 温度
-        netcdf.putAtt(ncid,temp_id, 'coordinates',  'standard_levels');                    % 温度
+        netcdf.putAtt(ncid,Ph_id, 'units',         '1');                                 % pH
+        netcdf.putAtt(ncid,Ph_id, 'long_name',    'carbonate pH on total scale');        % pH
+        netcdf.putAtt(ncid,Ph_id, 'coordinates',  'standard_levels');                    % pH
     end
 
     if SWITCH.sgm
         netcdf.putAtt(ncid,bathy_id, 'units',        'm');                                 % bathy
-        netcdf.putAtt(ncid,bathy_id, 'long_name',    'bathy_of_ocean');                     % bathy
+        netcdf.putAtt(ncid,bathy_id, 'long_name',    'bathy_of_ocean');                    % bathy
 
-        netcdf.putAtt(ncid,siglay_id, 'units',        '1');                                 % Siglay
-        netcdf.putAtt(ncid,siglay_id, 'long_name',    'sigma layers');                      % Siglay
-        netcdf.putAtt(ncid,siglay_id, 'positive',     'down');                              % Siglay
-        netcdf.putAtt(ncid,siglay_id, 'standard_name','ocean_sigma_coordinate');            % Siglay
+        netcdf.putAtt(ncid,siglay_id, 'units',        '1');                                % Siglay
+        netcdf.putAtt(ncid,siglay_id, 'long_name',    'sigma layers');                     % Siglay
+        netcdf.putAtt(ncid,siglay_id, 'positive',     'down');                             % Siglay
+        netcdf.putAtt(ncid,siglay_id, 'standard_name','ocean_sigma_coordinate');           % Siglay
 
-        netcdf.putAtt(ncid,temp_sgm_id, 'units',        'Celsius');                                 % Temp_sgm
-        netcdf.putAtt(ncid,temp_sgm_id, 'long_name',    'sea water temperature at sigma levels');             % Temp_sgm
-        netcdf.putAtt(ncid,temp_sgm_id, 'coordinates',  'sigma_levels');                     % Temp_sgm
+        netcdf.putAtt(ncid,Ph_sgm_id, 'units',        '1');                                 % pH_sgm
+        netcdf.putAtt(ncid,Ph_sgm_id, 'long_name',    'carbonate pH on total scale at sigma levels');  % pH_sgm
+        netcdf.putAtt(ncid,Ph_sgm_id, 'coordinates',  'sigma_levels');                     % pH_sgm
     end
 
     % 写入global attribute

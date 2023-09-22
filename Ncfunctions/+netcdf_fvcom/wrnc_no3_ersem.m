@@ -1,7 +1,7 @@
-function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
+function wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
     % =================================================================================================================
     % discription:
-    %       This function is used to write the sea temperature data to the netcdf file
+    %       This function is used to write the NO3 data to the netcdf file
     % =================================================================================================================
     % parameter:
     %       ncid:            netcdf file id                   || required: True  || type: int    || format: 1
@@ -14,15 +14,15 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
     %           .Siglay:     levels of siglay                 || required: False || type: double || format: matrix
     %       time:            time                             || required: True  || type: double || format: posixtime
     %       Velement:        value struct                     || required: True  || type: struct || format: struct
-    %           .Temp:       sea temperature                  || required: True  || type: double || format: matrix
-    %           .Temp_sgm:   sea temperature at sigma levels  || required: False || type: double || format: matrix
+    %           .No3:        nitrate nitrogen                 || required: True  || type: double || format: matrix
+    %           .No3_sgm:    nitrate nitrogen at sigma levels || required: False || type: double || format: matrix
     %       GA_start_date:   time of forecast start           || required: True  || type: string || format: '2023-05-30_00:00:00'
     %       varargin:        optional parameters     
-    %           conf:        configuration struct    || required: False || type: struct || format: struct
+    %           conf:        configuration struct             || required: False || type: struct || format: struct
     % =================================================================================================================
     % example:
-    %       netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date)
-    %       netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,'conf',conf)
+    %       netcdf_fvcom.wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date)
+    %       netcdf_fvcom.wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,'conf',conf)
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'conf'},{false});
@@ -31,18 +31,18 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
         SWITCH.std = true;
         SWITCH.sgm = false;
         Depth = Delement.Depth_std;
-        Temp = Velement.Temp;
+        No3 = Velement.No3;
     elseif length(fieldnames(Delement)) == 3  % Delement --> Bathy Sigma Siglay
         SWITCH.std = false;
         SWITCH.sgm = true;
         Sigma = Delement.Sigma; Bathy = Delement.Bathy; Siglay = Delement.Siglay;
-        Temp_sgm = Velement.Temp_sgm;
+        No3_sgm = Velement.No3_sgm;
     elseif length(fieldnames(Delement)) == 4  % Delement --> Depth_std Bathy Sigma Siglay
         SWITCH.std = true;
         SWITCH.sgm = true;
         Depth = Delement.Depth_std;
         Sigma = Delement.Sigma; Bathy = Delement.Bathy; Siglay = Delement.Siglay;
-        Temp = Velement.Temp; Temp_sgm = Velement.Temp_sgm;
+        No3 = Velement.No3; No3_sgm = Velement.No3_sgm;
     else
         error('The number of input parameters is wrong!')
     end
@@ -55,8 +55,8 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
         if ndims(Bathy) ~= 2
             error('Bathy must be a matrix 2D!')
         end
-        if ndims(Temp_sgm) > 4 || isvector(Temp_sgm)
-            error('Temp_sgm must be a matrix 2D, 3D or 4D!')
+        if ndims(No3_sgm) > 4 || isvector(No3_sgm)
+            error('No3_sgm must be a matrix 2D, 3D or 4D!')
         end
     end
 
@@ -65,13 +65,13 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
 
     % standard_name
     ResName = num2str(1/nanmean(diff(Lon)), '%2.f');
-    S_name = standard_filename('temperature',Lon,Lat,time_filename,ResName); % 标准文件名
+    S_name = standard_filename('no3',Lon,Lat,time_filename,ResName); % 标准文件名
     osprints('INFO',['Transfor --> ',S_name])
 
     % 定义维度
     londimID = netcdf.defDim(ncid, 'longitude',length(Lon));                        % 定义lon维度
     latdimID = netcdf.defDim(ncid, 'latitude', length(Lat));                        % 定义lat纬度
-    timedimID = netcdf.defDim(ncid,'time',    netcdf.getConstant('NC_UNLIMITED')); % 定义时间维度为unlimited
+    timedimID = netcdf.defDim(ncid,'time',    netcdf.getConstant('NC_UNLIMITED'));  % 定义时间维度为unlimited
     TIMEdimID = netcdf.defDim(ncid,'DateStr',  size(char(TIME),2));                 % 定义TIME维度
     if SWITCH.std
         depdimID = netcdf.defDim(ncid, 'depth',    length(Depth));                  % 定义depth维度
@@ -83,8 +83,8 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
     % 定义变量
     lon_id  =  netcdf.defVar(ncid,  'longitude', 'NC_FLOAT', londimID);                       % 经度
     lat_id  =  netcdf.defVar(ncid,  'latitude',  'NC_FLOAT', latdimID);                       % 纬度
-    time_id =  netcdf.defVar(ncid, 'time',      'double', timedimID);                      % 时间
-    TIME_id =  netcdf.defVar(ncid, 'TIME',      'NC_CHAR',  [TIMEdimID,timedimID]);          % 时间char
+    time_id =  netcdf.defVar(ncid, 'time',      'double', timedimID);                         % 时间
+    TIME_id =  netcdf.defVar(ncid, 'TIME',      'NC_CHAR',  [TIMEdimID,timedimID]);           % 时间char
     netcdf.defVarDeflate(ncid, lon_id, true, true, 5)
     netcdf.defVarDeflate(ncid, lat_id, true, true, 5)
     netcdf.defVarDeflate(ncid, time_id, true, true, 5)
@@ -92,24 +92,24 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
 
     if SWITCH.std
         dep_id  =  netcdf.defVar(ncid,  'depth',     'NC_FLOAT', [depdimID]);  % 深度
-        temp_id =  netcdf.defVar(ncid, 'temperature',    'NC_FLOAT', [londimID, latdimID,depdimID,timedimID]); % 温度
-        netcdf.defVarFill(ncid,      temp_id,      false,      9.9692100e+36); % 设置缺省值
+        No3_id =  netcdf.defVar(ncid, 'NO3',    'NC_FLOAT', [londimID, latdimID,depdimID,timedimID]); % NO3
+        netcdf.defVarFill(ncid,      No3_id,      false,      9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_id, true, true, 5)
-        netcdf.defVarDeflate(ncid, temp_id, true, true, 5)
+        netcdf.defVarDeflate(ncid, No3_id, true, true, 5)
     end
 
     if SWITCH.sgm
         bathy_id = netcdf.defVar(ncid, 'bathy',     'NC_FLOAT', [londimID, latdimID]);  % 深度
         siglay_id = netcdf.defVar(ncid, 'siglay',    'NC_FLOAT', [londimID, latdimID,sigdimID]);  % 深度
-        temp_sgm_id = netcdf.defVar(ncid, 'temperature_sgm',     'NC_FLOAT', [londimID, latdimID,sigdimID,timedimID]);  % 深度
+        No3_sgm_id = netcdf.defVar(ncid, 'NO3_sgm',     'NC_FLOAT', [londimID, latdimID,sigdimID,timedimID]);  % 深度
 
         netcdf.defVarFill(ncid,      bathy_id,      false,      9.9692100e+36); % 设置缺省值
         netcdf.defVarFill(ncid,      siglay_id,     false,      9.9692100e+36); % 设置缺省值
-        netcdf.defVarFill(ncid,      temp_sgm_id,   false,      9.9692100e+36); % 设置缺省值
+        netcdf.defVarFill(ncid,      No3_sgm_id,   false,      9.9692100e+36);  % 设置缺省值
 
         netcdf.defVarDeflate(ncid, bathy_id, true, true, 5)
         netcdf.defVarDeflate(ncid, siglay_id, true, true, 5)
-        netcdf.defVarDeflate(ncid, temp_sgm_id, true, true, 5)
+        netcdf.defVarDeflate(ncid, No3_sgm_id, true, true, 5)
     end
 
     % -----
@@ -122,13 +122,13 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
 
     if SWITCH.std
         netcdf.putVar(ncid,dep_id,                                                Depth);       % 深度
-        netcdf.putVar(ncid,temp_id,  [0,0,0,0],[size(Temp,1), size(Temp,2), size(Temp,3),size(Temp,4)],  Temp);     % 温度
+        netcdf.putVar(ncid,No3_id,  [0,0,0,0],[size(No3,1), size(No3,2), size(No3,3),size(No3,4)],  No3);     % NO3
     end
 
     if SWITCH.sgm
         netcdf.putVar(ncid,bathy_id,Bathy);        % bathy
-        netcdf.putVar(ncid,siglay_id,Siglay);        % Siglay
-        netcdf.putVar(ncid,temp_sgm_id,  [0,0,0,0],[size(Temp_sgm,1), size(Temp_sgm,2), size(Temp_sgm,3),size(Temp_sgm,4)],  Temp_sgm);        % temp_sgm
+        netcdf.putVar(ncid,siglay_id,Siglay);      % Siglay
+        netcdf.putVar(ncid,No3_sgm_id,  [0,0,0,0],[size(No3_sgm,1), size(No3_sgm,2), size(No3_sgm,3),size(No3_sgm,4)],  No3_sgm);  % No3_sgm
     end
 
     % -----
@@ -154,27 +154,27 @@ function wrnc_temp(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
     netcdf.putAtt(ncid,TIME_id,'end_date',      TIME_end_date);   % 时间char
 
     if SWITCH.std
-        netcdf.putAtt(ncid,dep_id, 'units',        'm');                                 % 深度
-        netcdf.putAtt(ncid,dep_id, 'long_name',    'depth');                             % 深度
-        netcdf.putAtt(ncid,dep_id, 'positive',     'down');                              % 深度
+        netcdf.putAtt(ncid,dep_id, 'units',        'm');                                 % NO3
+        netcdf.putAtt(ncid,dep_id, 'long_name',    'depth');                             % NO3
+        netcdf.putAtt(ncid,dep_id, 'positive',     'down');                              % NO3
 
-        netcdf.putAtt(ncid,temp_id, 'units',        'Celsius');                           % 温度
-        netcdf.putAtt(ncid,temp_id, 'long_name',    'sea water temperature');             % 温度
-        netcdf.putAtt(ncid,temp_id, 'coordinates',  'standard_levels');                    % 温度
+        netcdf.putAtt(ncid,No3_id, 'units',         'μM');                               % NO3
+        netcdf.putAtt(ncid,No3_id, 'long_name',    'nitrate nitrogen');                  % NO3
+        netcdf.putAtt(ncid,No3_id, 'coordinates',  'standard_levels');                   % NO3
     end
 
     if SWITCH.sgm
         netcdf.putAtt(ncid,bathy_id, 'units',        'm');                                 % bathy
-        netcdf.putAtt(ncid,bathy_id, 'long_name',    'bathy_of_ocean');                     % bathy
+        netcdf.putAtt(ncid,bathy_id, 'long_name',    'bathy_of_ocean');                    % bathy
 
-        netcdf.putAtt(ncid,siglay_id, 'units',        '1');                                 % Siglay
-        netcdf.putAtt(ncid,siglay_id, 'long_name',    'sigma layers');                      % Siglay
-        netcdf.putAtt(ncid,siglay_id, 'positive',     'down');                              % Siglay
-        netcdf.putAtt(ncid,siglay_id, 'standard_name','ocean_sigma_coordinate');            % Siglay
+        netcdf.putAtt(ncid,siglay_id, 'units',        '1');                                % Siglay
+        netcdf.putAtt(ncid,siglay_id, 'long_name',    'sigma layers');                     % Siglay
+        netcdf.putAtt(ncid,siglay_id, 'positive',     'down');                             % Siglay
+        netcdf.putAtt(ncid,siglay_id, 'standard_name','ocean_sigma_coordinate');           % Siglay
 
-        netcdf.putAtt(ncid,temp_sgm_id, 'units',        'Celsius');                                 % Temp_sgm
-        netcdf.putAtt(ncid,temp_sgm_id, 'long_name',    'sea water temperature at sigma levels');             % Temp_sgm
-        netcdf.putAtt(ncid,temp_sgm_id, 'coordinates',  'sigma_levels');                     % Temp_sgm
+        netcdf.putAtt(ncid,No3_sgm_id, 'units',        'μM');                                % NO3_sgm
+        netcdf.putAtt(ncid,No3_sgm_id, 'long_name',    'nitrate nitrogen at sigma levels');  % NO3_sgm
+        netcdf.putAtt(ncid,No3_sgm_id, 'coordinates',  'sigma_levels');                      % NO3_sgm
     end
 
     % 写入global attribute
