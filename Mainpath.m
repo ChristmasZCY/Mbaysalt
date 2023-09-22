@@ -17,6 +17,8 @@ function Mainpath(varargin)
                 case 'rm'
                     Crmpath(PathALL)  % remove all path
                     Caddpath(path)
+                case 'noclone'
+                    Caddpath(PathALL)
                 otherwise
                     error('parameter error')
             end
@@ -91,19 +93,19 @@ function gitclone()
    
 
     if ~(exist('ncdateread', 'file') == 2)  % CDT
-        system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt'])
+        system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt']);
     end
     
     if ~(exist('f_load_grid', 'file') == 2)  % matFVCOM
-        system(['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM'])
+        system(['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM']);
     end
 
     if ~(exist('mf_save', 'file') == 2)  % matFigure
-        system(['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure'])
+        system(['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure']);
     end
 
     if ~(exist('load_constants', 'file') == 2)  % matWRF
-        system(['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF'])
+        system(['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF']);
     end
 
     if ~(exist('nc_close', 'file') == 2) % matNC
