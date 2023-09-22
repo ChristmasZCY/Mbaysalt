@@ -57,7 +57,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     osprints('INFO', ['Transfor ',interval,' variable -->',double(SWITCH.temp)*' temp',double(SWITCH.salt)*' salt', ...
         double(SWITCH.adt)*' zeta',double(SWITCH.u)*' u',double(SWITCH.v)*' v', double(SWITCH.w)*' w', ...
         double(SWITCH.aice)*' aice', double(SWITCH.ph)*' ph', double(SWITCH.no3)*' no3', double(SWITCH.pco2)*' pco2', ...
-        double(SWITCH.aice)*' chlo'])  % 打印处理的变量
+        double(SWITCH.chlo)*' chlo'])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
@@ -259,8 +259,10 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 end
                 clear GridFile_fvcom GridFile_wrf ESMF_NCweightfile ESMFMAFILE ESMF_RegridMethod exe file_weight
 
-                for it = 1: size(temp,3) % time
-                    for iz = 1 : size(temp,2) % depth
+                % for it = 1: size(temp,3) % time
+                for it = 1: length(time)
+                    % for iz = 1 : size(temp,2) % depth
+                    for iz = 1: f_nc.kbm1
                         if SWITCH.temp
                             Temp(:,:,iz,it) =  esmf_regrid(temp(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                         end
@@ -630,12 +632,17 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             osprints('INFO',['Erosion coastline --> ',logical_to_char(SWITCH.erosion)]);
             file_erosion = para_conf.ErosionFile;
             if SWITCH.make_erosion
+                fields_Velement = fieldnames(Velement);
                 if ~SWITCH.out_std_level && SWITCH.out_sgm_level
-                    I_D_1 = erosion_coast_cal_id(Lon, Lat, Velement.Temp_sgm, 16, 5);
+                    if isfield(Velement,'Temp_sgm')
+                        I_D_1 = erosion_coast_cal_id(Lon, Lat, Velement.Temp_sgm, 16, 5);
+                    else
+                        I_D_1 = erosion_coast_cal_id(Lon, Lat, Velement.(fields_Velement{1}), 16, 5);
+                    end
                 elseif SWITCH.out_std_level && ~SWITCH.out_sgm_level
-                    I_D_1 = erosion_coast_cal_id(Lon, Lat, Velement.Temp, 16, 5);
+                        I_D_1 = erosion_coast_cal_id(Lon, Lat, Velement.(fields_Velement{1}), 16, 5);
                 elseif SWITCH.out_std_level && SWITCH.out_sgm_level
-                    I_D_1 = erosion_coast_cal_id(Lon, Lat, Velement.Temp, 16, 5);
+                        I_D_1 = erosion_coast_cal_id(Lon, Lat, Velement.(fields_Velement{1}), 16, 5);
                 end
                 save(file_erosion, 'I_D_1', '-v7.3','-nocompression');
             else
@@ -646,11 +653,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             Velement = merge_struct(Velement,VAelement); clear VAelement
             if SWITCH.make_erosion
                 if ~SWITCH.out_std_level && SWITCH.out_sgm_level
-                    I_D_2 = erosion_coast_cal_id(Lon, Lat, Velement.Temp_sgm, 16, 5);
+                    if ~isfield(Velement,'Temp_sgm')
+                        I_D_2 = erosion_coast_cal_id(Lon, Lat, Velement.Temp_sgm, 16, 5);
+                    else
+                        I_D_2 = erosion_coast_cal_id(Lon, Lat, Velement.(fields_Velement{1}), 16, 5);
+                    end
                 elseif SWITCH.out_std_level && ~SWITCH.out_sgm_level
-                    I_D_2 = erosion_coast_cal_id(Lon, Lat, Velement.Temp, 16, 5);
+                    I_D_2 = erosion_coast_cal_id(Lon, Lat, Velement.(fields_Velement{1}), 16, 5);
                 elseif SWITCH.out_std_level && SWITCH.out_sgm_level
-                    I_D_2 = erosion_coast_cal_id(Lon, Lat, Velement.Temp, 16, 5);
+                    I_D_2 = erosion_coast_cal_id(Lon, Lat, Velement.(fields_Velement{1}), 16, 5);
                 end
                 save(file_erosion, 'I_D_2', '-append','-nocompression');
             else
@@ -659,7 +670,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             [VAelement,Velement] = separate_var_gt_nd(Velement,4);
             VAelement = structfun(@(x) erosion_coast_via_id(I_D_2, x,'cycle_dim',4), VAelement, 'UniformOutput', false);
             Velement = merge_struct(Velement,VAelement); clear VAelement
-            clear I_D_* file_erosion
+            clear I_D_* file_erosion fields_Velement
         end
 
         %% global attribute start date
