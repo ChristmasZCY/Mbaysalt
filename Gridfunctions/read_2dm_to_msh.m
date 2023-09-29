@@ -1,22 +1,22 @@
-function read_2dm_to_msh(varargin)
+function mshFile = read_2dm_to_msh(varargin)
     % =================================================================================================================
     % discription:
     %       read 2dm file to msh file for Wave Watch III
     % =================================================================================================================
     % parameter:
-    %       varargin{1}: replace point depth from land to sea  || required: True || type: int || format: -0.5
-    %       varargin{2}: file                                  || required: False || type: string || format: 'file'
-    %       varargin{3}: file of file                          || required: False || type: string || format: 'ECS6.2dm'
-    %       varargin{4}: save_path                             || required: False || type: string || format: 'save_path'
-    %       varargin{5}: save_path of save_path                || required: False || type: string || format: '/home/ocean/'
-    %       varargin{6}: read_method                           || required: False || type: string || format: 'read_method'
-    %       varargin{7}: read_method of read_method            || required: False || type: string || format: 'Christmas'
+    %       varargin:        optional parameters    
+    %           relpaced_lt_depth: replace the point depth < relpaced_lt_depth to relpaced_lt_depth || required: False || type: double || format: 0.5
+    %           file:        2dm file path                                                          || required: False || type: char || format: ./Sanao_Z.2dm
+    %           save_path: save path                                                                || required: False || type: char || format: /Users/christmas/Desktop/
+    %           read_method: method of read                                                         || required: False || type: char || format: Christmas or Siqi
     % =================================================================================================================
     % example:
-    %       read_2dm_to_msh(-0.5)
-    %       read_2dm_to_msh(-0.5,'file','ECS6.2dm')
-    %       read_2dm_to_msh(-0.5,'file','ECS6.2dm','save_path','/home/ocean/')
-    %       read_2dm_to_msh(-0.5,'file','ECS6.2dm','read_method','read_method')
+    %       read_2dm_to_msh()
+    %       read_2dm_to_msh(0.5)
+    %       read_2dm_to_msh(0.5,'file','ECS6.2dm')
+    %       read_2dm_to_msh(0.5,'file','ECS6.2dm','save_path','/home/ocean/')
+    %       read_2dm_to_msh(0.5,'file','ECS6.2dm','read_method','Christmas')
+    %       read_2dm_to_msh(0.5,'file','ECS6.2dm','read_method','Siqi')
     % =================================================================================================================
 
     %% read conf file
@@ -27,6 +27,12 @@ function read_2dm_to_msh(varargin)
     varargin = read_varargin(varargin,{'file'},{file});
     varargin = read_varargin(varargin,{'save_path'},{save_path});
     varargin = read_varargin(varargin,{'read_method'},{read_method});
+    if ~isempty(varargin)
+        relpaced_lt_depth = varargin{1};
+        varargin(1) = [];
+    else
+        relpaced_lt_depth = [];
+    end
 
     save_path = split_path(save_path);
 
@@ -64,21 +70,22 @@ function read_2dm_to_msh(varargin)
             error('ERROR method')
     end
 
-    % change th point whose depth is positive to negative
-    cprintf('Blue', ['point depth < set min depth counts ',num2str(length(find(dl_dep>varargin{1}))),'\n'])
-    cprintf('Blue', ['point max depth ',num2str(max(dl_dep,[],'all')),'m\n'])
+    if ~isempty(relpaced_lt_depth)
+        % change th point whose depth is positive to negative
+        cprintf('Blue', ['point depth < set min depth counts ',num2str(length(find(dl_dep<relpaced_lt_depth))),'\n'])
+        cprintf('Blue', ['point max depth ',num2str(max(dl_dep,[],'all')),'m\n'])
 
-    if nargin == 1
-        cprintf('text',['replace point depth > ',num2str(varargin{1},'%3.2f'), ' m to ',num2str(varargin{1},'%3.2f'),'m','\n'])
-        dl_dep(dl_dep>varargin{1}) = varargin{1};
+        cprintf('text',['replace point depth < ',num2str(relpaced_lt_depth,'%3.2f'), ' m to ',num2str(relpaced_lt_depth,'%3.2f'),'m','\n'])
+        dl_dep(dl_dep<relpaced_lt_depth) = relpaced_lt_depth;
     end
     % Wave Watch III need to read positive depth
-    point(:,4) = -dl_dep;
+    point(:,4) = dl_dep;
     clearvars dl_dep
 
     %% write msh file
-    Outputfile = [save_path,filesep,name,'.msh'];
-    fid=fopen(Outputfile,'wt');
+    mshFile = [save_path,filesep,name,'.msh'];
+    osprints('INFO',mshFile)
+    fid=fopen(mshFile,'wt');
     fprintf(fid,'$MeshFormat\n');
     fprintf(fid,'2 0 8\n');
     fprintf(fid,'$EndMeshFormat\n');
