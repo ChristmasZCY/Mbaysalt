@@ -1,5 +1,20 @@
 function Mainpath(varargin)
-    % addpath for all functions
+    % =================================================================================================================
+    % discription:
+    %       Mainpath is a function to add all path of this package
+    % =================================================================================================================
+    % parameter:   
+    %       varargin:        optional parameters      
+    %           add:        add all path             || required: False|| type: string || format: 'add'
+    %           rm:         remove all path          || required: False|| type: string || format: 'rm'
+    %           noclone:    add all path without clone git || required: False|| type: string || format: 'noclone'
+    % =================================================================================================================
+    % example:
+    %       Mainpath
+    %       Mainpath('add')
+    %       Mainpath('rm')
+    %       Mainpath('noclone')
+    % =================================================================================================================
 
     [PathALL, path] = Cmakepath;  % get all path
 
@@ -9,8 +24,8 @@ function Mainpath(varargin)
         Caddpath(PathALL)  % add all path
     else
         for i = 1 : nargin
-            switch varargin{i}
-                case {'add', 'Add'}
+            switch lower(varargin{i})
+                case 'Add'
                     Caddpath(PathALL)
                     gitclone()
                     Caddpath(PathALL)
@@ -41,6 +56,7 @@ function [FunctionPath,path] = Cmakepath
         "Post_fvcom"
         "Post_ww3"
         "Post_tpxo"
+        "Post_wrf2fvcom"
         "Gridfunctions"
         "Exfunctions"
         "Readfunctions"

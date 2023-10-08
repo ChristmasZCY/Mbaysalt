@@ -16,7 +16,7 @@
 %    char_to_logical.m                   -  Convert char to logical
 %    del_quotation.m                     -  Delete quotation from a string
 %    grep.m                              -  Grep something from a file
-%    input_ys.m                          -  Check input yes or no
+%    input_yn.m                          -  Check input yes or no
 %    is_number.m                         -  Check if a string is a number with regexp
 %    isexist_var.m                       -  Check whether assigned variable, if not, assign default value
 %    json_load.m                         -  Load json file with matlab builtin function or jsonlab
@@ -101,6 +101,12 @@
 %    uvhap.m                             -  Calculate the u/v of the tidal harmonic analysis
 %
 %
+%                      Post_wrf2fvcom    -  Functions for handling wrf2fvcom data
+% =================================================================================================================
+%    Postorocess_wrf2fvcom.m             -  Read and postprocess wrf2fvcom data to standard format
+%    make_domain_ll.m                    -  Read and make grid from wrf2fvcom domain file
+%
+%
 %                         Mainfunctions  -  Functions for drawing pictures
 % =================================================================================================================
 %    Mainpath.m                          -  Set main path for toolbox
@@ -117,7 +123,7 @@
 % =================================================================================================================
 %    ncread_llt_v.m                      -  Read netcdf file contains lat/lon/time, several variables
 %    ncread_lltd_v.m                     -  Read netcdf file contains lat/lon/time/depth, several variables
-%    read_ncfile_lltdv.m                 -  Read netcdf file contains lat/lon/time/depth/variable
+%    read_ncfile_lldtv.m                 -  Read netcdf file contains lat/lon/time/depth/variable
 %
 %
 %                            Ncfunctions  -  Functions for netcdf
@@ -142,6 +148,9 @@
 %       wrnc_zooplankton.m               -  Write numuro zooplankton netcdf file
 %    +netcdf_tpxo                        -  Packages of functions for handling TPXO netcdf file
 %       wrnc_tpxo.m                      -  Write tpxo netcdf file
+%    +netcdf_wrf                         -  Packages of functions for handling WRF netcdf file
+%       wrnc_t2m.m                       -  Write WRF t2m netcdf file
+%       wrnc_wind10m.m                   -  Write WRF wind10m netcdf file
 %
 %
 %                            Inputfiles  -  Input files for toolbox

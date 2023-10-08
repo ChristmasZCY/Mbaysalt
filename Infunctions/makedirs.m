@@ -11,7 +11,7 @@ function makedirs(varargin)
     % =================================================================================================================
 
     for num = 1: nargin
-        if ~exist(varargin{num},'dir')
+        if ~exist(varargin{num},'dir') && ~isempty(varargin{num})
             mkdir(varargin{num});
         end
     end

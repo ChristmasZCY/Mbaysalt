@@ -24,8 +24,17 @@ function [lon, lat, time, varargout]  = ncread_llt_v(ncfile,lon_vname,lat_vname,
 
     lon = ncread(ncfile,lon_vname);
     lat = ncread(ncfile,lat_vname);
-    Time = ncdateread(ncfile,time_vname); 
-    time = Time(range(1):range(2));
+    info = ncinfo(ncfile);
+    time_index = find(strcmp({info.Variables.Name}, time_vname));
+    time_type = info.Variables(time_index).Datatype;
+    switch time_type
+        case {'double','single'}
+            Time = ncdateread(ncfile,time_vname);
+        case {'char','string'}
+            Time = ncread(ncfile,time_vname)';
+    end
+    
+    time = Time(range(1):range(2),:);
 
     for num = 1:length(varargin)
         varargout{num} = ncread(ncfile,varargin{num},[1 1 range(1)],[Inf Inf range(2)]);
