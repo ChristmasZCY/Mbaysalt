@@ -25,7 +25,7 @@ function Mainpath(varargin)
     else
         for i = 1 : nargin
             switch lower(varargin{i})
-                case 'Add'
+                case 'add'
                     Caddpath(PathALL)
                     gitclone()
                     Caddpath(PathALL)
@@ -42,6 +42,7 @@ function Mainpath(varargin)
 
     
 end
+
 
 function [FunctionPath,path] = Cmakepath
     path__ = mfilename("fullpath");
@@ -93,44 +94,84 @@ function [FunctionPath,path] = Cmakepath
     path = {path};
 end
 
+
 function Caddpath(Path)
     cellfun(@addpath, Path)
 end
 
+
 function Crmpath(Path)
     cellfun(@rmpath, Path)
 end
+
 
 function gitclone()
     path__ = mfilename("fullpath");
     [path,~]=fileparts(path__);
     division = string(filesep);
     Edir = char(path + division + 'Exfunctions' + division);
-   
 
-    if ~(exist('ncdateread', 'file') == 2)  % CDT
-        system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt']);
-    end
-    
-    if ~(exist('f_load_grid', 'file') == 2)  % matFVCOM
-        system(['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM']);
-    end
+    TF = check_command('git');
 
-    if ~(exist('mf_save', 'file') == 2)  % matFigure
-        system(['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure']);
-    end
+    if TF
+        if ~(exist('ncdateread', 'file') == 2)  % CDT
+            system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt']);
+        end
+        
+        if ~(exist('f_load_grid', 'file') == 2)  % matFVCOM
+            system(['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM']);
+        end
 
-    if ~(exist('load_constants', 'file') == 2)  % matWRF
-        system(['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF']);
-    end
+        if ~(exist('mf_save', 'file') == 2)  % matFigure
+            system(['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure']);
+        end
 
-    if ~(exist('nc_close', 'file') == 2) % matNC
-        system(['git clone https://github.com/SiqiLiOcean/matNC.git ', Edir, 'matNC'])
+        if ~(exist('load_constants', 'file') == 2)  % matWRF
+            system(['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF']);
+        end
+
+        if ~(exist('nc_close', 'file') == 2) % matNC
+            system(['git clone https://github.com/SiqiLiOcean/matNC.git ', Edir, 'matNC']);
+        end
+    else
+        warning('git is not installed, some functions will not be installed, please install git and run Mainpath again');
     end
 
     if ~(exist('t_tide', 'file') == 2) % t_tide
-        system(['wget https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip -O ', Edir, 't_tide_v1.5beta.zip'])
-        system(['unzip ', Edir, 't_tide_v1.5beta.zip -d ', Edir, 't_tide'])
-        system(['rm ', Edir, 't_tide_v1.5beta.zip'])
+        if check_command('wget')
+            system(['wget https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip -O ', Edir, 't_tide_v1.5beta.zip']);
+        elseif check_command('curl')
+            system(['curl https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip -o ', Edir, 't_tide_v1.5beta.zip']);
+        else
+            warning('wget and curl are not installed, t_tide will not be installed');
+        end
+        if ~(exist('t_tide_v1.5beta.zip', 'file') == 2)
+            error('t_tide_v1.5beta.zip is not downloaded, please download it manually');
+        else
+            if check_command('unzip')
+                system(['unzip ', Edir, 't_tide_v1.5beta.zip -d ', Edir, 't_tide']);
+            else
+                unzip([Edir, 't_tide_v1.5beta.zip'], [Edir, 't_tide']);
+            end
+        end
+        delete([Edir, 't_tide_v1.5beta.zip']);
+    end
+end
+
+
+function TF = check_command(command)
+    switch computer('arch')
+        case {'win32','win64'}
+            command = ['where ' command];
+        case {'glnxa64','maci64','maca64'}
+            command = ['which ' command];
+        otherwise
+            error('platform error')
+    end
+    [status,~] = system(command);
+    if status == 0
+        TF = true;
+    else
+        TF = false;
     end
 end

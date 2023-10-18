@@ -1,8 +1,9 @@
 % Mbaysalt_toolbox (Author: Christmas, Dovelet, Qidi Ma)
-% Version 0.1  Mar-2023
+% Version 0.1  2023-03-01
+% Version 1.0  2023-10-18
 %
 % This toolbox is used to postpocess model data and draw pictures.
-% The model data is from original FVCOM, original NEMURO, Standard WAVE WATCH III, Standard WRF.
+% The model data is from original FVCOM, original NEMURO, Standard WAVE WATCH III, Standard WRF, and so on.
 % Data annotation is written by Christmas Z. and Other baysalt members.
 %
 % Toolbox contents
@@ -64,7 +65,7 @@
 % =================================================================================================================
 %    make_mask_depth_data.m              -  Make mask to mask the data which is deeper than the grid depth(for 'mask_depth_data.m')
 %    mask_depth_data.m                   -  mask the data with the Standard_depth_mask(from the function of "make_mask_depth_data.m")
-%    mask_maskmat.m                      -  make mask mat file from gebco nc file(for 'mask2data.m')
+%    make_maskmat.m                      -  make mask mat file from gebco nc file(for 'mask2data.m')
 %    mask2data.m                         -  mask the data with the mask(from the function of "mask_maskmat,m")
 %    Postprocess_fvcom_old.m             -  Read and postprocess fvcom triangle data, contains daily/hourly (not recommend)
 %    Postprocess_fvcom.m                 -  Read and postprocess fvcom triangle data, contains daily/hourly
@@ -103,7 +104,7 @@
 %
 %                      Post_wrf2fvcom    -  Functions for handling wrf2fvcom data
 % =================================================================================================================
-%    Postorocess_wrf2fvcom.m             -  Read and postprocess wrf2fvcom data to standard format
+%    Postprocess_wrf2fvcom_domain.m      -  Read and postprocess wrf2fvcom data to standard format
 %    make_domain_ll.m                    -  Read and make grid from wrf2fvcom domain file
 %
 %
@@ -114,6 +115,7 @@
 %
 %                         Gridfunctions  -  Functions for model grid
 % =================================================================================================================
+%    read_GMT_to_cst.m                   -  Transform GMT/ACSII Coastline data imported by GEODAS to SMS's cst format
 %    read_2dm_to_msh.m                   -  Read 2dm mesh to msh format for Wave Watch III
 %    read_2dm_to_website.m               -  Read 2dm mesh to website format for www.iocean.cn
 %    read_gebco_to_sms.m                 -  Read gebco bathymetry to sms format
@@ -171,7 +173,7 @@
 %
 %                              Examples  -  Examples for toolbox
 % =================================================================================================================
-%    Example_erosion_coast_cal_id.m      -  Example for erosion coast cal id
+%    Example_erosion                     -  Example for erosion coast cal id
 %    Example_matFigure.m                 -  Example for matFigure
 %    Example_matFVCOM_interp_ESMF.m      -  Example for matFVCOM interp ESMF
 %    Example_matFVCOM_interp_MATLAB.m    -  Example for matFVCOM interp MATLAB
