@@ -1,4 +1,4 @@
-function GMT2cst(fin, fout, varargin)
+function read_GMT_to_cst(fin, fout, varargin)
     % =================================================================================================================
     % discription:
     %       Transform GMT/ACSII Coastline data imported by GEODAS to SMS's cst format

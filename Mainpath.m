@@ -88,6 +88,7 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/iniconfig"
         ];
     FunE = cellstr(FunE);
+    addpath([path + division + 'Exfunctions/genpath2']);
     FunE = cellfun(@genpath2,FunE,repmat({".git"},length(FunE),1),'UniformOutput', false);
 
     FunctionPath = [path; FunI; Cdata; FunE];
