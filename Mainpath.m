@@ -269,6 +269,10 @@ function gitclone()
         end  
     end
 
+    % etopo1
+    % m_etopo2
+    % url = 'https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/binary/etopo1_ice_g_i2.zip';
+
 end
 
 

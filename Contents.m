@@ -1,7 +1,7 @@
 % Mbaysalt_toolbox (Author: Christmas, Dovelet, Qidi Ma)
 % Version 0.1  2023-03-01 (Created by Christmas, Dovelet, Qidi Ma)
 % Version 1.0  2023-10-18 (Fixed by Christmas)
-% Version 2.0  2023-11-22 (Fixed by Christmas)
+% Version 2.0  2023-11-22 (Fixed by Christmas)  --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.0>
 %
 % This toolbox is used to postpocess model data and draw pictures.
 % The model data is from original FVCOM, original NEMURO, Standard WAVE WATCH III, Standard WRF, and so on.
@@ -121,7 +121,7 @@
 %    read_ncfile_lldtv.m                 -  Read netcdf file contains lat/lon/time/depth/variable
 %
 %
-%                            Ncfunctions  -  Functions for netcdf
+%                           Ncfunctions  -  Functions for netcdf
 % =================================================================================================================
 %       create_nc.m                      -  Create NETCDF file as input
 %    +netcdf_fvcom                       -  Packages of functions for handling FVCOM netcdf file
@@ -169,6 +169,7 @@
 % =================================================================================================================
 %    Example_erosion                     -  Example for erosion coast cal id
 %    Example_matFigure.m                 -  Example for matFigure
+%    Example_matFVCOM.m                  -  Example for matFVCOM
 %    Example_matFVCOM_interp_ESMF.m      -  Example for matFVCOM interp ESMF
 %    Example_matFVCOM_interp_MATLAB.m    -  Example for matFVCOM interp MATLAB
 %    Example_read_nc_lldtv.m             -  Example for read nc lldtv
@@ -183,6 +184,13 @@
 %       get_Variables_from_nc.m          -  Get variables from nc file
 %
 %
+%                                  Docs  -  Documents and Manuals for toolbox
+% =================================================================================================================
+%    M_map中文说明.pdf                    -  M_map中文说明
+%    Climate Data Toolbox中文说明.pdf      -  Climate Data Toolbox中文说明
+%    t_tide中文版说明.pdf                  -  t_tide中文版说明
+%
+%
 %                           Exfunctions  -  External functions for toolbox
 % =================================================================================================================
 %    git_clone.sh                        -  Clone git repository
@@ -195,7 +203,7 @@
 %    matNC                               -  NetCDF toolbox                              ||  https://github.com/SiqiLiOcean/matNC
 %    matWRF                              -  WRF toolbox                                 ||  https://github.com/SiqiLiOcean/matWRF
 %    struct2ini                          -  struct2ini toolbox                          ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/22079-struct2ini
-%    m_map                               -  m_map toolbox(v1.4o)                        ||  https://www.eoas.ubc.ca/~rich/map.html
+%    m_map                               -  m_map toolbox(v1.4o)                        ||  https://www.eoas.ubc.ca/~rich/map.html  &&  https://www.eoas.ubc.ca/~rich/mapug.html
 %    CDT                                 -  Climate Data Toolbox                        ||  https://github.com/chadagreene/CDT
 %    t_tide                              -  T_Tide Harmonic Analysis Toolbox(v1.5beta)  ||  https://www.eoas.ubc.ca/~rich/#T_Tide
 %    nctoolbox                           -  NCTOOLBOX                                   ||  https://github.com/nctoolbox/nctoolbox
