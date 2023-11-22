@@ -1,3 +1,15 @@
 [submodule "matFigure"]
 	path = Exfunctions/matFigure
 	url = https://github.com/SiqiLiOcean/matFigure.git
+
+[submodule "matFVCOM"]
+	path = Exfunctions/matFVCOM
+	url = https://github.com/SiqiLiOcean/matFVCOM.git
+
+[submodule "matNC"]
+	path = Exfunctions/matNC
+	url = https://github.com/SiqiLiOcean/matNC.git
+
+[submodule "matWRF"]
+	path = Exfunctions/matWRF
+	url = https://github.com/SiqiLiOcean/matWRF.git
