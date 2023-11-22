@@ -2,6 +2,7 @@
 **/.DS_Store
 **/.vscode
 ../../.git
+**/.git
 Exfunctions/matFigure
 Exfunctions/matNC
 Exfunctions/matWRF
