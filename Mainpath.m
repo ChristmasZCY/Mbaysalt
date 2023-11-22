@@ -115,11 +115,9 @@ function gitclone()
 
     TF = check_command('git');
     para_conf = read_conf(fullfile(path,'Configurefiles/INSTALL.conf'));
-    para_conf
 
     % SiqiLiOcean
     if TF
-        system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt']);
         if para_conf.cdt
             if ~(exist('ncdateread', 'file') == 2)  % CDT
                 system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt']);
