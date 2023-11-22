@@ -13,3 +13,7 @@
 [submodule "matWRF"]
 	path = Exfunctions/matWRF
 	url = https://github.com/SiqiLiOcean/matWRF.git
+
+[submodule "nctoolbox"]
+	path = Exfunctions/nctoolbox
+	url = https://github.com/nctoolbox/nctoolbox.git
