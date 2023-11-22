@@ -120,37 +120,55 @@ function gitclone()
     if TF
         if para_conf.cdt
             if ~(exist('ncdateread', 'file') == 2)  % CDT
-                system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt']);
+                txt = ['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt'];
+                disp('---------> Cloning cdt toolbox')
+                disp(txt)
+                system(txt);
             end
         end
         
         if para_conf.matFVCOM
             if ~(exist('f_load_grid', 'file') == 2)  % matFVCOM
-                system(['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM']);
+                txt = ['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM'];
+                disp('---------> Cloning matFVCOM toolbox')
+                disp(txt)
+                system(txt);
             end
         end
 
         if para_conf.matFigure
             if ~(exist('mf_save', 'file') == 2)  % matFigure
-                system(['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure']);
+                txt = ['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure'];
+                disp('---------> Cloning matFigure toolbox')
+                disp(txt)
+                system(txt);
             end
         end
 
         if para_conf.matWRF
             if ~(exist('load_constants', 'file') == 2)  % matWRF
-                system(['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF']);
+                txt = ['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF'];
+                disp('---------> Cloning cdt toolbox')
+                disp(txt)
+                system(txt);
             end
         end
             
         if para_conf.matNC
             if ~(exist('nc_close', 'file') == 2) % matNC
-                system(['git clone https://github.com/SiqiLiOcean/matNC.git ', Edir, 'matNC']);
+                txt = ['git clone https://github.com/SiqiLiOcean/matNC.git ', Edir, 'matNC'];
+                disp('---------> Cloning matNC toolbox')
+                disp(txt)
+                system(txt);
             end
         end
 
         if para_conf.nctoolbox
             if ~(exist('ncload', 'file') == 2) % nctoolbox
-                system(['git clone https://github.com/nctoolbox/nctoolbox.git ', Edir, 'nctoolbox']);
+                txt = ['git clone https://github.com/nctoolbox/nctoolbox.git ', Edir, 'nctoolbox'];
+                disp('---------> Cloning nctoolbox toolbox')
+                disp(txt)
+                system(txt);
             end
         end
     else
@@ -164,12 +182,12 @@ function gitclone()
                 url = 'https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip';
                 if check_command('wget')
                     txt = ['wget ', url, ' -O ', Edir, 't_tide_v1.5beta.zip'];
-                    disp('Downloading t_tide toolbox')
+                    disp('---------> Downloading t_tide toolbox')
                     disp(txt)
                     system(txt);
                 elseif check_command('curl')
                     txt = ['curl ', url, ' -o ', Edir, 't_tide_v1.5beta.zip'];
-                    disp('Downloading t_tide toolbox')
+                    disp('---------> Downloading t_tide toolbox')
                     disp(txt)
                     system(txt);
                 else
@@ -196,12 +214,12 @@ function gitclone()
                 url = 'https://www.eos.ubc.ca/%7Erich/m_map1.4.zip';
                 if check_command('wget')
                     txt = ['wget ', url, ' -O ', Edir, 'm_map1.4.zip'];
-                    disp('Downloading m_map toolbox')
+                    disp('---------> Downloading m_map toolbox')
                     disp(txt)
                     system(txt);
                 elseif check_command('curl')
                     txt = ['curl -L ', url, ' -o ', Edir, 'm_map1.4.zip'];
-                    disp('Downloading m_map toolbox')
+                    disp('---------> Downloading m_map toolbox')
                     disp(txt)
                     system(txt);
                 else
@@ -228,12 +246,12 @@ function gitclone()
                 url = 'https://www.ngdc.noaa.gov/mgg/shorelines/data/gshhs/latest/gshhg-bin-2.3.7.zip';
                 if check_command('wget')
                     txt = ['wget ', url, ' -O ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
-                    disp('Downloading gshhs data')
+                    disp('---------> Downloading gshhs data')
                     disp(txt)
                     system(txt);
                 elseif check_command('curl')
                     txt = ['curl -L ', url, ' -o ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
-                    disp('Downloading gshhs data')
+                    disp('---------> Downloading gshhs data')
                     disp(txt)
                     system(txt);
                 else
