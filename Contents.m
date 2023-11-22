@@ -203,7 +203,7 @@
 %    struct2ini                          -  struct2ini toolbox                ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/22079-struct2ini
 %    m_map                               -  m_map toolbox                     ||  https://www.eoas.ubc.ca/~rich/map.html
 %    CDT                                 -  Climate Data Toolbox              ||  https://github.com/chadagreene/CDT
-%    t_tide                              -  T_Tide Harmonic Analysis Toolbox  || https://www.eoas.ubc.ca/~rich/#T_Tide
+%    t_tide                              -  T_Tide Harmonic Analysis Toolbox  ||  https://www.eoas.ubc.ca/~rich/#T_Tide
 %
 %                                  Extend  Exfunctions
 %    matWRF                               -  Extend matWRF toolbox

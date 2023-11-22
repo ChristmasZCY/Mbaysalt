@@ -1,9 +1,9 @@
 function [lon, lat, time, varargout]  = ncread_llt_v(ncfile,lon_vname,lat_vname,time_vname,range,varargin)
     % =================================================================================================================
-    % discription:
+    % Discription:
     %       read lon,lat,time and other variables from netcdf file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       ncfile: netcdf file name      || required: True || type: char   || format: 'example.nc'
     %       lon_vname: lon variable name  || required: True || type: char   || format: 'lon'
     %       lat_vname: lat variable name  || required: True || type: char   || format: 'lat'
@@ -17,10 +17,15 @@ function [lon, lat, time, varargout]  = ncread_llt_v(ncfile,lon_vname,lat_vname,
     %       varargout:
     %           variable name             || required: True || type: char   || format: 'temp'
     % =================================================================================================================
-    % example:
+    % Update:
+    %       2023-11-21 23:09    Christmas   Fixed if time length less than "range(parameter)"
+    %
+    % =================================================================================================================
+    % Example:
     %       [Lon,lat,time,temp] = ncread_llt_v('example.nc','lon','lat','time',[1 10],'temp')
     %       [Lon,lat,time,temp,salt] = ncread_llt_v('example.nc','lon','lat','time',[1 10],'temp','salt')
     % =================================================================================================================
+
 
     lon = ncread(ncfile,lon_vname);
     lat = ncread(ncfile,lat_vname);
@@ -34,9 +39,20 @@ function [lon, lat, time, varargout]  = ncread_llt_v(ncfile,lon_vname,lat_vname,
             Time = ncread(ncfile,time_vname)';
     end
     
-    time = Time(range(1):range(2),:);
+    try
+        time = Time(range(1):range(2),:);
+    catch ME1
+        if strcmp(ME1.identifier,'MATLAB:badsubscript')
+            time = Time(range(1):end,:);
+        end
+    end
 
+    varargout = cell(length(varargin));
     for num = 1:length(varargin)
-        varargout{num} = ncread(ncfile,varargin{num},[1 1 range(1)],[Inf Inf range(2)]);
+        try
+            varargout{num} = ncread(ncfile,varargin{num},[1 1 range(1)],[Inf Inf range(2)-range(1)+1]);
+        catch
+            varargout{num} = ncread(ncfile,varargin{num});
+        end
     end
 end

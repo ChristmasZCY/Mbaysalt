@@ -17,7 +17,7 @@ git clone https://github.com/ChristmasZCY/Mbaysalt.git
 ## Contains
 
 * [Mbaysalt](https://github.com/ChristmasZCY/Mbaysalt)
-* [cprintf]()
+* [cprintf](https://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window)
 * [INI](https://ww2.mathworks.cn/matlabcentral/fileexchange/55766-ini)
 * [iniconfig](https://ww2.mathworks.cn/matlabcentral/fileexchange/24992-ini-config)
 * [inifile](https://ww2.mathworks.cn/matlabcentral/fileexchange/2976-inifile)
@@ -27,5 +27,5 @@ git clone https://github.com/ChristmasZCY/Mbaysalt.git
 * [matNC](https://github.com/SiqiLiOcean/matNC)
 * [struct2ini](https://ww2.mathworks.cn/matlabcentral/fileexchange/22079-struct2ini)
 * [m_map](https://www.eoas.ubc.ca/~rich/map.html)
-* [t_tide]()
+* [t_tide](https://www.eoas.ubc.ca/~rich/#T_Tide)
 * [CDT](https://github.com/chadagreene/CDT)
