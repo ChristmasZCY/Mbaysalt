@@ -2,9 +2,13 @@
 **/.DS_Store
 **/.vscode
 ../../.git
+**/*.m~
 **/.git
 Exfunctions/matNC
 Exfunctions/matWRF
 Exfunctions/matFVCOM
 Exfunctions/matFigure
 Exfunctions/t_tide
+Exfunctions/m_map
+Exfunctions/m_map1.4.zip
+Exfunctions/nctoolbox
