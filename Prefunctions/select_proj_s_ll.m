@@ -1,9 +1,7 @@
 function Sproj = select_proj_s_ll(area_name,varargin)
-    % =================================================================================================================
-    % discription:
     %       Select the projection and the area to plot
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       area_name: area name              || required: True || type: char   || format: 'scs' 'ecs' 'global'
     %       Sproj.
     %           projection: projection name   || required: True || type: char   || format: 'Mercator' 'Miller Cylindrical' 'Miller'
@@ -13,7 +11,7 @@ function Sproj = select_proj_s_ll(area_name,varargin)
     %           title_area: title name        || required: True || type: char   || format: 'South China Sea' 'East China Sea' 'Global'
     %           Fname_section: folder name    || required: True || type: char   || format: 'scs_project' 'scs_project2' 'southchinasea' 'eastchinasea' 'global'
     % =================================================================================================================
-    % example:
+    % Example:
     %       Sproj = select_proj_s_ll('scs')
     %       scs_project  -->  南海结题
     %       scs_project2 -->  南海结题大区域

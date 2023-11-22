@@ -1,19 +1,17 @@
-function wrnc_phytoplankton(ncid,Lon,Lat,Depth,time,Pp,start_date_gb)
-    % =================================================================================================================
-    % discription:
+function wrnc_phytoplankton(ncid,Lon,Lat,Depth,time,Pp,GA_start_date)
     %       This function is used to write the phytoplankton data into the netcdf file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       ncid:            netcdf file id          || required: True || type: int    || format: 1
     %       Lon:             longitude               || required: True || type: double || format: [120.5, 121.5]
     %       Lat:             latitude                || required: True || type: double || format: [30.5, 31.5]
     %       Depth:           depth of each level     || required: True || type: double || format: matrix
     %       time:            time                    || required: True || type: double || format: posixtime
     %       Pp:              phytoplankton           || required: True || type: double || format: matrix
-    %       start_date_gb:   time of forecast start  || required: True || type: string || format: '20221110'
+    %       GA_start_date:   time of forecast start  || required: True || type: string || format: '20221110'
     % =================================================================================================================
-    % example:
-    %       netcdf_nemuro.wrnc_phytoplankton(ncid,Lon,Lat,Depth,time,Pp,start_date_gb)
+    % Example:
+    %       netcdf_nemuro.wrnc_phytoplankton(ncid,Lon,Lat,Depth,time,Pp,GA_start_date)
     % =================================================================================================================
 
     % version
@@ -100,7 +98,7 @@ function wrnc_phytoplankton(ncid,Lon,Lat,Depth,time,Pp,start_date_gb)
     % 写入global attribute
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'product_name',   S_name);         % 文件名
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'source',         '147-NEMURO_SCS'); % 数据源
-    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'start',          start_date_gb);    % 起报时间
+    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'start',          GA_start_date);    % 起报时间
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'history',        ['Created by Matlab at ' char(datetime("now","Inputformat","yyyy-MM-dd HH:mm:SS"))]); % 操作历史记录
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'program_version',['V',Version]);    % 程序版本号
     netcdf.close(ncid);    % 关闭nc文件

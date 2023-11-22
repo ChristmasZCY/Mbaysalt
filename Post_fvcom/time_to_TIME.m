@@ -1,14 +1,12 @@
 function varargout = time_to_TIME(ptime, varargin)
-    % =================================================================================================================
-    % discription:
     %       To get TIME, TIME_reference, TIME_start_date, TIME_end_date, time_filename
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       ptime:           time                    || required: True  || type: double || format: posixtime
     %       time_format:     time format             || required: False || type: string || format: 'yyyy-MM-dd HH:mm:ss'
     %       out_type:        output type             || required: False || type: string || format: 'char' or 'string'
     % =================================================================================================================
-    % example:
+    % Example:
     %       [TIME, TIME_reference, TIME_start_date, TIME_end_date, time_filename] = time_to_TIME(ptime)
     %       [TIME, TIME_reference, TIME_start_date, TIME_end_date, time_filename] = time_to_TIME(ptime, 'time_format', 'yyyy-MM-dd HH:mm:ss', 'out_type', 'char')
     % =================================================================================================================

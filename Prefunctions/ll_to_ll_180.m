@@ -1,15 +1,13 @@
 function [Lon,varargout] = ll_to_ll_180(lon,varargin)
-    % =================================================================================================================
-    % discription:
     %       change the lon and lat 0-360 to -180-180
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       lon: longitude               || required: True || type: double || format: -180-180
     %       varargin{n}: value to change || required: True || type: char   || format: martix
     %       Lon: changed longitude       || required: True || type: double || format: martix
     %       varargout{n}: changed value  || required: True || type: double || format: martix
     % =================================================================================================================
-    % example:
+    % Example:
     %       [Lon,temp,salt] = ll_to_ll_180(lon,temp,salt)
     % =================================================================================================================
 

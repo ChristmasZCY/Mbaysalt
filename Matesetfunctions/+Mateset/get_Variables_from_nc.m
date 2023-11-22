@@ -1,14 +1,12 @@
 function [Vars_name, Vars] = get_Variables_from_nc(fin,varargin)
-    % =================================================================================================================
-    % discription:
     %       Get the variables from the netCDF file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       fin:        input NC file name                || required: True || type: string  ||  format: 'test.nc'
     %       varargin:   optional parameters     
-   %           INFO:    whether to print the information  || required: False|| type: char    ||  format: 'INFO'
+    %           INFO:    whether to print the information  || required: False|| type: char    ||  format: 'INFO'
     % =================================================================================================================
-    % example:
+    % Example:
     %       [Vars_name, Vars] = get_Variables_from_nc('test.nc');
     %       [Vars_name, Vars] = get_Variables_from_nc('test.nc','INFO');
     % =================================================================================================================
@@ -40,4 +38,3 @@ function [Vars_name, Vars] = get_Variables_from_nc(fin,varargin)
 end
     
 
-    

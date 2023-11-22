@@ -1,14 +1,12 @@
 function jdata = json_load(file,varargin)
-    % =================================================================================================================
-    % discription:
     %       Load json file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       file: file name                  || required: True || type: string || format: "file.json"
     %       varargin: Method_load            || required: False|| type: string || format: "MATLAB" or "jsonlab"
     %       varargout: json data             || required: False|| type: struct || format: struct('key1','value1','key2','value2')
     % =================================================================================================================
-    % example:
+    % Example:
     %       jdata = json_load('file.json');
     %       jdata = json_load('file.json','Method_load','MATLAB');
     %       jdata = json_load('file.json','Method_load','jsonlab');

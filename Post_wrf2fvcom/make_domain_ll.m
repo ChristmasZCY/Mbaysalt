@@ -1,13 +1,11 @@
 function Dgrid = make_domain_ll(fin,varargin)
-    % =================================================================================================================
-    % discription:
     %       Get domain longitude and latitude from wrf2fvcom file, and make a new grid file for structured grid
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       fin:             wrf2fvcom file          || required: True || type: char   || format: 'wrf2fvcom.nc'
     %       varargin:        optional parameters      
     % =================================================================================================================
-    % example:
+    % Example:
     %       Dgrid = make_domain_ll('wrf2fvcom.nc');
     % =================================================================================================================
     

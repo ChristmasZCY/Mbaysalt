@@ -1,6 +1,4 @@
 function [lon, lat, time, varargout]  = ncread_llt_v(ncfile,lon_vname,lat_vname,time_vname,range,varargin)
-    % =================================================================================================================
-    % Discription:
     %       read lon,lat,time and other variables from netcdf file
     % =================================================================================================================
     % Parameter:

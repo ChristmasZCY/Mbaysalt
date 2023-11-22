@@ -1,15 +1,13 @@
 function varargout =  list_to_cell(str,varargin)
-    % =================================================================================================================
-    % discription:
     %       Convert str of python list format to matlab cell
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       str: str of python list format   || required: True || type: string || format: "['key1','key2','key3']"
     %       varargin: index of cell          || required: False|| type: int    || format: 1
     %       varargout: cell                  || required: False|| type: cell   || format: {'key1','key2','key3'}
     %       varargout: value                 || required: False|| type: string || format: 'key1'
     % =================================================================================================================
-    % example:
+    % Example:
     %       C = list_to_cell(str)
     %       [value1, C] = list_to_cell(str,1)
     % =================================================================================================================

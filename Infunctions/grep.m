@@ -1,14 +1,12 @@
 function [varargout] = grep(filename, pattern)
-    % =================================================================================================================
-    % discription:
     %       simulation of unix grep command
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       filename: full path of the file  || required: True || type: string || format: "xxxx/xxxx/xxxx"
     %       pattern: pattern to match        || required: True || type: string || format: "xxxx"
     %       varargout: matched line          || required: True || type: string || format: "xxxx"
     % =================================================================================================================
-    % example:
+    % Example:
     %       file = grep(status_file,"MaskncFile");
     % =================================================================================================================
 

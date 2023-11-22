@@ -1,15 +1,13 @@
-function varargout = split_path(varargin)
-    % =================================================================================================================
-    % discription:
+function varargout = del_separator(varargin)
     %       Delete the last '/' from a path
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       varargin: path                     || required: True  || type: char or string ||  format: '/home/xxx/xxx/'
     %       varargout: path without last '/'   || required: True  || type: char or string ||  format: '/home/xxx/xxx'
     % =================================================================================================================
-    % example:
-    %       path = split_path('/home/xxx/xxx/')
-    %       [path1,path2] = split_path('/home/xxx/xxx', '/home/xxx/yyy/')
+    % Example:
+    %       path = del_separator('/home/xxx/xxx/')
+    %       [path1,path2] = del_separator('/home/xxx/xxx', '/home/xxx/yyy/')
     % =================================================================================================================
 
     varargout = cellfun(@zeros,cell(1:nargin),'UniformOutput',false);

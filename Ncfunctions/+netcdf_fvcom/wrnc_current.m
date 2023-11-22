@@ -1,9 +1,7 @@
 function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
-    % =================================================================================================================
-    % discription:
     %       This function is used to write the current data u/v/w(optional) to the netcdf file at std or sigma levels.
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       ncid:            netcdf file id          || required: True  || type: int    || format: 1
     %       Lon:             longitude               || required: True  || type: double || format: [120.5, 121.5]
     %       Lat:             latitude                || required: True  || type: double || format: [30.5, 31.5]
@@ -24,7 +22,7 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin
     %       varargin:        optional parameters     
     %           conf:        configuration struct    || required: False || type: struct || format: struct
     % =================================================================================================================
-    % example:
+    % Example:
     %       netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date)
     %       netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,'conf',conf)
     % =================================================================================================================

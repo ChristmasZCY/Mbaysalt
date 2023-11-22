@@ -1,17 +1,15 @@
 function Pic_draw_wind(date, day_length, region, varargin)
-    % =================================================================================================================
-    % discription:
     %       draw picture of wind speed and direction from netcdf file
     %       netcdf file: wind_5.nc(from standard WRF output)
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       date: date                            || required: True || type: number || format: yyyymmdd
     %       day_length: day length                || required: True || type: number || format: 1,2,3,4,5,6,7
     %       region: region                        || required: True || type: string || format: "scs_project","scs","ecs","global"
     %       varargin:
     %           conf_file: path of configure file || required: False|| type: string || format: "Pic_draw.conf"
     % =================================================================================================================
-    % example:
+    % Example:
     %       Pic_draw_wind(str2double(char(datetime("now","Format","yyyyMMdd"))),7,"scs_project")
     %       Pic_draw_wind(20230305,1,'ecs','conf_file','Pic_draw.conf')
     %       Pic_draw_wind(20230305,1,"scs_project")
@@ -23,8 +21,8 @@ function Pic_draw_wind(date, day_length, region, varargin)
     %% 文件夹
     varargin = read_varargin(varargin, {'conf_file'},{'Pic_draw.conf'});
     conf_para = read_conf(conf_file);
-    InputDir = split_path(conf_para.Wind_Dir);
-    OutputDir = split_path(conf_para.Output_Dir);
+    InputDir = del_separator(conf_para.Wind_Dir);
+    OutputDir = del_separator(conf_para.Output_Dir);
     %% 区域
     Sproj = select_proj_s_ll(region);
     projection = Sproj.projection; lon_select = Sproj.lon_select; lat_select = Sproj.lat_select; 

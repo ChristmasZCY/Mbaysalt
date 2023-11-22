@@ -1,15 +1,13 @@
 function Postprocess_nemuro(conf_file, interval, yyyymmdd, day_length, varargin)
-    % =================================================================================================================
-    % discription:
     %       This function is used to postprocess the nemuro output netcdf files, contains daily/hourly.
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       conf_file: configure file                 || required: True || type: string  || format: 'Post_nemuro.conf'
     %       interval: interval                        || reauired: True || type: string  || format: 'daily','hourly'
     %       yyyymmdd: date                            || required: True || type: double. || format: 20221110
     %       day_length: length of date                || required: True || type: double  || format: 5
     % =================================================================================================================
-    % example:
+    % Example:
     %       Postprocess_nemuro('Post_nemuro.conf','daily',20230410,1)
     %       Postprocess_nemuro('Post_nemuro.conf','hourly',20230410,1)
     % =================================================================================================================
@@ -298,32 +296,32 @@ function Postprocess_nemuro(conf_file, interval, yyyymmdd, day_length, varargin)
 
 
         %% global attribute start
-        start_date_gb = [char(datetime("now","Format","yyyy-MM-dd")), '_00:00:00'];
+        GA_start_date = [char(datetime("now","Format","yyyy-MM-dd")), '_00:00:00'];
 
         %% 写入
         file = fullfile(OutputDir_chlo,['chlorophyll',OutputRes,'.nc']);
         ncid = netcdf_fvcom.create_nc(file,'NETCDF4');
-        netcdf_nemuro.wrnc_chlorophyll(ncid,Lon,Lat,Depth,time,Chlo,start_date_gb)
+        netcdf_nemuro.wrnc_chlorophyll(ncid,Lon,Lat,Depth,time,Chlo,GA_start_date)
         clear filename_chlo Chlo ncid file
 
         file = fullfile(OutputDir_no3,['no3',OutputRes,'.nc']);
         ncid = netcdf_fvcom.create_nc(file,'NETCDF4');
-        netcdf_nemuro.wrnc_no3(ncid,Lon,Lat,Depth,time,No3,start_date_gb)
+        netcdf_nemuro.wrnc_no3(ncid,Lon,Lat,Depth,time,No3,GA_start_date)
         clear filename_no3 No3 ncid file
 
         file = fullfile(OutputDir_zp,['zooplankton',OutputRes,'.nc']);
         ncid = netcdf_fvcom.create_nc(file,'NETCDF4');
-        netcdf_nemuro.wrnc_zooplankton(ncid,Lon,Lat,Depth,time,Zp,start_date_gb)
+        netcdf_nemuro.wrnc_zooplankton(ncid,Lon,Lat,Depth,time,Zp,GA_start_date)
         clear filename_zp Zp ncid file
 
         file = fullfile(OutputDir_pp,['phytoplankton',OutputRes,'.nc']);
         ncid = netcdf_fvcom.create_nc(file,'NETCDF4');
-        netcdf_nemuro.wrnc_phytoplankton(ncid,Lon,Lat,Depth,time,Pp,start_date_gb)
+        netcdf_nemuro.wrnc_phytoplankton(ncid,Lon,Lat,Depth,time,Pp,GA_start_date)
         clear filename_pp Pp ncid file
 
         file = fullfile(OutputDir_sand,['sand',OutputRes,'.nc']);
         ncid = netcdf_fvcom.create_nc(file,'NETCDF4');
-        netcdf_nemuro.wrnc_sand(ncid,Lon,Lat,Depth,time,Sand,start_date_gb)
+        netcdf_nemuro.wrnc_sand(ncid,Lon,Lat,Depth,time,Sand,GA_start_date)
         clear filename_sand Sand ncid file
 
         clear Lon Lat Depth time TIME TIME_*

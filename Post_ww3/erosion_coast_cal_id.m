@@ -1,9 +1,7 @@
 function I_D = erosion_coast_cal_id(lon, lat, value, K, judge_num)
-    % =================================================================================================================
-    % discription:
     %       calculate the erosion of the coast id, only for the grid data, such as WRF
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       lon: longitude of the grid point        || required: True || type: double ||  format: matrix
     %       lat: latitude of the grid point         || required: True || type: double ||  format: matrix
     %       value: value of the grid point          || required: True || type: double ||  format: matrix
@@ -11,7 +9,7 @@ function I_D = erosion_coast_cal_id(lon, lat, value, K, judge_num)
     %       judge_num: the number of water values   || required: True || type: double ||  format: 5
     %       I_D: id and distance                    || required: True || type: double ||  format: struct
     % =================================================================================================================
-    % example:
+    % Example:
     %       I_D = erosion_coast_cal_id(lon, lat, value, 16, 5)
     % =================================================================================================================
 

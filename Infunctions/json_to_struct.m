@@ -1,15 +1,13 @@
 function varargout = json_to_struct(str,varargin)
-    % =================================================================================================================
-    % discription:
     %       Convert json string to struct
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       str: json string                 || required: True || type: string || format: "{'key1':'value1','key2':'value2'}"
     %       varargin: key                    || required: False|| type: string || format: "key1"
     %       varargout: value of varargin     || required: False|| type: string || format: "value1"
     %       varargout: struct                || required: False|| type: struct || format: struct('key1','value1','key2','value2')
     % =================================================================================================================
-    % example:
+    % Example:
     %       Struct = json_to_struct(str);
     %       [value1,Struct] = json_to_struct(str,'key1');
     % =================================================================================================================

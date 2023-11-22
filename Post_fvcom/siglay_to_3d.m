@@ -1,14 +1,12 @@
 function Depth = siglay_to_3d(h, siglay)
-    % =================================================================================================================
-    % discription:
     %       convert sigma layer to 3d depth for fvcom
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       h:      bottom depth (m)                  || required: True || type: double || format: matrix
     %       siglay: sigma layer                       || required: True || type: double || format: matrix
     %       Depth:  3d depth (m)                      || required: True || type: double || format: matrix
     % =================================================================================================================
-    % example:
+    % Example:
     %       Depth = siglay_to_3d(h, siglay)
     % =================================================================================================================
 

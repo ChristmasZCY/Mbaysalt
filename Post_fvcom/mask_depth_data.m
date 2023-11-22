@@ -1,14 +1,12 @@
 function varargout = mask_depth_data(Standard_depth_mask, varargin)
-    % =================================================================================================================
-    % discription:
     %       mask the data with the Standard_depth_mask(from the function of "make_mask_depth_data")
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       Standard_depth_mask: the mask matrix || required: True || type: double || format: martix
     %       varargin{n}: value to be masked      || required: True || type: char   || format: martix
     %       varargout{n}: masked value           || required: True || type: double || format: martix
     % =================================================================================================================
-    % example:
+    % Example:
     %       [Temp] = mask_depth_data(Standard_depth_mask, Temp);
     %       [Temp, Salt] = mask_depth_data(Standard_depth_mask, Temp, Salt);
     % =================================================================================================================

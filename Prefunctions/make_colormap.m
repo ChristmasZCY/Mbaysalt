@@ -1,13 +1,11 @@
 function cc = make_colormap(mode, varargin)
-    % =================================================================================================================
-    % discription:
     %       make_colormap is a function to create a colormap from a list of colors
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       mode: 1 or 2 || required: True || type: char || format: martix
     %       cc: colormap || required: True || type: char || format: martix
     % =================================================================================================================
-    % example:
+    % Example:
     %       cc = make_colormap(1);
     %       cc = make_colormap(2);
     % =================================================================================================================

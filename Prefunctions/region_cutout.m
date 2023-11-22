@@ -1,15 +1,13 @@
 function [lon,lat,varargout] = region_cutout(lon_range,lat_range,lon,lat,varargin)
-    % =================================================================================================================
-    % discription:
     %       Cut out a region from a map
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       lon: longitude               || required: True || type: double || format: -180-180
     %       varargin{n}: value to change || required: True || type: char   || format: martix
     %       Lon: changed longitude       || required: True || type: double || format: martix
     %       varargout{n}: changed value  || required: True || type: double || format: martix
     % =================================================================================================================
-    % example:
+    % Example:
     %       [lon,lat,U10] = region_cutout(lon_range,lat_range,lon,lat,U10);
     %       [lon,lat,U10,V10] = region_cutout(lon_range,lat_range,lon,lat,U10,V10);
     % =================================================================================================================

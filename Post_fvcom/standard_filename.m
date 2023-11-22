@@ -1,9 +1,7 @@
 function  new_filename = standard_filename(pre, lon, lat, yyyymmdd, res)
-    % =================================================================================================================
-    % discription:
     %       This function is used to make standard filename
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       pre:  prefix                      || required: True || type: string || format: 'adt'
     %       lon:  longitude                   || required: True || type: double || format: [120.5, 121.5]
     %       lat:  latitude                    || required: True || type: double || format: [30.5, 31.5]
@@ -11,7 +9,7 @@ function  new_filename = standard_filename(pre, lon, lat, yyyymmdd, res)
     %       res:  resolution                  || required: True || type: string || format: '5'
     %       new_filename: standard filename   || required: True || type: string || format: 'adt_120.50W_121.50E_30.50S_31.50N_20221110_5.nc'
     % =================================================================================================================
-    % example:
+    % Example:
     %       standard_filename('adt', [120.5, 121.5], [30.5, 31.5], '20221110', '5')
     % =================================================================================================================
 

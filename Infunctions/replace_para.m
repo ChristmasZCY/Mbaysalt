@@ -1,15 +1,13 @@
 function Sout = replace_para(Sin,replaced_format, str)
-    % =================================================================================================================
-    % discription:
     %       Replace ${replaced_format}$ with str for char or string or struct
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       Sin: input parameter                    || required: True || type: char or string or struct
     %       replaced_format: replaced format        || required: True || type: char or string  ||  format: 'yyyymmdd'
     %       str: replaced string                    || required: True || type: char or string  ||  format: '20190101'
     %       Sout: output parameter                  || required: True || type: char or string or struct
     % =================================================================================================================
-    % example:
+    % Example:
     %       Sout = replace_para('select * from ${yyyymmdd}$', 'yyyymmdd', '20190101')
     %       Sout = replace_para(struct, 'yyyymmdd', '20190101')
     % =================================================================================================================

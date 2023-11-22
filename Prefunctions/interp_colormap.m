@@ -1,16 +1,14 @@
 function map = interp_colormap(C, N, varargin)
-    % =================================================================================================================
-    % discription:
     %       This function is used to generate a color map, means Gradient matrix generator
-    %       渐变色矩阵生成器,a输入颜色矩阵,N表示把颜色矩阵a转变为N个色块的渐变颜色矩阵
+    %       娓愬彉鑹茬煩闃电敓鎴愬櫒,a杈撳叆棰滆壊鐭╅樀,N琛ㄧず鎶婇鑹茬煩闃礱杞彉涓篘涓壊鍧楃殑娓愬彉棰滆壊鐭╅樀
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       C: color matrix              || required: True || type: double || format: martix
     %       N: number of color blocks    || required: True || type: double || format: scalar
     %       varargin{1}: mode            || required: False|| type: char   || format: scalar
     %       map: color map               || required: True || type: double || format: martix
     % =================================================================================================================
-    % example:
+    % Example:
     %       map = interp_colormap(bb,60);
     % =================================================================================================================
 

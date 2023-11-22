@@ -1,17 +1,15 @@
 function make_maskmat(mask_ncfile,LON,LAT,file_matmask)
-    % =================================================================================================================
-    % discription:
     %       make mask mat file from gebco nc file
     %       gebco website: https://www.gebco.net/data_and_products/gridded_bathymetry_data/
     %       gebco nc file can be downloaded from https://www.bodc.ac.uk/data/open_download/gebco/gebco_2022/zip/
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       mask_ncfile: gebco nc file                || required: True || type: char    || format: 'gebco_2022.nc'
     %       LON: longitude of the rectangle grid      || required: True || type: double  || format: [120:.1:130]
     %       LAT: latitude of the rectangle grid       || required: True || type: double  || format: [20:.1:30]
     %       file_matmask: mat file name               || required: True || type: char    || format: 'elevation.mat'
     % =================================================================================================================
-    % example:
+    % Example:
     %       make_maskmat(file_ncmask,LON,LAT,file_matmask)
     % =================================================================================================================
 

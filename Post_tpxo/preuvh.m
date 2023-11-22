@@ -1,9 +1,7 @@
 function [preu,prev,preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, varargin)
-    % =================================================================================================================
-    % discription:
     %       Predict the tidal current velocity or elevation at a given time
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       ua: u amplitude                    || required: True || type: double || format: matrix
     %       up: u phase                        || required: True || type: double || format: matrix
     %       va: v amplitude                    || required: True || type: double || format: matrix
@@ -19,7 +17,7 @@ function [preu,prev,preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, varargin)
     %       prev: v predict                    || required: True || type: double || format: matrix
     %       preh: h predict                    || required: True || type: double || format: matrix
     % =================================================================================================================
-    % example:
+    % Example:
     %       [preu,prev,preh] = preuvh(ua,up,va,vp,ha,hp,lat,time, varargin)
     %       [preu,prev,preh] = preuvh(ua,up,va,vp,ha,hp,lat,time, 'Cdisp')
     %       [preu,prev,preh] = preuvh(ua,up,va,vp,ha,hp,lat,time, 'Cdisp', 'tidecon', 'tidecon-name-freq-12-atlas.mat');

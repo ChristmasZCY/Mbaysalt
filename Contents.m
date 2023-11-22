@@ -1,6 +1,7 @@
 % Mbaysalt_toolbox (Author: Christmas, Dovelet, Qidi Ma)
-% Version 0.1  2023-03-01
-% Version 1.0  2023-10-18
+% Version 0.1  2023-03-01 (Created by Christmas, Dovelet, Qidi Ma)
+% Version 1.0  2023-10-18 (Fixed by Christmas)
+% Version 2.0  2023-11-22 (Fixed by Christmas)
 %
 % This toolbox is used to postpocess model data and draw pictures.
 % The model data is from original FVCOM, original NEMURO, Standard WAVE WATCH III, Standard WRF, and so on.
@@ -9,17 +10,16 @@
 % Toolbox contents
 %
 %    Contents.m                          -  This file
+%    Mainpath.m                          -  Set main path for toolbox
 %
 %
 %                           Infunctions  -  Internal functions for drawing pictures
 % =================================================================================================================
-%    cell_del_empty.m                    -  Delete empty cell
-%    char_to_logical.m                   -  Convert char to logical
 %    del_quotation.m                     -  Delete quotation from a string
+%    del_separator.m                     -  Delete the last separator from a path
 %    grep.m                              -  Grep something from a file
 %    input_yn.m                          -  Check input yes or no
 %    is_number.m                         -  Check if a string is a number with regexp
-%    isexist_var.m                       -  Check whether assigned variable, if not, assign default value
 %    json_load.m                         -  Load json file with matlab builtin function or jsonlab
 %    json_to_struct.m                    -  Convert json to struct
 %    KeyValue2Struct.m                   -  Convert key-value to struct
@@ -31,8 +31,6 @@
 %    read_conf.m                         -  Read config file from Configfiles
 %    replace_para.m                      -  Replace parameters in a string or struct
 %    rmfiles.m                           -  Delete files or directories
-%    split_dir.m                         -  Split directory from a file
-%    split_path.m                        -  Delete the last '/' from a path
 %
 %
 %                          Prefunctions  -  Prefunctions for drawing pictures
@@ -106,11 +104,6 @@
 % =================================================================================================================
 %    Postprocess_wrf2fvcom_domain.m      -  Read and postprocess wrf2fvcom data to standard format
 %    make_domain_ll.m                    -  Read and make grid from wrf2fvcom domain file
-%
-%
-%                         Mainfunctions  -  Functions for drawing pictures
-% =================================================================================================================
-%    Mainpath.m                          -  Set main path for toolbox
 %
 %
 %                         Gridfunctions  -  Functions for model grid

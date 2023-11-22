@@ -1,14 +1,12 @@
 function varargout = read_conf(conf_file, varargin)
+    %       Read configuration file from *.conf file
     % =================================================================================================================
-    % discription:
-    %       read configuration file from *.conf file
-    % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       conf_file: configuration file          || required: True || type: char or string  ||  format: *.conf
     %       varargin{n}: parameter name            || required: False|| type: char or string  ||  format: 'f2dmFile'
     %       varargout{n}: parameter value          || required: False|| type: char or string  ||  format: 'f2dmFile'
     % =================================================================================================================
-    % example:
+    % Example:
     %       read_conf(conf_file)
     %       read_conf(conf_file, 'f2dmFile')
     % =================================================================================================================
@@ -62,7 +60,7 @@ function [key, value] = parse_line(line)
     value = del_quotation(value);
     if isstrprop(key(1), 'digit')
         key = ['f' , key];
-    elseif strcmpi(value, '.True.')
+    elseif strcmpi(value, '.True.')  % 不区分大小写
         value = true;
     elseif strcmpi(value, '.False.')
         value = false;

@@ -1,14 +1,12 @@
 function [Dims,Dims_name,Dims_len] = get_Dimensions_from_nc(fin,varargin)
-    % =================================================================================================================
-    % discription:
     %       Get the dimensions information from a netCDF file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       fin:        input NC file name                || required: True || type: string  ||  format: 'test.nc'
     %       varargin:   optional parameters     
-   %           INFO:    whether to print the information  || required: False|| type: char    ||  format: 'INFO'
+    %           INFO:    whether to print the information  || required: False|| type: char    ||  format: 'INFO'
     % =================================================================================================================
-    % example:
+    % Example:
     %       [Dims,Dims_name,Dims_len] = get_Dimensions_from_nc('test.nc');
     %       [Dims,Dims_name,Dims_len] = get_Dimensions_from_nc('test.nc','INFO');
     % =================================================================================================================

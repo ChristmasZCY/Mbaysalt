@@ -1,14 +1,12 @@
 function varargout = mask2data(mask_matfile,varargin)
-    % =================================================================================================================
-    % discription:
     %       mask the data with the mask
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       mask_matfile: mat file name               || required: True || type: char    || format: 'elevation.mat'
     %       varargin:     data to be masked           || required: True || type: double  || format: matrix
     %       varargout:    masked data                 || required: True || type: double  || format: matrix
     % =================================================================================================================
-    % example:
+    % Example:
     %       [Temp,Salt,Zeta,Depth,U,V,W] = mask2data(file_matmask,Temp,Salt,Zeta,Depth,U,V,W);
     % =================================================================================================================
 

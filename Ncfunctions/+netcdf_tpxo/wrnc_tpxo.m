@@ -1,9 +1,7 @@
 function wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
-    % =================================================================================================================
-    % discription:
     %       This function is used to write the tide current (u/v/zeta) to the netcdf file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       ncid:            netcdf file id          || required: True || type: int    || format: 1
     %       Lon:             longitude               || required: True || type: double || format: [120.5, 121.5]
     %       Lat:             latitude                || required: True || type: double || format: [30.5, 31.5]
@@ -12,7 +10,7 @@ function wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
     %       V:               v                       || required: True || type: double || format: matrix
     %       Zeta:            zeta                    || required: True || type: double || format: matrix
     % =================================================================================================================
-    % example:
+    % Example:
     %       netcdf_tpxo.wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
     % =================================================================================================================
 
@@ -26,7 +24,7 @@ function wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
     S_name = standard_filename('tide',Lon,Lat,time_filename,ResName); % 标准文件名
     osprint(['Transfor --> ',S_name])
     
-    start_date_gb = char(datetime("now","Format","yyyy-MM-dd_HH:mm:ss"));
+    GA_start_date = char(datetime("now","Format","yyyy-MM-dd_HH:mm:ss"));
 
     % 定义维度
     londimID = netcdf.defDim(ncid, 'longitude',length(Lon));                        % 定义lon维度
@@ -101,7 +99,7 @@ function wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
     % 写入global attribute
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'product_name',   S_name);         % 文件名
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'source',         '213-TPXO_Global'); % 数据源
-    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'start',          start_date_gb);               % 起报时间
+    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'start',          GA_start_date);               % 起报时间
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'history',        ['Created by Matlab at ' char(datetime("now","Inputformat","yyyy-MM-dd HH:mm:SS"))]); % 操作历史记录
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'program_version',['V',Version]);    % 程序版本号
     netcdf.close(ncid);    % 关闭nc文件

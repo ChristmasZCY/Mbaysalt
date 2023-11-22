@@ -1,9 +1,7 @@
 function wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,varargin)
-    % =================================================================================================================
-    % discription:
     %       This function is used to write the adt data to the netcdf file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       ncid:            netcdf file id          || required: True || type: int    || format: 1
     %       Lon:             longitude               || required: True || type: double || format: [120.5, 121.5]
     %       Lat:             latitude                || required: True || type: double || format: [30.5, 31.5]
@@ -13,7 +11,7 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,varargin)
     %       varargin:        optional parameters     
     %           conf:        configuration struct    || required: False || type: struct || format: struct
     % =================================================================================================================
-    % example:
+    % Example:
     %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date)
     %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,'conf',conf)
     % =================================================================================================================

@@ -1,23 +1,22 @@
 function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
-    % TODO:
-    %   !!! Not finished yet !!!
-    %   !!! Just for T2 now !!!
-    % =================================================================================================================
-    % discription:
     %       Postprocess wrf2fvcom output of domain
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       yyyymmdd:        start date              || required: True || type: char   || format: '20200101'
     %       day_len:         length of days          || required: True || type: int    || format: 5
     %       varargin:        optional parameters      
     %           domain:      domain number           || required: False|| type: int    || format: 1
     %           conf_file:   conf file               || required: False|| type: char   || format: 'Post_wrf2fvcom.conf'
     % =================================================================================================================
-    % example:
+    % Example:
     %       Postprocess_wrf2fvcom_domain('20231008',5)
     %       Postprocess_wrf2fvcom_domain('20231008',5,'domain',1)
     %       Postprocess_wrf2fvcom_domain('20231008',5,'conf_file','Post_wrf2fvcom.conf')
     %       Postprocess_wrf2fvcom_domain('20231008',5,'domain',2,'conf_file','Post_wrf2fvcom.conf')
+    % =================================================================================================================
+    % TODO:
+    %   !!! Not finished yet !!!
+    %   !!! Just for T2 now !!!
     % =================================================================================================================
     
     % read parameters

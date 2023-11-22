@@ -1,13 +1,11 @@
 function make_typhoon_warningline(varargin)
-    % =================================================================================================================
-    % discription:
     %       make typhoon warning line
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       varargin{1}: 24 or 48 hours || required: True || type: double || format: martix
     %       varargin{2}: 24 or 48 hours || required: True || type: double || format: martix
     % =================================================================================================================
-    % example:
+    % Example:
     %       make_typhoon_warningline(24)
     %       make_typhoon_warningline(24,48)
     %       make_typhoon_warningline(48)

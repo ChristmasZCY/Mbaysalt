@@ -1,15 +1,13 @@
 function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
-    % =================================================================================================================
-    % discription:
     %       This function is used to postprocess the fvcom output netcdf files, contains daily/hourly.
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       conf_file: configure file                 || required: True || type: string  || format: 'Post_fvcom.conf'
     %       interval: interval                        || reauired: True || type: string  || format: 'daily','hourly'
     %       yyyymmdd: date                            || required: True || type: double. || format: 20221110
     %       day_length: length of date                || required: True || type: double  || format: 5
     % =================================================================================================================
-    % example:
+    % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20230525,1)
     %       Postprocess_fvcom('Post_fvcom.conf','daily',20230525,1)
     % =================================================================================================================

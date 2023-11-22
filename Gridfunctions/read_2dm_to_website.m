@@ -1,12 +1,10 @@
 function read_2dm_to_website(varargin)
-    % =================================================================================================================
-    % discription:
     %       read 2dm file and write to website format
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       Global: whether is global grid  || required: False || type: logical || format: 'Global'
     % =================================================================================================================
-    % example:
+    % Example:
     %       read_2dm_to_website()
     %       read_2dm_to_website('Global')
     % =================================================================================================================
@@ -17,7 +15,7 @@ function read_2dm_to_website(varargin)
     osprints('INFO',file);
     [~,name,~]=fileparts(file);
     save_path = read_conf('Grid_functions.conf','save_path');
-    save_path = split_path(save_path);
+    save_path = del_separator(save_path);
 
     f = f_load_grid(file);
 

@@ -1,16 +1,14 @@
 function mshFile = read_2dm_to_msh(varargin)
-    % =================================================================================================================
-    % discription:
     %       read 2dm file to msh file for Wave Watch III
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       varargin:        optional parameters    
     %           relpaced_lt_depth: replace the point depth < relpaced_lt_depth to relpaced_lt_depth || required: False || type: double || format: 0.5
     %           file:        2dm file path                                                          || required: False || type: char || format: ./Sanao_Z.2dm
     %           save_path: save path                                                                || required: False || type: char || format: /Users/christmas/Desktop/
     %           read_method: method of read                                                         || required: False || type: char || format: Christmas or Siqi
     % =================================================================================================================
-    % example:
+    % Example:
     %       read_2dm_to_msh()
     %       read_2dm_to_msh(0.5)
     %       read_2dm_to_msh(0.5,'file','ECS6.2dm')
@@ -34,7 +32,7 @@ function mshFile = read_2dm_to_msh(varargin)
         relpaced_lt_depth = [];
     end
 
-    save_path = split_path(save_path);
+    save_path = del_separator(save_path);
 
     %% read 2dm file
     [~,name,suffix]=fileparts(file);

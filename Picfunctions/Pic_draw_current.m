@@ -1,27 +1,26 @@
 function Pic_draw_current(varargin)
-    % =================================================================================================================
-    % discription:
     %       draw picture of daily mean current velocity from netcdf file
     %       netcdf file: current_10.nc(from standard FVCOM output)
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       varargin{1}: date        || required: True || type: number || format: yyyymmdd
     %       varargin{2}: day length  || required: True || type: number || format: 1,2,3,4,5,6,7
     %       varargin{3}: region      || required: True || type: string || format: "scs_project","scs","ecs","global"
     %       varargin{4}: interval    || required: True || type: string || format: "daily","hourly"
     %       varargin{5}: depth level || required: True || type: number || format: 1,2,3,4,5,6,7,8,9,10
     % =================================================================================================================
-    % example:
+    % Example:
     %       Pic_draw_current(str2double(char(datetime("now","Format","yyyyMMdd"))),7,"scs_project","daily",1)
     %       Pic_draw_current(20230305,1,"scs_project","daily",1)
     % =================================================================================================================
     %% colorbar
     % cc=load("/home/ocean/Oceanmax/Data/input/MarginalSea/SCS/RGB.mat").RGB.wh_bl_gr_ye_re;
-    cc = make_colormap();
+    cc = make_colormap('2');
     %% 文件夹
-    Current_Dir = split_dir(grep("Pic_draw.conf","Current_Dir"));
+    para_conf = read_conf('Pic_draw.conf');
+    Current_Dir = para_conf.Current_Dir;
     InputDir = [Current_Dir,char(varargin{4})];
-    OutputDir = split_dir(grep("Pic_draw.conf","Output_Dir"));
+    OutputDir = para_conf.Output_Dir;
     %% 区域
     [projection,lon_select,lat_select,gshhs] = select_proj_s_ll(varargin{3});
     %% 日期

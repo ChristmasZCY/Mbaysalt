@@ -1,15 +1,13 @@
 function osprints(log,varargin)
-    % =================================================================================================================
-    % discription:
     %       print the string to the screen with INFO\WARING and so on.
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       log: message of log                   || required: True  || type: char or string ||  format: 'INFO', 'WARING', 'ERROR'
     %       varargin{1}: string to be printed     || required: True  || type: char or string ||  format: 'hello world'
     %       varargin{2}: wrfile                   || required: False || type: char or string ||  format: 'wrfile'
     %       varargin{3}: file of wrfile           || required: False || type: char or string ||  format: 'log.txt'
     % =================================================================================================================
-    % example:
+    % Example:
     %       osprints('INFO', 'hello world')
     %       osprints('DEBUG', 'hello world')
     %       osprints('ERROR', 'hello world')

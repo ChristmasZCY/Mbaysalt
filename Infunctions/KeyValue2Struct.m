@@ -1,16 +1,14 @@
 function varargout = KeyValue2Struct(key,value,varargin)
-    % =================================================================================================================
-    % discription:
     %       Convert key and value to struct
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       key: key of struct               || required: True || type: string || format: {"key1","key2"}
     %       value: value of struct           || required: True || type: string || format: {"value1","value2"}
     %       varargin: key                    || required: False|| type: string || format: "key1"
     %       varargout: value of varargin     || required: False|| type: string || format: "value1"
     %       varargout: struct                || required: False|| type: struct || format: struct('key1','value1','key2','value2')
     % =================================================================================================================
-    % example:
+    % Example:
     %       Struct = KeyValue2Struct(key,value);
     %       [value1,Struct] = KeyValue2Struct(key,value,'key1');
     % =================================================================================================================

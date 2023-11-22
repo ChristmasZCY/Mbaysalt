@@ -1,14 +1,12 @@
 function varargout = erosion_coast_via_id(I_D,varargin)
-    % =================================================================================================================
-    % discription:
     %       erode the coastline via id
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       varargin{n}: value of the grid point                 || required: True || type: double ||  format: matrix
     %       I_D: id and distance                                 || required: True || type: double ||  format: struct
     %       varargout{n}: value of the processed grid point      || required: True || type: double ||  format: matrix
     % =================================================================================================================
-    % example:
+    % Example:
     %       [Swh,Mwd] = erosion_coast_via_id(I_D,swh,mwd)
     % =================================================================================================================
 

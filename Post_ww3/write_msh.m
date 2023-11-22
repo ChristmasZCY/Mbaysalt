@@ -1,9 +1,7 @@
 function write_msh(fout, x, y, nv, h, ns)
-    % =================================================================================================================
-    % discription:
     %       Write the msh file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       fout: the name of the msh file                       || required: True  || type: string ||  format: string
     %       x: x coordinate of the grid point                    || required: True  || type: double ||  format: matrix
     %       y: y coordinate of the grid point                    || required: True  || type: double ||  format: matrix
@@ -11,7 +9,7 @@ function write_msh(fout, x, y, nv, h, ns)
     %       h: depth of the grid point                           || required: False || type: double ||  format: matrix
     %       ns: open boundary of the grid point                  || required: False || type: double ||  format: matrix
     % =================================================================================================================
-    % example:
+    % Example:
     %       write_msh('test.msh', x, y, nv, h, ns)
     %       write_msh('test.msh', x, y, nv, h)
     %       write_msh('test.msh', x, y, nv)

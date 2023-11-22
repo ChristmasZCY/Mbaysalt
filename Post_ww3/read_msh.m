@@ -1,9 +1,7 @@
 function [x, y, nv, h, ns]=read_msh(fin,varargin)
-    % =================================================================================================================
-    % discription:
     %       Read the msh file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       fin: file name of the msh file                       || required: True  || type: string ||  format: string
     %       Nodisp: if display the information of the msh file   || required: False || type: string ||  format: string
     %       x: x coordinate of the grid point                    || required: True  || type: double ||  format: matrix
@@ -12,7 +10,7 @@ function [x, y, nv, h, ns]=read_msh(fin,varargin)
     %       h: depth of the grid point                           || required: True  || type: double ||  format: matrix
     %       ns: open boundary of the grid point                  || required: True  || type: double ||  format: matrix
     % =================================================================================================================
-    % example:
+    % Example:
     %       [x, y, nv, h, ns]=read_msh('test.msh')
     %       [x, y, nv, h, ns]=read_msh('test.msh','Nodisp')
     % =================================================================================================================

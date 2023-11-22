@@ -1,6 +1,4 @@
 function wrnc_ice(ncid,Lon,Lat,time,Aice,GA_start_date,varargin)
-    % =================================================================================================================
-    % discription:
     %       This function is used to write the ice data to the netcdf file
     % =================================================================================================================
     % parameter:
@@ -13,7 +11,7 @@ function wrnc_ice(ncid,Lon,Lat,time,Aice,GA_start_date,varargin)
     %       varargin:        optional parameters     
     %           conf:        configuration struct    || required: False || type: struct || format: struct
     % =================================================================================================================
-    % example:
+    % Example:
     %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Aice,GA_start_date)
     %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Aice,GA_start_date,'conf',conf)
     % =================================================================================================================

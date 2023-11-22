@@ -1,9 +1,7 @@
 function wrnc_t2m(ncid,Lon,Lat,time,T2,varargin)
-    % =================================================================================================================
-    % discription:
     %       This function is used to write the temperature at 2m to the nc file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       ncid:            netcdf file id          || required: True || type: int    || format: 1
     %       Lon:             longitude               || required: True || type: double || format: [120.5, 121.5]
     %       Lat:             latitude                || required: True || type: double || format: [30.5, 31.5]
@@ -13,7 +11,7 @@ function wrnc_t2m(ncid,Lon,Lat,time,T2,varargin)
     %           GA:          global attribute        || required: False|| type: struct || format: struct('GA_START_DATE','2020-01-01 00:00:00')
     %           conf:        configuration struct    || required: False|| type: struct || format: struct
     % =================================================================================================================
-    % example:
+    % Example:
     %       netcdf_wrf.wrnc_t2m(ncid,Lon,Lat,time,T2)
     %       netcdf_wrf.wrnc_t2m(ncid,Lon,Lat,time,T2，'GA',struct('GA_START_DATE','2020-01-01 00:00:00'))
     %       netcdf_wrf.wrnc_t2m(ncid,Lon,Lat,time,T2，'conf',conf)
@@ -38,7 +36,7 @@ function wrnc_t2m(ncid,Lon,Lat,time,T2,varargin)
         end
     end
     
-    % start_date_gb = char(datetime("now","Format","yyyy-MM-dd_HH:mm:ss"));
+    % GA_start_date = char(datetime("now","Format","yyyy-MM-dd_HH:mm:ss"));
 
     % 定义维度
     londimID = netcdf.defDim(ncid, 'longitude',length(Lon));                        % 定义lon维度

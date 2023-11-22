@@ -1,9 +1,7 @@
 function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
-    % =================================================================================================================
-    % discription:
     %       Read nc file
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       fnc: nc file name                               || required: True  || type: string || format: 'wave.nc'
     %       varargin:
     %                conf: conf file                        || required: False || type: string || format: 'Read_file.conf'
@@ -18,7 +16,7 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     %                Log_file: log file                     || required: False || type: string || format: 'log.txt'
     %                'INFO': whether run osprints           || required: False || type: bool   || format: '(optional)
     % =================================================================================================================
-    % example:
+    % Example:
     %       [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc);
     %       [lon,lat,depth,time,swh,mpts] = read_ncfile_lldtv(fnc, 'Var_Name',{{'swh'},{'mpts'}});
     %       [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc,'conf','Read_file.conf','Lon_Name','lon', ...
@@ -178,4 +176,35 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
 
     % varargout{1} = cell(varargin);
 
+end
+
+
+function vout = isexist_var(vin, conf)
+    %       Check whether assigned variable, if not, assign default value
+    % =================================================================================================================
+    % parameter:
+    %       vin: variable to be checked                        || required: True  || type: cell  || format: {"Lon_Name","Lon_Name"}
+    %       conf: default value                                || required: True  || type: cell  || format: {"lon","lat"}
+    %       vout: variable after checking                      || required: True  || type: cell  || format: {"lon","lat"}
+    % =================================================================================================================
+    % example:
+    %       vout = isexist_var({"Lon_Name","Lat_Name"}, {"lon","lat"})
+    % =================================================================================================================
+
+    
+    vin = convertStringsToChars(vin);
+   
+    % if iscell(vin) 
+    %     vin = vin{1};
+    % end
+    
+    if islogical(vin)
+        if  ~vin
+            vout = conf;
+        else
+            vout = vin;
+        end
+    else
+        vout = vin;
+    end
 end

@@ -1,23 +1,21 @@
 function read_gebco_to_sms(res)
-    % =================================================================================================================
-    % discription:
     %       read gebco file and write to xyz file, res=1 means 1/240 degree, res=2 means 1/120 degree and so on
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       res: resolution of gebco file  || required: True || type: int || format: 3
     % =================================================================================================================
-    % example:
+    % Example:
     %       read_gebco_to_sms(2)
     % =================================================================================================================
 
-    !clear
-    file = split_dir(grep("Grid_functions.conf","gebcoNCfile"));
-    lon1 = str2double(split_dir(grep("Grid_functions.conf","lon_west")));
-    lon2 = str2double(split_dir(grep("Grid_functions.conf","lon_east")));
-    lat1 = str2double(split_dir(grep("Grid_functions.conf","lat_south")));
-    lat2 = str2double(split_dir(grep("Grid_functions.conf","lat_north")));
-    xyz_name = split_dir(grep("Grid_functions.conf","xyz_name"));
-    Outpath_dir = split_dir(grep("Grid_functions.conf","save_path"));
+    para_conf = read_conf("Grid_functions.conf");
+    file = para_conf.gebcoNCfile;
+    lon1 = para_conf.lon_west;
+    lon2 = para_conf.lon_east;
+    lat1 = para_conf.lat_south;
+    lat2 = para_conf.lat_north;
+    xyz_name = para_conf.xyz_name;
+    Outpath_dir = para_conf.save_path;    
     
     xyz_file = fullfile(Outpath_dir,xyz_name);
     Lon = [lon1 lon2];

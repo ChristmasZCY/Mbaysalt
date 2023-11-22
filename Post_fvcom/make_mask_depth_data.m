@@ -1,14 +1,12 @@
 function Standard_depth_mask = make_mask_depth_data(grid_depth, standard_depth)
-    % =================================================================================================================
-    % discription:
     %       Make mask to mask the data which is deeper than the grid depth(for 'mask_depth_data.m')
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       grid_depth: grid depth               || required: True || type: double || format: martix
     %       standard_depth: standard depth       || required: True || type: double || format: martix
     %       Standard_depth_mask: mask            || required: True || type: logical|| format: martix
     % =================================================================================================================
-    % example:
+    % Example:
     %       Standard_depth_mask = make_mask_depth_data(grid_depth, standard_depth);
     % =================================================================================================================
 

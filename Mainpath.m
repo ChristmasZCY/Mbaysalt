@@ -1,15 +1,13 @@
 function Mainpath(varargin)
-    % =================================================================================================================
-    % discription:
     %       Mainpath is a function to add all path of this package
     % =================================================================================================================
-    % parameter:   
+    % Parameter:
     %       varargin:        optional parameters      
     %           add:        add all path             || required: False|| type: string || format: 'add'
     %           rm:         remove all path          || required: False|| type: string || format: 'rm'
     %           noclone:    add all path without clone git || required: False|| type: string || format: 'noclone'
     % =================================================================================================================
-    % example:
+    % Example:
     %       Mainpath
     %       Mainpath('add')
     %       Mainpath('rm')

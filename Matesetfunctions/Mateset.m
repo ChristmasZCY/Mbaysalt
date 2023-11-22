@@ -1,12 +1,10 @@
 classdef Mateset < dynamicprops
-    % =================================================================================================================
-    % discription:
     %       Mateset is a class for storing the data from netcdf file or matrix
     % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       varargin:        optional parameters     || required: False|| type: char string double single || format: None
     % =================================================================================================================
-    % example:
+    % Example:
     %       Ms = Mateset(file)
     %       Ms = Mateset(x.lon,x.lat)
     %       Ms = Mateset(x.lon,x.lat,x.element)

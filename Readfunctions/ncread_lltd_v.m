@@ -1,9 +1,7 @@
 function [lon, lat, dep, time, varargout]  = ncread_lltd_v(ncfile,lon_vname,lat_vname,dep_vname,time_vname,depth_range,time_range,varargin)
+    %       Read lon,lat,time,depth and variable from netcdf file
     % =================================================================================================================
-    % discription:
-    %       read lon,lat,time,depth and variable from netcdf file
-    % =================================================================================================================
-    % parameter:
+    % Parameter:
     %       ncfile: netcdf file name       || required: True || type: char   || format: 'example.nc'
     %       lon_vname: lon variable name   || required: True || type: char   || format: 'lon'
     %       lat_vname: lat variable name   || required: True || type: char   || format: 'lat'
@@ -20,7 +18,7 @@ function [lon, lat, dep, time, varargout]  = ncread_lltd_v(ncfile,lon_vname,lat_
     %       varargout:
     %           variable name              || required: True || type: char   || format: 'temp'
     % =================================================================================================================
-    % example:
+    % Example:
     %       [Lon,lat,dep,time,temp] = ncread_lltd_v('example.nc','lon','lat','depth',[1 10],'time',[1 10],'temp')
     %       [Lon,lat,dep,time,temp,salt] = ncread_lltd_v('example.nc','lon','lat','depth',[1 10],'time',[1 10],'temp','salt')
     % =================================================================================================================
