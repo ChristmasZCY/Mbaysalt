@@ -3,8 +3,8 @@
 **/.vscode
 ../../.git
 **/.git
-Exfunctions/matFigure
 Exfunctions/matNC
 Exfunctions/matWRF
 Exfunctions/matFVCOM
+Exfunctions/matFigure
 Exfunctions/t_tide

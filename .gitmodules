@@ -1,0 +1,3 @@
+[submodule "matFigure"]
+	path = Exfunctions/matFigure
+	url = https://github.com/SiqiLiOcean/matFigure.git
