@@ -114,125 +114,146 @@ function gitclone()
     Edir = char(path + division + 'Exfunctions' + division);
 
     TF = check_command('git');
+    para_conf = read_conf(fullfile(path,'Configurefiles/INSTALL.conf'));
+    para_conf
 
     % SiqiLiOcean
     if TF
-        if ~(exist('ncdateread', 'file') == 2)  % CDT
-            system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt']);
+        system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt']);
+        if para_conf.cdt
+            if ~(exist('ncdateread', 'file') == 2)  % CDT
+                system(['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt']);
+            end
         end
         
-        if ~(exist('f_load_grid', 'file') == 2)  % matFVCOM
-            system(['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM']);
+        if para_conf.matFVCOM
+            if ~(exist('f_load_grid', 'file') == 2)  % matFVCOM
+                system(['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM']);
+            end
         end
 
-        if ~(exist('mf_save', 'file') == 2)  % matFigure
-            system(['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure']);
+        if para_conf.matFigure
+            if ~(exist('mf_save', 'file') == 2)  % matFigure
+                system(['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure']);
+            end
         end
 
-        if ~(exist('load_constants', 'file') == 2)  % matWRF
-            system(['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF']);
+        if para_conf.matWRF
+            if ~(exist('load_constants', 'file') == 2)  % matWRF
+                system(['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF']);
+            end
+        end
+            
+        if para_conf.matNC
+            if ~(exist('nc_close', 'file') == 2) % matNC
+                system(['git clone https://github.com/SiqiLiOcean/matNC.git ', Edir, 'matNC']);
+            end
         end
 
-        if ~(exist('nc_close', 'file') == 2) % matNC
-            system(['git clone https://github.com/SiqiLiOcean/matNC.git ', Edir, 'matNC']);
-        end
-
-        if ~(exist('ncload', 'file') == 2) % nctoolbox
-            system(['git clone https://github.com/nctoolbox/nctoolbox.git ', Edir, 'nctoolbox']);
+        if para_conf.nctoolbox
+            if ~(exist('ncload', 'file') == 2) % nctoolbox
+                system(['git clone https://github.com/nctoolbox/nctoolbox.git ', Edir, 'nctoolbox']);
+            end
         end
     else
         warning('git is not installed, some functions will not be installed, please install git and run Mainpath again');
     end
 
     % t_tide
-    if ~(exist('t_tide', 'file') == 2)  % t_tide
-        if ~(exist([Edir, 't_tide_v1.5beta.zip'], 'file') ==2)  % No cache will download.
-            url = 'https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip';
-            if check_command('wget')
-                txt = ['wget ', url, ' -O ', Edir, 't_tide_v1.5beta.zip'];
-                disp('Downloading t_tide toolbox')
-                disp(txt)
-                system(txt);
-            elseif check_command('curl')
-                txt = ['curl ', url, ' -o ', Edir, 't_tide_v1.5beta.zip'];
-                disp('Downloading t_tide toolbox')
-                disp(txt)
-                system(txt);
-            else
-                warning('wget and curl are not installed, t_tide will not be installed');
+    if para_conf.t_tide
+        if ~(exist('t_tide', 'file') == 2)  % t_tide
+            if ~(exist([Edir, 't_tide_v1.5beta.zip'], 'file') ==2)  % No cache will download.
+                url = 'https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip';
+                if check_command('wget')
+                    txt = ['wget ', url, ' -O ', Edir, 't_tide_v1.5beta.zip'];
+                    disp('Downloading t_tide toolbox')
+                    disp(txt)
+                    system(txt);
+                elseif check_command('curl')
+                    txt = ['curl ', url, ' -o ', Edir, 't_tide_v1.5beta.zip'];
+                    disp('Downloading t_tide toolbox')
+                    disp(txt)
+                    system(txt);
+                else
+                    warning('wget and curl are not installed, t_tide will not be installed');
+                end
             end
-        end
-        if ~(exist('t_tide_v1.5beta.zip', 'file') == 2)
-            error('t_tide_v1.5beta.zip is not downloaded, please download it manually');
-        else
-            if check_command('unzip')
-                system(['unzip ', Edir, 't_tide_v1.5beta.zip -d ', Edir, 't_tide']);
+            if ~(exist('t_tide_v1.5beta.zip', 'file') == 2)
+                error('t_tide_v1.5beta.zip is not downloaded, please download it manually');
             else
-                unzip([Edir, 't_tide_v1.5beta.zip'], [Edir, 't_tide']);
+                if check_command('unzip')
+                    system(['unzip ', Edir, 't_tide_v1.5beta.zip -d ', Edir, 't_tide']);
+                else
+                    unzip([Edir, 't_tide_v1.5beta.zip'], [Edir, 't_tide']);
+                end
             end
+            % delete([Edir, 't_tide_v1.5beta.zip']);
         end
-        % delete([Edir, 't_tide_v1.5beta.zip']);
     end
 
     % m_map
-    if ~(exist('m_demo', 'file') ==2)  % m_map
-        if ~(exist([Edir, 'm_map1.4.zip'], 'file') ==2)  % No cache will download.
-            url = 'https://www.eos.ubc.ca/%7Erich/m_map1.4.zip';
-            if check_command('wget')
-                txt = ['wget ', url, ' -O ', Edir, 'm_map1.4.zip'];
-                disp('Downloading m_map toolbox')
-                disp(txt)
-                system(txt);
-            elseif check_command('curl')
-                txt = ['curl -L ', url, ' -o ', Edir, 'm_map1.4.zip'];
-                disp('Downloading m_map toolbox')
-                disp(txt)
-                system(txt);
-            else
-                warning('wget and curl are not installed, m_map will not be installed');
+    if para_conf.m_map
+        if ~(exist('m_demo', 'file') ==2)  % m_map
+            if ~(exist([Edir, 'm_map1.4.zip'], 'file') ==2)  % No cache will download.
+                url = 'https://www.eos.ubc.ca/%7Erich/m_map1.4.zip';
+                if check_command('wget')
+                    txt = ['wget ', url, ' -O ', Edir, 'm_map1.4.zip'];
+                    disp('Downloading m_map toolbox')
+                    disp(txt)
+                    system(txt);
+                elseif check_command('curl')
+                    txt = ['curl -L ', url, ' -o ', Edir, 'm_map1.4.zip'];
+                    disp('Downloading m_map toolbox')
+                    disp(txt)
+                    system(txt);
+                else
+                    warning('wget and curl are not installed, m_map will not be installed');
+                end
             end
-        end
-        if ~(exist('m_map1.4.zip', 'file') == 2)
-                error('m_map1.4.zip is not downloaded, please download it manually');
-        else
-            if check_command('unzip')
-                system(['unzip ', Edir, 'm_map1.4.zip -d ', Edir]);
+            if ~(exist('m_map1.4.zip', 'file') == 2)
+                    error('m_map1.4.zip is not downloaded, please download it manually');
             else
-                unzip([Edir, 'm_map1.4.zip'], [Edir]);
+                if check_command('unzip')
+                    system(['unzip ', Edir, 'm_map1.4.zip -d ', Edir]);
+                else
+                    unzip([Edir, 'm_map1.4.zip'], [Edir]);
+                end
             end
-        end
-        % delete([Edir, 'm_map1.4.zip']);
-    end  
+            % delete([Edir, 'm_map1.4.zip']);
+        end  
+    end
     
-    % gshhs 
-    if ~(exist([Edir,'m_map/data/gshhs_c.b',], 'file') ==2) && (exist('m_demo', 'file') ==2) % gshhs
-        if ~(exist([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], 'file') ==2)  % No cache will download.
-            url = 'https://www.ngdc.noaa.gov/mgg/shorelines/data/gshhs/latest/gshhg-bin-2.3.7.zip';
-            if check_command('wget')
-                txt = ['wget ', url, ' -O ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
-                disp('Downloading gshhs data')
-                disp(txt)
-                system(txt);
-            elseif check_command('curl')
-                txt = ['curl -L ', url, ' -o ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
-                disp('Downloading gshhs data')
-                disp(txt)
-                system(txt);
-            else
-                warning('wget and curl are not installed, m_map will not be installed');
+    % gshhs
+    if para_conf.gshhs
+        if ~(exist([Edir,'m_map/data/gshhs_c.b',], 'file') ==2) && (exist([Edir,'m_map/data',], 'file') ==7) % gshhs
+            if ~(exist([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], 'file') ==2)  % No cache will download.
+                url = 'https://www.ngdc.noaa.gov/mgg/shorelines/data/gshhs/latest/gshhg-bin-2.3.7.zip';
+                if check_command('wget')
+                    txt = ['wget ', url, ' -O ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
+                    disp('Downloading gshhs data')
+                    disp(txt)
+                    system(txt);
+                elseif check_command('curl')
+                    txt = ['curl -L ', url, ' -o ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
+                    disp('Downloading gshhs data')
+                    disp(txt)
+                    system(txt);
+                else
+                    warning('wget and curl are not installed, m_map will not be installed');
+                end
             end
-        end
-        if ~(exist([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], 'file') == 2)
-                error('gshhg-bin-2.3.7.zip is not downloaded, please download it manually');
-        else
-            if check_command('unzip')
-                system(['unzip ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip -d ', Edir, 'm_map/data/']);
+            if ~(exist([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], 'file') == 2)
+                    error('gshhg-bin-2.3.7.zip is not downloaded, please download it manually');
             else
-                unzip([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], [Edir, 'm_map/data/']);
+                if check_command('unzip')
+                    system(['unzip ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip -d ', Edir, 'm_map/data/']);
+                else
+                    unzip([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], [Edir, 'm_map/data/']);
+                end
             end
-        end
-        % delete([Edir, 'm_map/data/gshhg-bin-2.3.7.zip']);
-    end  
+            % delete([Edir, 'm_map/data/gshhg-bin-2.3.7.zip']);
+        end  
+    end
 
 end
 

@@ -1,21 +1,61 @@
-<!--
- * @ -*- coding:UTF-8 -*-: 
- * @#########################: 
- * @Author: Christmas
- * @Date: 2023-09-18 21:13:00
- * @LastEditTime: 2023-09-19 00:26:14
- * @Description: 
--->
-
 # Mbaysalt Toolbox
 
 ## Mbaysalt means Matlab-baysalt-toolbox.
 
 ## Installation
 
-```shell
-git clone https://github.com/ChristmasZCY/Mbaysalt.git
-```
+> 1. Shell/Powershell/Command Prompt.
+>
+>    ```shell
+>    git clone https://github.com/ChristmasZCY/Mbaysalt.git
+>    ```
+> 2. Change which Exfunction you want to use.
+>
+>    ```shell
+>    vim Mbaysalt/Configurefiles/INSTALL.conf
+>    ```
+>
+>    **From**
+>
+>    > \# Name     : INSTALL.conf
+>    > \# Author   : Christmas
+>    > \# Time     : 2023.11.22
+>    > \# Abstract : 安装配置文件
+>    >
+>    > m_map     = .TRUE.
+>    > matFigure = .TRUE.
+>    > matFVCOM  = .TRUE.
+>    > matNC     = .TRUE.
+>    > matWRF    = .TRUE.
+>    > nctoolbox = .TRUE.
+>    > t_tide    = .TRUE.
+>    > cdt       = .TRUE.
+>    > gshhs     = .TRUE.
+>    >
+>
+>    **To**
+>
+>    > \# Name     : INSTALL.conf
+>    > \# Author   : Christmas
+>    > \# Time     : 2023.11.22
+>    > \# Abstract : 安装配置文件
+>    >
+>    > m_map     = .FALSE.
+>    > matFigure = .TRUE.
+>    > matFVCOM  = .TRUE.
+>    > matNC.    = .TRUE.
+>    > matWRF    = .TRUE.
+>    > nctoolbox = .FALSE.
+>    > t_tide    = .FALSE.
+>    > cdt       = .FALSE.
+>    > gshhs     = .FALSE.
+>    >
+> 3. Matlab
+>
+>    ```matlab
+>    addpath('Mbaysalt')
+>    run Mainpath.m
+>    ```
 
 ## Contains
 

@@ -169,6 +169,7 @@
 %    Post_fvcom_old.conf                 -  Config file for Post_fvcom/Postprocess_fvcom_old (not recommend)
 %    Post_nemuro.conf                    -  Config file for Post_fvcom/Postprocess_nemuro
 %    Read_file.conf                      -  Config file for Readfunctions/read_ncfile_lltdv
+%    INSTALL.conf                        -  Config file for INSTALL Mbaysalt_toolbox
 %
 %
 %                              Examples  -  Examples for toolbox
