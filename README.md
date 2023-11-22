@@ -17,37 +17,37 @@
 >
 >    **From**
 >
->    > \# Name     : INSTALL.conf
->    > \# Author   : Christmas
->    > \# Time     : 2023.11.22
->    > \# Abstract : 安装配置文件
+>    > \# Name     : INSTALL.conf \
+>    > \# Author   : Christmas \
+>    > \# Time     : 2023.11.22 \
+>    > \# Abstract : 安装配置文件 
 >    >
->    > m_map     = .TRUE.
->    > matFigure = .TRUE.
->    > matFVCOM  = .TRUE.
->    > matNC     = .TRUE.
->    > matWRF    = .TRUE.
->    > nctoolbox = .TRUE.
->    > t_tide    = .TRUE.
->    > cdt       = .TRUE.
->    > gshhs     = .TRUE.
+>    > m_map     = .TRUE. \
+>    > matFigure = .TRUE. \
+>    > matFVCOM  = .TRUE. \
+>    > matNC     = .TRUE. \
+>    > matWRF    = .TRUE. \
+>    > nctoolbox = .TRUE. \
+>    > t_tide    = .TRUE. \
+>    > cdt       = .TRUE. \
+>    > gshhs     = .TRUE. 
 >    >
 >
 >    **To**
 >
->    > \# Name     : INSTALL.conf
->    > \# Author   : Christmas
->    > \# Time     : 2023.11.22
->    > \# Abstract : 安装配置文件
+>    > \# Name     : INSTALL.conf \
+>    > \# Author   : Christmas \
+>    > \# Time     : 2023.11.22 \
+>    > \# Abstract : 安装配置文件 
 >    >
->    > m_map     = .FALSE.
->    > matFigure = .TRUE.
->    > matFVCOM  = .TRUE.
->    > matNC.    = .TRUE.
->    > matWRF    = .TRUE.
->    > nctoolbox = .FALSE.
->    > t_tide    = .FALSE.
->    > cdt       = .FALSE.
+>    > m_map     = .FALSE. \
+>    > matFigure = .TRUE. \
+>    > matFVCOM  = .TRUE. \
+>    > matNC.    = .TRUE. \
+>    > matWRF    = .TRUE. \
+>    > nctoolbox = .FALSE. \
+>    > t_tide    = .FALSE. \
+>    > cdt       = .FALSE. \
 >    > gshhs     = .FALSE.
 >    >
 > 3. Matlab
