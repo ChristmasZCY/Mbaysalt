@@ -12,10 +12,10 @@ function read_2dm_to_website(varargin)
     varargin = read_varargin2(varargin,{'Global'});
 
     file = read_conf('Grid_functions.conf','f2dmfile');
-    osprints('INFO',file);
+    osprint2('INFO',file);
     [~,name,~]=fileparts(file);
     save_path = read_conf('Grid_functions.conf','save_path');
-    save_path = del_separator(save_path);
+    save_path = del_filesep(save_path);
 
     f = f_load_grid(file);
 
@@ -40,7 +40,7 @@ function read_2dm_to_website(varargin)
 
     % write to website format
     Outputfile = [save_path,filesep,name,'.web'];
-    osprints('INFO',Outputfile);
+    osprint2('INFO',Outputfile);
     fid = fopen(Outputfile,'w');
     fprintf(fid,['%12.8f',',', '%12.8f','%14.8f',',', '%12.8f','%14.8f',',', '%12.8f', '\n'],LL');
     fclose(fid);

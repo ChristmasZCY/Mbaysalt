@@ -1,0 +1,20 @@
+
+{
+    "_schemaVersion": "1.0.0",
+    "Pic_draw_current":{
+        "inputs":[],
+        "outputs":[]},
+    "Pic_draw_mwp":{
+        "inputs":[],
+        "outputs":[]},
+    "Pic_draw_precipitation":{
+        "inputs":[],
+        "outputs":[]},
+    "Pic_draw_swh":{
+        "inputs":[],
+        "outputs":[]},
+    "Pic_draw_wind":{
+        "inputs":[],
+        "outputs":[]}
+
+}

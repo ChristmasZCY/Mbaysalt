@@ -50,7 +50,7 @@ classdef Mdatetime
                     obj.TIME = ttime;
                     obj.Times = datetime(ttime,'InputFormat',obj.fmt);
                     if isnat(obj.Times)
-                        osprints('WARNING', 'Mdatetime: input time convert to datetime failed, please try to transpose matrix.')
+                        osprint2('WARNING', 'Mdatetime: input time convert to datetime failed, please try to transpose matrix.')
                         if input_yn('Do you want to transpose matrix?')
                             obj.Times = datetime(ttime','InputFormat',obj.fmt);
                         end

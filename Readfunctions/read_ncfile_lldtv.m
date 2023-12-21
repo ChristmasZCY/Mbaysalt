@@ -14,7 +14,7 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     %                Var_Name: var name                     || required: False || type: dell   || format: {{'swh'},{'mpts'}}
     %                Switch_log: switch log                 || required: False || type: bool   || format: (optional)
     %                Log_file: log file                     || required: False || type: string || format: 'log.txt'
-    %                'INFO': whether run osprints           || required: False || type: bool   || format: '(optional)
+    %                'INFO': whether run osprint2           || required: False || type: bool   || format: '(optional)
     % =================================================================================================================
     % Example:
     %       [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc);
@@ -166,11 +166,11 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
             if ~Log_file
                 Log_file = para_conf.Log_file;
             end
-            osprints('INFO','Reading from nc','new_line',1,'ddt_log',1,'wrfile',Log_file)
-            osprints('INFO',var_of_read,'new_line',0,'ddt_log',0,'wrfile',Log_file)
+            osprint2('INFO','Reading from nc','newline',1,'ddt_log',1,'output',Log_file)
+            osprint2('INFO',var_of_read,'newline',0,'ddt_log',0,'output',Log_file)
         else
-            osprints('INFO','Reading from nc','new_line',0,'ddt_log',1)
-            osprints('INFO',var_of_read,'new_line',1,'ddt_log',0)
+            osprint2('INFO','Reading from nc','newline',0,'ddt_log',1)
+            osprint2('INFO',var_of_read,'newline',1,'ddt_log',0)
         end
     end
 

@@ -1,0 +1,123 @@
+
+{
+    "_schemaVersion": "1.0.0",
+    "read_conf":{
+        "inputs":[
+            {"name":"confFile",  "kind":"required", "type":["file"], "purpose":"Configure filename"},
+            {"name":"key",  "kind":"positional", "type":["char"], "purpose":"key name"}],
+        "outputs":[
+            {"name":"conf_para(1*1)", "type":["struct"], "purpose":"Configure Structure (1*1)"},
+            {"name":"conf_para(name,value)", "type":["struct"], "purpose":"Configure Structure (n*1)"}],
+        "outputs":[
+            {"name":"Key of Value", "purpose":"Key of Value"},
+            {"name":"conf_para(1*1)", "type":["struct"], "purpose":"Configure Structure (1*1)"},
+            {"name":"conf_para(name,value)", "type":["struct"], "purpose":"Configure Structure (n*1)"}]},
+    "Mncload":{
+        "inputs":[
+            {"name":"ncFile",  "kind":"required", "type":["file=*.nc"], "purpose":"Filename of NETCDF file"},
+            {"name":"varName",  "kind":"positional", "type":["char"], "purpose":"Variable name"}],
+        "outputs":[
+            {"name":"var", "type":["struct"], "purpose":"Variable Structure"}]},
+    "clm":{
+        "inputs":[
+            {"name":"cmd",  "kind":"ordered", "type":["char","choices={'clear','clc','close all'}"], "purpose":"Command of MATLAB"}]},
+    "del_quotation":{
+        "inputs":[
+            {"name":"Text",  "kind":"required", "type":["char","string"], "purpose":"Text with quotation"}],
+        "outputs":[
+            {"name":"Text", "type":["char"], "purpose":"Text without quotation"}]},
+    "del_filesep":{
+        "inputs":[
+            {"name":"Path",  "kind":"required", "type":["folder"], "purpose":"Path with filesep", "repeating":true}],
+        "outputs":[
+            {"name":"Path", "type":["char"], "purpose":"Text without separator", "repeating":true}]},
+    "grep":{
+        "inputs":[
+            {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename"},
+            {"name":"Text",  "kind":"required", "type":["char","string"], "purpose":"Text to be searched"}],
+        "outputs":[
+            {"name":"Searched lines", "type":["cell"], "purpose":"Searched lines"}]},
+    "input_yn":{
+        "inputs":[
+            {"name":"Prompt",  "kind":"required", "type":["char","string"], "purpose":"Prompt, tip or question"}],
+        "outputs":[
+            {"name":"Answer", "type":["logical","scalar"], "purpose":"true or false"}]},
+    "is_number":{
+        "inputs":[
+            {"name":"Text",  "kind":"required", "type":["char","string"], "purpose":"Text to be judged"}],
+        "outputs":[
+            {"name":"Answer", "type":["logical","scalar"], "purpose":"Number or not"}]},
+    "json_load":{
+        "inputs":[
+            {"name":"jsonFile",  "kind":"required", "type":["file"], "purpose":"Filename of JSON file"},
+            {"name":"method",  "kind":"namevalue", "type":["char","choices={'MATLAB','jsonlab'}"], "purpose":"Method of loading json"}],
+        "outputs":[
+            {"name":"jdata", "type":["struct"], "purpose":"JSON Structure"}]},
+    "json_to_struct":{
+        "inputs":[
+            {"name":"Text",  "kind":"required", "type":["char","string"], "purpose":"Text of JSON"},
+            {"name":"key",  "kind":"positional", "type":["char","string"], "purpose":"key name to be searched"}],
+        "outputs":[
+            {"name":"value", "type":["char","string"], "purpose":"Searched value"},
+            {"name":"jsonData", "type":["struct"], "purpose":"JSON Structure"}],
+        "outputs":[
+            {"name":"jsonData", "type":["struct"], "purpose":"JSON Structure"}]},
+    "KeyValue2Struct":{
+        "inputs":[
+            {"name":"Key cell",  "kind":"required", "type":["cell"], "purpose":"Keys(Format:cell)"},
+            {"name":"Value cell",  "kind":"required", "type":["cell"], "purpose":"Values(Format:cell)"},
+            {"name":"key_searched",  "kind":"positional", "type":["char","string"], "purpose":"key name to be searched"}],
+        "outputs":[
+            {"name":"Struct(1*1)", "type":["struct"], "purpose":"Strucct (1*1)"},
+            {"name":"Struct(name,value)", "type":["struct"], "purpose":"Strucct (n*1)"}],
+        "outputs":[
+            {"name":"Key of Value", "purpose":"Key of Value"},
+            {"name":"Struct(1*1)", "type":["struct"], "purpose":"Strucct (1*1)"},
+            {"name":"Struct(name,value)", "type":["struct"], "purpose":"Strucct (n*1)"}]},
+    "listStr_to_cell":{
+        "inputs":[
+            {"name":"List text",  "kind":"required", "type":["char","string"], "purpose":"List test"},
+            {"name":"Index",  "kind":"positional", "type":["numeric"], "purpose":"index of list"}],
+        "outputs":[
+            {"name":"Cell", "type":["cell"], "purpose":"Cell"}],
+        "outputs":[
+            {"name":"Index of value", "type":["char","string"], "purpose":"Index of list"},
+            {"name":"Cell", "type":["cell"], "purpose":"Cell"}]},
+    "makedirs":{
+        "inputs":[
+            {"name":"Folder path",  "kind":"required", "type":["folder"], "purpose":"Folder path", "repeating":true}]},
+    "nr":{
+        "inputs":[
+            {"name":"netCDF file",  "kind":"required", "type":["file=*.nc"], "purpose":"Filename of NETCDF file"},
+            {"name":"Varname",  "kind":"required", "type":["char","string"], "purpose":"Variable name"}],
+        "outputs":[
+            {"name":"Variable", "type":["integer"], "purpose":"Variable of reading"}]},
+    "osprint":{
+        "inputs":[
+            {"name":"Message", "kind":"required", "type":["char","string"], "purpose":"Message to be printed", "repeating":true}]},
+    "osprint2":{
+        "inputs":[
+            {"name":"Log level",  "kind":"required", "type":["char","choices={'DEBUG','INFO','WARNING','ERROR','CRACTICAL'}"], "purpose":"Level of log"},
+            {"name":"Message",  "kind":"required", "type":["char","string"], "purpose":"Message to be printed"},
+            {"name":"newline",  "kind":"namevalue", "type":["logical","scalar"], "purpose":"Newline or not"},
+            {"name":"ddt_log",  "kind":"namevalue", "type":["logical","scalar"], "purpose":"Append ddt or not"},
+            {"name":"output",  "kind":"namevalue", "type":["char"], "purpose":"'screen' or Filename to be printed"}]},
+    "replace_para":{
+        "inputs":[
+            {"name":"Input parameter",  "kind":"required", "type":["char","string"], "purpose":"Text or Struct"},
+            {"name":"Replaced_str",  "kind":"required", "type":["char","string"], "purpose":"ymd in ${ymd}$"},
+            {"name":"new_str",  "kind":"required", "type":["char","string"], "purpose":"ymd --> 20230101"}],
+        "outputs":[
+            {"name":"Outvalue", "type":["char","string"], "purpose":"New value"}],
+        "inputs":[
+            {"name":"Input parameter",  "kind":"required", "type":["struct"], "purpose":"Text or Struct"},
+            {"name":"Replaced_str",  "kind":"required", "type":["char","string"], "purpose":"ymd in ${ymd}$"},
+            {"name":"new_str",  "kind":"required", "type":["char","string"], "purpose":"ymd --> 20230101"}],
+        "outputs":[
+            {"name":"Outvalue", "type":["struct"], "purpose":"New value"}]},
+    "rmfiles":{
+        "inputs":[
+            {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":true}]
+    }
+
+}

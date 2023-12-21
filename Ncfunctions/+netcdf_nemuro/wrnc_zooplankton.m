@@ -22,7 +22,7 @@ function wrnc_zooplankton(ncid,Lon,Lat,Depth,time,Zp,GA_start_date)
     % standard_name
     ResName = num2str(1/nanmean(diff(Lon)), '%2.f');
     S_name = standard_filename('zooplankton',Lon,Lat,time_filename,ResName); % 标准文件名
-    osprint(['Transfor --> ',S_name])
+    osprints('INFO',['Transfor --> ',S_name]);
 
     % 定义维度
     londimID = netcdf.defDim(ncid, 'longitude',length(Lon));                        % 定义lon维度

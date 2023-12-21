@@ -24,7 +24,7 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,varargin)
     % standard_name
     ResName = num2str(1/mean(diff(Lon),'omitnan'), '%2.f');
     S_name = standard_filename('adt',Lon,Lat,time_filename,ResName); % 标准文件名
-    osprints('INFO',['Transfor --> ',S_name])
+    osprint2('INFO',['Transfor --> ',S_name])
 
     % 定义维度
     londimID = netcdf.defDim(ncid, 'longitude',length(Lon));                        % 定义lon维度

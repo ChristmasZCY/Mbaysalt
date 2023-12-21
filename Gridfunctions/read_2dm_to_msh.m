@@ -32,11 +32,11 @@ function mshFile = read_2dm_to_msh(varargin)
         relpaced_lt_depth = [];
     end
 
-    save_path = del_separator(save_path);
+    save_path = del_filesep(save_path);
 
     %% read 2dm file
     [~,name,suffix]=fileparts(file);
-    osprint([name,suffix])
+    osprints('INFO',[name,suffix]);
     switch read_method
         case 'Christmas'
             % ---> Christmas
@@ -82,7 +82,7 @@ function mshFile = read_2dm_to_msh(varargin)
 
     %% write msh file
     mshFile = [save_path,filesep,name,'.msh'];
-    osprints('INFO',mshFile)
+    osprint2('INFO',mshFile)
     fid=fopen(mshFile,'wt');
     fprintf(fid,'$MeshFormat\n');
     fprintf(fid,'2 0 8\n');

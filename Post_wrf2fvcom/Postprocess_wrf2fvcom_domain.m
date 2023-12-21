@@ -41,7 +41,7 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
     else
         error('Domain has not configured !!!')
     end
-    osprints('INFO','domain: %s',domain.name)
+    osprint2('INFO','domain: %s',domain.name)
     NcOutfilename = ['temperature_',domain.region_name,'_',domain.resolution,'.nc'];
     
     for i = 1 : day_len

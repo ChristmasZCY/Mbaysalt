@@ -56,7 +56,7 @@ function [preu,prev,preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, varargin)
         if ~isempty(Cdisp)
             d_num = length(num2str(lat_num));
             D_num = ['%',num2str(d_num),'d'];
-            osprints('INFO',[sprintf(D_num,i),'/',sprintf(D_num,lat_num)])
+            osprint2('INFO',[sprintf(D_num,i),'/',sprintf(D_num,lat_num)])
         end
 
     end

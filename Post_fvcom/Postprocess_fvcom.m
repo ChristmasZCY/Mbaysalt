@@ -44,15 +44,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     if SWITCH.out_sgm_level % sigma层
         Level_sgm = para_conf.Level_sgm;
     end
-    osprints('INFO',['Output standard levels --> ',logical_to_char(SWITCH.out_std_level)])
-    osprints('INFO',['Output sigma levels --> ',logical_to_char(SWITCH.out_sgm_level)])
+    osprint2('INFO',['Output standard levels --> ',logical_to_char(SWITCH.out_std_level)])
+    osprint2('INFO',['Output sigma levels --> ',logical_to_char(SWITCH.out_sgm_level)])
 
     getdate = datetime(num2str(yyyymmdd),"format","yyyyMMdd"); clear yyyymmdd
     Length = day_length;clear day_length;% 当天开始向后处理的天数
 
-    osprints('INFO', ['Date parameter --> ',char(getdate),' total transfor ',num2str(Length),' days'])  % 输出处理的日期信息
-    osprints('INFO', ['Method --> ',Method_interpn])  % 输出插值方法
-    osprints('INFO', ['Transfor ',interval,' variable -->',double(SWITCH.temp)*' temp',double(SWITCH.salt)*' salt', ...
+    osprint2('INFO', ['Date parameter --> ',char(getdate),' total transfor ',num2str(Length),' days'])  % 输出处理的日期信息
+    osprint2('INFO', ['Method --> ',Method_interpn])  % 输出插值方法
+    osprint2('INFO', ['Transfor ',interval,' variable -->',double(SWITCH.temp)*' temp',double(SWITCH.salt)*' salt', ...
         double(SWITCH.adt)*' zeta',double(SWITCH.u)*' u',double(SWITCH.v)*' v', double(SWITCH.w)*' w', ...
         double(SWITCH.aice)*' aice', double(SWITCH.ph)*' ph', double(SWITCH.no3)*' no3', double(SWITCH.pco2)*' pco2', ...
         double(SWITCH.chlo)*' chlo'])  % 打印处理的变量
@@ -184,7 +184,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     delete(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     clear Lon_m Lat_m
-                    osprints('INFO',['Calculate 2d weight costs ',num2str(toc),' 秒'])
+                    osprint2('INFO',['Calculate 2d weight costs ',num2str(toc),' 秒'])
                 else
                     Weight_2d = load(file_weight).Weight_2d;
                 end
@@ -251,7 +251,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     delete(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     clear Lon_m Lat_m
-                    osprints('INFO',['Calculate 2d weight costs ',num2str(toc),' 秒'])
+                    osprint2('INFO',['Calculate 2d weight costs ',num2str(toc),' 秒'])
                 else
                     Weight_2d = load(file_weight).Weight_2d;
                 end
@@ -367,7 +367,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                         depth_2d_to_1d = reshape(Depth,size_2d_to_1d_ll,[]);
                         F_noNaN = find(~isnan(depth_2d_to_1d(:,1)),1);  % 找到第一个不是NaN的数字，否则interp_vertical_calc_weight会报错
                         if isempty(F_noNaN)
-                            osprints('ERROR', 'Depth is all NaN'); error('Depth is all NaN')
+                            osprint2('ERROR', 'Depth is all NaN'); error('Depth is all NaN')
                         elseif F_noNaN ~= 1
                             depth_2d_to_1d = [depth_2d_to_1d(F_noNaN:end,:); depth_2d_to_1d(1:F_noNaN-1,:)];
                         end
@@ -375,7 +375,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                         Weight_vertical = structfun(@(x) flip2_to_recover(x,F_noNaN), Weight_vertical, 'UniformOutput', false);  % 顺序转换回去
                         delete(file_weight_vertical); clear F_noNaN depth_2d_to_1d
                         save(file_weight_vertical, 'Weight_vertical','-v7.3','-nocompression');
-                        osprints('INFO',['Calculate vertical weight costs ',num2str(toc),' 秒'])
+                        osprint2('INFO',['Calculate vertical weight costs ',num2str(toc),' 秒'])
                     else
                         Weight_vertical = load(file_weight_vertical).Weight_vertical;
                     end
@@ -603,7 +603,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 [~, Standard_depth_mask] = ll_to_ll(Lon, Standard_depth_mask);
                 delete(file_mask)
                 save(file_mask,'Standard_depth_mask','-v7.3','-nocompression');
-                osprints('INFO',['Calculate depth mask costs ',num2str(toc),' 秒'])
+                osprint2('INFO',['Calculate depth mask costs ',num2str(toc),' 秒'])
             else
                 Standard_depth_mask = load(file_mask).Standard_depth_mask;
             end
@@ -621,13 +621,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 clear VAelement VBelement
                 clear Standard_depth_mask
             end
-            osprints('INFO',['Masking depth of data greater than bathy --> ', logical_to_char(SWITCH.vertical_mask)])
+            osprint2('INFO',['Masking depth of data greater than bathy --> ', logical_to_char(SWITCH.vertical_mask)])
         end
         clear Depth_origin_to_wrf_grid
 
         %% 岸线侵蚀
         if SWITCH.erosion
-            osprints('INFO',['Erosion coastline --> ',logical_to_char(SWITCH.erosion)]);
+            osprint2('INFO',['Erosion coastline --> ',logical_to_char(SWITCH.erosion)]);
             file_erosion = para_conf.ErosionFile;
             if SWITCH.make_erosion
                 fields_Velement = fieldnames(Velement);
@@ -760,7 +760,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     clear Method_interpn % 插值方法
     clear file_Mcasename
     clear varargin
-    osprint(['GivenDate   --> ',char(getdate),' interval ',interval,' 处理完成耗时 ', num2str(toc),' 秒']);
+    osprints('INFO',['GivenDate   --> ',char(getdate),' interval ',interval,' 处理完成耗时 ', num2str(toc),' 秒']);
     clear getdate interval  % 基准天 间隔
 end
 

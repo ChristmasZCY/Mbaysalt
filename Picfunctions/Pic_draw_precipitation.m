@@ -21,8 +21,8 @@ function Pic_draw_precipitation(date, day_length, region, varargin)
     %% 文件夹
     varargin = read_varargin(varargin, {'conf_file'},{'Pic_draw.conf'});
     conf_para = read_conf(conf_file);
-    InputDir = del_separator(conf_para.Precipitation_Dir);
-    OutputDir = del_separator(conf_para.Output_Dir);
+    InputDir = del_filesep(conf_para.Precipitation_Dir);
+    OutputDir = del_filesep(conf_para.Output_Dir);
     %% 区域
     Sproj = select_proj_s_ll(region);
     projection = Sproj.projection; lon_select = Sproj.lon_select; lat_select = Sproj.lat_select; 
@@ -47,10 +47,10 @@ function Pic_draw_precipitation(date, day_length, region, varargin)
         try
             [lon,lat,time,Precipitation] = ncread_llt_v(ncfile,'longitude','latitude','time',[1 24],'precipitation');
         catch
-            osprints('ERROR', ['读取文件失败 --> ',nd, '/precipitation_5.nc'])
+            osprint2('ERROR', ['读取文件失败 --> ',nd, '/precipitation_5.nc'])
             continue
         end
-        osprints('INFO', ['预测数据的时间 --> ',char(time(1))]);
+        osprint2('INFO', ['预测数据的时间 --> ',char(time(1))]);
 
         [lon,lat,Precipitation] = region_cutout(lon_select,lat_select,lon,lat,Precipitation);
 

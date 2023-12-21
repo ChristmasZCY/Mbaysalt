@@ -1,0 +1,28 @@
+
+{
+    "_schemaVersion": "1.0.0",
+    "select_proj_s_ll":{
+        "inputs":[],
+        "outputs":[]},
+    "region_cutout":{
+        "inputs":[],
+        "outputs":[]},
+    "make_typhoon_warningline":{
+        "inputs":[],
+        "outputs":[]},
+    "make_colormap":{
+        "inputs":[],
+        "outputs":[]},
+    "ll_to_ll":{
+        "inputs":[],
+        "outputs":[]},
+    "ll_to_ll_180":{
+        "inputs":[],
+        "outputs":[]},
+    "ll_to_ll_360":{
+        "inputs":[],
+        "outputs":[]},
+    "interp_colormap":{
+        "inputs":[],
+        "outputs":[]}
+}

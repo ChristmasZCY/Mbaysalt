@@ -21,8 +21,8 @@ function Pic_draw_wind(date, day_length, region, varargin)
     %% 文件夹
     varargin = read_varargin(varargin, {'conf_file'},{'Pic_draw.conf'});
     conf_para = read_conf(conf_file);
-    InputDir = del_separator(conf_para.Wind_Dir);
-    OutputDir = del_separator(conf_para.Output_Dir);
+    InputDir = del_filesep(conf_para.Wind_Dir);
+    OutputDir = del_filesep(conf_para.Output_Dir);
     %% 区域
     Sproj = select_proj_s_ll(region);
     projection = Sproj.projection; lon_select = Sproj.lon_select; lat_select = Sproj.lat_select; 
@@ -45,7 +45,7 @@ function Pic_draw_wind(date, day_length, region, varargin)
         ncfile = [InputDir, filesep, nd, '/wind_5.nc'];
 
         [lon,lat,time,U10,V10] = ncread_llt_v(ncfile,'longitude','latitude','time',[1 24],'wind_U10','wind_V10');
-        osprints('INFO', ['预测数据的时间 --> ',char(time(1))]);
+        osprint2('INFO', ['预测数据的时间 --> ',char(time(1))]);
 
         [lon,lat,U10,V10] = region_cutout(lon_select,lat_select,lon,lat,U10,V10);
 
