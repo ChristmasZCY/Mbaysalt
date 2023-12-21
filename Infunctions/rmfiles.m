@@ -9,9 +9,14 @@ function rmfiles(varargin)
     %       rmfiles(path1,path2)
     % =================================================================================================================
 
+    arguments(Input,Repeating)
+        varargin {mustBeTextScalar}
+    end
+
     for num = 1: nargin
-        if exist(varargin{num}, 'file') || exist(varargin{num}, 'dir')
-            delete(varargin{num});
+        file = convertStringsToChars(varargin{num});
+        if exist(file, 'file') || exist(file, 'dir')
+            delete(file);
         end
     end
 

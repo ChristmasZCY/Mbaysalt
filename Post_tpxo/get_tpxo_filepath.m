@@ -11,8 +11,8 @@ function [gfile_old, gfile_new, ...
     % =================================================================================================================
 
     jdata = json_load(file_json,'Method_load','MATLAB');
-    tpxo_old_path = string(del_separator(jdata.tpxo_path));
-    tpxo_new_path = del_separator(jdata.tpxo_fixed_coordinate_path);
+    tpxo_old_path = string(del_filesep(jdata.tpxo_path));
+    tpxo_new_path = del_filesep(jdata.tpxo_fixed_coordinate_path);
     makedirs(tpxo_new_path)
 
     gfile_old = path_plus_fileCell(tpxo_old_path, jdata.tpxo_grid_uvh_coordinate);
@@ -26,7 +26,7 @@ end
 
 
 function filepath = path_plus_fileCell(path, fileCell)
-    path = string(del_separator(path));
+    path = string(del_filesep(path));
     file = string(fileCell);
     division = string(filesep);
     filepath = path + division + string(file);

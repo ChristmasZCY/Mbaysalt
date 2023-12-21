@@ -1,9 +1,11 @@
-function var = nr(file,varargin)
-    %       read netcdf file, the same as ncread
+function var = nr(fin,varName, varargin)
+    %       Read netcdf file, the same as ncread
     % =================================================================================================================
-    % Parameter:
-    %       file: file name                                    || required: True  || type: string || format: "file"
-    %       varargin: the same as ncread                       || required: False || type: string || format: "var1"
+    % Parameters:
+    %       fin: file name                                     || required: True  || type: string || example: "d01.nc"
+    %       varargin: the same as ncread                       || required: False || type: string || example: "T2"
+    % =================================================================================================================
+    % Returns:
     %       var: variable matrix                               || required: False || type: double || format: matrix
     % =================================================================================================================
     % Example:
@@ -11,6 +13,19 @@ function var = nr(file,varargin)
     %       var = nr(file,'x',[1,1],[Inf,Inf]);
     % =================================================================================================================
 
-    var = ncread(file,varargin{:});
+    arguments(Input)
+        fin {mustBeFile}
+        varName {mustBeTextScalar}
+    end
+
+    arguments(Input,Repeating)
+        varargin
+    end
+
+    arguments(Output)
+        var
+    end
+
+    var = ncread(fin,varName, varargin{:});
 
 end

@@ -1,19 +1,40 @@
-function varargout = read_conf(conf_file, varargin)
+function varargout = read_conf(confin, varargin)
     %       Read configuration file from *.conf file
     % =================================================================================================================
     % Parameter:
-    %       conf_file: configuration file          || required: True || type: char or string  ||  format: *.conf
-    %       varargin{n}: parameter name            || required: False|| type: char or string  ||  format: 'f2dmFile'
-    %       varargout{n}: parameter value          || required: False|| type: char or string  ||  format: 'f2dmFile'
+    %       confin: configuration file             || required: True || type: char or string  ||  format: *.conf
+    %       varargin: (optional input)
+    %           varargin{1}: keyToGet              || required: False|| type: char or string  ||  format: 'f2dmFile'
+    %       varargout: (optional output)
+    %         nargin == 1:
+    %           varargout{1}: struct               || required: False|| type: struct          ||  format: struct(1*1)
+    %           varargout{2}: struct               || required: False|| type: struct          ||  format: struct(n*1) --> name value
+    %         nargin == 2:
+    %           varargout{1}: value                || required: False|| type: char or string  ||  format: '/Users/.../f2dmFile.2dm'
+    %           varargout{2}: struct               || required: False|| type: struct          ||  format: struct(n*1) --> name value
+    %           varargout{3}: struct               || required: False|| type: struct          ||  format: struct(1*1)
     % =================================================================================================================
     % Example:
-    %       read_conf(conf_file)
-    %       read_conf(conf_file, 'f2dmFile')
+    %       conf = read_conf(confin)
+    %       [conf, kv] = read_conf(confin)
+    %       Value = read_conf(confin, 'f2dmFile')
+    %       [Value, kv, conf] = read_conf(confin, 'f2dmFile')
     % =================================================================================================================
 
-    fid = fopen(conf_file, 'r');
+    arguments(Input)
+        confin {mustBeFile}
+    end
+
+    arguments(Repeating)
+        varargin
+    end
+
+    keyToGet = varargin{1};
+    varargin(1) = [];
+
+    fid = fopen(confin, 'r');
     if fid == -1
-        error('Cannot open file %s', conf_file);
+        error('Cannot open file %s', confin);
     end
 
     l_num = 1;
@@ -45,7 +66,12 @@ function varargout = read_conf(conf_file, varargin)
     if nargin > 1
         varargout{3} = varargout{2};
         varargout{2} = varargout{1};
-        varargout{1} = varargout{1}.(varargin{1});
+        if ~ isfield(varargout{1}, keyToGet)
+            varargout{1} = '';
+            warning('Key "%s" not found in struct', keyToGet);
+        else
+            varargout{1} = varargout{1}.(keyToGet);
+        end
     end
 end
 
@@ -68,7 +94,7 @@ function [key, value] = parse_line(line)
         if ~ isnan(str2num(value))
             value = str2num(value);
         else
-            value = list_to_cell(value);
+            value = listStr_to_cell(value);
         end
     elseif startsWith(value,'{')
         value = json_to_struct(value);

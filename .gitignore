@@ -1,8 +1,9 @@
-**/.idea
-**/.DS_Store
-**/.vscode
+.idea
+.DS_Store
+.vscode
 ../../.git
 **/*.m~
+**/*.asv
 **/.git
 Exfunctions/matNC
 Exfunctions/matWRF

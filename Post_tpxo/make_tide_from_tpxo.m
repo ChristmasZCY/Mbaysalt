@@ -55,7 +55,7 @@ function make_tide_from_tpxo(yyyy, mm, varargin)
         Lon = ll_to_ll(Lon);
     end
     % interpn
-    osprints('INFO',['Fixed grid to destination grid --> ',logical_to_char(SWITCH.fixed_to_dst_grid)]);
+    osprint2('INFO',['Fixed grid to destination grid --> ',logical_to_char(SWITCH.fixed_to_dst_grid)]);
     if SWITCH.fixed_to_dst_grid
         method_interpn = conf.Method_interpn;
         try
@@ -65,7 +65,7 @@ function make_tide_from_tpxo(yyyy, mm, varargin)
             clear Preu Prev Preh lon lat
             Preu = PreuS; Prev = PrevS; Preh = PrehS; lon = Lon; lat = Lat;
         catch ME1
-            osprints('ERROR','Fixed grid to destination grid Failed!');
+            osprint2('ERROR','Fixed grid to destination grid Failed!');
         end          
     end
     
@@ -75,7 +75,7 @@ function make_tide_from_tpxo(yyyy, mm, varargin)
     if max(Prev(:)) == Inf || min(Prev(:)) == -Inf
         Prev(Prev==Inf)  = NaN;
         Prev(Prev==-Inf) = NaN;
-        osprints('WARNING','Appear Inf or -Inf, fix to NaN.')
+        osprint2('WARNING','Appear Inf or -Inf, fix to NaN.')
     end
     % <--- Fixed
     % 时间

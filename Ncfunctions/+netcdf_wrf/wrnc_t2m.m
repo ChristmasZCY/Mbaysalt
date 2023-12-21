@@ -28,7 +28,7 @@ function wrnc_t2m(ncid,Lon,Lat,time,T2,varargin)
     % standard_name
     ResName = num2str(1/mean(diff(Lon),'omitnan'), '%2.f');
     S_name = standard_filename('temperature',Lon,Lat,time_filename,ResName); % 标准文件名
-    osprint(['Transfor --> ',S_name])
+    osprints('INFO',['Transfor --> ',S_name])
 
     if ~isempty(GA)
         if ~isfield(GA,'START_DATE')

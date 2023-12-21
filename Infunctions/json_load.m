@@ -1,19 +1,35 @@
 function jdata = json_load(file,varargin)
     %       Load json file
     % =================================================================================================================
-    % Parameter:
-    %       file: file name                  || required: True || type: string || format: "file.json"
-    %       varargin: Method_load            || required: False|| type: string || format: "MATLAB" or "jsonlab"
-    %       varargout: json data             || required: False|| type: struct || format: struct('key1','value1','key2','value2')
+    % Parameters:
+    %       file: file name                  || required: True || type: string || example: "file.json"
+    %       varargin: 
+    %           Method_load                  || required: False|| type: string || example: "MATLAB" or "jsonlab"
+    % =================================================================================================================
+    % Returns:
+    %       jdata: json data                 || required: False|| type: struct || example: struct('key1','value1','key2','value2')
     % =================================================================================================================
     % Example:
     %       jdata = json_load('file.json');
-    %       jdata = json_load('file.json','Method_load','MATLAB');
-    %       jdata = json_load('file.json','Method_load','jsonlab');
+    %       jdata = json_load('file.json','method','MATLAB');
+    %       jdata = json_load('file.json','method','jsonlab');
     % =================================================================================================================
 
-    varargin = read_varargin(varargin,{'Method_load'},{'MATLAB'});
-    varargin = read_varargin2(varargin,{'S'});
+    arguments(Input)
+        file {mustBeFile}
+    end
+
+    arguments(Input,Repeating)
+        varargin
+    end
+
+    arguments(Output)
+        jdata {struct}
+    end
+
+    file = convertStringsToChars(file);
+
+    varargin = read_varargin(varargin,{'method'},{'MATLAB'});
     
     switch Method_load
         case "MATLAB"
@@ -21,10 +37,6 @@ function jdata = json_load(file,varargin)
             jdata = jsondecode(json_str);
         case "jsonlab"
             jdata = loadjson(file);
-    end
-
-    if ~isempty(S)
-        disp('Switch_S is Open')
     end
 
 end
