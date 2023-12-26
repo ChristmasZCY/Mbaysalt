@@ -1,14 +1,32 @@
-//TODO:
+
 {
     "_schemaVersion": "1.0.0",
-    "erosion_coast_via_id":{
-        "inputs":[],
+    "create_nc":{
+        "inputs":[
+            {"name":"NCfilename", "kind":"required","type":["char"],"purpose":"netCDF filename"},
+            {"name":"File format","kind":"positional","type":["choices={'CLOBBER','NOCLOBBER','SHARE','64BIT_OFFSET','NETCDF4','CLASSIC_MODEL'}"],"purpose":"Format of netCDF file"}],
+        "outputs":[
+            {"name":"ncid", "type":["scalar"], "purpose":"netCDF ID"}]},
+    "netcdf_wrf.wrnc_wind10m":{
+        "inputs":[
+            {"name":"ncid", "kind":"required","type":["vector"],"purpose":"netCDF ID"},
+            {"name":"lon", "kind":"required","type":["vector"],"purpose":"longitude"},
+            {"name":"lat", "kind":"required","type":["vector"],"purpose":"latitude"},
+            {"name":"time", "kind":"required","type":["vector"],"purpose":"time"},
+            {"name":"u10", "kind":"required","type":["3d"],"purpose":"u10"},
+            {"name":"v10", "kind":"required","type":["scalar"],"purpose":"v10"},
+            {"name":"GA", "kind":"namevalue","type":["struct"],"purpose":"Global attributes"},
+            {"name":"para_conf", "kind":"namevalue","type":["struct"],"purpose":"Parameter configuration"}],
         "outputs":[]},
-    "write_msh":{
-        "inputs":[],
-        "outputs":[]},
-    "read_msh":{
-        "inputs":[],
+    "etcdf_wrf.wrnc_t2m":{
+        "inputs":[
+            {"name":"ncid", "kind":"required","type":["vector"],"purpose":"netCDF ID"},
+            {"name":"lon", "kind":"required","type":["vector"],"purpose":"longitude"},
+            {"name":"lat", "kind":"required","type":["vector"],"purpose":"latitude"},
+            {"name":"time", "kind":"required","type":["vector"],"purpose":"time"},
+            {"name":"t2m", "kind":"required","type":["3d"],"purpose":"t2m"},
+            {"name":"GA", "kind":"namevalue","type":["struct"],"purpose":"Global attributes"},
+            {"name":"para_conf", "kind":"namevalue","type":["struct"],"purpose":"Parameter configuration"}],
         "outputs":[]},
     "erosion_coast_cal_id":{
         "inputs":[],

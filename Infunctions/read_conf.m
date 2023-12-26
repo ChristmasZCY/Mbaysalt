@@ -29,9 +29,6 @@ function varargout = read_conf(confin, varargin)
         varargin
     end
 
-    keyToGet = varargin{1};
-    varargin(1) = [];
-
     fid = fopen(confin, 'r');
     if fid == -1
         error('Cannot open file %s', confin);
@@ -66,6 +63,10 @@ function varargout = read_conf(confin, varargin)
     if nargin > 1
         varargout{3} = varargout{2};
         varargout{2} = varargout{1};
+
+        keyToGet = varargin{1};
+        varargin(1) = [];
+
         if ~ isfield(varargout{1}, keyToGet)
             varargout{1} = '';
             warning('Key "%s" not found in struct', keyToGet);

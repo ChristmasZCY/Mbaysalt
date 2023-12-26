@@ -22,7 +22,7 @@ function wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
     % standard_name
     ResName = num2str(1/mean(diff(Lon),'omitnan'), '%2.f');
     S_name = standard_filename('tide',Lon,Lat,time_filename,ResName); % 标准文件名
-    osprints('INFO',['Transfor --> ',S_name])
+    osprint2('INFO',['Transfor --> ',S_name])
     
     GA_start_date = char(datetime("now","Format","yyyy-MM-dd_HH:mm:ss"));
 

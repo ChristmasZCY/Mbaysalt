@@ -36,7 +36,7 @@ function mshFile = read_2dm_to_msh(varargin)
 
     %% read 2dm file
     [~,name,suffix]=fileparts(file);
-    osprints('INFO',[name,suffix]);
+    osprint2('INFO',[name,suffix]);
     switch read_method
         case 'Christmas'
             % ---> Christmas
