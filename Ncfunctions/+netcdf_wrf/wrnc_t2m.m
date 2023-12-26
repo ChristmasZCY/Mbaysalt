@@ -28,7 +28,7 @@ function wrnc_t2m(ncid,Lon,Lat,time,T2,varargin)
     % standard_name
     ResName = num2str(1/mean(diff(Lon),'omitnan'), '%2.f');
     S_name = standard_filename('temperature',Lon,Lat,time_filename,ResName); % 标准文件名
-    osprints('INFO',['Transfor --> ',S_name])
+    osprint2('INFO',['Transfor --> ',S_name])
 
     if ~isempty(GA)
         if ~isfield(GA,'START_DATE')
@@ -104,12 +104,12 @@ function wrnc_t2m(ncid,Lon,Lat,time,T2,varargin)
 
     % 写入global attribute
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'product_name',   S_name);         % 文件名
-    if class(conf) == "struct"
+    if class(conf) == "struct" && isfield(conf,"P_Source")
         netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'source',     conf.P_Source); % 数据源
     end
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'start',          GA.START_DATE);               % 起报时间
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'history',        ['Created by Matlab at ' char(datetime("now","Inputformat","yyyy-MM-dd HH:mm:SS"))]); % 操作历史记录
-    if class(conf) == "struct"
+    if class(conf) == "struct" && isfield(conf,"P_Version")
         netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'program_version',['V',num2str(conf.P_Version)]);    % 程序版本号
     end
     netcdf.close(ncid);    % 关闭nc文件

@@ -2,38 +2,47 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       This function is used to postprocess the fvcom output netcdf files, contains daily/hourly.
     % =================================================================================================================
     % Parameter:
-    %       conf_file: configure file                 || required: True || type: string  || format: 'Post_fvcom.conf'
-    %       interval: interval                        || reauired: True || type: string  || format: 'daily','hourly'
-    %       yyyymmdd: date                            || required: True || type: double. || format: 20221110
-    %       day_length: length of date                || required: True || type: double  || format: 5
+    %       conf_file: configure file                 || required: True || type: text    || example: 'Post_fvcom.conf'
+    %       interval: interval                        || reauired: True || type: text    || example: 'daily','hourly'
+    %       yyyymmdd: date                            || required: True || type: double  || example: 20221110
+    %       day_length: length of date                || required: True || type: double  || example: 5
+    % =================================================================================================================
+    % Update:
+    %       2023-**-**:     Created, by Christmas;
+    %       2023-**-**:     Adjusted method of calculate to rectangule grid, by Christmas;
+    %       2023-**-**:     Added vertical mask, by Christmas;
+    %       2023-**-**:     Added out sgm level and std level, by Christmas;
+    %       2023-**-**:     Added switch of output each value, by Christmas;
+    %       2023-12-22:     TODO: Add swicth of output vertical-integration value, by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20230525,1)
-    %       Postprocess_fvcom('Post_fvcom.conf','daily',20230525,1)
+    %       Postprocess_fvcom('Post_fvcom.conf','daily', 20230525,1)
     % =================================================================================================================
 
     %% 读取
     tic % 计时开始
     switch interval
         case {'daily','hourly'}
-            interval = char(interval); % daily hourly
+            interval = convertStringsToChars(interval); % daily hourly
         otherwise
             error("interval must be 'daily' or 'hourly'")
     end
 
-    para_conf              =  read_conf(conf_file);           % 读取配置文件
-    Inputpath              =  para_conf.ModelOutputDir;       % 输入路径  --> '/home/ocean/ForecastSystem/FVCOM_Global/Run/'
-    Outputpath             =  para_conf.StandardDir;          % 输出路径  --> '/home/ocean/ForecastSystem/Output/Standard/'
-    file_Mcasename         =  para_conf.ModelCasename;        % fvcom的casename  --> 'forecast'
-    OutputRes              =  para_conf.OutputRes;            % 生成文件的后缀  --> _global_5
-    Method_interpn         =  para_conf.Method_interpn;       % 插值方法  --> 'Siqi_interp'
-    lon_dst                =  para_conf.Lon_destination;      % 模型的经度范围  --> [-180,180]
-    lat_dst                =  para_conf.Lat_destination;      % 模型的纬度范围  --> [20,30]
-    % makedirs(para_conf.TemporaryDir)                          % 创建临时文件夹
+    para_conf       = read_conf(conf_file);             % 读取配置文件
+    Inputpath       = para_conf.ModelOutputDir;         % 输入路径  --> '/home/ocean/ForecastSystem/FVCOM_Global/Run/'
+    Outputpath      = para_conf.StandardDir;            % 输出路径  --> '/home/ocean/ForecastSystem/Output/Standard/'
+    file_Mcasename  = para_conf.ModelCasename;          % fvcom的casename  --> 'forecast'
+    OutputRes       = para_conf.OutputRes;              % 生成文件的后缀  --> _global_5
+    Method_interpn  = para_conf.Method_interpn;         % 插值方法  --> 'Siqi_interp'
+    lon_dst         = para_conf.Lon_destination;        % 模型的经度范围  --> [-180,180]
+    lat_dst         = para_conf.Lat_destination;        % 模型的纬度范围  --> [20,30]
+    Ecology_model   = para_conf.Ecology_model;          % 生态模型  --> 'ERSEM' or 'NEMURO'
+    % makedirs(para_conf.TemporaryDir)                  % 创建临时文件夹
     SWITCH = read_switch(para_conf); % 读取开关
 
-    if ~SWITCH.out_std_level && ~SWITCH.out_sgm_level  % 至少输出一种层
-        error('At least one of the two output levels must be selected')
+    if ~SWITCH.out_std_level && ~SWITCH.out_sgm_level && ~SWITCH.out_avg_level  % 至少输出一种层
+        error('At least one of the three output levels must be selected')
     end
 
     if SWITCH.warningtext;warning('on');else; warning('off');end  % 是否显示警告信息
@@ -44,8 +53,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     if SWITCH.out_sgm_level % sigma层
         Level_sgm = para_conf.Level_sgm;
     end
+    if SWITCH.out_avg_level % 平均层
+        Avg_depth = para_conf.Avg_depth;
+    end
     osprint2('INFO',['Output standard levels --> ',logical_to_char(SWITCH.out_std_level)])
     osprint2('INFO',['Output sigma levels --> ',logical_to_char(SWITCH.out_sgm_level)])
+    osprint2('INFO',['Output average depth --> ',logical_to_char(SWITCH.out_avg_level)])
 
     getdate = datetime(num2str(yyyymmdd),"format","yyyyMMdd"); clear yyyymmdd
     Length = day_length;clear day_length;% 当天开始向后处理的天数
@@ -129,21 +142,29 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             aice = double(ncread(ncfile,'aice'));
         end
         if SWITCH.ph % 是否包含ph
-            ph = double(ncread(ncfile,'O3_pH'));
+            if strcmpi(Ecology_model, 'ERSEM')
+                ph = double(ncread(ncfile,'O3_pH'));
+            end
         end
-        if SWITCH.no3 % 是否包含海no3
-            no3 = double(ncread(ncfile,'N3_n'));
+        if SWITCH.no3 % 是否包含no3
+            if strcmpi(Ecology_model, 'ERSEM')
+                no3 = double(ncread(ncfile,'N3_n'));
+            end
         end
         if SWITCH.pco2 % 是否包含pco2
-            pco2 = double(ncread(ncfile,'O3_pCO2'));
+            if strcmpi(Ecology_model, 'ERSEM')
+                pco2 = double(ncread(ncfile,'O3_pCO2'));
+            end
         end
         if SWITCH.chlo % 是否包含chlorophyll
-            chlo_p1 = double(ncread(ncfile,'P1_Chl'));
-            chlo_p2 = double(ncread(ncfile,'P2_Chl'));
-            chlo_p3 = double(ncread(ncfile,'P3_Chl'));
-            chlo_p4 = double(ncread(ncfile,'P4_Chl'));
-            chlo = chlo_p1 + chlo_p2 + chlo_p3 + chlo_p4;
-            clear chlo_p1 chlo_p2 chlo_p3 chlo_p4
+            if strcmpi(Ecology_model, 'ERSEM')
+                chlo_p1 = double(ncread(ncfile,'P1_Chl'));
+                chlo_p2 = double(ncread(ncfile,'P2_Chl'));
+                chlo_p3 = double(ncread(ncfile,'P3_Chl'));
+                chlo_p4 = double(ncread(ncfile,'P4_Chl'));
+                chlo = chlo_p1 + chlo_p2 + chlo_p3 + chlo_p4;
+                clear chlo_p1 chlo_p2 chlo_p3 chlo_p4
+            end
         end
 
         %% time
@@ -352,6 +373,36 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 VAelement.Chlo_sgm = Chlo;
             end
         end
+
+        % if SWITCH.out_avg_level
+        %     if SWITCH.temp
+        %         VAelement.Temp_avg = Temp;
+        %     end
+        %     if SWITCH.salt
+        %         VAelement.Salt_avg = Salt;
+        %     end
+        %     if SWITCH.u
+        %         VAelement.U_avg = U;
+        %     end
+        %     if SWITCH.v
+        %         VAelement.V_avg = V;
+        %     end
+        %     if SWITCH.w
+        %         VAelement.W_avg = W;
+        %     end
+        %     if SWITCH.ph
+        %         VAelement.Ph_avg = Ph;
+        %     end
+        %     if SWITCH.no3
+        %         VAelement.No3_avg = No3;
+        %     end
+        %     if SWITCH.pco2
+        %         VAelement.Pco2_avg = Pco2;
+        %     end
+        %     if SWITCH.chlo
+        %         VAelement.Chlo_avg = Chlo;
+        %     end
+        % end
 
         switch Method_interpn 
             case {'Siqi_interp', 'Siqi_ESMF'}
@@ -760,7 +811,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     clear Method_interpn % 插值方法
     clear file_Mcasename
     clear varargin
-    osprints('INFO',['GivenDate   --> ',char(getdate),' interval ',interval,' 处理完成耗时 ', num2str(toc),' 秒']);
+    osprint2('INFO',['GivenDate   --> ',char(getdate),' interval ',interval,' 处理完成耗时 ', num2str(toc),' 秒']);
     clear getdate interval  % 基准天 间隔
 end
 

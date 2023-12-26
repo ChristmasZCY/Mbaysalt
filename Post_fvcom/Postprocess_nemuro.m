@@ -47,19 +47,19 @@ function Postprocess_nemuro(conf_file, interval, yyyymmdd, day_length, varargin)
     if switch_warning;warning('on');else; warning('off');end
 
     if switch_to_std_level
-        osprints('INFO','Transfor to standard level --> TRUE')
+        osprint2('INFO','Transfor to standard level --> TRUE')
         Depth_std = para_conf.Depth;
     else
-        osprints('INFO','Transfor to standard level --> FALSE')
+        osprint2('INFO','Transfor to standard level --> FALSE')
     end
 
     getdate=datetime(num2str(yyyymmdd),"format","yyyyMMdd");
     Length = day_length;% 当天开始向后处理的天数
     makedirs(Outputpath) % 创建文件夹
 
-    osprints('INFO',['Date parameter --> ',char(getdate),' total transfor ',num2str(Length),' days'])
-    osprints('INFO',['Method --> ',Method_interpn])
-    osprints('INFO',['Transfor ', interval ,' variable --> pp zp no3 sand'])
+    osprint2('INFO',['Date parameter --> ',char(getdate),' total transfor ',num2str(Length),' days'])
+    osprint2('INFO',['Method --> ',Method_interpn])
+    osprint2('INFO',['Transfor ', interval ,' variable --> pp zp no3 sand'])
 
     for dr=1:Length
         dr1=dr-1;

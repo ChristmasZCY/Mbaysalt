@@ -512,7 +512,7 @@ function Postprocess_fvcom_old(conf_file, interval, yyyymmdd, day_length, vararg
     clear Method_interpn % 插值方法
     clear file_Mcasename
     clear varargin
-    osprints('INFO',['GivenDate   --> ',char(getdate),' interval ',interval,' 处理完成耗时 ', num2str(toc),' 秒']);
+    osprint2('INFO',['GivenDate   --> ',char(getdate),' interval ',interval,' 处理完成耗时 ', num2str(toc),' 秒']);
     clear getdate interval  % 基准天 间隔
 end
 
