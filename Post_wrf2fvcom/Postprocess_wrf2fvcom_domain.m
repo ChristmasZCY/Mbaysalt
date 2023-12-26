@@ -82,6 +82,8 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
                     clear(domain.name) % 清除'd03'变量
                 end
             end
+        else
+            domain_ll = load(conf.GridMatFile, domain.name).(domain.name);
         end
     
         % read NC file variables
