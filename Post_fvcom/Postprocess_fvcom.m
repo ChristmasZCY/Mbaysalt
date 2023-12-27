@@ -68,7 +68,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     osprint2('INFO', ['Transfor ',interval,' variable -->',double(SWITCH.temp)*' temp',double(SWITCH.salt)*' salt', ...
         double(SWITCH.adt)*' zeta',double(SWITCH.u)*' u',double(SWITCH.v)*' v', double(SWITCH.w)*' w', ...
         double(SWITCH.aice)*' aice', double(SWITCH.ph)*' ph', double(SWITCH.no3)*' no3', double(SWITCH.pco2)*' pco2', ...
-        double(SWITCH.chlo)*' chlo'])  % 打印处理的变量
+        double(SWITCH.chlo)*' chlo', double(SWITCH.casf_co2)*' casf_co2'])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
@@ -89,6 +89,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         OutputDir.no3 = fullfile(Outputpath,'no3',interval,deal_date);  % no3输出路径
         OutputDir.pco2 = fullfile(Outputpath,'pco2',interval,deal_date);  % pco2输出路径
         OutputDir.chlo = fullfile(Outputpath,'chlorophyll',interval,deal_date);  % chlorophyll输出路径
+        OutputDir.casf = fullfile(Outputpath,'casf_co2',interval,deal_date);  % casf_co2输出路径
         structfun(@(x) makedirs(x),OutputDir); % 创建文件夹
 
         clear deal_date_dt deal_date % 日期处理中间变量
@@ -164,6 +165,11 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 chlo_p4 = double(ncread(ncfile,'P4_Chl'));
                 chlo = chlo_p1 + chlo_p2 + chlo_p3 + chlo_p4;
                 clear chlo_p1 chlo_p2 chlo_p3 chlo_p4
+            end
+        end
+        if SWITCH.casf_co2 % 是否包含海气二氧化碳通量
+            if strcmpi(Ecology_model, 'ERSEM')
+                casf = double(ncread(ncfile,'O3_fair'));
             end
         end
 
@@ -243,12 +249,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 if SWITCH.chlo
                     Chlo = interp_2d_via_weight(chlo,Weight_2d);
                 end
+                if SWITCH.casf_co2
+                    Casf = interp_2d_via_weight(casf,Weight_2d);
+                end
                 Depth = interp_2d_via_weight(f_nc.deplay,Weight_2d);
                 Siglay = interp_2d_via_weight(f_nc.siglay,Weight_2d);
                 Depth_origin_to_wrf_grid =  interp_2d_via_weight(f_nc.h,Weight_2d);
 
 
-                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo
+                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo casf
                 clear file_weight Weight_2d
 
             case 'Siqi_ESMF'
@@ -321,9 +330,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     if SWITCH.aice
                         Aice(:,:,it) =  esmf_regrid(aice(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     end
+                    if SWITCH.casf_co2
+                        Casf(:,:,it) =  esmf_regrid(casf(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                    end
                 end
                 Depth_origin_to_wrf_grid =  esmf_regrid(f_nc.h,Weight_2d,'Dims',[length(Lon),length(Lat)]); % depth of WRF grid
-                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo it iz Weight_2d
+                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo casf it iz Weight_2d
             otherwise
                 error('Method_interpn must be Siqi_interp or Siqi_ESMF!')
         end
@@ -343,6 +355,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % No3                      --> lon*lat*sigma_orig*time (no3 of fvcom vertical grid)
         % Pco2                     --> lon*lat*sigma_orig*time (pco2 of fvcom vertical grid)
         % Chlo                     --> lon*lat*sigma_orig*time (chlorophyll of fvcom vertical grid)
+        % Casf                     --> lon*lat*time (casf of fvcom vertical grid)
 
         if SWITCH.out_sgm_level % 是否输出sigma层
             if SWITCH.temp
@@ -554,12 +567,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     end
                 end
         end
-        % Temp Salt U V W Zeta Depth Aice Ph No3 Pco2 Chlo --> std_level
+        % Temp Salt U V W Zeta Depth Aice Ph No3 Pco2 Chlo Casf --> std_level
         if SWITCH.adt
             Velement.Zeta = Zeta;
         end
         if SWITCH.aice
             Velement.Aice = Aice;
+        end
+        if SWITCH.casf_co2
+            Velement.Casf = Casf;
         end
         % -----> std_level
         if SWITCH.out_std_level
@@ -592,7 +608,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             end
             Delement.Depth_std = Depth_std;
         end
-        clear Temp Salt U V W Zeta Aice Ph No3 Pco2 Chlo
+        clear Temp Salt U V W Zeta Aice Ph No3 Pco2 Chlo Casf
         % <----- std_level
         % -----> sgm_level
         if SWITCH.out_sgm_level
@@ -729,7 +745,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.u || SWITCH.v || SWITCH.v
             file = fullfile(OutputDir.curr,['current',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_current,Velement] = rmfields_key_from_struct(Velement,{'Temp','Temp_sgm','Salt','Salt_sgm','Zeta','Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
+            [Velement_current,Velement] = rmfields_key_from_struct(Velement,{'Temp','Temp_sgm','Salt','Salt_sgm','Zeta','Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm','Casf'});
             netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement_current,GA_start_date,'conf',para_conf);
             clear Velement_current ncid file
         end
@@ -737,7 +753,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.temp
             file = fullfile(OutputDir.temp,['temperature',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_temperature,Velement] = rmfields_key_from_struct(Velement,{'Salt','Salt_sgm','Zeta','Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
+            [Velement_temperature,Velement] = rmfields_key_from_struct(Velement,{'Salt','Salt_sgm','Zeta','Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm','Casf'});
             netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement_temperature,GA_start_date,'conf',para_conf)
             clear Velement_temperature ncid file
         end
@@ -745,7 +761,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.salt
             file = fullfile(OutputDir.salt,['salinity',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_salt,Velement] = rmfields_key_from_struct(Velement,{'Zeta','Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
+            [Velement_salt,Velement] = rmfields_key_from_struct(Velement,{'Zeta','Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm','Casf'});
             netcdf_fvcom.wrnc_salt(ncid,Lon,Lat,Delement,time,Velement_salt,GA_start_date,'conf',para_conf);
             clear Velement_salt ncid file
         end
@@ -753,7 +769,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.adt
             file = fullfile(OutputDir.adt,['adt',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_adt,Velement] = rmfields_key_from_struct(Velement,{'Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
+            [Velement_adt,Velement] = rmfields_key_from_struct(Velement,{'Aice','Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm','Casf'});
             netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Velement_adt.Zeta,GA_start_date,'conf',para_conf);
             clear Velement_adt ncid file
         end
@@ -761,7 +777,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.aice
             file = fullfile(OutputDir.ice,['ice',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_ice,Velement] = rmfields_key_from_struct(Velement,{'Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
+            [Velement_ice,Velement] = rmfields_key_from_struct(Velement,{'Ph','Ph_sgm','No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm','Casf'});
             netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Velement_ice.Aice,GA_start_date,'conf',para_conf);
             clear Velement_ice ncid file
         end
@@ -769,30 +785,37 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.ph
             file = fullfile(OutputDir.ph,['ph',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_ph,Velement] = rmfields_key_from_struct(Velement,{'No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
+            [Velement_ph,Velement] = rmfields_key_from_struct(Velement,{'No3','No3_sgm','Pco2','Pco2_sgm','Chlo','Chlo_sgm','Casf'});
             netcdf_fvcom.wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,Velement_ph,GA_start_date,'conf',para_conf);
             clear Velement_ph ncid file
         end
         if SWITCH.no3
             file = fullfile(OutputDir.no3,['no3',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_no3,Velement] = rmfields_key_from_struct(Velement,{'Pco2','Pco2_sgm','Chlo','Chlo_sgm'});
+            [Velement_no3,Velement] = rmfields_key_from_struct(Velement,{'Pco2','Pco2_sgm','Chlo','Chlo_sgm','Casf'});
             netcdf_fvcom.wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,Velement_no3,GA_start_date,'conf',para_conf);
             clear Velement_no3 ncid file
         end
         if SWITCH.pco2
             file = fullfile(OutputDir.pco2,['pco2',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_pco2,Velement] = rmfields_key_from_struct(Velement,{'Chlo','Chlo_sgm'});
+            [Velement_pco2,Velement] = rmfields_key_from_struct(Velement,{'Chlo','Chlo_sgm','Casf'});
             netcdf_fvcom.wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,Velement_pco2,GA_start_date,'conf',para_conf);
             clear Velement_pco2 ncid file
         end
         if SWITCH.chlo
             file = fullfile(OutputDir.chlo,['chlorophyll',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_chlo,Velement] = rmfields_key_from_struct(Velement,{''});
+            [Velement_chlo,Velement] = rmfields_key_from_struct(Velement,{'Casf'});
             netcdf_fvcom.wrnc_chlo_ersem(ncid,Lon,Lat,Delement,time,Velement_chlo,GA_start_date,'conf',para_conf);
             clear Velement_chlo ncid file
+        end
+        if SWITCH.casf_co2
+            file = fullfile(OutputDir.chlo,['casf_co2',OutputRes,'.nc']);
+            ncid = create_nc(file, 'NETCDF4');
+            [Velement_casf,Velement] = rmfields_key_from_struct(Velement,{''});
+            netcdf_fvcom.wrnc_casfco2_ersem(ncid,Lon,Lat,Delement,time,Velement_casf,GA_start_date,'conf',para_conf);
+            clear Velement_casf ncid file
         end
 
 
