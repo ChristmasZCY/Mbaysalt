@@ -69,21 +69,22 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
         if SWITCH.read_ll_from_nc  % 从mat文件中读取
             if i == 1 % 只运行一次
                 if isfile(conf.GridMatFile) && check_key_whether_in_mat(conf.GridMatFile, domain.name)
-                    domain_ll = load(conf.GridMatFile, domain.name).(domain.name);
+                    domain_ll = load(conf.GridMatFile, domain.name).(['domain_',domain.name]);
                 else
                     domain_ll = make_domain_ll(fin);
-                    eval([domain.name,' = domain_ll;']);
+                    eval([domain.name,' = domain_ll;']); % d03 = domain_ll;
+		            eval(['domain_',domain.name,' = domain_ll;']);
                     if ~isfile(conf.GridMatFile)
                         makedirs(fileparts(conf.GridMatFile))
-                        save(conf.GridMatFile, domain.name, '-nocompression');
+                        save(conf.GridMatFile, ['domain_',domain.name], '-nocompression');
                     else
-                        save(conf.GridMatFile, domain.name, '-append', '-nocompression');
+                        save(conf.GridMatFile, ['domain_',domain.name], '-append', '-nocompression');
                     end
                     clear(domain.name) % 清除'd03'变量
                 end
             end
-        else
-            domain_ll = load(conf.GridMatFile, domain.name).(domain.name);
+	    else
+            domain_ll = load(conf.GridMatFile, ['domain_',domain.name]).(['domain_',domain.name]);
         end
     
         % read NC file variables
@@ -123,12 +124,16 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
                     esmf_write_grid(GridFile_std, 'WRF', Lon_m,Lat_m);
                     esmf_regrid_weight(GridFile_wrf, GridFile_std, ESMF_NCweightfile, 'exe', exe, 'Src_loc', 'corner', 'Method', ESMF_RegridMethod); 
                     Weight_2d = esmf_read_weight(ESMF_NCweightfile);
-                    rmfiles(file_weight)
-                    save(file_weight,'Weight_2d','-v7.3','-nocompression');
-                    clear Lon_m Lat_m
+		        eval(['Weight_2d_',domain.name,' = Weight_2d;']);
+		        if exist(file_weight,"file")
+                    save(file_weight,['Weight_2d_',domain.name],'-v7.3','-nocompression', '-append');
+		        else
+		    	    save(file_weight,['Weight_2d_',domain.name],'-v7.3','-nocompression');
+		        end
+		        clear Lon_m Lat_m
                     osprint2('INFO',['Calculate 2d weight costs ',num2str(toc),' 秒'])
                 else
-                    Weight_2d = load(file_weight).Weight_2d;
+                    Weight_2d = load(file_weight).(['Weight_2d_',domain.name]);
                 end
                 clear GridFile_wrf GridFile_std ESMF_NCweightfile ESMFMAFILE ESMF_RegridMethod exe file_weight
 
