@@ -856,13 +856,14 @@ function var = flip2_to_recover(var, F)
     var = flip(var,1);
 end
 
-function SWITCH = read_switch(struct)
-    % 从struct中读取以SWITCH.开头的变量，将变量写入到switch结构体中
-    % eg: 将struct中的Switch_erosion写入到switch.erosion中
-    key = fieldnames(struct);
+function SWITCH = read_switch(structIn)
+    % 从structIn中读取以SWITCH_开头的变量，将变量写入到SWITCH结构体中
+    % eg: 将structIn中的Switch_erosion写入到SWITCH.erosion中
+    SWITCH = struct();
+    key = fieldnames(structIn);
     for i = 1 : length(key)
         if ~isempty(regexp(key{i},'^Switch_','once'))
-            SWITCH.(key{i}(8:end)) = struct.(key{i});
+            SWITCH.(key{i}(8:end)) = structIn.(key{i});
         end
     end
 end

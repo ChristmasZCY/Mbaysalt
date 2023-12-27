@@ -17,3 +17,11 @@
 [submodule "Exfunctions/nctoolbox"]
 	path = Exfunctions/nctoolbox
 	url = https://github.com/nctoolbox/nctoolbox.git
+
+[submodule "Exfunctions/FVCOM_NML"]
+	path = Exfunctions/FVCOM_NML
+	url = https://github.com/SiqiLiOcean/FVCOM_NML.git
+
+[submodule "Exfunctions/OceanData"]
+	path = Exfunctions/OceanData
+	url = https://github.com/SiqiLiOcean/OceanData.git

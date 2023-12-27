@@ -1,13 +1,20 @@
 function Mainpath(varargin)
     %       Mainpath is a function to add all path of this package
     % =================================================================================================================
-    % Parameter:
+    % Parameters:
     %       varargin:        optional parameters      
     %           add:        add all path             || required: False|| type: string || format: 'add'
     %           rm:         remove all path          || required: False|| type: string || format: 'rm'
     %           noclone:    add all path without clone git || required: False|| type: string || format: 'noclone'
     % =================================================================================================================
-    % Example:
+    % Returns:
+    %       None
+    % =================================================================================================================
+    % Updates:
+    %       2023-**-**:     Created, by Christmas;
+    %       2023-12-27:     Added check_command, OceanData, FVCOM_NML, by Christmas;
+    % =================================================================================================================
+    % Examples:
     %       Mainpath
     %       Mainpath('add')
     %       Mainpath('rm')
@@ -86,6 +93,8 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/iniconfig"
         "Exfunctions/m_map"
         "Exfunctions/nctoolbox"
+        "Exfunctions/OceanData"
+        "Exfunctions/FVCOM_NML"
         ];
     FunE = cellstr(FunE);
     addpath(path + division + 'Exfunctions/genpath2');
@@ -113,8 +122,15 @@ function gitclone()
 
     TF = check_command('git');
     para_conf = read_conf(fullfile(path,'Configurefiles/INSTALL.conf'));
+    PATH = read_PATH(para_conf);
+    if ~isempty(PATH)
+        if isfield(PATH, 'git')
+            if ~isempty(PATH.git)
+                setenv('PATH', [PATH.git, pathsep, getenv('PATH')]);
+            end
+        end
+    end
 
-    % SiqiLiOcean
     if TF
         if para_conf.cdt
             if ~(exist('ncdateread', 'file') == 2)  % CDT
@@ -125,7 +141,7 @@ function gitclone()
             end
         end
         
-        if para_conf.matFVCOM
+        if para_conf.matFVCOM  % SiqiLiOcean/matFVCOM
             if ~(exist('f_load_grid', 'file') == 2)  % matFVCOM
                 txt = ['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM'];
                 disp('---------> Cloning matFVCOM toolbox')
@@ -134,7 +150,7 @@ function gitclone()
             end
         end
 
-        if para_conf.matFigure
+        if para_conf.matFigure  % SiqiLiOcean/matFigure
             if ~(exist('mf_save', 'file') == 2)  % matFigure
                 txt = ['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure'];
                 disp('---------> Cloning matFigure toolbox')
@@ -143,7 +159,7 @@ function gitclone()
             end
         end
 
-        if para_conf.matWRF
+        if para_conf.matWRF  % SiqiLiOcean/matWRF
             if ~(exist('load_constants', 'file') == 2)  % matWRF
                 txt = ['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF'];
                 disp('---------> Cloning cdt toolbox')
@@ -152,10 +168,28 @@ function gitclone()
             end
         end
             
-        if para_conf.matNC
+        if para_conf.matNC  % SiqiLiOcean/matNC
             if ~(exist('nc_close', 'file') == 2) % matNC
                 txt = ['git clone https://github.com/SiqiLiOcean/matNC.git ', Edir, 'matNC'];
                 disp('---------> Cloning matNC toolbox')
+                disp(txt)
+                system(txt);
+            end
+        end
+
+        if para_conf.OceanData  % SiqiLiOcean/OceanData
+            if ~(exist('UHSLC_info', 'file') == 2) % OceanData
+                txt = ['git clone https://github.com/SiqiLiOcean/OceanData.git ', Edir, 'OceanData'];
+                disp('---------> Cloning OceanData toolbox')
+                disp(txt)
+                system(txt);
+            end
+        end
+
+        if para_conf.FVCOM_NML  % SiqiLiOcean/FVCOM_NML
+            if ~(exist('FVCOM_NML', 'dir') == 7) % FVCOM_NML
+                txt = ['git clone https://github.com/SiqiLiOcean/FVCOM_NML.git ', Edir, 'FVCOM_NML'];
+                disp('---------> Cloning FVCOM_NML toolbox')
                 disp(txt)
                 system(txt);
             end
@@ -170,7 +204,7 @@ function gitclone()
             end
         end
     else
-        warning('git is not installed, some functions will not be installed, please install git and run Mainpath again');
+        warning('git is not installed, some functions will not be installed, please install git or set in INSTALL.conf and run Mainpath again.');
     end
 
     % t_tide
@@ -290,5 +324,18 @@ function TF = check_command(command)
         TF = true;
     else
         TF = false;
+    end
+end
+
+
+function PATH = read_PATH(structIn)
+    % 从struct中读取以PATH_开头的变量，将变量写入到PATH结构体中
+    % eg: 将struct中的PATH_git写入到PATH.git中
+    PATH = struct();
+    key = fieldnames(structIn);
+    for i = 1 : length(key)
+        if ~isempty(regexp(key{i},'^PATH_','once'))
+            PATH.(key{i}(6:end)) = structIn.(key{i});
+        end
     end
 end
