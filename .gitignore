@@ -9,6 +9,8 @@ Exfunctions/matNC
 Exfunctions/matWRF
 Exfunctions/matFVCOM
 Exfunctions/matFigure
+Exfunctions/FVCOM_NML
+Exfunctions/OceanData
 Exfunctions/t_tide
 Exfunctions/m_map
 Exfunctions/m_map1.4.zip
