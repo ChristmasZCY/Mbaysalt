@@ -3,11 +3,14 @@
     "_schemaVersion": "1.0.0",
     "read_conf":{
         "inputs":[
-            {"name":"confFile",  "kind":"required", "type":["file"], "purpose":"Configure filename"},
-            {"name":"key",  "kind":"positional", "type":["char"], "purpose":"key name"}],
+            {"name":"confFile",  "kind":"required", "type":["file"], "purpose":"Configure filename"}],
         "outputs":[
             {"name":"conf_para(1*1)", "type":["struct"], "purpose":"Configure Structure (1*1)"},
-            {"name":"conf_para(name,value)", "type":["struct"], "purpose":"Configure Structure (n*1)"}],
+            {"name":"conf_para(name,value)", "type":["struct"], "purpose":"Configure Structure (n*1)"}]},
+    "read_conf":{
+        "inputs":[
+            {"name":"confFile",  "kind":"required", "type":["file"], "purpose":"Configure filename"},
+            {"name":"key",  "kind":"required", "type":["char"], "purpose":"key name"}],
         "outputs":[
             {"name":"Key of Value", "purpose":"Key of Value"},
             {"name":"conf_para(1*1)", "type":["struct"], "purpose":"Configure Structure (1*1)"},
@@ -55,31 +58,41 @@
             {"name":"jdata", "type":["struct"], "purpose":"JSON Structure"}]},
     "json_to_struct":{
         "inputs":[
+            {"name":"Text",  "kind":"required", "type":["char","string"], "purpose":"Text of JSON"}],
+        "outputs":[
+            {"name":"jsonData", "type":["struct"], "purpose":"JSON Structure"}]},
+    "json_to_struct":{
+        "inputs":[
             {"name":"Text",  "kind":"required", "type":["char","string"], "purpose":"Text of JSON"},
-            {"name":"key",  "kind":"positional", "type":["char","string"], "purpose":"key name to be searched"}],
+            {"name":"key",  "kind":"required", "type":["char","string"], "purpose":"key name to be searched"}],
         "outputs":[
             {"name":"value", "type":["char","string"], "purpose":"Searched value"},
-            {"name":"jsonData", "type":["struct"], "purpose":"JSON Structure"}],
-        "outputs":[
             {"name":"jsonData", "type":["struct"], "purpose":"JSON Structure"}]},
     "KeyValue2Struct":{
         "inputs":[
             {"name":"Key cell",  "kind":"required", "type":["cell"], "purpose":"Keys(Format:cell)"},
-            {"name":"Value cell",  "kind":"required", "type":["cell"], "purpose":"Values(Format:cell)"},
-            {"name":"key_searched",  "kind":"positional", "type":["char","string"], "purpose":"key name to be searched"}],
+            {"name":"Value cell",  "kind":"required", "type":["cell"], "purpose":"Values(Format:cell)"}],
         "outputs":[
             {"name":"Struct(1*1)", "type":["struct"], "purpose":"Strucct (1*1)"},
-            {"name":"Struct(name,value)", "type":["struct"], "purpose":"Strucct (n*1)"}],
+            {"name":"Struct(name,value)", "type":["struct"], "purpose":"Strucct (n*1)"}]},
+    "KeyValue2Struct":{
+        "inputs":[
+            {"name":"Key cell",  "kind":"required", "type":["cell"], "purpose":"Keys(Format:cell)"},
+            {"name":"Value cell",  "kind":"required", "type":["cell"], "purpose":"Values(Format:cell)"},
+            {"name":"key_searched",  "kind":"required", "type":["char","string"], "purpose":"key name to be searched"}],
         "outputs":[
             {"name":"Key of Value", "purpose":"Key of Value"},
             {"name":"Struct(1*1)", "type":["struct"], "purpose":"Strucct (1*1)"},
             {"name":"Struct(name,value)", "type":["struct"], "purpose":"Strucct (n*1)"}]},
     "listStr_to_cell":{
         "inputs":[
-            {"name":"List text",  "kind":"required", "type":["char","string"], "purpose":"List test"},
-            {"name":"Index",  "kind":"positional", "type":["numeric"], "purpose":"index of list"}],
+            {"name":"List text",  "kind":"required", "type":["char","string"], "purpose":"List test"}],
         "outputs":[
-            {"name":"Cell", "type":["cell"], "purpose":"Cell"}],
+            {"name":"Cell", "type":["cell"], "purpose":"Cell"}]},
+    "listStr_to_cell":{
+        "inputs":[
+            {"name":"List text",  "kind":"required", "type":["char","string"], "purpose":"List test"},
+            {"name":"Index",  "kind":"required", "type":["numeric"], "purpose":"index of list"}],
         "outputs":[
             {"name":"Index of value", "type":["char","string"], "purpose":"Index of list"},
             {"name":"Cell", "type":["cell"], "purpose":"Cell"}]},
@@ -108,7 +121,8 @@
             {"name":"Replaced_str",  "kind":"required", "type":["char","string"], "purpose":"ymd in ${ymd}$"},
             {"name":"new_str",  "kind":"required", "type":["char","string"], "purpose":"ymd --> 20230101"}],
         "outputs":[
-            {"name":"Outvalue", "type":["char","string"], "purpose":"New value"}],
+            {"name":"Outvalue", "type":["char","string"], "purpose":"New value"}]},
+    "replace_para":{
         "inputs":[
             {"name":"Input parameter",  "kind":"required", "type":["struct"], "purpose":"Text or Struct"},
             {"name":"Replaced_str",  "kind":"required", "type":["char","string"], "purpose":"ymd in ${ymd}$"},

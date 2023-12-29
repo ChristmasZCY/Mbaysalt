@@ -2,14 +2,21 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,varargin)
     %       This function is used to write the adt data to the netcdf file
     % =================================================================================================================
     % Parameter:
-    %       ncid:            netcdf file id          || required: True || type: int    || format: 1
-    %       Lon:             longitude               || required: True || type: double || format: [120.5, 121.5]
-    %       Lat:             latitude                || required: True || type: double || format: [30.5, 31.5]
-    %       time:            time                    || required: True || type: double || format: posixtime
-    %       Zeta:            adt                     || required: True || type: double || format: matrix
-    %       GA_start_date:   time of forecast start  || required: True || type: string || format: '20221110'
+    %       ncid:            netcdf file id          || required: True  || type: int    || format: 1
+    %       Lon:             longitude               || required: True  || type: double || format: [120.5, 121.5]
+    %       Lat:             latitude                || required: True  || type: double || format: [30.5, 31.5]
+    %       time:            time                    || required: True  || type: double || format: posixtime
+    %       Zeta:            adt                     || required: True. || type: double || format: matrix
+    %       GA_start_date:   time of forecast start  || required: True  || type: string || format: '20221110'
     %       varargin:        optional parameters     
     %           conf:        configuration struct    || required: False || type: struct || format: struct
+    % =================================================================================================================
+    % Returns:
+    %       None
+    % =================================================================================================================
+    % Update:
+    %       2023-**-**:     Created, by Christmas;
+    %       2023-12-29:     Fixed comments, by Christmas;
     % =================================================================================================================
     % Example:
     %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date)
@@ -29,15 +36,15 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,varargin)
     % 定义维度
     londimID = netcdf.defDim(ncid, 'longitude',length(Lon));                        % 定义lon维度
     latdimID = netcdf.defDim(ncid, 'latitude', length(Lat));                        % 定义lat纬度
-    timedimID = netcdf.defDim(ncid,'time',    netcdf.getConstant('NC_UNLIMITED')); % 定义时间维度为unlimited
+    timedimID = netcdf.defDim(ncid,'time',    netcdf.getConstant('NC_UNLIMITED'));  % 定义时间维度为unlimited
     TIMEdimID = netcdf.defDim(ncid,'DateStr',  size(char(TIME),2));                 % 定义TIME维度
 
     % 定义变量
-    lon_id  =  netcdf.defVar(ncid,  'longitude', 'NC_FLOAT', londimID);                       % 经度
-    lat_id  =  netcdf.defVar(ncid,  'latitude',  'NC_FLOAT', latdimID);                       % 纬度
+    lon_id  =  netcdf.defVar(ncid,  'longitude', 'NC_FLOAT', londimID);                    % 经度
+    lat_id  =  netcdf.defVar(ncid,  'latitude',  'NC_FLOAT', latdimID);                    % 纬度
     time_id =  netcdf.defVar(ncid, 'time',      'double', timedimID);                      % 时间
-    TIME_id =  netcdf.defVar(ncid, 'TIME',      'NC_CHAR',  [TIMEdimID,timedimID]);          % 时间char
-    adt_id =  netcdf.defVar(ncid, 'adt',    'NC_FLOAT', [londimID, latdimID,timedimID]); % 海平面高度
+    TIME_id =  netcdf.defVar(ncid, 'TIME',      'NC_CHAR',  [TIMEdimID,timedimID]);        % 时间char
+    adt_id =  netcdf.defVar(ncid, 'adt',    'NC_FLOAT', [londimID, latdimID,timedimID]);   % 海平面高度
 
     netcdf.defVarFill(ncid,      adt_id,      false,      9.9692100e+36); % 设置缺省值
 
@@ -50,11 +57,11 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,varargin)
     % -----
     netcdf.endDef(ncid);    % 结束nc文件定义
     % 将数据放入相应的变量
-    netcdf.putVar(ncid,lon_id,                                                 Lon);         % 经度
-    netcdf.putVar(ncid,lat_id,                                                 Lat);         % 纬度
-    netcdf.putVar(ncid,time_id,  0,      length(time),                          time);       % 时间
-    netcdf.putVar(ncid,TIME_id, [0,0],  [size(char(TIME),2),size(char(TIME),1)],char(TIME)');% 时间char
-    netcdf.putVar(ncid,adt_id,  [0,0,0],[size(Zeta,1), size(Zeta,2), size(Zeta,3)],  Zeta);     % 海平面高度
+    netcdf.putVar(ncid,lon_id,                                                 Lon);          % 经度
+    netcdf.putVar(ncid,lat_id,                                                 Lat);          % 纬度
+    netcdf.putVar(ncid,time_id,  0,      length(time),                          time);        % 时间
+    netcdf.putVar(ncid,TIME_id, [0,0],  [size(char(TIME),2),size(char(TIME),1)],char(TIME)'); % 时间char
+    netcdf.putVar(ncid,adt_id,  [0,0,0],[size(Zeta,1), size(Zeta,2), size(Zeta,3)],  Zeta);   % 海平面高度
 
     % -----
     netcdf.reDef(ncid);    % 使打开的nc文件重新进入定义模式
@@ -73,12 +80,12 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,GA_start_date,varargin)
     netcdf.putAtt(ncid,time_id,'long_name',    'UTC time');                          % 时间
     netcdf.putAtt(ncid,time_id,'calendar',     'gregorian');                         % 时间
 
-    netcdf.putAtt(ncid,TIME_id,'reference',     TIME_reference);       % 时间char
-    netcdf.putAtt(ncid,TIME_id,'long_name',    'UTC time');             % 时间char
+    netcdf.putAtt(ncid,TIME_id,'reference',     TIME_reference);  % 时间char
+    netcdf.putAtt(ncid,TIME_id,'long_name',    'UTC time');       % 时间char
     netcdf.putAtt(ncid,TIME_id,'start_date',    TIME_start_date); % 时间char
     netcdf.putAtt(ncid,TIME_id,'end_date',      TIME_end_date);   % 时间char
 
-    netcdf.putAtt(ncid,adt_id, 'units',        'm');                                 % 海平面高度
+    netcdf.putAtt(ncid,adt_id, 'units',        'm');                              % 海平面高度
     netcdf.putAtt(ncid,adt_id, 'long_name',    'absolute dynamic topography');    % 海平面高度
 
     % 写入global attribute
