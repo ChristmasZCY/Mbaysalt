@@ -22,7 +22,7 @@ function varargout = read_conf(confin, varargin)
     % =================================================================================================================
 
     arguments(Input)
-        confin {mustBeFile}
+        confin % {mustBeFile}
     end
 
     arguments(Repeating)

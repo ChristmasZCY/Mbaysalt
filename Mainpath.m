@@ -120,7 +120,6 @@ function gitclone()
     division = string(filesep);
     Edir = char(path + division + 'Exfunctions' + division);
 
-    TF = check_command('git');
     para_conf = read_conf(fullfile(path,'Configurefiles/INSTALL.conf'));
     PATH = read_PATH(para_conf);
     if ~isempty(PATH)
@@ -130,6 +129,7 @@ function gitclone()
             end
         end
     end
+    TF = check_command('git');
 
     if TF
         if para_conf.cdt
