@@ -139,7 +139,7 @@ function wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,vararg
 
     if SWITCH.std
         dep_std_id =  netcdf.defVar(ncid, 'depth_std',  'NC_FLOAT', [depStddimID]);  % 深度
-        no3_std_id =  netcdf.defVar(ncid, 'NO3',    'NC_FLOAT', [londimID, latdimID, depStddimID, timedimID]); % NO3
+        no3_std_id =  netcdf.defVar(ncid, 'NO3_std',    'NC_FLOAT', [londimID, latdimID, depStddimID, timedimID]); % NO3
         netcdf.defVarFill(ncid,      no3_std_id,      false,      9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_std_id, true, true, 5)
         netcdf.defVarDeflate(ncid, no3_std_id, true, true, 5)
