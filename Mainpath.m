@@ -2,10 +2,10 @@ function Mainpath(varargin)
     %       Mainpath is a function to add all path of this package
     % =================================================================================================================
     % Parameters:
-    %       varargin:        optional parameters      
-    %           add:        add all path             || required: False|| type: string || format: 'add'
-    %           rm:         remove all path          || required: False|| type: string || format: 'rm'
-    %           noclone:    add all path without clone git || required: False|| type: string || format: 'noclone'
+    %       varargin:       optional parameters      
+    %           add:        add all path                    || required: False|| type: string || format: 'add'
+    %           rm:         remove all path                 || required: False|| type: string || format: 'rm'
+    %           noclone:    add all path without clone git  || required: False|| type: string || format: 'noclone'
     % =================================================================================================================
     % Returns:
     %       None
@@ -13,6 +13,7 @@ function Mainpath(varargin)
     % Updates:
     %       2023-**-**:     Created, by Christmas;
     %       2023-12-27:     Added check_command, OceanData, FVCOM_NML, by Christmas;
+    %       2024-01-02:     Added path pref, by Christmas;
     % =================================================================================================================
     % Examples:
     %       Mainpath
@@ -20,32 +21,54 @@ function Mainpath(varargin)
     %       Mainpath('rm')
     %       Mainpath('noclone')
     % =================================================================================================================
+    
+    arguments(Input,Repeating)
+        varargin
+    end
 
-    [PathALL, path] = Cmakepath;  % get all path
-
-    if nargin ==0
-        Caddpath(PathALL)  % add all path
-        gitclone()  % clone all git
-        Caddpath(PathALL)  % add all path
-    else
-        for i = 1 : nargin
-            switch lower(varargin{i})
-                case 'add'
-                    Caddpath(PathALL)
-                    gitclone()
-                    Caddpath(PathALL)
-                case 'rm'
-                    Crmpath(PathALL)  % remove all path
-                    Caddpath(path)
-                case 'noclone'
-                    Caddpath(PathALL)
-                otherwise
-                    error('parameter error')
-            end
+    cmd = 'add';
+    for i = 1: length(varargin)
+        switch lower(varargin{i})
+            case {'add','rm','noclone'}
+                cmd = convertStringsToChars(varargin{i});
+                varargin(i) = [];
+                break
+        end
+    end
+    init = false;
+    for i = 1: length(varargin)
+        switch lower(varargin{i})
+            case 'init'
+                init = true;
+                varargin(i) = [];
+                break
         end
     end
 
-    
+
+    if ispref('Mbaysalt','PATH_contains') && ispref('Mbaysalt','PATH_toolbox') && ~init
+        PATH_contains = getpref('Mbaysalt','PATH_contains');
+        PATH_toolbox = getpref('Mbaysalt','PATH_toolbox');
+    else
+        [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
+        setpref('Mbaysalt','PathALL',PATH_contains)
+        setpref('Mbaysalt','path',Cmakepath)
+    end
+
+    switch lower(cmd)
+        case 'add'
+            Caddpath(PATH_contains)  % add all path
+            gitclone()               % clone all git
+            Caddpath(PATH_contains)  % add all path
+        case 'rm'
+            Crmpath(PATH_contains)   % remove all path
+            Caddpath(PATH_toolbox)
+        case 'noclone'
+            Caddpath(PATH_contains)
+        otherwise
+            error('parameter error')
+    end
+
 end
 
 
@@ -97,20 +120,25 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/FVCOM_NML"
         ];
     FunE = cellstr(FunE);
-    addpath(path + division + 'Exfunctions/genpath2');
-    FunE = cellfun(@genpath2,FunE,repmat({".git"},length(FunE),1),'UniformOutput', false);
 
-    FunctionPath = [path; FunI; Cdata; FunE];
+    fun_genpath2 = path + division + 'Exfunctions/genpath2';
+    addpath(fun_genpath2);
+    FunE = cellfun(@genpath2,FunE,repmat({".git"},length(FunE),1),'UniformOutput', false);
+    FunE (cellfun (@isempty,FunE))= [];
+
+    FunctionPath = [path; FunI; Cdata; FunE; fun_genpath2];
     path = {path};
 end
 
 function Caddpath(Path)
-    cellfun(@addpath, Path)
+    cellfun(@addpath, Path);
 end
 
 
 function Crmpath(Path)
-    cellfun(@rmpath, Path)
+    currentPaths = strsplit(path, pathsep);
+    % cellfun(@rmpath, Path);
+    cellfun(@rmpath, Path(cellfun(@(x) ismember(x, currentPaths), Path)));
 end
 
 

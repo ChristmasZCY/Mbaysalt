@@ -138,7 +138,7 @@ function wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varar
 
     if SWITCH.std
         dep_std_id =  netcdf.defVar(ncid, 'depth_std',  'NC_FLOAT', [depStddimID]);  % 深度
-        pco2_std_id =  netcdf.defVar(ncid, 'Pco2',    'NC_FLOAT', [londimID, latdimID, depStddimID, timedimID]); % pCo2
+        pco2_std_id =  netcdf.defVar(ncid, 'pCO2_std',    'NC_FLOAT', [londimID, latdimID, depStddimID, timedimID]); % pCo2
         netcdf.defVarFill(ncid,      pco2_std_id,      false,      9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_std_id, true, true, 5)
         netcdf.defVarDeflate(ncid, pco2_std_id, true, true, 5)
@@ -147,7 +147,7 @@ function wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varar
     if SWITCH.sgm
         bathy_id = netcdf.defVar(ncid, 'bathy',       'NC_FLOAT', [londimID, latdimID]);  % 深度
         siglay_id = netcdf.defVar(ncid, 'siglay',     'NC_FLOAT', [londimID, latdimID,sigdimID]);  % 深度
-        pco2_sgm_id = netcdf.defVar(ncid, 'Pco2_sgm', 'NC_FLOAT', [londimID, latdimID,sigdimID,timedimID]);  % 深度
+        pco2_sgm_id = netcdf.defVar(ncid, 'pCO2_sgm', 'NC_FLOAT', [londimID, latdimID,sigdimID,timedimID]);  % 深度
 
         netcdf.defVarFill(ncid,      bathy_id,      false,      9.9692100e+36); % 设置缺省值
         netcdf.defVarFill(ncid,      siglay_id,     false,      9.9692100e+36); % 设置缺省值
@@ -160,7 +160,7 @@ function wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varar
 
     if SWITCH.avg
         dep_avg_id =  netcdf.defVar(ncid, 'depth_avg',  'NC_FLOAT', [depAvgdimID,twodimID]);  % 深度
-        pco2_avg_id =  netcdf.defVar(ncid, 'Pco2_avg',  'NC_FLOAT', [londimID, latdimID, depAvgdimID, timedimID]); % pCo2
+        pco2_avg_id =  netcdf.defVar(ncid, 'pCO2_avg',  'NC_FLOAT', [londimID, latdimID, depAvgdimID, timedimID]); % pCo2
         netcdf.defVarFill(ncid,      pco2_avg_id,      false,      9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_avg_id, true, true, 5)
         netcdf.defVarDeflate(ncid, pco2_avg_id, true, true, 5)
