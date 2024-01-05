@@ -39,7 +39,8 @@
             {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename"},
             {"name":"Text",  "kind":"required", "type":["char","string"], "purpose":"Text to be searched"}],
         "outputs":[
-            {"name":"Searched lines", "type":["cell"], "purpose":"Searched lines"}]},
+            {"name":"Searched contents", "type":["cell"], "purpose":"Searched contents"},
+            {"name":"Lines id", "type":["scalar"], "purpose":"Lines id"}]},
     "input_yn":{
         "inputs":[
             {"name":"Prompt",  "kind":"required", "type":["char","string"], "purpose":"Prompt, tip or question"}],
@@ -131,7 +132,11 @@
             {"name":"Outvalue", "type":["struct"], "purpose":"New value"}]},
     "rmfiles":{
         "inputs":[
-            {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":true}]
-    }
+            {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":true}]},
+    "readlinks":{
+        "inputs":[
+            {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":true}],
+        "outputs":[
+            {"name":"Origin file", "type":["file"], "purpose":"Origin file", "repeating":true}]}
 
 }

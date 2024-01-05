@@ -15,6 +15,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2023-**-**:     Added switch of output each value, by Christmas;
     %       2023-12-29:     Added average depth output, by Christmas;
     %       2023-12-29:     Added output casfco2, by Christmas;
+    %       2024-01-03:     Fixed aligning of osprint2, by Christmas;
+    %       2024-01-03:     Added Avg_depth wrong warning, by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20230525,1)
@@ -67,20 +69,29 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     end
     if SWITCH.out_avg_level % 平均层
         Avg_depth = para_conf.Avg_depth;
+        if size(Avg_depth,2) ~= 2
+            if size(Avg_depth,1) ==1
+                Avg_depth = reshape(Avg_depth,2,[])';
+                [list_content,line_id] = grep(conf_file, 'Avg_depth');
+                warning("Wrong set Avg_depth in '%s' line %d, with '%s' \n Maybe you want to set %s", conf_file, line_id(1), list_content{1}, warningText(Avg_depth))
+            end
+        end
     end
-    osprint2('INFO',['Output standard levels --> ',logical_to_char(SWITCH.out_std_level)])
-    osprint2('INFO',['Output sigma levels --> ',logical_to_char(SWITCH.out_sgm_level)])
-    osprint2('INFO',['Output average depth --> ',logical_to_char(SWITCH.out_avg_level)])
+
+    osprint2('INFO',[pad('Output standard depth ',45,'right'),'--> ', logical_to_char(SWITCH.out_std_level)])
+    osprint2('INFO',[pad('Output sigma levels ',45,'right'),'--> ', logical_to_char(SWITCH.out_sgm_level)])
+    osprint2('INFO',[pad('Output average depth ',45,'right'),'--> ', logical_to_char(SWITCH.out_avg_level)])
 
     getdate = datetime(num2str(yyyymmdd),"format","yyyyMMdd"); clear yyyymmdd
     Length = day_length;clear day_length;% 当天开始向后处理的天数
 
-    osprint2('INFO', ['Date parameter --> ',char(getdate),' total transfor ',num2str(Length),' days'])  % 输出处理的日期信息
-    osprint2('INFO', ['Method --> ',Method_interpn])  % 输出插值方法
-    osprint2('INFO', ['Transfor ',interval,' variable -->',double(SWITCH.temp)*' temp',double(SWITCH.salt)*' salt', ...
-        double(SWITCH.adt)*' zeta',double(SWITCH.u)*' u',double(SWITCH.v)*' v', double(SWITCH.w)*' w', ...
-        double(SWITCH.aice)*' aice', double(SWITCH.ph)*' ph', double(SWITCH.no3)*' no3', double(SWITCH.pco2)*' pco2', ...
-        double(SWITCH.chlo)*' chlo', double(SWITCH.casfco2)*' casfco2'])  % 打印处理的变量
+    osprint2('INFO', [pad('Date parameter ',45,'right'),'--> ', char(getdate)])  % 输出处理的日期信息
+    osprint2('INFO', [pad('Total transfor ',45,'right'),'--> ', num2str(Length),' days'])  % 输出处理的日期信息
+    osprint2('INFO', [pad('Method ',45,'right'),'--> ', Method_interpn])  % 输出插值方法
+    osprint2('INFO', [pad(['Transfor ',interval,' variable '],45,'right'), '-->', repmat(' temp',SWITCH.temp),repmat(' salt',SWITCH.salt) ...
+        repmat(' zeta',SWITCH.adt),repmat(' u',SWITCH.u),repmat(' v',SWITCH.v), repmat(' w',SWITCH.w), ...
+        repmat(' aice',SWITCH.aice), repmat(' ph',SWITCH.ph), repmat(' no3',SWITCH.no3), repmat(' pco2',SWITCH.pco2), ...
+        repmat(' chlo',SWITCH.chlo), repmat(' casfco2',SWITCH.casfco2)])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
@@ -580,30 +591,61 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 coefficient = Deplev_interval./sum_depth_avg;
                 if SWITCH.temp
                     Velement.Temp_avg(:,:,idep,:)= sum(coefficient.*VAelement.Temp_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.Temp_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.Temp_avg,3),1]);  % 1800*3600*2*24
+                    Velement.Temp_avg(land_mask) = NaN;
                 end
                 if SWITCH.salt
                     Velement.Salt_avg(:,:,idep,:)= sum(coefficient.*VAelement.Salt_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.Salt_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.Salt_avg,3),1]);  % 1800*3600*2*24
+                    Velement.Salt_avg(land_mask) = NaN;
                 end
                 if SWITCH.u
                     Velement.U_avg(:,:,idep,:)= sum(coefficient.*VAelement.U_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.U_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.U_avg,3),1]);  % 1800*3600*2*24
+                    Velement.U_avg(land_mask) = NaN;
                 end
                 if SWITCH.v
                     Velement.V_avg(:,:,idep,:)= sum(coefficient.*VAelement.V_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.V_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.V_avg,3),1]);  % 1800*3600*2*24
+                    Velement.V_avg(land_mask) = NaN;
                 end
                 if SWITCH.w
                     Velement.W_avg(:,:,idep,:)= sum(coefficient.*VAelement.W_sgm,3,"omitnan");
+                    Velement.W_avg(:,:,idep,:)= sum(coefficient.*VAelement.W_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.W_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.W_avg,3),1]);  % 1800*3600*2*24
+                    Velement.W_avg(land_mask) = NaN;
                 end
                 if SWITCH.ph
                     Velement.Ph_avg(:,:,idep,:)= sum(coefficient.*VAelement.Ph_sgm,3,"omitnan");
+                    Velement.Ph_avg(:,:,idep,:)= sum(coefficient.*VAelement.Ph_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.Ph_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.Ph_avg,3),1]);  % 1800*3600*2*24
+                    Velement.Ph_avg(land_mask) = NaN;
                 end
                 if SWITCH.no3
                     Velement.No3_avg(:,:,idep,:)= sum(coefficient.*VAelement.No3_sgm,3,"omitnan");
+                    Velement.No3_avg(:,:,idep,:)= sum(coefficient.*VAelement.No3_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.No3_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.No3_avg,3),1]);  % 1800*3600*2*24
+                    Velement.No3_avg(land_mask) = NaN;
                 end
                 if SWITCH.pco2
                     Velement.Pco2_avg(:,:,idep,:)= sum(coefficient.*VAelement.Pco2_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.Pco2_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.Pco2_avg,3),1]);  % 1800*3600*2*24
+                    Velement.Pco2_avg(land_mask) = NaN;
                 end
                 if SWITCH.chlo
                     Velement.Chlo_avg(:,:,idep,:)= sum(coefficient.*VAelement.Chlo_sgm,3,"omitnan");
+                    Velement.Chlo_avg(:,:,idep,:)= sum(coefficient.*VAelement.Chlo_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.Chlo_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.Chlo_avg,3),1]);  % 1800*3600*2*24
+                    Velement.Chlo_avg(land_mask) = NaN;
                 end
                 clear Deplev_use Deplev_interval sum_depth_avg coefficient
             end
@@ -724,13 +766,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 clear VAelement VBelement
                 clear Standard_depth_mask
             end
-            osprint2('INFO',['Masking depth of data greater than bathy --> ', logical_to_char(SWITCH.vertical_mask)])
+            osprint2('INFO',[pad('Masking depth of data greater than bathy ',45,'right'),'--> ', logical_to_char(SWITCH.vertical_mask)])
         end
         clear Depth_origin_to_wrf_grid
 
         %% 岸线侵蚀
         if SWITCH.erosion
-            osprint2('INFO',['Erosion coastline --> ',logical_to_char(SWITCH.erosion)]);
+            osprint2('INFO',[pad('Erosion coastline ',45,'right'),'--> ', logical_to_char(SWITCH.erosion)]);
             file_erosion = para_conf.ErosionFile;
             if SWITCH.make_erosion
                 fields_Velement = fieldnames(Velement);
@@ -876,7 +918,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     clear Method_interpn % 插值方法
     clear file_Mcasename
     clear varargin
-    osprint2('INFO',['GivenDate   --> ',char(getdate),' interval ',interval,' 处理完成耗时 ', num2str(toc),' 秒']);
+    osprint2('INFO',['GivenDate ',char(getdate),' interval ',interval,' 处理完成耗时 ', num2str(toc),' 秒']);
     clear getdate interval  % 基准天 间隔
 end
 
@@ -959,4 +1001,22 @@ function [Struct1,Struct2] = rmfields_key_from_struct(structIn,keysIn)
         end
     end
     Struct2 = rmfield(structIn,setdiff(key,keysIn));
+end
+
+
+function matStr = warningText(Avg_depth)
+    [rows, cols] = size(Avg_depth);  % 获取矩阵的大小
+    matStr = '[';  % 初始化字符串
+    for i = 1 : rows  % 遍历矩阵并构建字符串
+        for j = 1 : cols
+            matStr = [matStr, num2str(Avg_depth(i, j))];  %#ok<AGROW>
+            if j < cols
+                matStr = [matStr, ','];  %#ok<AGROW>
+            end
+        end
+        if i < rows
+            matStr = [matStr, ';'];  %#ok<AGROW>
+        end
+    end
+    matStr = [matStr, ']'];  % 关闭字符串
 end

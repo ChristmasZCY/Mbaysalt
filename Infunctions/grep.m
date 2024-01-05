@@ -1,24 +1,26 @@
-function list = grep(file, text)
+function [list_content,line_id] = grep(file, text)
     %       Simulation of unix grep command
     % =================================================================================================================
     % Parameters:
-    %       file: full path of the file  || required: True || type: text || example: "xxxx/xxxx/xxxx"
-    %       text: text to match          || required: True || type: text || example: "xxxx"
+    %       file: full path of the file   || required: True  || type: text   || example: "xxxx/xxxx/xxxx"
+    %       text: text to match           || required: True  || type: text   || example: "xxxx"
     % =================================================================================================================
     % Returns:
-    %       list: matched line           || required: True || type: cell || example: "xxxx"
+    %       list_content: matched line    || required: True  || type: cell   || example: {'Method_interpn =  Siqi_ESMF'}
+    %       line_id: matched in file line || required: False || type: double || example: [1]
     % =================================================================================================================
     % Example:
-    %       file = grep("c_load_grid.m",'f_load_grid')
+    %       [list_content,line_id] = grep("Post_fvcom.conf",'Method')
     % =================================================================================================================
 
     arguments(Input)
-        file {mustBeFile}
+        file % {mustBeFile}  %环境变量中也可
         text {mustBeTextScalar}
     end
 
     arguments(Output)
-        list {cell}
+        list_content {cell}
+        line_id {double}
     end
 
     warning('This function is not recommend');
@@ -30,7 +32,8 @@ function list = grep(file, text)
         error('Cannot open file: %s', file);
     end
     line_number = 0;
-    list = {};
+    list_content = {};
+    line_id = [];
     %-fgets 和 fgetl ： 可从文件读取信息
     while feof(fid) == 0
         line = fgetl(fid);
@@ -39,7 +42,8 @@ function list = grep(file, text)
             if  ~ startsWith(line,"#")
             % -输出格式： 行号，对应行内容
                 % fprintf('%d: %s \n', line_number,line);
-                list =[list;line];
+                list_content =[list_content;line];
+                line_id = [line_id;line_number + 1];
             end
         end
         line_number = line_number + 1;

@@ -45,7 +45,6 @@ function Mainpath(varargin)
         end
     end
 
-
     if ispref('Mbaysalt','PATH_contains') && ispref('Mbaysalt','PATH_toolbox') && ~init
         PATH_contains = getpref('Mbaysalt','PATH_contains');
         PATH_toolbox = getpref('Mbaysalt','PATH_toolbox');
