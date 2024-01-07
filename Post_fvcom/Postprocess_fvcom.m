@@ -1,11 +1,14 @@
 function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       This function is used to postprocess the fvcom output netcdf files, contains daily/hourly.
     % =================================================================================================================
-    % Parameter:
+    % Parameters:
     %       conf_file: configure file                 || required: True || type: text    || example: 'Post_fvcom.conf'
     %       interval: interval                        || reauired: True || type: text    || example: 'daily','hourly'
     %       yyyymmdd: date                            || required: True || type: double  || example: 20221110
     %       day_length: length of date                || required: True || type: double  || example: 5
+    % =================================================================================================================
+    % Returns:
+    %       None
     % =================================================================================================================
     % Update:
     %       2023-**-**:     Created, by Christmas;
@@ -17,6 +20,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2023-12-29:     Added output casfco2, by Christmas;
     %       2024-01-03:     Fixed aligning of osprint2, by Christmas;
     %       2024-01-03:     Added Avg_depth wrong warning, by Christmas;
+    %       2024-01-07:     Added nemuro output(chlo,no3,zp,pp,sand), by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20230525,1)
@@ -113,6 +117,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         OutputDir.pco2 = fullfile(Outputpath,'pco2',interval,deal_date);  % pco2输出路径
         OutputDir.chlo = fullfile(Outputpath,'chlorophyll',interval,deal_date);  % chlorophyll输出路径
         OutputDir.casfco2 = fullfile(Outputpath,'casfco2',interval,deal_date);  % casfco2输出路径
+        OutputDir.zp = fullfile(Outputpath,'zooplankton',interval,deal_date);  % zooplankton输出路径
+        OutputDir.pp = fullfile(Outputpath,'phytoplankton',interval,deal_date);  % phytoplankton输出路径
+        OutputDir.sand = fullfile(Outputpath,'sand',interval,deal_date);  % sand输出路径
         if SWITCH.DEBUG  % 如果打开DEBUG模式,则OutputDir中的值都为'./'
             Fun_new_dir = @(x) './';
             OutputDir = structfun(Fun_new_dir,OutputDir,'UniformOutput',false);
@@ -177,6 +184,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.no3 % 是否包含no3
             if strcmpi(Ecology_model, '.ERSEM.')
                 no3 = double(ncread(ncfile,'N3_n'));
+            elseif strcmpi(Ecology_model, '.NEMURO.')
+                no3 = double(ncread(ncfile,'NO3')); % NO3 氮氧化物
             end
         end
         if SWITCH.pco2 % 是否包含pco2
@@ -192,11 +201,43 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 chlo_p4 = double(ncread(ncfile,'P4_Chl'));
                 chlo = chlo_p1 + chlo_p2 + chlo_p3 + chlo_p4;
                 clear chlo_p1 chlo_p2 chlo_p3 chlo_p4
+            elseif strcmpi(Ecology_model, '.NEMURO.')
+                ps = double(ncread(ncfile,'PS')); % PS 小型浮游植物
+                pl = double(ncread(ncfile,'PL')); % PL 大型浮游植物
+                pp = ps+pl; % phytoplankton pp 浮游植物
+                chlo = 1.59 * pp;
+                clear ps pl pp
             end
         end
         if SWITCH.casfco2 % 是否包含海气二氧化碳通量
             if strcmpi(Ecology_model, '.ERSEM.')
                 casfco2 = double(ncread(ncfile,'O3_fair'));
+            end
+        end
+        if SWITCH.zp  % zooplankton zp 浮游动物
+            if strcmpi(Ecology_model, '.NEMURO.')
+                zp = double(ncread(ncfile,'ZP')); % ZP 食肉浮游动物
+                zs = double(ncread(ncfile,'ZS')); % ZS 小型浮游动物
+                zl = double(ncread(ncfile,'ZL')); % ZL 大型浮游动物
+                zp = zp+zs+zl; % zooplankton zp 浮游动物
+                clear zs zl
+            end
+        end
+        if SWITCH.pp  % phytoplankton pp 浮游植物
+            if strcmpi(Ecology_model, '.NEMURO.')
+                ps = double(ncread(ncfile,'PS')); % PS 小型浮游植物
+                pl = double(ncread(ncfile,'PL')); % PL 大型浮游植物
+                pp = ps+pl; % phytoplankton pp 浮游植物
+                clear ps pl
+            end
+        end
+        if SWITCH.sand  % 沙质
+            if strcmpi(Ecology_model, '.NEMURO.')
+                cs = double(ncread(ncfile,'coarse_sand')); % cs 粗沙
+                ms = double(ncread(ncfile,'medium_sand')); % ms 中沙
+                fs = double(ncread(ncfile,'fine_sand')); % fs 细沙
+                sand = cs+ms+fs; % 沙质
+                clear cs ms fs
             end
         end
 
@@ -279,13 +320,22 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 if SWITCH.casfco2
                     Casfco2 = interp_2d_via_weight(casfco2,Weight_2d);
                 end
+                if SWITCH.zp
+                    Zp = interp_2d_via_weight(zp,Weight_2d);
+                end
+                if SWITCH.pp
+                    Pp = interp_2d_via_weight(pp,Weight_2d);
+                end
+                if SWITCH.sand
+                    Sand = interp_2d_via_weight(sand,Weight_2d);
+                end
                 Deplev = interp_2d_via_weight(f_nc.deplevc,Weight_2d);  % each sigma level depth(31) node
                 Depth = interp_2d_via_weight(f_nc.deplay,Weight_2d);
                 Siglay = interp_2d_via_weight(f_nc.siglay,Weight_2d);
                 Depth_origin_to_wrf_grid =  interp_2d_via_weight(f_nc.h,Weight_2d);
 
 
-                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo casfco2
+                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo casfco2 zp pp sand
                 clear file_weight Weight_2d
 
             case 'Siqi_ESMF'
@@ -346,6 +396,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                         if SWITCH.chlo
                             Chlo(:,:,iz,it) =  esmf_regrid(chlo(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                         end
+                        if SWITCH.zp
+                            Zp(:,:,iz,it) = interp_2d_via_weight(zp(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                        end
+                        if SWITCH.pp
+                            Pp(:,:,iz,it) = interp_2d_via_weight(pp(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                        end
+                        if SWITCH.sand
+                            Sand(:,:,iz,it) = interp_2d_via_weight(sand(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                        end
                         if it == 1  % 不随time变化，只需要计算一次
                             Depth(:,:,iz) =  esmf_regrid(f_nc.deplay(:,iz),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                             Siglay(:,:,iz) =  esmf_regrid(f_nc.siglay(:,iz),Weight_2d,'Dims',[length(Lon),length(Lat)]);
@@ -389,6 +448,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % No3                      --> lon*lat*sigma_layer_orig*time (no3 of fvcom vertical grid)
         % Pco2                     --> lon*lat*sigma_layer_orig*time (pco2 of fvcom vertical grid)
         % Chlo                     --> lon*lat*sigma_layer_orig*time (chlorophyll of fvcom vertical grid)
+        % Pp                       --> lon*lat*sigma_layer_orig*time (phytoplankton of fvcom vertical grid)
+        % Zp                       --> lon*lat*sigma_layer_orig*time (zooplankton of fvcom vertical grid)
+        % sand                     --> lon*lat*sigma_layer_orig*time (sand of fvcom vertical grid)
         % Casfco2                     --> lon*lat*time (casfco2 of fvcom vertical grid)
 
         if SWITCH.out_sgm_level % 是否输出sigma层
@@ -418,6 +480,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             end
             if SWITCH.chlo
                 VAelement.Chlo_sgm = Chlo;
+            end
+            if SWITCH.zp
+                VAelement.Zp_sgm = Zp;
+            end
+            if SWITCH.pp
+                VAelement.Pp_sgm = Pp;
+            end
+            if SWITCH.sand
+                VAelement.Sand_sgm = Sand;
             end
         end
 
@@ -476,6 +547,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     if SWITCH.chlo
                         Chlo1 = reshape(Chlo,[size_2d_to_1d_ll,size(Chlo,[3,4])]);clear Chlo
                     end
+                    if SWITCH.zp
+                        Zp1 = reshape(Zp,[size_2d_to_1d_ll,size(Zp,[3,4])]);clear Zp
+                    end
+                    if SWITCH.pp
+                        Pp1 = reshape(Pp,[size_2d_to_1d_ll,size(Pp,[3,4])]);clear Pp
+                    end
+                    if SWITCH.sand
+                        Sand1 = reshape(Sand,[size_2d_to_1d_ll,size(Sand,[3,4])]);clear Sand
+                    end
 
                     % make empty matrix
                     if SWITCH.temp
@@ -504,6 +584,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     end
                     if SWITCH.chlo
                         Chlo = zeros(size_2d_to_1d_ll,length(Depth_std),size(Chlo1,3));
+                    end
+                    if SWITCH.zp
+                        Zp = zeros(size_2d_to_1d_ll,length(Depth_std),size(Zp1,3));
+                    end
+                    if SWITCH.pp
+                        Pp = zeros(size_2d_to_1d_ll,length(Depth_std),size(Pp1,3));
+                    end
+                    if SWITCH.sand
+                        Sand = zeros(size_2d_to_1d_ll,length(Depth_std),size(Sand1,3));
                     end
                     clear size_2d_to_1d_ll
 
@@ -537,8 +626,17 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                         if SWITCH.chlo
                             Chlo(:,:,it) = interp_vertical_via_weight(Chlo1(:,:,it),Weight_vertical);
                         end
+                        if SWITCH.zp
+                            Zp(:,:,it) = interp_vertical_via_weight(Zp1(:,:,it),Weight_vertical);
+                        end
+                        if SWITCH.pp
+                            Pp(:,:,it) = interp_vertical_via_weight(Pp1(:,:,it),Weight_vertical);
+                        end
+                        if SWITCH.sand
+                            Sand(:,:,it) = interp_vertical_via_weight(Sand1(:,:,it),Weight_vertical);
+                        end
                     end
-                    clear Temp1 Salt1 U1 V1 W1 Ph1 No31 Pco21 Chlo1 it
+                    clear Temp1 Salt1 U1 V1 W1 Ph1 No31 Pco21 Chlo1 Zp1 Pp1 Sand1 it
                     clear Weight_vertical
 
                     if SWITCH.temp
@@ -568,9 +666,18 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     if SWITCH.chlo
                         Chlo = reshape(Chlo,[size(Depth,[1,2]),size(Chlo,[2,3,4])]);
                     end
+                    if SWITCH.zp
+                        Zp = reshape(Zp,[size(Depth,[1,2]),size(Zp,[2,3,4])]);
+                    end
+                    if SWITCH.pp
+                        Pp = reshape(Pp,[size(Depth,[1,2]),size(Pp,[2,3,4])]);
+                    end
+                    if SWITCH.sand
+                        Sand = reshape(Sand,[size(Depth,[1,2]),size(Sand,[2,3,4])]);
+                    end
             end
         end
-        % Temp Salt U V W Zeta Depth Aice Ph No3 Pco2 Chlo Casfco2 --> std_level
+        % Temp Salt U V W Zeta Depth Aice Ph No3 Pco2 Chlo Casfco2 Zp Pp Sand --> std_level
         if SWITCH.adt
             Velement.Zeta = Zeta;
         end
@@ -615,20 +722,17 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 end
                 if SWITCH.w
                     Velement.W_avg(:,:,idep,:)= sum(coefficient.*VAelement.W_sgm,3,"omitnan");
-                    Velement.W_avg(:,:,idep,:)= sum(coefficient.*VAelement.W_sgm,3,"omitnan");
                     land_mask = isnan(VAelement.W_sgm(:,:,1,:));  % 1800*3600*1*24
                     land_mask = repmat(land_mask,[1,1,size(Velement.W_avg,3),1]);  % 1800*3600*2*24
                     Velement.W_avg(land_mask) = NaN;
                 end
                 if SWITCH.ph
                     Velement.Ph_avg(:,:,idep,:)= sum(coefficient.*VAelement.Ph_sgm,3,"omitnan");
-                    Velement.Ph_avg(:,:,idep,:)= sum(coefficient.*VAelement.Ph_sgm,3,"omitnan");
                     land_mask = isnan(VAelement.Ph_sgm(:,:,1,:));  % 1800*3600*1*24
                     land_mask = repmat(land_mask,[1,1,size(Velement.Ph_avg,3),1]);  % 1800*3600*2*24
                     Velement.Ph_avg(land_mask) = NaN;
                 end
                 if SWITCH.no3
-                    Velement.No3_avg(:,:,idep,:)= sum(coefficient.*VAelement.No3_sgm,3,"omitnan");
                     Velement.No3_avg(:,:,idep,:)= sum(coefficient.*VAelement.No3_sgm,3,"omitnan");
                     land_mask = isnan(VAelement.No3_sgm(:,:,1,:));  % 1800*3600*1*24
                     land_mask = repmat(land_mask,[1,1,size(Velement.No3_avg,3),1]);  % 1800*3600*2*24
@@ -642,12 +746,29 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 end
                 if SWITCH.chlo
                     Velement.Chlo_avg(:,:,idep,:)= sum(coefficient.*VAelement.Chlo_sgm,3,"omitnan");
-                    Velement.Chlo_avg(:,:,idep,:)= sum(coefficient.*VAelement.Chlo_sgm,3,"omitnan");
                     land_mask = isnan(VAelement.Chlo_sgm(:,:,1,:));  % 1800*3600*1*24
                     land_mask = repmat(land_mask,[1,1,size(Velement.Chlo_avg,3),1]);  % 1800*3600*2*24
                     Velement.Chlo_avg(land_mask) = NaN;
                 end
-                clear Deplev_use Deplev_interval sum_depth_avg coefficient
+                if SWITCH.zp
+                    Velement.Zp_avg(:,:,idep,:)= sum(coefficient.*VAelement.Zp_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.Zp_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.Zp_avg,3),1]);  % 1800*3600*2*24
+                    Velement.Zp_avg(land_mask) = NaN;
+                end
+                if SWITCH.pp
+                    Velement.Pp_avg(:,:,idep,:)= sum(coefficient.*VAelement.Pp_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.Pp_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.Pp_avg,3),1]);  % 1800*3600*2*24
+                    Velement.Pp_avg(land_mask) = NaN;
+                end
+                if SWITCH.sand
+                    Velement.Sand_avg(:,:,idep,:)= sum(coefficient.*VAelement.Sand_sgm,3,"omitnan");
+                    land_mask = isnan(VAelement.Sand_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(Velement.Sand_avg,3),1]);  % 1800*3600*2*24
+                    Velement.Sand_avg(land_mask) = NaN;
+                end
+                clear Deplev_use Deplev_interval sum_depth_avg coefficient close land_mask
             end
             Delement.Depth_avg = Avg_depth;
         end
@@ -681,9 +802,18 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             if SWITCH.chlo
                 Velement.Chlo_std = Chlo;
             end
+            if SWITCH.zp
+                Velement.Zp_std = Zp;
+            end
+            if SWITCH.pp
+                Velement.Pp_std = Pp;
+            end
+            if SWITCH.Sand
+                Velement.Sand_std = Sand;
+            end
             Delement.Depth_std = Depth_std;
         end
-        clear Temp Salt U V W Zeta Aice Ph No3 Pco2 Chlo Casfco2
+        clear Temp Salt U V W Zeta Aice Ph No3 Pco2 Chlo Casfco2 Zp Pp Sand
         % <----- std_level
         % -----> sgm_level
         if SWITCH.out_sgm_level
@@ -717,6 +847,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             end
             if SWITCH.chlo
                 Velement.Chlo_sgm = VAelement.Chlo_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.zp
+                Velement.Zp_sgm = VAelement.Zp_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.pp
+                Velement.Pp_sgm = VAelement.Pp_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.sand
+                Velement.Sand_sgm = VAelement.Sand_sgm(:,:,Level_sgm,:);
             end
             Delement.Siglay = Siglay(:,:,Level_sgm); clear Siglay
 
@@ -829,7 +968,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.u || SWITCH.v || SWITCH.w
             file = fullfile(OutputDir.curr,['current',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_current,Velement] = rmfields_key_from_struct(Velement,{'Temp_std','Temp_sgm','Temp_avg','Salt_std','Salt_sgm','Salt_avg','Zeta','Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2'});
+            [Velement_current,Velement] = rmfields_key_from_struct(Velement,{'Temp_std','Temp_sgm','Temp_avg','Salt_std','Salt_sgm','Salt_avg','Zeta','Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement_current,GA_start_date,'conf',para_conf);
             clear Velement_current ncid file
         end
@@ -837,7 +976,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.temp
             file = fullfile(OutputDir.temp,['temperature',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_temperature,Velement] = rmfields_key_from_struct(Velement,{'Salt_std','Salt_sgm','Salt_avg','Zeta','Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2'});
+            [Velement_temperature,Velement] = rmfields_key_from_struct(Velement,{'Salt_std','Salt_sgm','Salt_avg','Zeta','Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement_temperature,GA_start_date,'conf',para_conf)
             clear Velement_temperature ncid file
         end
@@ -845,7 +984,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.salt
             file = fullfile(OutputDir.salt,['salinity',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_salt,Velement] = rmfields_key_from_struct(Velement,{'Zeta','Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2'});
+            [Velement_salt,Velement] = rmfields_key_from_struct(Velement,{'Zeta','Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_salt(ncid,Lon,Lat,Delement,time,Velement_salt,GA_start_date,'conf',para_conf);
             clear Velement_salt ncid file
         end
@@ -853,7 +992,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.adt
             file = fullfile(OutputDir.adt,['adt',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_adt,Velement] = rmfields_key_from_struct(Velement,{'Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2'});
+            [Velement_adt,Velement] = rmfields_key_from_struct(Velement,{'Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Velement_adt.Zeta,GA_start_date,'conf',para_conf);
             clear Velement_adt ncid file
         end
@@ -861,7 +1000,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.aice
             file = fullfile(OutputDir.ice,['ice',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_ice,Velement] = rmfields_key_from_struct(Velement,{'Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2'});
+            [Velement_ice,Velement] = rmfields_key_from_struct(Velement,{'Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Velement_ice.Aice,GA_start_date,'conf',para_conf);
             clear Velement_ice ncid file
         end
@@ -869,37 +1008,58 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.ph
             file = fullfile(OutputDir.ph,['ph',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_ph,Velement] = rmfields_key_from_struct(Velement,{'No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2'});
+            [Velement_ph,Velement] = rmfields_key_from_struct(Velement,{'No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,Velement_ph,GA_start_date,'conf',para_conf);
             clear Velement_ph ncid file
         end
         if SWITCH.no3
             file = fullfile(OutputDir.no3,['no3',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_no3,Velement] = rmfields_key_from_struct(Velement,{'Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2'});
+            [Velement_no3,Velement] = rmfields_key_from_struct(Velement,{'Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,Velement_no3,GA_start_date,'conf',para_conf);
             clear Velement_no3 ncid file
         end
         if SWITCH.pco2
             file = fullfile(OutputDir.pco2,['pco2',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_pco2,Velement] = rmfields_key_from_struct(Velement,{'Chlo_std','Chlo_sgm','Chlo_avg','Casfco2'});
+            [Velement_pco2,Velement] = rmfields_key_from_struct(Velement,{'Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,Velement_pco2,GA_start_date,'conf',para_conf);
             clear Velement_pco2 ncid file
         end
         if SWITCH.chlo
             file = fullfile(OutputDir.chlo,['chlorophyll',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_chlo,Velement] = rmfields_key_from_struct(Velement,{'Casfco2'});
+            [Velement_chlo,Velement] = rmfields_key_from_struct(Velement,{'Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_chlo_ersem(ncid,Lon,Lat,Delement,time,Velement_chlo,GA_start_date,'conf',para_conf);
             clear Velement_chlo ncid file
         end
         if SWITCH.casfco2
             file = fullfile(OutputDir.casfco2,['casfco2',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_casfco2,Velement] = rmfields_key_from_struct(Velement,{''});
+            [Velement_casfco2,Velement] = rmfields_key_from_struct(Velement,{'Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_casfco2_ersem(ncid,Lon,Lat,time,Velement_casfco2.Casfco2,GA_start_date,'conf',para_conf);
             clear Velement_casfco2 ncid file
+        end
+        if SWITCH.zp
+            file = fullfile(OutputDir.zp,['zooplankton',OutputRes,'.nc']);
+            ncid = create_nc(file, 'NETCDF4');
+            [Velement_zp,Velement] = rmfields_key_from_struct(Velement,{'Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
+            netcdf_fvcom.wrnc_zp_nemuro(ncid,Lon,Lat,Delement,time,Velement_zp,GA_start_date,'conf',para_conf);
+            clear Velement_zp ncid file
+        end
+        if SWITCH.pp
+            file = fullfile(OutputDir.pp,['phytoplankton',OutputRes,'.nc']);
+            ncid = create_nc(file, 'NETCDF4');
+            [Velement_pp,Velement] = rmfields_key_from_struct(Velement,{'Sand_std','Sand_sgm','Sand_avg'});
+            netcdf_fvcom.wrnc_pp_nemuro(ncid,Lon,Lat,Delement,time,Velement_pp,GA_start_date,'conf',para_conf);
+            clear Velement_pp ncid file
+        end
+        if SWITCH.sand
+            file = fullfile(OutputDir.sand,['sand',OutputRes,'.nc']);
+            ncid = create_nc(file, 'NETCDF4');
+            [Velement_sand,Velement] = rmfields_key_from_struct(Velement,{''});
+            netcdf_fvcom.wrnc_sand_nemuro(ncid,Lon,Lat,Delement,time,Velement_sand,GA_start_date,'conf',para_conf);
+            clear Velement_csand ncid file
         end
 
 
