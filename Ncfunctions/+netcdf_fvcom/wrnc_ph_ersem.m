@@ -237,6 +237,16 @@ function wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargi
         netcdf.putAtt(ncid,ph_sgm_id, 'coordinates',  'sigma levels');                     % pH_sgm
     end
 
+    if SWITCH.avg
+        netcdf.putAtt(ncid,dep_avg_id, 'units',        'm');                                 % pH
+        netcdf.putAtt(ncid,dep_avg_id, 'long_name',    sprintf('average depth between %.1f and %.1f, such on', Depth_avg(1,1),Depth_avg(1,2)));                     % Depth_avg
+        netcdf.putAtt(ncid,dep_avg_id, 'positive',     'down');                              % pH
+
+        netcdf.putAtt(ncid,ph_avg_id, 'units',         '1');                                 % pH
+        netcdf.putAtt(ncid,ph_avg_id, 'long_name',    'carbonate pH on total scale');        % pH
+        netcdf.putAtt(ncid,ph_avg_id, 'coordinates',  'average levels');                     % pH
+    end
+
     % 写入global attribute
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'product_name',   S_name);         % 文件名
     if class(conf) == "struct" && isfield(conf,"P_Source")
