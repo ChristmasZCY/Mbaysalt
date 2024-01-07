@@ -247,14 +247,19 @@ function wrnc_chlo_ersem(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varar
     end
 
     % 写入global attribute
-    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'product_name',   S_name);          % 文件名
-    if class(conf) == "struct"
+    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'product_name',   S_name);         % 文件名
+    if class(conf) == "struct" && isfield(conf,"P_Source")
         netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'source',         conf.P_Source); % 数据源
     end
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'start',          GA_start_date);               % 起报时间
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'history',        ['Created by Matlab at ' char(datetime("now","Inputformat","yyyy-MM-dd HH:mm:SS"))]); % 操作历史记录
-    if class(conf) == "struct"
+    if class(conf) == "struct" && isfield(conf,"P_Version")
         netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'program_version',['V',num2str(conf.P_Version)]);    % 程序版本号
+    end
+    if class(conf) == "struct" && isfield(conf,"Switch_ecology")
+        if Switch_ecology
+            netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'ecology_model',[conf.Ecology_model]);  % 生态模式
+        end
     end
     netcdf.close(ncid);    % 关闭nc文件
     return 
