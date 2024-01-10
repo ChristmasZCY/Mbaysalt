@@ -25,3 +25,7 @@
 [submodule "Exfunctions/OceanData"]
 	path = Exfunctions/OceanData
 	url = https://github.com/SiqiLiOcean/OceanData.git
+
+[submodule "Exfunctions/ZoomPlot"]
+	path = Exfunctions/ZoomPlot
+	url = https://github.com/iqiukp/ZoomPlot-MATLAB.git

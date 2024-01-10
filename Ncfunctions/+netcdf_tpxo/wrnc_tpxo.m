@@ -1,18 +1,52 @@
-function wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
+function wrnc_tpxo(ncid,Lon,Lat,time,options)
     %       This function is used to write the tide current (u/v/zeta) to the netcdf file
     % =================================================================================================================
     % Parameter:
-    %       ncid:            netcdf file id          || required: True || type: int    || format: 1
-    %       Lon:             longitude               || required: True || type: double || format: [120.5, 121.5]
-    %       Lat:             latitude                || required: True || type: double || format: [30.5, 31.5]
+    %       ncid:            netcdf file id          || required: True || type: int    || example: 1
+    %       Lon:             longitude               || required: True || type: double || example: [120.5, 121.5]
+    %       Lat:             latitude                || required: True || type: double || example: [30.5, 31.5]
     %       time:            time                    || required: True || type: double || format: posixtime
-    %       U:               u                       || required: True || type: double || format: matrix
-    %       V:               v                       || required: True || type: double || format: matrix
-    %       Zeta:            zeta                    || required: True || type: double || format: matrix
+    %       options.
+    %           U:           u                       || required: True || type: double || format: matrix, 3D
+    %           V:           v                       || required: True || type: double || format: matrix, 3D
+    %           Zeta:        zeta                    || required: True || type: double || format: matrix, 3D
+    % =================================================================================================================
+    % Returns:
+    %       None
+    % =================================================================================================================
+    % Update:
+    %       2023-**-**:     Created, by Christmas;
+    %       2024-01-10:     Fixed, auto for tide current or tide level, by Christmas;
     % =================================================================================================================
     % Example:
-    %       netcdf_tpxo.wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
+    %       netcdf_tpxo.wrnc_tpxo(ncid,Lon,Lat,time,'U',U,'V',V,'Zeta',Zeta)
+    %       netcdf_tpxo.wrnc_tpxo(ncid,Lon,Lat,time,'U',U,'V',V)
+    %       netcdf_tpxo.wrnc_tpxo(ncid,Lon,Lat,time,'Zeta',Zeta)
     % =================================================================================================================
+
+    arguments(Input)
+        ncid {mustBeNumeric}
+        Lon (:, 1) {mustBeNumeric}
+        Lat (:, 1) {mustBeNumeric}
+        time (:, 1) {mustBeNumeric}
+        options.U (:,:,:) {mustBeNumeric} 
+        options.V (:,:,:) {mustBeNumeric} 
+        options.Zeta (:,:,:) {mustBeNumeric} 
+    end
+
+SWITCH = struct('current',false,'zeta',false);
+if isfield(options,'U') && isfield(options,'V')
+    SWITCH.current=true;
+    U = options.U;
+    V = options.V;
+end
+if isfield(options,'Zeta')
+    SWITCH.zeta=true;
+    Zeta = options.Zeta;
+end
+if ~ SWITCH.current && ~ SWITCH.zeta
+    error('No data to write')
+end
 
     % version
     Version = '2.1';
@@ -29,29 +63,32 @@ function wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
     % 定义维度
     londimID = netcdf.defDim(ncid, 'longitude',length(Lon));                        % 定义lon维度
     latdimID = netcdf.defDim(ncid, 'latitude', length(Lat));                        % 定义lat纬度
-    timedimID = netcdf.defDim(ncid,'time',    netcdf.getConstant('NC_UNLIMITED')); % 定义时间维度为unlimited
+    timedimID = netcdf.defDim(ncid,'time',    netcdf.getConstant('NC_UNLIMITED'));  % 定义时间维度为unlimited
     TIMEdimID = netcdf.defDim(ncid,'DateStr',  size(char(TIME),2));                 % 定义TIME维度
 
     % 定义变量
     lon_id  =  netcdf.defVar(ncid, 'longitude', 'NC_FLOAT', londimID);                       % 经度
     lat_id  =  netcdf.defVar(ncid, 'latitude',  'NC_FLOAT', latdimID);                       % 纬度
     time_id =  netcdf.defVar(ncid, 'time',      'double',   timedimID);                      % 时间
-    TIME_id =  netcdf.defVar(ncid, 'TIME',      'NC_CHAR',  [TIMEdimID, timedimID]);          % 时间char
-    u_id    =  netcdf.defVar(ncid, 'tide_u',    'NC_FLOAT', [londimID, latdimID, timedimID]); % u
-    v_id    =  netcdf.defVar(ncid, 'tide_v',    'NC_FLOAT', [londimID, latdimID, timedimID]); % v
-    h_id    =  netcdf.defVar(ncid, 'tide_h',    'NC_FLOAT', [londimID, latdimID, timedimID]); % h
-
-    netcdf.defVarFill(ncid,      u_id,      false,      9.9692100e+36); % 设置缺省值
-    netcdf.defVarFill(ncid,      v_id,      false,      9.9692100e+36); % 设置缺省值
-    netcdf.defVarFill(ncid,      h_id,      false,      9.9692100e+36); % 设置缺省值
+    TIME_id =  netcdf.defVar(ncid, 'TIME',      'NC_CHAR',  [TIMEdimID, timedimID]);         % 时间char
+    if SWITCH.current
+        u_id    =  netcdf.defVar(ncid, 'tide_u',    'NC_FLOAT', [londimID, latdimID, timedimID]); % u
+        v_id    =  netcdf.defVar(ncid, 'tide_v',    'NC_FLOAT', [londimID, latdimID, timedimID]); % v
+        netcdf.defVarFill(ncid,      u_id,      false,      9.9692100e+36); % 设置缺省值
+        netcdf.defVarFill(ncid,      v_id,      false,      9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, u_id, true, true, 5)
+        netcdf.defVarDeflate(ncid, v_id, true, true, 5)
+    end
+    if SWITCH.zeta
+        h_id    =  netcdf.defVar(ncid, 'tide_h',    'NC_FLOAT', [londimID, latdimID, timedimID]); % h
+        netcdf.defVarFill(ncid,      h_id,      false,      9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, h_id, true, true, 5)
+    end
 
     netcdf.defVarDeflate(ncid, lon_id, true, true, 5)
     netcdf.defVarDeflate(ncid, lat_id, true, true, 5)
     netcdf.defVarDeflate(ncid, time_id, true, true, 5)
     netcdf.defVarDeflate(ncid, TIME_id, true, true, 5)
-    netcdf.defVarDeflate(ncid, u_id, true, true, 5)
-    netcdf.defVarDeflate(ncid, v_id, true, true, 5)
-    netcdf.defVarDeflate(ncid, h_id, true, true, 5)
 
     % -----
     netcdf.endDef(ncid);    % 结束nc文件定义
@@ -60,9 +97,13 @@ function wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
     netcdf.putVar(ncid, lat_id, Lat);  % 纬度
     netcdf.putVar(ncid, time_id, 0, length(time), time);  % 时间
     netcdf.putVar(ncid, TIME_id, [0,0], [size(char(TIME),2),size(char(TIME),1)],char(TIME)');% 时间char
-    netcdf.putVar(ncid, u_id, [0,0,0], [size(U,1), size(U,2), size(U,3)], U);        % u
-    netcdf.putVar(ncid, v_id, [0,0,0], [size(V,1), size(V,2), size(V,3)], V);        % v
-    netcdf.putVar(ncid, h_id, [0,0,0], [size(Zeta,1), size(Zeta,2), size(Zeta,3)], Zeta); % h
+    if SWITCH.current
+        netcdf.putVar(ncid, u_id, [0,0,0], [size(U,1), size(U,2), size(U,3)], U);        % u
+        netcdf.putVar(ncid, v_id, [0,0,0], [size(V,1), size(V,2), size(V,3)], V);        % v
+    end
+    if SWITCH.zeta
+        netcdf.putVar(ncid, h_id, [0,0,0], [size(Zeta,1), size(Zeta,2), size(Zeta,3)], Zeta); % h
+    end
 
     % -----
     netcdf.reDef(ncid);    % 使打开的nc文件重新进入定义模式
@@ -87,14 +128,18 @@ function wrnc_tpxo(ncid,Lon,Lat,time,U,V,Zeta)
     netcdf.putAtt(ncid,TIME_id,'start_date',    TIME_start_date); % 时间char
     netcdf.putAtt(ncid,TIME_id,'end_date',      TIME_end_date);   % 时间char
 
-    netcdf.putAtt(ncid,u_id, 'units',        'm/s');                                 % u
-    netcdf.putAtt(ncid,u_id, 'long_name',    'tide eastward water velocity');        % u
+    if SWITCH.current
+        netcdf.putAtt(ncid,u_id, 'units',        'm/s');                                 % u
+        netcdf.putAtt(ncid,u_id, 'long_name',    'tide eastward water velocity');        % u
 
-    netcdf.putAtt(ncid,v_id, 'units',        'm/s');                                 % v
-    netcdf.putAtt(ncid,v_id, 'long_name',    'tide northward water velocity');       % v
+        netcdf.putAtt(ncid,v_id, 'units',        'm/s');                                 % v
+        netcdf.putAtt(ncid,v_id, 'long_name',    'tide northward water velocity');       % v
+    end
 
-    netcdf.putAtt(ncid,h_id, 'units',        'm');                                   % h
-    netcdf.putAtt(ncid,h_id, 'long_name',    'tide water level');                    % h
+    if SWITCH.zeta
+        netcdf.putAtt(ncid,h_id, 'units',        'm');                                   % h
+        netcdf.putAtt(ncid,h_id, 'long_name',    'tide water level');                    % h
+    end
 
     % 写入global attribute
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'product_name',   S_name);         % 文件名

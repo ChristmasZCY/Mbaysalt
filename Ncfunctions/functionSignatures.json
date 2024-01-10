@@ -9,24 +9,34 @@
             {"name":"ncid", "type":["scalar"], "purpose":"netCDF ID"}]},
     "netcdf_wrf.wrnc_wind10m":{
         "inputs":[
-            {"name":"ncid", "kind":"required","type":["vector"],"purpose":"netCDF ID"},
-            {"name":"lon", "kind":"required","type":["vector"],"purpose":"longitude"},
-            {"name":"lat", "kind":"required","type":["vector"],"purpose":"latitude"},
-            {"name":"time", "kind":"required","type":["vector"],"purpose":"time"},
-            {"name":"u10", "kind":"required","type":["3d"],"purpose":"u10"},
-            {"name":"v10", "kind":"required","type":["scalar"],"purpose":"v10"},
+            {"name":"ncid", "kind":"required","type":["numeric"],"purpose":"netCDF ID"},
+            {"name":"lon", "kind":"required","type":["numeric"],"purpose":"longitude"},
+            {"name":"lat", "kind":"required","type":["numeric"],"purpose":"latitude"},
+            {"name":"time", "kind":"required","type":["numeric"],"purpose":"time"},
+            {"name":"u10", "kind":"required","type":["numeric"],"purpose":"u10"},
+            {"name":"v10", "kind":"required","type":["numeric"],"purpose":"v10"},
             {"name":"GA", "kind":"namevalue","type":["struct"],"purpose":"Global attributes"},
             {"name":"para_conf", "kind":"namevalue","type":["struct"],"purpose":"Parameter configuration"}],
         "outputs":[]},
-    "etcdf_wrf.wrnc_t2m":{
+    "netcdf_wrf.wrnc_t2m":{
         "inputs":[
-            {"name":"ncid", "kind":"required","type":["vector"],"purpose":"netCDF ID"},
-            {"name":"lon", "kind":"required","type":["vector"],"purpose":"longitude"},
-            {"name":"lat", "kind":"required","type":["vector"],"purpose":"latitude"},
-            {"name":"time", "kind":"required","type":["vector"],"purpose":"time"},
-            {"name":"t2m", "kind":"required","type":["3d"],"purpose":"t2m"},
+            {"name":"ncid", "kind":"required","type":["numeric"],"purpose":"netCDF ID"},
+            {"name":"lon", "kind":"required","type":["numeric"],"purpose":"longitude"},
+            {"name":"lat", "kind":"required","type":["numeric"],"purpose":"latitude"},
+            {"name":"time", "kind":"required","type":["numeric"],"purpose":"time"},
+            {"name":"t2m", "kind":"required","type":["numeric"],"purpose":"t2m"},
             {"name":"GA", "kind":"namevalue","type":["struct"],"purpose":"Global attributes"},
             {"name":"para_conf", "kind":"namevalue","type":["struct"],"purpose":"Parameter configuration"}],
+        "outputs":[]},
+    "netcdf_tpxo.wrnc_tpxo":{
+        "inputs":[
+            {"name":"ncid", "kind":"required","type":["numeric"],"purpose":"netCDF ID"},
+            {"name":"lon", "kind":"required","type":["numeric"],"purpose":"longitude"},
+            {"name":"lat", "kind":"required","type":["numeric"],"purpose":"latitude"},
+            {"name":"time", "kind":"required","type":["numeric"],"purpose":"time"},
+            {"name":"U", "kind":"namevalue","type":["numeric"],"purpose":"u"},
+            {"name":"V", "kind":"namevalue","type":["numeric"],"purpose":"v"},
+            {"name":"Zeta", "kind":"namevalue","type":["numeric"],"purpose":"zeta"}],
         "outputs":[]},
     "erosion_coast_cal_id":{
         "inputs":[],

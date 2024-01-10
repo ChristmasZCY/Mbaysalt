@@ -5,7 +5,10 @@
         "inputs":[],
         "outputs":[]},
     "make_tide_from_tpxo":{
-        "inputs":[],
+        "inputs":[
+            {"name":"year", "kind":"required","type":["numeric"],"purpose":"Year to predict"},
+            {"name":"month", "kind":"required","type":["numeric"],"purpose":"Month to predict"},
+            {"name":"days", "kind":"positional","type":["numeric"],"purpose":"days after to predict(such as [0,1,10,20])"}],
         "outputs":[]},
     "make_tpxo_fixed_coordinate":{
         "inputs":[],
