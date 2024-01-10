@@ -2,25 +2,43 @@ function make_tide_from_tpxo(yyyy, mm, varargin)
     %       Make tide current u/v/h from TPXO9-atlas, and write to nc file.
     % =================================================================================================================
     % Parameter:
-    %       yyyy: year                             || required: True || type: double         ||  format: 2019 or '2019'
-    %       mm: month                              || required: True || type: double         ||  format: 1 or '1'
-    %       varargin{1}: day_length                || required: False|| type: double         ||  format: 1:31
+    %       yyyy: year                             || required: True || type: double         ||  example: 2019 or '2019'
+    %       mm: month                              || required: True || type: double         ||  example: 1 or '1'
+    %       varargin: (optional)
+    %           day_len: days after to predict     || required: False || type: double         ||  example: [1:3] or [1:6]
+    % =================================================================================================================
+    % Returns:
+    %       None
+    % =================================================================================================================
+    % Update:
+    %       2023-**-**:     Created, by Christmas;
+    %       2024-01-10:     Completed, by Christmas;
     % =================================================================================================================
     % Example:
     %       make_tide_from_tpxo(2023,5)
     %       make_tide_from_tpxo(2023,5,[1,3,5])
+    %       make_tide_from_tpxo(2023,5,[1:10])
+    %       make_tide_from_tpxo(2023,5,[1,3,5,11,21,51])
     % =================================================================================================================
+
+    arguments(Input)
+        yyyy {mustBeNumeric}
+        mm {mustBeNumeric}
+    end
+    arguments(Repeating)
+        varargin
+    end
 
     %% 位置
     conf = read_conf('tpxo.conf');
     OutputPath = conf.OutputPath;  % 不要创建！ 含${yyyymmdd}$
     SWITCH = read_switch(conf);
     TNF_mat = conf.TNF_mat;
-    Lon = conf.Lon;  % 0  :.2:360
+    Lon = conf.Lon;  %   0:.2:360
     Lat = conf.Lat;  % -90:.2:90
     res = conf.Res;
     res_filename = conf.Res_filename;
-    lon = Lon;  % 0  :.2:360
+    lon = Lon;  %   0:.2:360
     lat = Lat;  % -90:.2:90
 
     %% 构建时间序列
@@ -31,9 +49,14 @@ function make_tide_from_tpxo(yyyy, mm, varargin)
         day_length = 1: eomday(yyyy,mm);  % 一个月的天数
     else
         day_length = varargin{1};
+        varargin(1) = [];
     end
 
-    time = zeros(24,length(day_length),'double');
+    if ~ isMATLABReleaseOlderThan("R2024a")
+        time = createArray([24,length(day_length)]);
+    else
+        time = zeros(24,length(day_length),'double');
+    end
     for dd = day_length
         for i = 1 : 24
             time(i,dd) = datenum(yyyy,mm,dd)+(i-1)/24.0; %#ok<DATNM> % datenum是天，小时要除以24，UTC
@@ -42,12 +65,9 @@ function make_tide_from_tpxo(yyyy, mm, varargin)
     clear i dd
     time = reshape(time, [], 1);
  %% t_tide 正文
-    [ua,up,va,vp,ha,hp,lat,lon]=uvhap(lon,lat,res); %1=1/30
-    [preu,prev,preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, 'Cdisp', 'tidecon', TNF_mat);
-    Preu = permute(real((preu)),[2,1,3]);  % 各小时的u方向流速  ---> lon,lat,time
-    Prev = permute(real((prev)),[2,1,3]);  % 各小时的v方向流速  ---> lon,lat,time
-    Preh = permute(real((preh)),[2,1,3]);  % 各小时的水位      ---> lon,lat,time
-    clear preu prev preh
+    [ua,up,va,vp,ha,hp,lat,lon]=uvhap(lon,lat,res); % 1=1/30
+    [Preu,Prev,Preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, 'Cdisp', 'tidecon', TNF_mat);
+
     clear ua up va vp ha hp
     % 0-360 --> -180-0-180
     if SWITCH.change_lon_to_180

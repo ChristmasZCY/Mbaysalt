@@ -51,7 +51,7 @@ function Mainpath(varargin)
     else
         [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
         setpref('Mbaysalt','PathALL',PATH_contains)
-        setpref('Mbaysalt','path',Cmakepath)
+        setpref('Mbaysalt','path',PATH_toolbox)
     end
 
     switch lower(cmd)

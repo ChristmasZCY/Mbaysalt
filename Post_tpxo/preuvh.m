@@ -38,19 +38,19 @@ function [preu,prev,preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, varargin)
             Tidecon_u(:,2) = 100;
             Tidecon_u(:,3) = up(:,i,j);
             Tidecon_u(:,4) = 100;
-            preu(i,j,:)=t_predic(time,NAME,FREQ,Tidecon_u,lat(i));
+            preu(j,i,:)=t_predic(time,NAME,FREQ,Tidecon_u,lat(i));
 
             Tidecon_v(:,1) = va(:,i,j);
             Tidecon_v(:,2) = 100;
             Tidecon_v(:,3) = vp(:,i,j);
             Tidecon_v(:,4) = 100;
-            prev(i,j,:)=t_predic(time,NAME,FREQ,Tidecon_v,lat(i));
+            prev(j,i,:)=t_predic(time,NAME,FREQ,Tidecon_v,lat(i));
 
             Tidecon_h(:,1) = ha(:,i,j);
             Tidecon_h(:,2) = 100;
             Tidecon_h(:,3) = hp(:,i,j);
             Tidecon_h(:,4) = 100;
-            preh(i,j,:)=t_predic(time,NAME,FREQ,Tidecon_h,lat(i));
+            preh(j,i,:)=t_predic(time,NAME,FREQ,Tidecon_h,lat(i));
         end
 
         if ~isempty(Cdisp)

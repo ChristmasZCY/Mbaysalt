@@ -106,28 +106,28 @@ function [Lon,varargout] = ll_to_ll(lon,varargin)
         varargout{1} = ele;
     else
         switch Method_split_ele
-            case 'repmat'
-                % 历时 3.077064 秒
-                for i = 1 : length(varargin)
-                    subs{i} = repmat({':'}, 1, ele_dims); % 创建一个与 ele 大小相同的子索引
-                    subs{i}{ele_dims} = i; % 将要选择的维度的子索引设置为 i
-                    varargout{i} = ele(subs{i}{:}); % 选择要选择的维度的所有元素并将其存储在
-                end
-
-            case 'mat2cell'
-                % 历时 3.275914 秒
-                for i = 1 : length(size_ele) - 1
-                    subs{i} = size(ele,i);
-                end
-                varargout = mat2cell(ele,subs{:},ones(1,size_ele(end)));
-
-            case 'reshape'
-                % 历时 3.113021 秒
-                ele_2dims = reshape(ele, [], size_ele(end));
-                for i = 1 : size_ele(end)
-                    varargout{i} = reshape(ele_2dims(:,i), size_ele(1:end-1));
-                end
+        case 'repmat'
+            % 历时 3.077064 秒
+            for i = 1 : length(varargin)
+                subs{i} = repmat({':'}, 1, ele_dims); % 创建一个与 ele 大小相同的子索引
+                subs{i}{ele_dims} = i; % 将要选择的维度的子索引设置为 i
+                varargout{i} = ele(subs{i}{:}); % 选择要选择的维度的所有元素并将其存储在
             end
+
+        case 'mat2cell'
+            % 历时 3.275914 秒
+            for i = 1 : length(size_ele) - 1
+                subs{i} = size(ele,i);
+            end
+            varargout = mat2cell(ele,subs{:},ones(1,size_ele(end)));
+
+        case 'reshape'
+            % 历时 3.113021 秒
+            ele_2dims = reshape(ele, [], size_ele(end));
+            for i = 1 : size_ele(end)
+                varargout{i} = reshape(ele_2dims(:,i), size_ele(1:end-1));
+            end
+        end
     end
 
 
