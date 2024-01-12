@@ -1,0 +1,58 @@
+{
+    "_schemaVersion": "1.0.0",
+    "ecef_distance":{
+        "inputs":[
+            {"name":"lat1", "kind":"required", "type":["numeric"], "purpose":"latitude of point 1"},
+            {"name":"lon1", "kind":"required", "type":["numeric"], "purpose":"longitude of point 1"},
+            {"name":"alt1", "kind":"required", "type":["numeric"], "purpose":"altitude of point 1"},
+            {"name":"lat2", "kind":"required", "type":["numeric"], "purpose":"latitude of point 2"},
+            {"name":"lon2", "kind":"required", "type":["numeric"], "purpose":"longitude of point 2"},
+            {"name":"alt2", "kind":"required", "type":["numeric"], "purpose":"altitude of point 2"},
+            {"name":"lengthUnit", "kind":"namevalue", "type":["char","choice={'meter','kilometer'}"], "purpose":"length unit of output"}],
+        "outputs":[
+            {"name":"deltaX", "type":["numeric"], "purpose":"delta X"},
+            {"name":"deltaY", "type":["numeric"], "purpose":"delta Y"},
+            {"name":"deltaZ", "type":["numeric"], "purpose":"delta Z"},
+            {"name":"distance", "type":["numeric"], "purpose":"distance between points 1 and 2"}]},
+    "geo_ecef":{
+        "inputs":[
+            {"name":"rule", "kind":"required", "type":["choice={'geo2ecef','ecef2geo'}"], "purpose":"conversion style"},
+            {"name":"xlon", "kind":"required", "type":["numeric"], "purpose":"x-longitude of point"},
+            {"name":"ylat", "kind":"required", "type":["numeric"], "purpose":"y-latitude of point"},
+            {"name":"zh", "kind":"required", "type":["numeric"], "purpose":"z-altitude of point"},
+            {"name":"lengthUnit", "kind":"namevalue", "type":["char","choice={'meter','kilometer'}"], "purpose":"length unit of output"}],
+        "outputs":[
+            {"name":"xlon", "type":["numeric"], "purpose":"x-longitude of point"},
+            {"name":"ylat", "type":["numeric"], "purpose":"y-latitude of point"},
+            {"name":"zh", "type":["numeric"], "purpose":"z-altitude of point"}]},
+    "geo_xy":{
+        "inputs":[
+            {"name":"proj_ori", "kind":"required", "type":["choice={4326,3857}"], "purpose":"Origin projection"},
+            {"name":"proj_dst", "kind":"required", "type":["choice={4326,3857,'UTM'}"], "purpose":"Destination projection"},
+            {"name":"ylat", "kind":"required", "type":["numeric"], "purpose":"y-latitude of point"},
+            {"name":"xlon", "kind":"required", "type":["numeric"], "purpose":"x-longitude of point"}],
+        "outputs":[
+            {"name":"ylat", "type":["numeric"], "purpose":"y-latitude of point"},
+            {"name":"xlon", "type":["numeric"], "purpose":"x-longitude of point"}]},
+    "ll_to_ll_180":{
+        "inputs":[
+            {"name":"lon_ori", "kind":"required", "type":["numeric"], "purpose":"Origin longitude"},
+            {"name":"value", "kind":"positional", "type":["numeric"], "purpose":"value array","repeating":true}],
+        "outputs":[
+            {"name":"lon_dst", "type":["numeric"], "purpose":"Destination longitude"},
+            {"name":"value", "type":["numeric"], "purpose":"value array","repeating":true}]},
+    "ll_to_ll_360":{
+        "inputs":[
+            {"name":"lon_ori", "kind":"required", "type":["numeric"], "purpose":"Origin longitude"},
+            {"name":"value", "kind":"positional", "type":["numeric"], "purpose":"value array","repeating":true}],
+        "outputs":[
+            {"name":"lon_dst", "type":["numeric"], "purpose":"Destination longitude"},
+            {"name":"value", "type":["numeric"], "purpose":"value array","repeating":true}]},
+    "ll_to_ll":{
+        "inputs":[
+            {"name":"lon_ori", "kind":"required", "type":["numeric"], "purpose":"Origin longitude"},
+            {"name":"value", "kind":"positional", "type":["numeric"], "purpose":"value array","repeating":true}],
+        "outputs":[
+            {"name":"lon_dst", "type":["numeric"], "purpose":"Destination longitude"},
+            {"name":"value", "type":["numeric"], "purpose":"value array","repeating":true}]}
+}

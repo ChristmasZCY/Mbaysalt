@@ -1,57 +1,65 @@
+<!--
+ * @ -*- coding:UTF-8 -*-: 
+ * @#########################: 
+ * @Author: Christmas
+ * @Date: 2023-09-18 21:13:00
+ * @LastEditTime: 2024-01-12 22:33:19
+ * @Description: 
+-->
 # Mbaysalt Toolbox
 
 ## Mbaysalt means Matlab-baysalt-toolbox
 
 ## Installation
 
- 1. Shell/Powershell/Command Prompt.
+1. Shell/Powershell/Command Prompt.
 
-    ```shell
-    git clone https://github.com/ChristmasZCY/Mbaysalt.git
-    ```
+   ```shell
+   git clone https://github.com/ChristmasZCY/Mbaysalt.git
+   ```
+2. Change which Exfunction you want to use.
 
- 2. Change which Exfunction you want to use.
+   ```shell
+   vim Mbaysalt/Configurefiles/INSTALL.conf
+   ```
 
-    ```shell
-    vim Mbaysalt/Configurefiles/INSTALL.conf
-    ```
+   - **From**
 
-    - **From**
+   > m_map = .FALSE. 
+   > matFigure = .FALSE. 
+   > matFVCOM = .FALSE. 
+   > matNC = .FALSE. 
+   > matWRF = .FALSE. 
+   > nctoolbox = .FALSE. 
+   > t_tide = .FALSE. 
+   > cdt = .FALSE. 
+   > gshhs = .FALSE. 
+   > FVCOM_NML = .FALSE. 
+   > OceanData = .FALSE. 
+   > \# PATH_git = /usr/bin/git
+   >
 
-    > m_map = .FALSE. \
-    > matFigure = .FALSE. \
-    > matFVCOM = .FALSE. \
-    > matNC = .FALSE. \
-    > matWRF = .FALSE. \
-    > nctoolbox = .FALSE. \
-    > t_tide = .FALSE. \
-    > cdt = .FALSE. \
-    > gshhs = .FALSE. \
-    > FVCOM_NML = .FALSE. \
-    > OceanData = .FALSE. \
-    > \# PATH_git = /usr/bin/git
+   - **To**
 
-    - **To**
+   > m_map = .TRUE. 
+   > matFigure = .TRUE. 
+   > matFVCOM = .TRUE. 
+   > matNC = .TRUE. 
+   > matWRF = .TRUE. 
+   > nctoolbox = .TRUE. 
+   > t_tide = .TRUE. 
+   > cdt = .TRUE. 
+   > gshhs = .TRUE. 
+   > FVCOM_NML = .TRUE. 
+   > OceanData = .TRUE. 
+   > PATH_git = /usr/bin/git
+   >
+3. Matlab
 
-    > m_map = .TRUE. \
-    > matFigure = .TRUE. \
-    > matFVCOM = .TRUE. \
-    > matNC = .TRUE. \
-    > matWRF = .TRUE. \
-    > nctoolbox = .TRUE. \
-    > t_tide = .TRUE. \
-    > cdt = .TRUE. \
-    > gshhs = .TRUE. \
-    > FVCOM_NML = .TRUE. \
-    > OceanData = .TRUE. \
-    > PATH_git = /usr/bin/git
-
- 3. Matlab
-
- ```matlab
- addpath('Mbaysalt')
- run Mainpath.m
- ```
+```matlab
+addpath('Mbaysalt')
+run Mainpath.m
+```
 
 ## Contains
 
@@ -71,3 +79,6 @@
 - [CDT](https://github.com/chadagreene/CDT)
 - [nctoolbox](https://github.com/nctoolbox/nctoolbox)
 - [OceanData](https://github.com/SiqiLiOcean/OceanData)
+- [ZoomPlot](https://github.com/iqiukp/ZoomPlot-MATLAB)
+- [TMDToolbox](https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5)
+- [vtkToolbox](https://github.com/KIT-IBT/vtkToolbox)

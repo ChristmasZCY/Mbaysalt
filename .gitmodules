@@ -29,3 +29,12 @@
 [submodule "Exfunctions/ZoomPlot"]
 	path = Exfunctions/ZoomPlot
 	url = https://github.com/iqiukp/ZoomPlot-MATLAB.git
+
+[submodule "Exfunctions/vtkToolbox"]
+	path = Exfunctions/vtkToolbox
+	url = https://github.com/KIT-IBT/vtkToolbox.git
+
+[submodule "Exfunctions/TMDToolbox"]
+	path = Exfunctions/TMDToolbox
+	url = https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git
+
