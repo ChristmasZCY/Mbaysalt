@@ -4,6 +4,7 @@
 ../../.git
 **/*.m~
 **/*.asv
+**/.gitR
 **/.git
 Exfunctions/matNC
 Exfunctions/matWRF
@@ -19,4 +20,4 @@ Exfunctions/nctoolbox
 Exfunctions/cdt
 Exfunctions/TMDToolbox
 Exfunctions/vtkToolbox
-**/.gitR
+
