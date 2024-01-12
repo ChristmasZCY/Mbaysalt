@@ -1,10 +1,10 @@
 .idea
 .DS_Store
 .vscode
+.gitR
 ../../.git
 **/*.m~
 **/*.asv
-**/.gitR
 **/.git
 Exfunctions/matNC
 Exfunctions/matWRF
