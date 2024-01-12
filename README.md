@@ -3,7 +3,7 @@
  * @#########################: 
  * @Author: Christmas
  * @Date: 2023-09-18 21:13:00
- * @LastEditTime: 2024-01-12 22:33:19
+ * @LastEditTime: 2024-01-12 22:47:18
  * @Description: 
 -->
 # Mbaysalt Toolbox
@@ -20,40 +20,13 @@
 2. Change which Exfunction you want to use.
 
    ```shell
+   cd /path/to/Mbaysalt
    vim Mbaysalt/Configurefiles/INSTALL.conf
    ```
 
-   - **From**
+   > a. Change What you want to install to **.TRUE.** and others to **.FALSE.** . \
+   > b. If git is not in your system path, you can uncomment `PATH_git = /usr/bin/git`, and change the path to your git path.
 
-   > m_map = .FALSE. 
-   > matFigure = .FALSE. 
-   > matFVCOM = .FALSE. 
-   > matNC = .FALSE. 
-   > matWRF = .FALSE. 
-   > nctoolbox = .FALSE. 
-   > t_tide = .FALSE. 
-   > cdt = .FALSE. 
-   > gshhs = .FALSE. 
-   > FVCOM_NML = .FALSE. 
-   > OceanData = .FALSE. 
-   > \# PATH_git = /usr/bin/git
-   >
-
-   - **To**
-
-   > m_map = .TRUE. 
-   > matFigure = .TRUE. 
-   > matFVCOM = .TRUE. 
-   > matNC = .TRUE. 
-   > matWRF = .TRUE. 
-   > nctoolbox = .TRUE. 
-   > t_tide = .TRUE. 
-   > cdt = .TRUE. 
-   > gshhs = .TRUE. 
-   > FVCOM_NML = .TRUE. 
-   > OceanData = .TRUE. 
-   > PATH_git = /usr/bin/git
-   >
 3. Matlab
 
 ```matlab
