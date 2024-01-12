@@ -44,14 +44,13 @@ function Mainpath(varargin)
                 break
         end
     end
-
     if ispref('Mbaysalt','PATH_contains') && ispref('Mbaysalt','PATH_toolbox') && ~init
         PATH_contains = getpref('Mbaysalt','PATH_contains');
         PATH_toolbox = getpref('Mbaysalt','PATH_toolbox');
     else
         [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
-        setpref('Mbaysalt','PathALL',PATH_contains)
-        setpref('Mbaysalt','path',PATH_toolbox)
+        setpref('Mbaysalt','PATH_contains',PATH_contains)
+        setpref('Mbaysalt','PATH_toolbox',PATH_toolbox)
     end
 
     switch lower(cmd)
@@ -92,6 +91,7 @@ function [FunctionPath,path] = Cmakepath
         "Examples"
         "Py"
         "Matesetfunctions"
+        "Mapfunctions"
         ];
     FunI = cellstr(FunI);
     
@@ -117,6 +117,9 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/nctoolbox"
         "Exfunctions/OceanData"
         "Exfunctions/FVCOM_NML"
+        "Exfunctions/ZoomPlot"
+        "Exfunctions/TMDToolbox"
+        "Exfunctions/vtkToolbox"
         ];
     FunE = cellstr(FunE);
 
@@ -135,9 +138,15 @@ end
 
 
 function Crmpath(Path)
-    currentPaths = strsplit(path, pathsep);
-    % cellfun(@rmpath, Path);
-    cellfun(@rmpath, Path(cellfun(@(x) ismember(x, currentPaths), Path)));
+    % currentPaths = strsplit(path, pathsep);
+    % cellfun(@rmpath, Path(cellfun(@(x) ismember(x, currentPaths), Path)));
+    % exception = warning('on','last');
+    % identifier = exception.identifier;
+    identifier = 'MATLAB:rmpath:DirNotFound';
+    
+    warning('off',identifier);
+    cellfun(@rmpath, Path);
+    warning('on',identifier);
 end
 
 
@@ -222,10 +231,28 @@ function gitclone()
             end
         end
 
-        if para_conf.nctoolbox
-            if ~(exist('ncload', 'file') == 2) % nctoolbox
+        if para_conf.nctoolbox  % nctoolbox
+            if ~(exist('ncload', 'file') == 2)
                 txt = ['git clone https://github.com/nctoolbox/nctoolbox.git ', Edir, 'nctoolbox'];
                 disp('---------> Cloning nctoolbox toolbox')
+                disp(txt)
+                system(txt);
+            end
+        end
+
+        if para_conf.TMDToolbox  % TMDToolbox
+            if ~(exist('TMD','file') == 2)
+                txt = ['git clone https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git ', Edir, 'TMDToolbox'];
+                disp('---------> Cloning TMDToolbox toolbox')
+                disp(txt)
+                system(txt);
+            end
+        end
+
+        if para_conf.vtkToolbox  % vtkToolbox
+            if ~(exist('vtkRead','file') == 2)
+                txt = ['git clone https://github.com/KIT-IBT/vtkToolbox.git ', Edir, 'vtkToolbox'];
+                disp('---------> Cloning vtkToolbox toolbox')
                 disp(txt)
                 system(txt);
             end

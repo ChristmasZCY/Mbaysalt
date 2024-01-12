@@ -1,16 +1,42 @@
-
 {
-    "_schemaVersion": "1.0.0",
-    "read_2dm_to_msh":{
-        "inputs":[],
-        "outputs":[]},
-    "read_2dm_to_website":{
-        "inputs":[],
-        "outputs":[]},
-    "read_gebco_to_sms":{
-        "inputs":[],
-        "outputs":[]},
-    "read_GMT_to_cst":{
-        "inputs":[],
-        "outputs":[]}
+  "_schemaVersion": "1.0.0",
+  "read_2dm_to_msh": {
+    "inputs": [],
+    "outputs": []
+  },
+  "read_2dm_to_website": {
+    "inputs": [],
+    "outputs": []
+  },
+  "read_gebco_to_sms": {
+    "inputs": [],
+    "outputs": []
+  },
+  "read_GMT_to_cst": {
+    "inputs": [],
+    "outputs": []
+  },
+  "read_vtk": {
+    "inputs": [
+        {"name":"fin", "kind":"required","type":["file=*.vtk"],"purpose":"vtk file to read"},
+        {"name":"INFO", "kind":"flag","type":["choices={'INFO'}"],"purpose":"print information of vtk file"}],
+    "outputs": [
+        {"name":"x","type":["numeric"],"purpose":"x coordinate"},
+        {"name":"y","type":["numeric"],"purpose":"y coordinate"},
+        {"name":"nv","type":["numeric"],"purpose":"triangle connectivity"},
+        {"name":"z","type":["numeric"],"purpose":"z coordinate"},
+        {"name":"cell_type","type":["numeric"],"purpose":"cell type"},
+        {"name":"cell_data","type":["numeric"],"purpose":"cell data"}]},
+  "write_vtk": {
+    "inputs": [
+        {"name":"fout","kind":"required","type":["char"],"purpose":"vtk file to write"},
+        {"name":"x","kind":"required","type":["numeric"],"purpose":"x coordinate"},
+        {"name":"y","kind":"required","type":["numeric"],"purpose":"y coordinate"},
+        {"name":"nv","kind":"required","type":["numeric"],"purpose":"triangle connectivity"},
+        {"name":"z","kind":"positional","type":["numeric"],"purpose":"z coordinate"},
+        {"name":"cell_type","kind":"positional","type":["numeric"],"purpose":"cell type"},
+        {"name":"cell_data","kind":"positional","type":["numeric"],"purpose":"cell data"},
+        {"name":"Coordinate","kind":"namevalue","type":["choices={'geo','xy'}"],"purpose":"coordinate type"}],
+    "outputs": []
+  }
 }
