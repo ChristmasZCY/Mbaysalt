@@ -691,8 +691,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.out_avg_level
             for idep = 1: size(Avg_depth,1)
                 Deplev_use = Deplev;
-                Deplev_use(Deplev < min(Avg_depth(idep,:))) = NaN;
-                Deplev_use(Deplev > max(Avg_depth(idep,:))) = NaN;
+                Deplev_use(Deplev_use < min(Avg_depth(idep,:))) = NaN;
+                Deplev_use(Deplev_use > max(Avg_depth(idep,:))) = NaN;
                 Deplev_interval = Deplev_use(:,:,2:end) - Deplev_use(:,:,1:end-1);  % 两层的差，每层的厚度
                 sum_depth_avg = sum(Deplev_interval,3,"omitnan");
                 coefficient = Deplev_interval./sum_depth_avg;
