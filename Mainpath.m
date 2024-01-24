@@ -44,6 +44,7 @@ function Mainpath(varargin)
                 break
         end
     end
+    % 初始化
     if ispref('Mbaysalt','PATH_contains') && ispref('Mbaysalt','PATH_toolbox') && ~init
         PATH_contains = getpref('Mbaysalt','PATH_contains');
         PATH_toolbox = getpref('Mbaysalt','PATH_toolbox');
@@ -58,13 +59,19 @@ function Mainpath(varargin)
             Caddpath(PATH_contains)  % add all path
             gitclone()               % clone all git
             Caddpath(PATH_contains)  % add all path
+            Javaaddpath()            % add java path
         case 'rm'
             Crmpath(PATH_contains)   % remove all path
             Caddpath(PATH_toolbox)
         case 'noclone'
             Caddpath(PATH_contains)
+            Javaaddpath()
         otherwise
             error('parameter error')
+    end
+
+    if init
+        Fixed_functions  % Fixed some functions
     end
 
 end
@@ -147,6 +154,12 @@ function Crmpath(Path)
     warning('off',identifier);
     cellfun(@rmpath, Path);
     warning('on',identifier);
+end
+
+function Javaaddpath()
+    if exist('setup_nctoolbox_java','file') == 2
+        setup_nctoolbox_java()
+    end
 end
 
 
@@ -392,4 +405,49 @@ function PATH = read_PATH(structIn)
             PATH.(key{i}(6:end)) = structIn.(key{i});
         end
     end
+end
+
+
+function Fixed_functions()
+    % 修正一些函数在高版本matlab中的报错
+    fixed_t_tide()
+    fixed_setup_nctoolbox_java()
+end
+
+
+function fixed_t_tide()
+    % 为t_tide工具包的t_tide.m文件添加ref参数
+    m_filepath = which('t_tide.m');
+    % 备份源文件
+    path_DIR = fileparts(m_filepath);
+    m_filecopy = fullfile(path_DIR,'t_tide_origin.m');
+    if ~ exist(m_filecopy,'file')
+        copyfile(m_filepath,m_filecopy);
+    end
+    fileContent = fileread(m_filepath);  % 读取文件内容
+    searchStr = "nameu = struct('name',nameu,'freq',fu,'tidecon',tidecon,'type',ltype);";  % 定义要查找的字符串
+    replaceStr = "nameu = struct('name',nameu,'freq',fu,'tidecon',tidecon,'type',ltype,'ref',z0);";  % 定义替换后的字符串
+    newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
+    fid = fopen(m_filepath, 'w');  % 将修改后的内容写回文件
+    fwrite(fid, newContent);
+    fclose(fid);
+end
+
+
+function fixed_setup_nctoolbox_java()
+    % 修正nctoolbox工具包的setup_nctoolbox_java.m函数在高版本matlab中的报错
+    m_filepath = which('setup_nctoolbox_java.m');
+    % 备份源文件
+    path_DIR = fileparts(m_filepath);
+    m_filecopy = fullfile(path_DIR,'setup_nctoolbox_java_origin.m');
+    if ~ exist(m_filecopy,'file')
+        copyfile(m_filepath,m_filecopy);
+    end
+    fileContent = fileread(m_filepath);  % 读取文件内容
+    pattern = '(?m)^(?<!%)(root\.addAppender\(org\.apache\.log4j\.ConsoleAppender\(org\.apache\.log4j\.PatternLayout\(''%d\{ISO8601\} \[\%t\] %-5p %c %x - %m%n''\)\)\);)';
+    replacement = '% $1';
+    newContent = regexprep(fileContent, pattern, replacement);
+    fid = fopen(m_filepath, 'w');  % 将修改后的内容写回文件
+    fwrite(fid, newContent);
+    fclose(fid);
 end
