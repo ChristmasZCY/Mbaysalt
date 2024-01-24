@@ -82,6 +82,11 @@ function [xlon_dst,ylat_dst] = geo_xy(proj_ori,proj_dst,xlon_ori,ylat_ori,option
         % elseif all(proj_ori == '4326') && strcmp(proj_dst,'UTM') % WGS84 to UTM (经纬度坐标转 UTM 坐标)
         elseif strcmp(proj_ori,'4326') && strcmp(proj_dst,'UTM') % Web Mercator to UTM (平面坐标转 UTM 坐标)
             esriCode = latlonToUTMESRI(xlon_ori,ylat_ori);
+            if max(esriCode) - min(esriCode) ~= 0
+                warning(sprintf(['There are at least 2 UTM Region at matrix. \n' ...
+                    '      Maybe %d UTM region'], int16(max(esriCode) - min(esriCode)+1)))
+            end
+            esriCode = round(mean(esriCode(:)),0);
             proj = projcrs(esriCode);
             [xlon_dst,ylat_dst] = projfwd(proj,ylat_ori,xlon_ori);
         else

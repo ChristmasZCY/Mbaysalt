@@ -8,13 +8,17 @@ function var = nr(fin,varName, varargin)
     % Returns:
     %       var: variable matrix                               || required: False || type: double || format: matrix
     % =================================================================================================================
+    % Update:
+    %       2023-**-**:     Created, by Christmas;
+    %       2024-01-16:     Fixed filename str with ' ', by Christmas;
+    % =================================================================================================================
     % Example:
     %       var = nr(file,'x');
     %       var = nr(file,'x',[1,1],[Inf,Inf]);
     % =================================================================================================================
 
     arguments(Input)
-        fin {mustBeFile}
+        fin % {mustBeFile}
         varName {mustBeTextScalar}
     end
 
@@ -25,7 +29,7 @@ function var = nr(fin,varName, varargin)
     arguments(Output)
         var
     end
-
+    fin = strtrim(fin);
     var = ncread(fin,varName, varargin{:});
 
 end
