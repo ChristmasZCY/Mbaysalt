@@ -137,6 +137,11 @@
         "inputs":[
             {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":true}],
         "outputs":[
-            {"name":"Origin file", "type":["file"], "purpose":"Origin file", "repeating":true}]}
-
+            {"name":"Origin file", "type":["file"], "purpose":"Origin file", "repeating":true}]},
+    "limit_var":{
+        "inputs":[
+            {"name":"Var",  "kind":"required", "type":["numeric"], "purpose":"Variable"},
+            {"name":"range",  "kind":"required", "type":["numeric"], "purpose":"Range of variable"}],
+        "outputs":[
+            {"name":"Var", "type":["numeric"], "purpose":"Variable"}]}
 }
