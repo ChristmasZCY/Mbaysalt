@@ -2,6 +2,11 @@
 {
     "_schemaVersion": "1.0.0",
     "calc_rh2":{
-        "inputs":[],
-        "outputs":[]}
+        "inputs":[
+            {"name":"PSFC", "kind":"required","type":["scalar"],"purpose":"PSFC at WRF"},
+            {"name":"Q2", "kind":"required","type":["scalar"],"purpose":"Q2 at WRF"},
+            {"name":"T2", "kind":"required","type":["scalar"],"purpose":"T2 at WRF"}],
+        "outputs":[
+            {"name":"RH2", "type":["scalar"],"purpose":"RH2 at WRF"}
+        ]}
 }

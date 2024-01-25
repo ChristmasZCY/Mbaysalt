@@ -1,0 +1,10 @@
+
+{
+    "_schemaVersion": "1.0.0",
+    "esmf_write_structured_grid":{
+        "inputs":[
+            {"name":"fout", "kind":"required","type":["char"],"purpose":"output NCfile name"},
+            {"name":"lon", "kind":"required","type":["scalar"],"purpose":"longitude(1D)"},
+            {"name":"lat", "kind":"required","type":["scalar"],"purpose":"latitude(1D)"}],
+        "outputs":[]}
+}

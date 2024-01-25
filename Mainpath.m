@@ -110,7 +110,6 @@ function [FunctionPath,path] = Cmakepath
     FunE = path + division + [
         "Exfunctions/cprintf"
         "Exfunctions/matFVCOM"
-        "Exfunctions/Extend/matWRF"
         "Exfunctions/matFigure"
         "Exfunctions/matWRF"
         "Exfunctions/cdt"
@@ -127,6 +126,8 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/ZoomPlot"
         "Exfunctions/TMDToolbox"
         "Exfunctions/vtkToolbox"
+        "Exfunctions/Extend/matWRF"
+        "Exfunctions/Extend/matFVCOM"
         ];
     FunE = cellstr(FunE);
 
