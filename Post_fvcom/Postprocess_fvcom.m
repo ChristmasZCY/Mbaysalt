@@ -21,6 +21,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-01-03:     Fixed aligning of osprint2, by Christmas;
     %       2024-01-03:     Added Avg_depth wrong warning, by Christmas;
     %       2024-01-07:     Added nemuro output(chlo,no3,zp,pp,sand), by Christmas;
+    %       2024-01-25:     Added limit for ecological element(ph, no3, pco2, chlo, casfco2)
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20230525,1)
@@ -180,6 +181,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             if strcmpi(Ecology_model, '.ERSEM.')
                 ph = double(ncread(ncfile,'O3_pH'));
             end
+            ph = limit_var(ph, [0,14]);
         end
         if SWITCH.no3 % 是否包含no3
             if strcmpi(Ecology_model, '.ERSEM.')
@@ -187,11 +189,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             elseif strcmpi(Ecology_model, '.NEMURO.')
                 no3 = double(ncread(ncfile,'NO3')); % NO3 氮氧化物
             end
+            no3 = limit_var(no3, [0,400]);
         end
         if SWITCH.pco2 % 是否包含pco2
             if strcmpi(Ecology_model, '.ERSEM.')
                 pco2 = double(ncread(ncfile,'O3_pCO2'));
             end
+            pco2 = limit_var(pco2, [0,10000]);
         end
         if SWITCH.chlo % 是否包含chlorophyll
             if strcmpi(Ecology_model, '.ERSEM.')
@@ -208,11 +212,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 chlo = 1.59 * pp;
                 clear ps pl pp
             end
+            chlo = limit_var(chlo, [0,100]);
         end
         if SWITCH.casfco2 % 是否包含海气二氧化碳通量
             if strcmpi(Ecology_model, '.ERSEM.')
                 casfco2 = double(ncread(ncfile,'O3_fair'));
             end
+            casfco2 = limit_var(casfco2, [-300, 300]);
         end
         if SWITCH.zp  % zooplankton zp 浮游动物
             if strcmpi(Ecology_model, '.NEMURO.')
