@@ -1,23 +1,30 @@
-function read_2dm_to_website(varargin)
-    %       read 2dm file and write to website format
+function read_2dm_to_website(fin, fout, varargin)
+    %       Read 2dm file and write to website format
     % =================================================================================================================
     % Parameter:
     %       Global: whether is global grid  || required: False || type: logical || format: 'Global'
     % =================================================================================================================
+    % Returns:
+    %       None
+    % =================================================================================================================
+    % Update:
+    %       2023-**-**:     Created,    by Christmas;
+    %       2024-01-31:     Change read arguments from parameter,   by Christmas;
+    % =================================================================================================================
     % Example:
-    %       read_2dm_to_website()
-    %       read_2dm_to_website('Global')
+    %       read_2dm_to_website('/Users/christmas/Desktop/项目/网格/ECS/ECS_9/ECS_9(msl).2dm','./ECS_9(msl).web')
+    %       read_2dm_to_website('/Users/christmas/Desktop/项目/网格/ECS/ECS_9/ECS_9(msl).2dm','./ECS_9(msl).web','Global')
     % =================================================================================================================
 
     varargin = read_varargin2(varargin,{'Global'});
 
-    file = read_conf('Grid_functions.conf','f2dmfile');
-    osprint2('INFO',file);
-    [~,name,~]=fileparts(file);
-    save_path = read_conf('Grid_functions.conf','save_path');
-    save_path = del_filesep(save_path);
+    % fin = read_conf('Grid_functions.conf','f2dmfile');
+    osprint2('INFO',fin);
+    % [~,name,~]=fileparts(fin);
+    % save_path = read_conf('Grid_functions.conf','save_path');
+    % save_path = del_filesep(save_path);
 
-    f = f_load_grid(file);
+    f = f_load_grid(fin);
 
     if isempty(Global)
         for i = 1 : length(f.nv)
@@ -29,7 +36,6 @@ function read_2dm_to_website(varargin)
 
     else
         f_h = f_2d_mesh(f,'Global');
-
         F.Lon = f_h.XData';
         F.Lat = f_h.YData';
         clf;close
@@ -39,10 +45,18 @@ function read_2dm_to_website(varargin)
     clear i j
 
     % write to website format
-    Outputfile = [save_path,filesep,name,'.web'];
-    osprint2('INFO',Outputfile);
-    fid = fopen(Outputfile,'w');
-    fprintf(fid,['%12.8f',',', '%12.8f','%14.8f',',', '%12.8f','%14.8f',',', '%12.8f', '\n'],LL');
+    [fout_path, name, ~] = fileparts(fout);
+    if ~contains(fout,'/')
+        fout_path = pwd;
+    end
+    makedirs(fout_path);
+    if ~endsWith(fout_path, '.web')
+        fout = [fout_path, filesep, name, '.web'];
+    end
+    osprint2('INFO',fout);
+    fid = fopen(fout,'w+');
+    fprintf(fid, '%.8f, %.8f  %.8f, %.8f  %.8f, %.8f\n',LL');
+    % fprintf(fid,['%12.8f',',', '%12.8f','%14.8f',',', '%12.8f','%14.8f',',', '%12.8f', '\n'],LL');
     fclose(fid);
-
+    return
 end
