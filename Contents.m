@@ -1,10 +1,11 @@
 % Mbaysalt Toolbox
-% Version 2.1 (R2023b) 2023-12-27 
+% Version 2.2 (R2023b) 2024-01-31
 % =================================================================================================================
 % Version 0.1  2023-03-01   R2023b  (Created by Christmas, Dovelet, Qidi Ma)
 % Version 1.0  2023-10-18   R2023b  (Fixed by Christmas)
 % Version 2.0  2023-11-22   R2023b  (Fixed by Christmas)  --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.0>
 % Version 2.1 (R2023b) 2023-12-27   (Modified by Christmas)
+% Version 2.2 (R2023b) 2024-01-31   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.2>
 %
 % This toolbox is used to postpocess model data and draw pictures.
 % The model data is from original FVCOM, original NEMURO, Standard WAVE WATCH III, Standard WRF, and so on.
