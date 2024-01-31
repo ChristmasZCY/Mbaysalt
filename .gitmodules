@@ -38,3 +38,7 @@
 	path = Exfunctions/TMDToolbox
 	url = https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git
 
+[submodule "Exfunctions/HYCOM2FVCOM"]
+	path = Exfunctions/HYCOM2FVCOM
+	url = https://github.com/SiqiLiOcean/HYCOM2FVCOM.git
+
