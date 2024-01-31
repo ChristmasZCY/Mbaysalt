@@ -5,7 +5,10 @@
     "outputs": []
   },
   "read_2dm_to_website": {
-    "inputs": [],
+    "inputs": [
+      {"name":"fin", "kind":"required","type":["file=*.2dm"],"purpose":"2dm file to be read"},
+      {"name":"fout", "kind":"required","type":["char"], "purpose":"Webfile to be written"},
+      {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"}],
     "outputs": []
   },
   "read_gebco_to_sms": {
