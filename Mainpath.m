@@ -1,4 +1,4 @@
-function Mainpath(varargin)
+function varargout = Mainpath(varargin)
     %       Mainpath is a function to add all path of this package
     % =================================================================================================================
     % Parameters:
@@ -14,6 +14,7 @@ function Mainpath(varargin)
     %       2023-**-**:     Created, by Christmas;
     %       2023-12-27:     Added check_command, OceanData, FVCOM_NML, by Christmas;
     %       2024-01-02:     Added path pref, by Christmas;
+    %       2024-01-31:     Added gitclone(built-in) and return clones info, by Christmas;
     % =================================================================================================================
     % Examples:
     %       Mainpath
@@ -55,23 +56,27 @@ function Mainpath(varargin)
     end
 
     switch lower(cmd)
-        case 'add'
-            Caddpath(PATH_contains)  % add all path
-            gitclone()               % clone all git
-            Caddpath(PATH_contains)  % add all path
-            Javaaddpath()            % add java path
-        case 'rm'
-            Crmpath(PATH_contains)   % remove all path
-            Caddpath(PATH_toolbox)
-        case 'noclone'
-            Caddpath(PATH_contains)
-            Javaaddpath()
-        otherwise
-            error('parameter error')
+    case 'add'
+        Caddpath(PATH_contains)  % add all path
+        CLONES = git_clone();    % clone all git
+        Caddpath(PATH_contains)  % add all path
+        Javaaddpath()            % add java path
+    case 'rm'
+        Crmpath(PATH_contains)   % remove all path
+        Caddpath(PATH_toolbox)
+    case 'noclone'
+        Caddpath(PATH_contains)
+        Javaaddpath()
+    otherwise
+        error('parameter error')
     end
 
     if init
         Fixed_functions  % Fixed some functions
+    end
+
+    if nargout > 0
+        varargout{1} = CLONES;
     end
 
 end
@@ -103,7 +108,8 @@ function [FunctionPath,path] = Cmakepath
     FunI = cellstr(FunI);
     
     Cdata = path + division + [
-        "Inputfiles",
+        "Inputfiles"
+        "Savefiles"
         ];
     Cdata = cellstr(Cdata);
 
@@ -112,6 +118,7 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/matFVCOM"
         "Exfunctions/matFigure"
         "Exfunctions/matWRF"
+        "Exfunctions/HYCOM2FVCOM"
         "Exfunctions/cdt"
         "Exfunctions/matNC"
         "Exfunctions/t_tide"
@@ -164,111 +171,215 @@ function Javaaddpath()
 end
 
 
-function gitclone()
+function CLONES = git_clone()
     path__ = mfilename("fullpath");
     [path,~]=fileparts(path__);
     division = string(filesep);
     Edir = char(path + division + 'Exfunctions' + division);
 
     para_conf = read_conf(fullfile(path,'Configurefiles/INSTALL.conf'));
-    PATH = read_PATH(para_conf);
-    if ~isempty(PATH)
-        if isfield(PATH, 'git')
-            if ~isempty(PATH.git)
-                setenv('PATH', [PATH.git, pathsep, getenv('PATH')]);
+    Git = read_Git(para_conf);
+    if ~isempty(Git)
+        if isfield(Git, 'method') && ~isempty(Git.method) && isa(Git.method,"char")
+            switch lower(Git.method)
+            case {'cmd'}
+                if isfield(Git, 'path') && ~isempty(Git.path) && isa(Git.path,"char")
+                    setenv('PATH', [Git.path, pathsep, getenv('PATH')]);
+                end
+            case {'auto'}
+                if ~isMATLABReleaseOlderThan("R2023b")
+                    Git.method = 'MATLAB';
+                else
+                    Git.method = 'cmd';
+                end
+            case {'matlab'}
+                if ~isMATLABReleaseOlderThan("R2023b")
+                else
+                    error(sprintf([' MATLAB version less than R2023b! \n ' ...
+                                   'Please set "Git.method" in "INSTALL.conf" to "AUTO" or "CMD"']))
+                end
             end
         end
     end
-    TF = check_command('git');
 
+    switch lower(Git.method)
+    case{'cmd'}
+        TF = check_command('git');
+    case{'matlab'}
+        TF = true;
+    end
+
+    if isfield(Git, 'mirror') && ~isempty(Git.mirror) && isa(Git.mirror,"char")
+        git_url = Git.mirror;
+    else
+        git_url = 'https://github.com/';
+    end
+
+    CLONES = struct();
     if TF
         if para_conf.cdt
             if ~(exist('ncdateread', 'file') == 2)  % CDT
-                txt = ['git clone https://github.com/chadagreene/CDT.git ', Edir, 'cdt'];
+                url = fullfile(git_url, 'chadagreene/CDT.git');  % https://github.com/chadagreene/CDT.git
                 disp('---------> Cloning cdt toolbox')
-                disp(txt)
-                system(txt);
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'cdt');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.cdt = gitclone(url,[Edir, 'cdt']);
+                end
+
             end
         end
         
         if para_conf.matFVCOM  % SiqiLiOcean/matFVCOM
             if ~(exist('f_load_grid', 'file') == 2)  % matFVCOM
-                txt = ['git clone https://github.com/SiqiLiOcean/matFVCOM.git ', Edir, 'MatFVCOM'];
+                url = fullfile(git_url, 'SiqiLiOcean/matFVCOM.git');  % https://github.com/SiqiLiOcean/matFVCOM.git
                 disp('---------> Cloning matFVCOM toolbox')
-                disp(txt)
-                system(txt);
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'matFVCOM');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.matfvcom = gitclone(url,[Edir, 'matFVCOM']);
+                end
             end
         end
 
         if para_conf.matFigure  % SiqiLiOcean/matFigure
             if ~(exist('mf_save', 'file') == 2)  % matFigure
-                txt = ['git clone https://github.com/SiqiLiOcean/matFigure.git ', Edir, 'matFigure'];
+                url = fullfile(git_url, 'SiqiLiOcean/matFigure.git');  % https://github.com/SiqiLiOcean/matFigure.git
                 disp('---------> Cloning matFigure toolbox')
-                disp(txt)
-                system(txt);
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'matFigure');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.matfigure = gitclone(url,[Edir, 'matFigure']);
+                end
             end
         end
 
         if para_conf.matWRF  % SiqiLiOcean/matWRF
             if ~(exist('load_constants', 'file') == 2)  % matWRF
-                txt = ['git clone https://github.com/SiqiLiOcean/matWRF.git ', Edir, 'matWRF'];
-                disp('---------> Cloning cdt toolbox')
-                disp(txt)
-                system(txt);
+                url = fullfile(git_url, 'SiqiLiOcean/matWRF.git');  % https://github.com/SiqiLiOcean/matWRF.git
+                disp('---------> Cloning matWRF toolbox')
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'matWRF');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.matwrf = gitclone(url,[Edir, 'matWRF']);
+                end
             end
         end
             
         if para_conf.matNC  % SiqiLiOcean/matNC
             if ~(exist('nc_close', 'file') == 2) % matNC
-                txt = ['git clone https://github.com/SiqiLiOcean/matNC.git ', Edir, 'matNC'];
+                url = fullfile(git_url, 'SiqiLiOcean/matNC.git');  % https://github.com/SiqiLiOcean/matNC.git
                 disp('---------> Cloning matNC toolbox')
-                disp(txt)
-                system(txt);
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'matNC');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.matnc = gitclone(url,[Edir, 'matNC']);
+                end
             end
         end
 
         if para_conf.OceanData  % SiqiLiOcean/OceanData
             if ~(exist('UHSLC_info', 'file') == 2) % OceanData
-                txt = ['git clone https://github.com/SiqiLiOcean/OceanData.git ', Edir, 'OceanData'];
+                url = fullfile(git_url, 'SiqiLiOcean/OceanData.git');  % https://github.com/SiqiLiOcean/OceanData.git
                 disp('---------> Cloning OceanData toolbox')
-                disp(txt)
-                system(txt);
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'OceanData');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.oceandata = gitclone(url,[Edir, 'OceanData']);
+                end
             end
         end
 
         if para_conf.FVCOM_NML  % SiqiLiOcean/FVCOM_NML
             if ~(exist('FVCOM_NML', 'dir') == 7) % FVCOM_NML
-                txt = ['git clone https://github.com/SiqiLiOcean/FVCOM_NML.git ', Edir, 'FVCOM_NML'];
+                url = fullfile(git_url, 'SiqiLiOcean/FVCOM_NML.git');  % https://github.com/SiqiLiOcean/FVCOM_NML.git
                 disp('---------> Cloning FVCOM_NML toolbox')
-                disp(txt)
-                system(txt);
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'FVCOM_NML');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.FVCOM_NML = gitclone(url,[Edir, 'FVCOM_NML']);
+                end
+            end
+        end
+
+        if para_conf.HYCOM2FVCOM  % SiqiLiOcean/HYCOM2FVCOM
+            if ~(exist('hycom2fvcom_iniTS_create', 'file') == 2) % HYCOM2FVCOM
+                url = fullfile(git_url, 'SiqiLiOcean/HYCOM2FVCOM.git');  % https://github.com/SiqiLiOcean/HYCOM2FVCOM.git
+                disp('---------> Cloning HYCOM2FVCOM toolbox')
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'HYCOM2FVCOM');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.hycom2fvcom = gitclone(url,[Edir, 'HYCOM2FVCOM']);
+                end
             end
         end
 
         if para_conf.nctoolbox  % nctoolbox
             if ~(exist('ncload', 'file') == 2)
-                txt = ['git clone https://github.com/nctoolbox/nctoolbox.git ', Edir, 'nctoolbox'];
+                url = fullfile(git_url, 'nctoolbox/nctoolbox.git');  % https://github.com/nctoolbox/nctoolbox.git
                 disp('---------> Cloning nctoolbox toolbox')
-                disp(txt)
-                system(txt);
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'nctoolbox');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.nctoolbox = gitclone(url,[Edir, 'nctoolbox']);
+                end
             end
         end
 
         if para_conf.TMDToolbox  % TMDToolbox
             if ~(exist('TMD','file') == 2)
-                txt = ['git clone https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git ', Edir, 'TMDToolbox'];
+                url = fullfile(git_url, 'EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git');  % https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git
                 disp('---------> Cloning TMDToolbox toolbox')
-                disp(txt)
-                system(txt);
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'TMDToolbox');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.tmdtoolbox = gitclone(url,[Edir, 'TMDToolbox']);
+                end
             end
         end
 
         if para_conf.vtkToolbox  % vtkToolbox
             if ~(exist('vtkRead','file') == 2)
-                txt = ['git clone https://github.com/KIT-IBT/vtkToolbox.git ', Edir, 'vtkToolbox'];
+                url = fullfile(git_url, 'KIT-IBT/vtkToolbox.git');  % https://github.com/KIT-IBT/vtkToolbox.git
                 disp('---------> Cloning vtkToolbox toolbox')
-                disp(txt)
-                system(txt);
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'vtkToolbox');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.vtktoolbox = gitclone(url,[Edir, 'vtkToolbox']);
+                end
             end
         end
     else
@@ -282,17 +393,14 @@ function gitclone()
                 url = 'https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip';
                 if check_command('wget')
                     txt = ['wget ', url, ' -O ', Edir, 't_tide_v1.5beta.zip'];
-                    disp('---------> Downloading t_tide toolbox')
-                    disp(txt)
-                    system(txt);
                 elseif check_command('curl')
                     txt = ['curl ', url, ' -o ', Edir, 't_tide_v1.5beta.zip'];
-                    disp('---------> Downloading t_tide toolbox')
-                    disp(txt)
-                    system(txt);
                 else
                     warning('wget and curl are not installed, t_tide will not be installed');
                 end
+                disp('---------> Downloading t_tide toolbox')
+                disp(txt)
+                system(txt);
             end
             if ~(exist('t_tide_v1.5beta.zip', 'file') == 2)
                 error('t_tide_v1.5beta.zip is not downloaded, please download it manually');
@@ -314,17 +422,14 @@ function gitclone()
                 url = 'https://www.eos.ubc.ca/%7Erich/m_map1.4.zip';
                 if check_command('wget')
                     txt = ['wget ', url, ' -O ', Edir, 'm_map1.4.zip'];
-                    disp('---------> Downloading m_map toolbox')
-                    disp(txt)
-                    system(txt);
                 elseif check_command('curl')
                     txt = ['curl -L ', url, ' -o ', Edir, 'm_map1.4.zip'];
-                    disp('---------> Downloading m_map toolbox')
-                    disp(txt)
-                    system(txt);
                 else
                     warning('wget and curl are not installed, m_map will not be installed');
                 end
+                disp('---------> Downloading m_map toolbox')
+                disp(txt)
+                system(txt);
             end
             if ~(exist('m_map1.4.zip', 'file') == 2)
                     error('m_map1.4.zip is not downloaded, please download it manually');
@@ -346,17 +451,14 @@ function gitclone()
                 url = 'https://www.ngdc.noaa.gov/mgg/shorelines/data/gshhs/latest/gshhg-bin-2.3.7.zip';
                 if check_command('wget')
                     txt = ['wget ', url, ' -O ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
-                    disp('---------> Downloading gshhs data')
-                    disp(txt)
-                    system(txt);
                 elseif check_command('curl')
                     txt = ['curl -L ', url, ' -o ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
-                    disp('---------> Downloading gshhs data')
-                    disp(txt)
-                    system(txt);
                 else
                     warning('wget and curl are not installed, m_map will not be installed');
                 end
+                disp('---------> Downloading gshhs data')
+                disp(txt)
+                system(txt);
             end
             if ~(exist([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], 'file') == 2)
                     error('gshhg-bin-2.3.7.zip is not downloaded, please download it manually');
@@ -396,14 +498,14 @@ function TF = check_command(command)
 end
 
 
-function PATH = read_PATH(structIn)
-    % 从struct中读取以PATH_开头的变量，将变量写入到PATH结构体中
-    % eg: 将struct中的PATH_git写入到PATH.git中
-    PATH = struct();
+function Git = read_Git(structIn)
+    % 从struct中读取以Git_开头的变量，将变量写入到PATH结构体中
+    % eg: 将struct中的Git_path写入到Git.path中
+    Git = struct();
     key = fieldnames(structIn);
     for i = 1 : length(key)
-        if ~isempty(regexp(key{i},'^PATH_','once'))
-            PATH.(key{i}(6:end)) = structIn.(key{i});
+        if ~isempty(regexp(key{i},'^Git_','once'))
+            Git.(key{i}(5:end)) = structIn.(key{i});
         end
     end
 end
@@ -451,4 +553,24 @@ function fixed_setup_nctoolbox_java()
     fid = fopen(m_filepath, 'w');  % 将修改后的内容写回文件
     fwrite(fid, newContent);
     fclose(fid);
+end
+
+
+function save_clones(clones)
+    path__ = mfilename("fullpath");
+    [path,~]=fileparts(path__);
+    Sdir = fullfile(path, 'Savefiles');
+    Sfile = fullfile(Sdir, 'GitRepository.mat');
+    
+    keys = fieldnames(clones);
+    for i = 1 : length(keys)
+        if exist(Sfile,'file')
+            load(Sfile,'GitRepository')
+            GitRepository.(keys{i}) = clones.(keys{i});
+        else
+            GitRepository = clones;
+        end
+        save(Sfile,'GitRepository',"GitRepository","-mat",'-v7.3')
+    end
+
 end
