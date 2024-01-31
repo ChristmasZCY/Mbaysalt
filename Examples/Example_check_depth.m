@@ -108,6 +108,6 @@ for ifile = 1:length(dep_files)
 
     i = strfind(dep_files(ifile).name, '高程点');
     ffig = [fig_dir '/' dep_files(ifile).name(1:i - 1) '.png'];
-    mf_save(ffig)
+    % mf_save(ffig)
 
 end
