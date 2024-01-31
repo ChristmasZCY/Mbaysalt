@@ -2,7 +2,7 @@
 .DS_Store
 .vscode
 .gitR
-**/.gitkeep
+!**/.gitkeep
 ../../.git
 **/*.m~
 **/*.asv
@@ -22,5 +22,6 @@ Exfunctions/cdt
 Exfunctions/TMDToolbox
 Exfunctions/vtkToolbox
 Data/*
+!/Savefiles
 
 
