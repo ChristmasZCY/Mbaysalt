@@ -207,6 +207,8 @@
 %   Example_TMD.m                               -  Example for TMD toolbox
 %   Example_draw_gfvcom_UHSLC_comparison.m      -  Example for draw gfvcom UHSLC comparison
 %   Example_draw_tsuvz.m                        -  Example for draw tsuvz(fvcom)
+%   Example_draw_uv_avg.m                       -  Example for draw uv 0-300m avg
+%   Example_draw_ersem.m                        -  Example for draw ersem
 %   Post_gfvcom.conf                            -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gersem.conf                            -  Example for Post_fvcom/Postprocess_fvcom

@@ -46,3 +46,10 @@ g9 = w_2d_vector_legend(w);
 
 %% KML
 kml_w_boundary()
+
+%% calculate resolution
+% f = f_load_grid('/Users/christmas/Desktop/项目/网格/田湾核电/v4.1/tw_utm4.2dm');
+% [d_cell, d] = f_calc_resolution(f);
+f = f_load_grid('/Users/christmas/Desktop/项目/网格/田湾核电/v4.1/tw_lon_lat4.2dm','Coordinate','xy');
+[d_cell, d] = f_calc_resolution(f,'Geo');
+f_2d_image(f,d_cell)
