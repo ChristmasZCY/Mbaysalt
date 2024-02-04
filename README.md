@@ -1,4 +1,11 @@
-span
+<!--
+ * @ -*- coding:UTF-8 -*-: 
+ * @#########################: 
+ * @Author: Christmas
+ * @Date: 2023-09-18 21:13:00
+ * @LastEditTime: 2024-01-31 20:51:36
+ * @Description: 
+-->
 
 # Mbaysalt Toolbox
 
@@ -11,21 +18,22 @@ span
    ```shell
    git clone https://github.com/ChristmasZCY/Mbaysalt.git
    ```
-2. Change which Exfunction you want to use.
+2. Change Exfunction install switch which you want to open.
 
    ```shell
    cd /path/to/Mbaysalt
    vim Mbaysalt/Configurefiles/INSTALL.conf
    ```
 
-   > a. Change What you want to install to **.TRUE.** and others to **.FALSE.** .
-   > b. If git is not in your system path, you can uncomment `PATH_git = /usr/bin/git`, and change the path to your git path.
+   > a. Change What you want to install to **.TRUE.** and others to **.FALSE.** . \
+   > b. If git is not in your system path, you can uncomment `Git_path = /usr/bin/git`, and change the path to your git path. \
+   > c. If you want to clone at github mirror, you can uncomment `Github_mirror = $url`, '$url' means the mirror url, such as `Github_mirror = https://githubfast.com/`. 
    >
 3. Matlab
 
 ```matlab
 addpath('Mbaysalt')
-run Mainpath.m
+Mainpath
 ```
 
 ## Contains
