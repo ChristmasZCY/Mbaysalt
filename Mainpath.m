@@ -15,12 +15,16 @@ function varargout = Mainpath(varargin)
     %       2023-12-27:     Added check_command, OceanData, FVCOM_NML, by Christmas;
     %       2024-01-02:     Added path pref, by Christmas;
     %       2024-01-31:     Added gitclone(built-in) and return clones info, by Christmas;
+    %       2024-02-05:     Added 'cd' feature, by Christmas;
     % =================================================================================================================
     % Examples:
-    %       Mainpath
-    %       Mainpath('add')
-    %       Mainpath('rm')
-    %       Mainpath('noclone')
+    %       Mainpath                        % Add all path
+    %       Mainpath('add')                 % Add all path
+    %       Mainpath('rm')                  % Remove all path
+    %       Mainpath('noclone')             % Add all path without clone git
+    %       Mainpath('init', true)          % Initialize
+    %       Mainpath('add','init', true)    % Initialize and add all path
+    %       Mainpath('cd')                  % Change current directory to the path of this function
     % =================================================================================================================
     
     arguments(Input,Repeating)
@@ -34,6 +38,11 @@ function varargout = Mainpath(varargin)
                 cmd = convertStringsToChars(varargin{i});
                 varargin(i) = [];
                 break
+            case {'cd'}  % cd to the path of this function
+                path__ = mfilename("fullpath");
+                [path,~]=fileparts(path__);
+                cd(path)
+                return
         end
     end
     init = false;
