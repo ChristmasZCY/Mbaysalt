@@ -530,6 +530,9 @@ end
 function fixed_t_tide()
     % 为t_tide工具包的t_tide.m文件添加ref参数
     m_filepath = which('t_tide.m');
+    if isempty(m_filepath)
+        return
+    end
     % 备份源文件
     path_DIR = fileparts(m_filepath);
     m_filecopy = fullfile(path_DIR,'t_tide_origin.m');
@@ -549,6 +552,9 @@ end
 function fixed_setup_nctoolbox_java()
     % 修正nctoolbox工具包的setup_nctoolbox_java.m函数在高版本matlab中的报错
     m_filepath = which('setup_nctoolbox_java.m');
+    if isempty(m_filepath)
+        return
+    end
     % 备份源文件
     path_DIR = fileparts(m_filepath);
     m_filecopy = fullfile(path_DIR,'setup_nctoolbox_java_origin.m');
