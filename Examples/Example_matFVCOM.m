@@ -1,8 +1,8 @@
 %% FVCOM
 fin = '/Users/christmas/Desktop/exampleNC/forecast_0001.nc';
-f2dm = '/Users/christmas/Desktop/项目/网格/FVCOM全球/Global-FVCOM_v1.1.2dm';
-
 f = f_load_grid(fin,'Coordinate','geo');
+
+f2dm = '/Users/christmas/Desktop/项目/网格/FVCOM全球/Global-FVCOM_v1.1.2dm';
 f = f_load_grid(f2dm,'MaxLon',360);
 
 zeta = nr(fin,'zeta');
@@ -46,6 +46,8 @@ g9 = w_2d_vector_legend(w);
 
 %% KML
 kml_w_boundary()
+kml_f_boundary()
+kml_f_mesh()
 
 %% calculate resolution
 % f = f_load_grid('/Users/christmas/Desktop/项目/网格/田湾核电/v4.1/tw_utm4.2dm');
@@ -53,3 +55,31 @@ kml_w_boundary()
 f = f_load_grid('/Users/christmas/Desktop/项目/网格/田湾核电/v4.1/tw_lon_lat4.2dm','Coordinate','xy');
 [d_cell, d] = f_calc_resolution(f,'Geo');
 f_2d_image(f,d_cell)
+
+%% Get netsing
+clm
+fgrid = f_load_grid('/Users/christmas/Desktop/exampleNC/FVCOM_ECS_2d.nc','Coordinate','geo');
+[node_layer, cell_layer, weight_node, weight_cell] = f_find_nesting(fgrid, 1:102, 1);
+node_nesting = [node_layer{:}];
+cell_nesting = [cell_layer{:}];
+node_weight = [weight_node{:}];
+cell_weight = [weight_cell{:}];
+fn = f_load_grid_nesting(fgrid, node_nesting, cell_nesting);
+f_2d_mesh(fn)
+
+%% Add sigma for fgrid
+clm
+fgrid = f_load_grid('/Users/christmas/Desktop/项目/网格/温州/2022-李思齐一期182/WenZhou_Dep1+.2dm');
+sigma = read_sigma('/Users/christmas/Desktop/项目/网格/温州/2022-李思齐一期182/WenZhou_sigma.dat');
+fgrid1 = f_calc_sigma(fgrid, sigma);
+
+%% FVCOM river netCDF
+clm
+ncload /Users/christmas/Documents/Code/Project/Server_Program/ForecastModel/温州182/input/WenZhou_river.nc
+clear Itime Itime2 Times time
+river_names = cellstr(river_names);
+time = f_load_time('/Users/christmas/Documents/Code/Project/Server_Program/ForecastModel/温州182/input/WenZhou_river.nc');
+write_river('./Wenzhou_river_20230101_20261231.nc', ...
+    cellstr(river_names), time, ...
+    'Temperature',river_temp', 'Salinity',river_salt', 'Flux',river_flux');
+

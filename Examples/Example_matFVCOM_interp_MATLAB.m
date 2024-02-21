@@ -6,7 +6,7 @@
 % interp_3d_* 先vertically interpolate, then horizontally interpolate， then vertically interpolate
 
 % node-网格点 temp salt zeta
-% cell-重心点 u v 
+% cell-重心点 u v
 
 % level-层面  siglay kb
 % layer-层心  siglev kbm1
@@ -38,7 +38,7 @@ u_int = f_interp_cell2node(f_nc, u);
 % Cell -> node
 u2 = interp_2d_via_weight(u_int,weight);
 
-% Interpolate temperature data 
+% Interpolate temperature data
 temp2 = interp_2d_via_weight(temp,weight);
 
 %% Interpolate vertical data fvcom grid
@@ -48,6 +48,32 @@ for it = 1:size(temp,3)
     tV(:,:,it) = interp_vertical_via_weight(temp(:,:,it),weight);
 end
 
+%% 3d
+std = 0:1:110;
+weight_node = interp_2d_calc_weight('TRI',f1.x,f1.y,f1.nv,fn.x,fn.y);
+weight_node_siglay = interp_3d_calc_weight(f1.deplay, std, fn.deplay,'TRI', f1.x, f1.y, f1.nv, fn.x, fn.y, 'Extrap');
+weight_cell_siglay = interp_3d_calc_weight(f1.deplayc, std, fn.deplayc,'TRI', f1.xc, f1.yc, f1.nv, fn.xc, fn.yc, 'Extrap');
+
+zeta = interp_2d_via_weight(zeta0(:,it), weight_node);
+temp = interp_3d_via_weight(temp0(:,:,it), weight_node_siglay);
+salinity = interp_3d_via_weight(salinity0(:,:,it), weight_node_siglay);
+u = interp_3d_via_weight(u0(:,:,it), weight_cell_siglay);
+v = interp_3d_via_weight(v0(:,:,it), weight_cell_siglay);
+
+%% vertical 2d
+f1 = f_load_grid(fin);
+weight.v = interp_vertical_calc_weight(f1.deplay,repmat(std,f1.node,1));
+weight.h = interp_2d_calc_weight('TRI',f1.x,f1.y,f1.nv,f2.x,f2.y);
+
+temp0 = ncread(fin, 'temp', [1 1 it], [Inf Inf 1]);
+% tsl = interp_3d_via_weight(weight_node_siglay, temp0);
+tsl = interp_vertical_via_weight(temp0, weight.v);
+tsl = interp_2d_via_weight(tsl, weight.h);
+% salinity
+salinity0 = ncread(fin, 'salinity', [1 1 it], [Inf Inf 1]);
+% ssl = interp_3d_via_weight(weight_node_siglay, salinity0);
+ssl = interp_vertical_via_weight(salinity0, weight.v);
+ssl = interp_2d_via_weight(ssl, weight.h);
 
 %% Plot TRI figure
 figure
