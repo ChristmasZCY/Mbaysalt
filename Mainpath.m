@@ -16,6 +16,8 @@ function varargout = Mainpath(varargin)
     %       2024-01-02:     Added path pref, by Christmas;
     %       2024-01-31:     Added gitclone(built-in) and return clones info, by Christmas;
     %       2024-02-05:     Added 'cd' feature, by Christmas;
+    %       2024-02-22:     Added Exfunctions-kmz2struct, by Christmas;
+    %       2024-02-22:     Added Exfunctions/SupplementFiles for toolox, by Christmas;
     % =================================================================================================================
     % Examples:
     %       Mainpath                        % Add all path
@@ -66,16 +68,19 @@ function varargout = Mainpath(varargin)
 
     switch lower(cmd)
     case 'add'
-        Caddpath(PATH_contains)  % add all path
-        CLONES = git_clone();    % clone all git
-        Caddpath(PATH_contains)  % add all path
-        Javaaddpath()            % add java path
+        Caddpath(PATH_contains)             % add all path
+        [STATUS, CLONES] = git_clone();     % clone all git
+        if STATUS == 1  % 如果Exfunctions增加了新工具包，则运行重置路径表
+            [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
+            setpref('Mbaysalt','PATH_contains',PATH_contains)
+            setpref('Mbaysalt','PATH_toolbox',PATH_toolbox)
+        end
+        Caddpath(PATH_contains)             % add all path
     case 'rm'
         Crmpath(PATH_contains)   % remove all path
         Caddpath(PATH_toolbox)
     case 'noclone'
         Caddpath(PATH_contains)
-        Javaaddpath()
     otherwise
         error('parameter error')
     end
@@ -142,8 +147,10 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/ZoomPlot"
         "Exfunctions/TMDToolbox"
         "Exfunctions/vtkToolbox"
+        "Exfunctions/kmz2struct"
         "Exfunctions/Extend/matWRF"
         "Exfunctions/Extend/matFVCOM"
+        "Exfunctions/SupplementFiles/matFVCOM"
         ];
     FunE = cellstr(FunE);
 
@@ -158,6 +165,7 @@ end
 
 function Caddpath(Path)
     cellfun(@addpath, Path);
+    Javaaddpath()  % add java path
 end
 
 
@@ -180,7 +188,8 @@ function Javaaddpath()
 end
 
 
-function CLONES = git_clone()
+function [STATUS, CLONES] = git_clone()
+    STATUS = 0;
     path__ = mfilename("fullpath");
     [path,~]=fileparts(path__);
     division = string(filesep);
@@ -238,7 +247,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.cdt = gitclone(url,[Edir, 'cdt']);
                 end
-
+                STATUS = 1;
             end
         end
         
@@ -254,6 +263,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.matfvcom = gitclone(url,[Edir, 'matFVCOM']);
                 end
+                STATUS = 1;
             end
         end
 
@@ -269,6 +279,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.matfigure = gitclone(url,[Edir, 'matFigure']);
                 end
+                STATUS = 1;
             end
         end
 
@@ -284,6 +295,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.matwrf = gitclone(url,[Edir, 'matWRF']);
                 end
+                STATUS = 1;
             end
         end
             
@@ -299,6 +311,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.matnc = gitclone(url,[Edir, 'matNC']);
                 end
+                STATUS = 1;
             end
         end
 
@@ -314,6 +327,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.oceandata = gitclone(url,[Edir, 'OceanData']);
                 end
+                STATUS = 1;
             end
         end
 
@@ -329,6 +343,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.FVCOM_NML = gitclone(url,[Edir, 'FVCOM_NML']);
                 end
+                STATUS = 1;
             end
         end
 
@@ -344,6 +359,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.hycom2fvcom = gitclone(url,[Edir, 'HYCOM2FVCOM']);
                 end
+                STATUS = 1;
             end
         end
 
@@ -359,6 +375,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.nctoolbox = gitclone(url,[Edir, 'nctoolbox']);
                 end
+                STATUS = 1;
             end
         end
 
@@ -374,6 +391,7 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.tmdtoolbox = gitclone(url,[Edir, 'TMDToolbox']);
                 end
+                STATUS = 1;
             end
         end
 
@@ -389,6 +407,23 @@ function CLONES = git_clone()
                 case {'matlab'}
                     CLONES.vtktoolbox = gitclone(url,[Edir, 'vtkToolbox']);
                 end
+                STATUS = 1;
+            end
+        end
+
+        if para_conf.kmz2struct  % kmz2struct
+            if ~(exist('kmz2struct','file') == 2)
+                url = fullfile(git_url, 'njellingson/kmz2struct.git');  % https://github.com/njellingson/kmz2struct.git
+                disp('---------> Cloning kmz2struct toolbox')
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'kmz2struct');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.kmz2struct = gitclone(url,[Edir, 'kmz2struct']);
+                end
+                STATUS = 1;
             end
         end
     else
@@ -421,6 +456,7 @@ function CLONES = git_clone()
                 end
             end
             % delete([Edir, 't_tide_v1.5beta.zip']);
+            STATUS = 1;
         end
     end
 
@@ -450,6 +486,7 @@ function CLONES = git_clone()
                 end
             end
             % delete([Edir, 'm_map1.4.zip']);
+            STATUS = 1;
         end  
     end
     
@@ -479,6 +516,7 @@ function CLONES = git_clone()
                 end
             end
             % delete([Edir, 'm_map/data/gshhg-bin-2.3.7.zip']);
+            STATUS = 1;
         end  
     end
 
@@ -524,6 +562,7 @@ function Fixed_functions()
     % 修正一些函数在高版本matlab中的报错
     fixed_t_tide()
     fixed_setup_nctoolbox_java()
+    fixed_matFVCOM()
 end
 
 
@@ -588,4 +627,22 @@ function save_clones(clones)
         save(Sfile,'GitRepository',"GitRepository","-mat",'-v7.3')
     end
 
+end
+
+
+function fixed_matFVCOM()
+    % 为matFVCOM添加Contents.m和functionSignatures.json
+    m_filepath = which('f_load_grid');
+    path_matFVCOM = fileparts(m_filepath);
+    if isempty(m_filepath)
+        return
+    end
+    path__ = mfilename("fullpath");
+    [path,~]=fileparts(path__);
+    File_supplements = fullfile(path, 'Exfunctions/SupplementFiles/matFVCOM');
+    File_Contents = fullfile(File_supplements, 'Contents.m');
+    File_functionSignatures = fullfile(File_supplements, 'functionSignatures.json');
+    copyfile(File_Contents,fullfile(path_matFVCOM,'Contents.m'));
+    copyfile(File_functionSignatures,fullfile(path_matFVCOM,'functionSignatures.json'));
+    fprintf('\nAs adding files, if it does not take efect, please restart MATLAB\n\n')
 end

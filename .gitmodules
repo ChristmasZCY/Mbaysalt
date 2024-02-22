@@ -42,3 +42,7 @@
 	path = Exfunctions/HYCOM2FVCOM
 	url = https://github.com/SiqiLiOcean/HYCOM2FVCOM.git
 
+[submodule "Exfunctions/kmz2struct"]
+	path = Exfunctions/kmz2struct
+	url = https://github.com/njellingson/kmz2struct.git
+

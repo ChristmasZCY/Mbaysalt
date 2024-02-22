@@ -21,6 +21,7 @@ Exfunctions/nctoolbox
 Exfunctions/cdt
 Exfunctions/TMDToolbox
 Exfunctions/vtkToolbox
+Exfunctions/kmz2struct
 Data/*
 !/Savefiles
 
