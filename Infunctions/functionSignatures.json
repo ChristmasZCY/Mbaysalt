@@ -143,5 +143,10 @@
             {"name":"Var",  "kind":"required", "type":["numeric"], "purpose":"Variable"},
             {"name":"range",  "kind":"required", "type":["numeric"], "purpose":"Range of variable"}],
         "outputs":[
-            {"name":"Var", "type":["numeric"], "purpose":"Variable"}]}
+            {"name":"Var", "type":["scalar"], "purpose":"Variable"}]},
+    "set_proxy":{
+        "inputs":[
+            {"name":"Stage",  "kind":"required", "type":["scalar","logical"], "purpose":"Whether to set proxy"},
+            {"name":"Host",  "kind":"namevalue", "type":["char","string"], "purpose":"Proxy host"},
+            {"name":"Port",  "kind":"namevalue", "type":["char","string"], "purpose":"Proxy port"}]}
 }

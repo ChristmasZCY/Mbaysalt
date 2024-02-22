@@ -1,0 +1,337 @@
+
+{
+    "_schemaVersion": "1.0.0",
+    "f_load_grid":{
+        "inputs":[
+            {"name":"Gridfile", "kind":"required","type":["file=*.nc,*.2dm,*.dat"],"purpose":"netCDF, grd.dat, 2dm"},
+            {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
+            {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
+            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":""},
+            {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo'}"],"purpose":"Coordinate of reading"},
+            {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"}],
+        "outputs":[
+            {"name":"fgrid", "type":["struct"], "purpose":"FVCOM grid"}]},
+    "f_load_grid":{
+        "inputs":[
+            {"name":"x", "kind":"required","type":["scalar"],"purpose":"X coordinate"},
+            {"name":"y", "kind":"required","type":["scalar"],"purpose":"Y coordinate"},
+            {"name":"nv", "kind":"required","type":["scalar"],"purpose":"Triangular structure"},
+            {"name":"h", "kind":"positional","type":["scalar"],"purpose":"h"},
+            {"name":"siglay", "kind":"positional","type":["scalar"],"purpose":"siglay"},
+            {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
+            {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
+            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,,360}"],"purpose":""},
+            {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo'}"],"purpose":"Coordinate of reading"},
+            {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"}],
+        "outputs":[
+            {"name":"fgrid", "type":["struct"], "purpose":"FVCOM grid"}]},
+    "esmf_read_weight":{
+        "inputs":[
+            {"name":"fweight", "kind":"required","type":["file=*.nc"],"purpose":"ESMF interpolating weights(netCDF)"},
+            {"name":"Extrap", "kind":"flag","type":["char","choices={'Extrap'}"],"purpose":"Extrapolation"}],
+        "outputs":[
+            {"name":"weight", "type":["struct"], "purpose":"ESMF interpolating weights"}]},
+    "esmf_write_grid":{
+        "inputs":[
+            {"name":"fout", "kind":"required","type":["char"],"purpose":"netCDF to be write"},
+            {"name":"grid_type", "kind":"required","type":["choices={'FVCOM'}"],"purpose":"Grid type"},
+            {"name":"lon", "kind":"required","type":["2d"],"purpose":"longitude"},
+            {"name":"lat", "kind":"required","type":["2d"],"purpose":"latitude"},
+            {"name":"nv", "kind":"required","type":["2d","size=:,3"],"purpose":"nv"}]},
+    "esmf_write_grid":{
+        "inputs":[
+            {"name":"fout", "kind":"required","type":["char"],"purpose":"netCDF to be write"},
+            {"name":"grid_type", "kind":"required","type":["choices={'WRF'}"],"purpose":"Grid type"},
+            {"name":"lon", "kind":"required","type":["2d"],"purpose":"longitude"},
+            {"name":"lat", "kind":"required","type":["2d"],"purpose":"latitude"}]},
+    "esmf_regrid":{
+        "inputs":[
+            {"name":"src_field", "kind":"required","type":["scalar","2d"],"purpose":"Source varaible"},
+            {"name":"weight", "kind":"required","type":["struct"],"purpose":"ESMF interpolating weights"},
+            {"name":"Dims", "kind":"namevalue","type":["numeric"],"purpose":"Dimensions"},
+            {"name":"Extrap", "kind":"flag","type":["char","choices={'Extrap'}"],"purpose":"Extrapolation"}],
+        "outputs":[
+            {"name":"dst_field", "type":["scalar","2d"], "purpose":"Destination varaible"}]},
+    "esmf_regrid_weight":{
+        "inputs":[
+            {"name":"fsrc", "kind":"required","type":["file=*.nc"],"purpose":"Source Grid"},
+            {"name":"fdst", "kind":"required","type":["file=*.nc"],"purpose":"Destination Grid"},
+            {"name":"fweight", "kind":"required","type":["char"],"purpose":"Weight file"},
+            {"name":"ESMFMKFILE", "kind":"namevalue","type":["char"],"purpose":"ESMF mkfile"},
+            {"name":"exe", "kind":"namevalue","type":["char"],"purpose":"ESMF_regridWeightGen.exe"},
+            {"name":"Method", "kind":"namevalue","type":["char","choices={'nearest_stod','nearest_id','patch','bilinear','conservative'}"],"purpose":"Method"},
+            {"name":"Extrap", "kind":"namevalue","type":["char","choices={'none','neareststod','nearestidavg'}"],"purpose":"Extrapolation"},
+            {"name":"Src_loc", "kind":"namevalue","type":["char","choices={'corner','center'}"],"purpose":"Source locate"},
+            {"name":"Dst_loc", "kind":"namevalue","type":["char","choices={'corner','center'}"],"purpose":"Destination locate"}],
+        "outputs":[
+            {"name":"status", "type":["scalar"], "purpose":"status"}]},
+    "f_2d_boundary":{
+        "inputs":[
+            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"},
+            {"name":"Patch", "kind":"flag","type":["char","choices={'Patch'}"],"purpose":"Patch"}],
+        "outputs":[
+            {"name":"h","type":["line"],"purpose":"line(plot)"}
+        ]},
+    "f_2d_coast":{
+        "inputs":[
+            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"},
+            {"name":"New", "kind":"flag","type":["char","choices={'New'}"],"purpose":"New or not"},
+            {"name":"xlims", "kind":"namevalue","type":["numeric"],"purpose":"xlims"},
+            {"name":"ylims", "kind":"namevalue","type":["numeric"],"purpose":"ylims"},
+            {"name":"Coordinate", "kind":"namevalue","type":["char","choices={'xy','geo'}"],"purpose":"Coordinate"},
+            {"name":"Resolution", "kind":"namevalue","type":["char","choices={'c','l','i','h'}"],"purpose":"Resolution"}],
+        "outputs":[
+            {"name":"h","type":["line"],"purpose":"line(plot)"},
+            {"name":"poly_coast","type":["polyshape"],"purpose":"polyshape"}]},
+    "f_2d_contour":{
+        "inputs":[
+            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"},
+            {"name":"Value", "kind":"required","type":["numeric"],"purpose":"Value"},
+            {"name":"Manual", "kind":"flag","type":["char","choices={'Manual'}"],"purpose":"Manual"},
+            {"name":"NoLabel", "kind":"flag","type":["char","choices={'NoLabel'}"],"purpose":"NoLabel"},
+            {"name":"Global", "kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"},
+            {"name":"Angle", "kind":"flag","type":["char","choices={'Angle'}"],"purpose":"Angle","repeating":true},
+            {"name":"FontSize", "kind":"namevalue","type":["numeric"],"purpose":"FontSize"},
+            {"name":"LabelSpacing", "kind":"namevalue","type":["numeric"],"purpose":"LabelSpacing"},
+            {"name":"Color", "kind":"namevalue","type":["char"],"purpose":"Color"},
+            {"name":"Levels", "kind":"namevalue","type":["numeric"],"purpose":"Levels"},
+            {"name":"xlims", "kind":"namevalue","type":["numeric"],"purpose":"xlims"},
+            {"name":"ylims", "kind":"namevalue","type":["numeric"],"purpose":"ylims"}],
+        "outputs":[
+            {"name":"C","type":["2d"],"purpose":"C"},
+            {"name":"h","type":["contour"],"purpose":"contour"}]},
+    "f_2d_image":{
+        "inputs":[
+            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"},
+            {"name":"Value", "kind":"required","type":["numeric"],"purpose":"Value"},
+            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,,360}"],"purpose":"MaxLon"}],
+        "outputs":[
+            {"name":"h","type":["patch"],"purpose":"Patch"}]},
+    "f_2d_mask_boundary":{
+        "inputs":[
+            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"}],
+        "outputs":[
+            {"name":"h","type":["polyshape"],"purpose":"Polygon"}]},
+    "f_2d_mesh":{
+        "inputs":[
+            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"},
+            {"name":"Global", "kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"},
+            {"name":"Color", "kind":"namevalue","type":["char"],"purpose":"Color"}],
+        "outputs":[
+            {"name":"h","type":["patch"],"purpose":"Patch"}]},
+    "interp_2d_calc_weight":{
+        "inputs":[
+            {"name":"METHOD_2D","kind":"required","type":["choices={'TRI'}"],"purpose":"METHOD_2D"},
+            {"name":"x","kind":"required","type":["numeric"],"purpose":"Source x"},
+            {"name":"y","kind":"required","type":["numeric"],"purpose":"Source y"},
+            {"name":"nv","kind":"required","type":["numeric"],"purpose":"Source nv"},
+            {"name":"xo","kind":"required","type":["numeric"],"purpose":"Destination x"},
+            {"name":"yo","kind":"required","type":["numeric"],"purpose":"Destination y"},
+            {"name":"Extrap","kind":"flag","type":["choices={'Extrap'}"],"purpose":"Extrap"},
+            {"name":"Global","kind":"flag","type":["choices={'Global'}"],"purpose":"Global"},
+            {"name":"K","kind":"namevalue","type":["numeric"],"purpose":"K"}],
+        "outputs":[
+            {"name":"weight","type":["struct"],"purpose":"weight"}
+        ]},
+    "interp_2d_calc_weight":{
+        "inputs":[
+            {"name":"METHOD_2D","kind":"required","type":["choices={'BI'}"],"purpose":"METHOD_2D"},
+            {"name":"x","kind":"required","type":["numeric"],"purpose":"Source x"},
+            {"name":"y","kind":"required","type":["numeric"],"purpose":"Source y"},
+            {"name":"xo","kind":"required","type":["numeric"],"purpose":"Destination x"},
+            {"name":"yo","kind":"required","type":["numeric"],"purpose":"Destination y"},
+            {"name":"Global","kind":"flag","type":["choices={'Global'}"],"purpose":"Global"}],
+        "outputs":[
+            {"name":"weight","type":["struct"],"purpose":"weight"}
+        ]},
+    "interp_2d_calc_weight":{
+        "inputs":[
+            {"name":"METHOD_2D","kind":"required","type":["choices={'QU'}"],"purpose":"METHOD_2D"},
+            {"name":"x","kind":"required","type":["numeric"],"purpose":"Source x"},
+            {"name":"y","kind":"required","type":["numeric"],"purpose":"Source y"},
+            {"name":"xo","kind":"required","type":["numeric"],"purpose":"Destination x"},
+            {"name":"yo","kind":"required","type":["numeric"],"purpose":"Destination y"},
+            {"name":"Extrap","kind":"flag","type":["choices={'Extrap'}"],"purpose":"Extrap"},
+            {"name":"Global","kind":"flag","type":["choices={'Global'}"],"purpose":"Global"}],
+        "outputs":[
+            {"name":"weight","type":["struct"],"purpose":"weight"}
+        ]},
+    "interp_2d_calc_weight":{
+        "inputs":[
+            {"name":"METHOD_2D","kind":"required","type":["choices={'ID'}"],"purpose":"METHOD_2D"},
+            {"name":"x","kind":"required","type":["numeric"],"purpose":"Source x"},
+            {"name":"y","kind":"required","type":["numeric"],"purpose":"Source y"},
+            {"name":"xo","kind":"required","type":["numeric"],"purpose":"Destination x"},
+            {"name":"yo","kind":"required","type":["numeric"],"purpose":"Destination y"},
+            {"name":"Global","kind":"flag","type":["choices={'Global'}"],"purpose":"Global"},
+            {"name":"np","kind":"namevalue","type":["numeric"],"purpose":"the flag to do extrapolation"},
+            {"name":"Power","kind":"namevalue","type":["choices={'Power'}"],"purpose":"the order of distance in the ID equation"}],
+        "outputs":[
+            {"name":"weight","type":["struct"],"purpose":"weight"}
+        ]},
+    "interp_2d_calc_weight":{
+        "inputs":[
+            {"name":"METHOD_2D","kind":"required","type":["choices={'GLOBAL_BI'}"],"purpose":"METHOD_2D"},
+            {"name":"x","kind":"required","type":["numeric"],"purpose":"Source x"},
+            {"name":"y","kind":"required","type":["numeric"],"purpose":"Source y"},
+            {"name":"xo","kind":"required","type":["numeric"],"purpose":"Destination x"},
+            {"name":"yo","kind":"required","type":["numeric"],"purpose":"Destination y"},
+            {"name":"Global","kind":"flag","type":["choices={'Global'}"],"purpose":"Global"}],
+        "outputs":[
+            {"name":"weight","type":["struct"],"purpose":"weight"}
+        ]},
+    "interp_2d_calc_weight":{
+        "inputs":[
+            {"name":"METHOD_2D","kind":"required","type":["choices={'NEAREST'}"],"purpose":"METHOD_2D"},
+            {"name":"x","kind":"required","type":["numeric"],"purpose":"Source x"},
+            {"name":"y","kind":"required","type":["numeric"],"purpose":"Source y"},
+            {"name":"xo","kind":"required","type":["numeric"],"purpose":"Destination x"},
+            {"name":"yo","kind":"required","type":["numeric"],"purpose":"Destination y"},
+            {"name":"Global","kind":"flag","type":["choices={'Global'}"],"purpose":"Global"}],
+        "outputs":[
+            {"name":"weight","type":["struct"],"purpose":"weight"}
+        ]},
+    "interp_2d_via_weight":{
+        "inputs":[
+            {"name":"Invariable","kind":"required","type":["numeric"],"purpose":"Input variable"},
+            {"name":"Weight","kind":"required","type":["struct"],"purpose":"weight cell(from interp_2d_calc_weight)"}],
+        "outputs":[
+            {"name":"Outvariable","type":["scalar"],"purpose":"Output variable"}]},
+    "interp_vertical_calc_weight":{
+        "inputs":[
+            {"name":"depth1","kind":"required","type":["numeric"],"purpose":"Source depth"},
+            {"name":"depth2","kind":"required","type":["numeric"],"purpose":"Destination depth"},
+            {"name":"List","kind":"namevalue","type":["numeric"],"purpose":"List"}],
+        "outputs":[
+            {"name":"weight","type":["struct"],"purpose":"weight"}]},
+    "interp_vertical_via_weight":{
+        "inputs":[
+            {"name":"Invariable","kind":"required","type":["numeric"],"purpose":"Input variable"},
+            {"name":"Weight","kind":"required","type":["struct"],"purpose":"weight"}],
+        "outputs":[
+            {"name":"Outvariable","type":["scalar"],"purpose":"Output variable"}]},
+    "kml_f_boundary":{
+        "inputs":[
+            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"},
+            {"name":"kmzfile", "kind":"required","type":["char"],"purpose":"kmzfile"},
+            {"name":"Model", "kind":"namevalue","type":["char"],"purpose":"Model"},
+            {"name":"LineWidth", "kind":"namevalue","type":["numeric"],"purpose":"LineWidth"},
+            {"name":"LineColor", "kind":"namevalue","type":["numeric"],"purpose":"LineColor"}],
+        "outputs":[
+            {"name":"k","type":["kml"],"purpose":"kml handle"}]},
+    "kml_f_mesh":{
+        "inputs":[
+            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"},
+            {"name":"kmzfile", "kind":"required","type":["char"],"purpose":"kmzfile"},
+            {"name":"Model", "kind":"namevalue","type":["char"],"purpose":"Model"},
+            {"name":"Altitude", "kind":"namevalue","type":["numeric"],"purpose":"Altitude"},
+            {"name":"LineWidth", "kind":"namevalue","type":["numeric"],"purpose":"LineWidth"},
+            {"name":"LineColor", "kind":"namevalue","type":["numeric"],"purpose":"LineColor"}],
+        "outputs":[
+            {"name":"k","type":["kml"],"purpose":"kml handle"}]},
+    "kml_image":{
+        "inputs":[
+            {"name":"xx", "kind":"required","type":["numeric"],"purpose":"xx"},
+            {"name":"yy", "kind":"required","type":["numeric"],"purpose":"yy"},
+            {"name":"zz", "kind":"required","type":["numeric"],"purpose":"zz"},
+            {"name":"kmzfile", "kind":"required","type":["char"],"purpose":"kmzfile"},
+            {"name":"zlims", "kind":"namevalue","type":["numeric"],"purpose":"zlims"},
+            {"name":"cm", "kind":"namevalue","type":["numeric"],"purpose":"cm"},
+            {"name":"Model", "kind":"namevalue","type":["numeric"],"purpose":"Model"}]},
+    "kml_w_boundary":{
+        "inputs":[
+            {"name":"wgrid","kind":"required","type":["struct"],"purpose":"WRF Grid"},
+            {"name":"kmzfile", "kind":"required","type":["char"],"purpose":"kmzfile"},
+            {"name":"Model", "kind":"namevalue","type":["char"],"purpose":"Model"},
+            {"name":"LineWidth", "kind":"namevalue","type":["numeric"],"purpose":"LineWidth"},
+            {"name":"LineColor", "kind":"namevalue","type":["numeric"],"purpose":"LineColor"}],
+        "outputs":[
+            {"name":"k","type":["kml"],"purpose":"kml handle"}]},
+    "read_2dm":{
+        "inputs":[
+            {"name":"fin", "kind":"required","type":["file=*.2dm"],"purpose":"2dm file"}],
+        "outputs":[
+            {"name":"x","type":["scalar"],"purpose":"x"},
+            {"name":"y","type":["scalar"],"purpose":"y"},
+            {"name":"nv","type":["2d","size=:,3"],"purpose":"nv"},
+            {"name":"h","type":["scalar"],"purpose":"depth"},
+            {"name":"ns","type":["scalar"],"purpose":"node IDs of node strings"},
+            {"name":"tail","type":["scalar"],"purpose":"tail"},
+            {"name":"id","type":["scalar"],"purpose":"id"}]},
+    "read_tiff":{
+        "inputs":[
+            {"name":"fin", "kind":"required","type":["file=*.tif"],"purpose":"tiff file"},
+            {"name":"Increase","kind":"flag","type":["choices={'Increase'}"],"purpose":"Increase"}],
+        "outputs":[
+            {"name":"x","type":["2d"],"purpose":"2-d longitude"},
+            {"name":"y","type":["2d"],"purpose":"2-d latitude"},
+            {"name":"z","type":["2d"],"purpose":"2-d bathymetry"}]},
+    "w_2d_boundary":{
+        "inputs":[
+            {"name":"wgrid","kind":"required","type":["struct"],"purpose":"WRF Grid"},
+            {"name":"varargin", "kind":"positional","type":["char"],"purpose":"varargin","repeating":true}],
+        "outputs":[
+            {"name":"h","type":["line"],"purpose":"line(plot)"}
+        ]},
+    "w_2d_coast":{
+        "inputs":[
+            {"name":"wgrid","kind":"required","type":["struct"],"purpose":"WRF Grid"},
+            {"name":"New", "kind":"flag","type":["char","choices={'New'}"],"purpose":"New or not"},
+            {"name":"xlims", "kind":"namevalue","type":["numeric"],"purpose":"xlims"},
+            {"name":"ylims", "kind":"namevalue","type":["numeric"],"purpose":"ylims"},
+            {"name":"Resolution", "kind":"namevalue","type":["char","choices={'c','l','i','h'}"],"purpose":"Resolution"}],
+        "outputs":[
+            {"name":"h","type":["line"],"purpose":"line(plot)"},
+            {"name":"poly_coast","type":["polyshape"],"purpose":"polyshape"}]},
+    "w_2d_contour":{
+        "inputs":[
+            {"name":"wgrid","kind":"required","type":["struct"],"purpose":"WRF Grid"},
+            {"name":"Value", "kind":"required","type":["numeric"],"purpose":"Value"},
+            {"name":"Manual", "kind":"flag","type":["char","choices={'Manual'}"],"purpose":"Manual"},
+            {"name":"NoLabel", "kind":"flag","type":["char","choices={'NoLabel'}"],"purpose":"NoLabel"},
+            {"name":"FontSize", "kind":"namevalue","type":["numeric"],"purpose":"FontSize"},
+            {"name":"LabelSpacing", "kind":"namevalue","type":["numeric"],"purpose":"LabelSpacing"},
+            {"name":"Color", "kind":"namevalue","type":["char"],"purpose":"Color"},
+            {"name":"Levels", "kind":"namevalue","type":["numeric"],"purpose":"Levels"}],
+        "outputs":[
+            {"name":"C","type":["2d"],"purpose":"C"},
+            {"name":"h","type":["contour"],"purpose":"contour"}
+        ]},
+    "w_2d_image":{
+        "inputs":[
+            {"name":"wgrid","kind":"required","type":["struct"],"purpose":"WRF Grid"},
+            {"name":"Value", "kind":"required","type":["numeric"],"purpose":"Value"},
+            {"name":"Global","kind":"flag","type":["choices={'Global'}"],"purpose":"Global"}],
+        "outputs":[
+            {"name":"h","type":["patch"],"purpose":"Patch"}
+        ]},
+    "w_2d_mask_boundary":{
+        "inputs":[
+            {"name":"wgrid","kind":"required","type":["struct"],"purpose":"WRF Grid"}],
+        "outputs":[
+            {"name":"h","type":["polyshape"],"purpose":"Polygon"}]},
+    "w_2d_mesh":{
+        "inputs":[
+            {"name":"wgrid","kind":"required","type":["struct"],"purpose":"WRF Grid"},
+            {"name":"Color", "kind":"namevalue","type":["char"],"purpose":"Color"}],
+        "outputs":[
+            {"name":"h","type":["patch"],"purpose":"Patch"}]},
+    "w_load_grid":{
+        "inputs":[
+            {"name":"Gridfile", "kind":"required","type":["file"],"purpose":"Grid file"},
+            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":"MaxLon"},
+            {"name":"P","kind":"flag","type":["choices={'P'}"],"purpose":"P"},
+            {"name":"Z","kind":"flag","type":["choices={'Z'}"],"purpose":"Z"},
+            {"name":"Rotate", "kind":"namevalue","type":["numeric"],"purpose":"Rotate"}],
+        "outputs":[
+            {"name":"wgrid", "type":["struct"], "purpose":"WRF grid"}]},
+    "w_load_grid":{
+        "inputs":[
+            {"name":"x", "kind":"required","type":["scalar"],"purpose":"X coordinate"},
+            {"name":"y", "kind":"required","type":["scalar"],"purpose":"Y coordinate"},
+            {"name":"Rotate", "kind":"namevalue","type":["numeric"],"purpose":"Rotate"},
+            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,,360}"],"purpose":"MaxLon"}],
+        "outputs":[
+            {"name":"wgrid", "type":["struct"], "purpose":"WRF grid"}]}
+
+}

@@ -37,6 +37,7 @@
 %   read_conf.m                                 -  Read config file from Configfiles
 %   replace_para.m                              -  Replace parameters in a string or struct
 %   rmfiles.m                                   -  Delete files or directories
+%   set_proxy.m                                 -  Set proxy by system command
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -253,6 +254,7 @@
 %   ZoomPlot               (optional)           -  ZoomPlot toolbox                            ||  https://github.com/iqiukp/ZoomPlot-MATLAB
 %   TMD                    (optional)           -  Tidal Model Driver                          ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/75599-tide-model-driver-tmd-version-2-5-toolbox-for-matlab
 %   vtkToolbox             (optional)           -  VTK toolbox                                 ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/94993-vtktoolbox
+%   kmz2struct             (optional)           -  kmz2struct toolbox                          ||  https://github.com/njellingson/kmz2struct
 %
 %                                         Extend Exfunctions
 %   matWRF                                      -  Extend matWRF toolbox
@@ -262,6 +264,11 @@
 %   matFVCOM                                    -  Extend matFVCOM toolbox
 %       functionSignatures.json                 -  Function signatures for toolbox
 %       esmf_write_structured_grid.m            -  Write structured grid to ESMF format
+%
+%                                     Supplement Files
+%   matFVCOM                                    -  Supplement files for matFVCOM toolbox
+%       functionSignatures.json                 -  Function signatures for toolbox
+%       Contents.m                              -  Contents for toolbox
 %
 %
 %
