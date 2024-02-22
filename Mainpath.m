@@ -632,6 +632,7 @@ end
 
 function fixed_matFVCOM()
     % 为matFVCOM添加Contents.m和functionSignatures.json
+    STATUS = 0;
     m_filepath = which('f_load_grid');
     path_matFVCOM = fileparts(m_filepath);
     if isempty(m_filepath)
@@ -642,7 +643,20 @@ function fixed_matFVCOM()
     File_supplements = fullfile(path, 'Exfunctions/SupplementFiles/matFVCOM');
     File_Contents = fullfile(File_supplements, 'Contents.m');
     File_functionSignatures = fullfile(File_supplements, 'functionSignatures.json');
-    copyfile(File_Contents,fullfile(path_matFVCOM,'Contents.m'));
-    copyfile(File_functionSignatures,fullfile(path_matFVCOM,'functionSignatures.json'));
-    fprintf('\nAs adding files, if it does not take efect, please restart MATLAB\n\n')
+    if ~ exist(fullfile(path_matFVCOM,'Contents.m'),"file")
+        copyfile(File_Contents,fullfile(path_matFVCOM,'Contents.m'));
+        STATUS = 1;
+    end
+    if ~ exist(fullfile(path_matFVCOM,'functionSignatures.json'),"file")
+        copyfile(File_functionSignatures,fullfile(path_matFVCOM,'functionSignatures.json'));
+        STATUS = 1;
+    end
+    
+    % T = validateFunctionSignaturesJSON(fullfile(path_matFVCOM,'functionSignatures.json'));
+    % if ~isempty(T)
+        % validateFunctionSignaturesJSON(fullfile(path_matFVCOM,'functionSignatures.json'));
+    % end
+    if STATUS == 1
+        fprintf('\nAs adding files, if it does not take efect, please restart MATLAB\n\n')
+    end
 end

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+    <Folder id="ioc-sealevel-stations">
+    <name>IOC Sealevel stations</name>
+	<!-- divided in 4 parts of the world, due too Google Earth freezing when +200 stations shown -->
+	<open>1</open>
+	<description>The status is refreshed every minute.</description> 
+	 <NetworkLink>
+      <name>NW</name>
+      <visibility>1</visibility>
+      <Link>
+        <href>http://www.ioc-sealevelmonitoring.org/gml.php?showkml=t&amp;show=all&amp;bbox=-180,0,0,90</href>
+        <refreshMode>onInterval</refreshMode>
+		<refreshInterval>90</refreshInterval>
+      </Link>
+     </NetworkLink>
+	 <NetworkLink>
+      <name>SW</name>
+      <visibility>1</visibility>
+      <Link>
+        <href>http://www.ioc-sealevelmonitoring.org/gml.php?showkml=t&amp;show=all&amp;bbox=-180,-90,0,0</href>
+        <refreshMode>onInterval</refreshMode>
+		<refreshInterval>45</refreshInterval>
+      </Link>
+     </NetworkLink>
+	 <NetworkLink>
+      <name>NE</name>
+      <visibility>1</visibility>
+      <Link>
+        <href>http://www.ioc-sealevelmonitoring.org/gml.php?showkml=t&amp;show=all&amp;bbox=0,0,180,90</href>
+        <refreshMode>onInterval</refreshMode>
+		<refreshInterval>55</refreshInterval>
+      </Link>
+     </NetworkLink>
+	 <NetworkLink>
+      <name>SE</name>
+      <visibility>1</visibility>
+      <Link>
+        <href>http://www.ioc-sealevelmonitoring.org/gml.php?showkml=t&amp;show=all&amp;bbox=0,-90,180,0</href>
+        <refreshMode>onInterval</refreshMode>
+		<refreshInterval>40</refreshInterval>
+      </Link>
+     </NetworkLink>
+	</Folder>
+</kml>
