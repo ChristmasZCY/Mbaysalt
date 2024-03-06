@@ -41,5 +41,15 @@
         {"name":"cell_data","kind":"positional","type":["numeric"],"purpose":"cell data"},
         {"name":"Coordinate","kind":"namevalue","type":["choices={'geo','xy'}"],"purpose":"coordinate type"}],
     "outputs": []
+  },
+  "write_sms_grd": {
+    "inputs": [
+      {"name":"fout", "kind":"required","type":["char"],"purpose":"SMS grd file to write"},
+      {"name":"x", "kind":"required","type":["numeric"],"purpose":"x coordinate"},
+      {"name":"y", "kind":"required","type":["numeric"],"purpose":"y coordinate"},
+      {"name":"nv", "kind":"required","type":["numeric"],"purpose":"triangle connectivity"},
+      {"name":"h", "kind":"positional","type":["numeric"],"purpose":"depth"},
+      {"name":"Coordinate", "kind":"namevalue","type":["choices={'geo','xy'}"],"purpose":"coordinate type"}],
+    "outputs": []
   }
 }

@@ -75,6 +75,16 @@ salinity0 = ncread(fin, 'salinity', [1 1 it], [Inf Inf 1]);
 ssl = interp_vertical_via_weight(salinity0, weight.v);
 ssl = interp_2d_via_weight(ssl, weight.h);
 
+%% time 1d
+t_in = [datenum(2024,1,1),datenum(2024,1,2)];
+t_out = datenum(2024,1,1): 1/24: datenum(2024,1,2);
+weight_t = interp_time_calc_weight(t_in, t_out);
+zeta4 = interp_time_via_weight(zeta3, weight_t);
+u4 = interp_time_via_weight(u3, weight_t);
+v4 = interp_time_via_weight(v3, weight_t);
+t4 = interp_time_via_weight(t3, weight_t);
+s4 = interp_time_via_weight(s3, weight_t);
+
 %% Plot TRI figure
 figure
 f_2d_mesh(f);
