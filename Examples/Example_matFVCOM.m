@@ -13,6 +13,7 @@ g1 = f_2d_image(f,zeta(:,1));
 hold on
 g2 = f_2d_boundary(f);
 g3 = f_2d_coast(f,'Coordinate','geo','Resolution','l');
+% f_2d_coast(f,"New")
 g4 = f_2d_mesh(f,'Global');
 % g4 = f_2d_lonlat(f);
 g5 = f_2d_mask_boundary(f);
@@ -72,6 +73,7 @@ clm
 fgrid = f_load_grid('/Users/christmas/Desktop/项目/网格/温州/2022-李思齐一期182/WenZhou_Dep1+.2dm');
 sigma = read_sigma('/Users/christmas/Desktop/项目/网格/温州/2022-李思齐一期182/WenZhou_sigma.dat');
 fgrid1 = f_calc_sigma(fgrid, sigma);
+draw_sigma(sigma)
 
 %% FVCOM river netCDF
 clm
@@ -83,3 +85,13 @@ write_river('./Wenzhou_river_20230101_20261231.nc', ...
     cellstr(river_names), time, ...
     'Temperature',river_temp', 'Salinity',river_salt', 'Flux',river_flux');
 
+%% Extract coastline and write
+f = f_load_grid('/Users/christmas/Desktop/项目/网格/北部湾/v3/Beihai(lonlat3).2dm');
+a = [];
+b = [];
+for i = 1:length(f.bdy_x)
+    a = [a,f.bdy_x{i},NaN];
+    b = [b,f.bdy_y{i},NaN];
+end
+% plot(a,b)
+write_cst('/Users/christmas/Desktop/x.cst', a,b)

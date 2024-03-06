@@ -135,6 +135,7 @@
 %   read_2dm_to_website.m                       -  Read 2dm mesh to website format for www.iocean.cn
 %   read_gebco_to_sms.m                         -  Read gebco bathymetry to sms format
 %   read_vtk.m                                  -  Read vtk file
+%   write_sms_grd.m                             -  Write sms grd file (Uncompleted)
 %   write_vtk.m                                 -  Write vtk file
 %
 %
@@ -197,22 +198,27 @@
 %
 %                                     Examples  -  Examples for toolbox
 % =================================================================================================================
-%   Example_erosion                             -  Example for erosion coast cal id
-%   Example_matFigure.m                         -  Example for matFigure
-%   Example_matFVCOM.m                          -  Example for matFVCOM
-%   Example_matFVCOM_interp_ESMF.m              -  Example for matFVCOM interp ESMF
-%   Example_matFVCOM_interp_MATLAB.m            -  Example for matFVCOM interp MATLAB
-%   Example_read_nc_lldtv.m                     -  Example for read nc lldtv
+%   Example_check_depth.m                       -  Example for check depth
+%   Example_draw_ersem.m                        -  Example for draw ersem
+%   Example_draw_gfvcom_UHSLC_comparison.m      -  Example for draw gfvcom UHSLC comparison
+%   Example_draw_sst_ssh_sss.m                  -  Example for draw sst ssh sss
 %   Example_draw_tide.m                         -  Example for draw tide
 %   Example_draw_TMD.m                          -  Example for draw TMD tide
-%   Example_TMD.m                               -  Example for TMD toolbox
-%   Example_draw_gfvcom_UHSLC_comparison.m      -  Example for draw gfvcom UHSLC comparison
 %   Example_draw_tsuvz.m                        -  Example for draw tsuvz(fvcom)
 %   Example_draw_uv_avg.m                       -  Example for draw uv 0-300m avg
-%   Example_draw_ersem.m                        -  Example for draw ersem
-%   Post_gfvcom.conf                            -  Example for Post_fvcom/Postprocess_fvcom
-%   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
+%   Example_erosion                             -  Example for erosion coast cal id
+%   Example_extract_cst_from_fgrid.m            -  Example for extract cst from fgrid
+%   Example_matFigure.m                         -  Example for matFigure
+%   Example_matFVCOM_interp_ESMF.m              -  Example for matFVCOM interp ESMF
+%   Example_matFVCOM_interp_MATLAB.m            -  Example for matFVCOM interp MATLAB
+%   Example_matFVCOM.m                          -  Example for matFVCOM
+%   Example_read_kml_xml.m                      -  Example for read kml xml (Uncompleted)
+%   Example_read_nc_lldtv.m                     -  Example for read nc lldtv
+%   Example_TMD.m                               -  Example for TMD toolbox
 %   Post_gersem.conf                            -  Example for Post_fvcom/Postprocess_fvcom
+%   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
+%   Post_gfvcom.conf                            -  Example for Post_fvcom/Postprocess_fvcom
+%   stations.xml                                -  Example of xml file
 %   xy.vtk                                      -  Example of vtk file
 %
 %
