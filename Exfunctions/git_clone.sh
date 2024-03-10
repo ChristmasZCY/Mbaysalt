@@ -17,6 +17,8 @@ git clone https://github.com/SiqiLiOcean/matFigure.git
 
 git clone https://github.com/SiqiLiOcean/matNC.git
 
+git clone https://github.com/SiqiLiOcean/WRF2FVCOM.git
+
 git clone https://github.com/nctoolbox/nctoolbox.git
 
 git clone https://github.com/SiqiLiOcean/FVCOM_NML.git
