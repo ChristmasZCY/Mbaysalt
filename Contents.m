@@ -252,6 +252,7 @@
 %   matNC                                       -  NetCDF toolbox                              ||  https://github.com/SiqiLiOcean/matNC
 %   matWRF                                      -  WRF toolbox                                 ||  https://github.com/SiqiLiOcean/matWRF
 %   HYCOM2FVCOM                                 -  Run fvcom with HYCOM data                   ||  https://github.com/SiqiLiOcean/HYCOM2FVCOM
+%   WRF2FVCOM              (optional)           -  Run fvcom with WRF data                     ||  https://github.com/SiqiLiOcean/WRF2FVCOM
 %   struct2ini                                  -  struct2ini toolbox                          ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/22079-struct2ini
 %   m_map                                       -  m_map toolbox(v1.4o)                        ||  https://www.eoas.ubc.ca/~rich/map.html  &&  https://www.eoas.ubc.ca/~rich/mapug.html
 %   CDT                                         -  Climate Data Toolbox                        ||  https://github.com/chadagreene/CDT

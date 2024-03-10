@@ -46,3 +46,7 @@
 	path = Exfunctions/kmz2struct
 	url = https://github.com/njellingson/kmz2struct.git
 
+[submodule "Exfunctions/WRF2FVCOM"]
+	path = Exfunctions/WRF2FVCOM
+	url = https://github.com/SiqiLiOcean/WRF2FVCOM.git
+

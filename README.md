@@ -25,9 +25,9 @@
    vim Mbaysalt/Configurefiles/INSTALL.conf
    ```
 
-   > a. Change What you want to install to **.TRUE.** and others to **.FALSE.** . \
-   > b. If git is not in your system path, you can uncomment `Git_path = /usr/bin/git`, and change the path to your git path. \
-   > c. If you want to clone at github mirror, you can uncomment `Github_mirror = $url`, '$url' means the mirror url, such as `Github_mirror = https://githubfast.com/`. 
+   > a. Change What you want to install to **.TRUE.** and others to **.FALSE.** .
+   > b. If git is not in your system path, you can uncomment `Git_path = /usr/bin/git`, and change the path to your git path.
+   > c. If you want to clone at github mirror, you can uncomment `Github_mirror = $url`, '$url' means the mirror url, such as `Github_mirror = https://githubfast.com/`.
    >
 3. Matlab
 
@@ -59,3 +59,4 @@ Mainpath
 - [TMDToolbox](https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5)
 - [vtkToolbox](https://github.com/KIT-IBT/vtkToolbox)
 - [kmz2struct](https://github.com/njellingson/kmz2struct)
+- [WRF2FVCOM](https://github.com/SiqiLiOcean/WRF2FVCOM)

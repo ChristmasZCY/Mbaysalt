@@ -133,6 +133,7 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/matFigure"
         "Exfunctions/matWRF"
         "Exfunctions/HYCOM2FVCOM"
+        "Exfunctions/WRF2FVCOM"
         "Exfunctions/cdt"
         "Exfunctions/matNC"
         "Exfunctions/t_tide"
@@ -358,6 +359,22 @@ function [STATUS, CLONES] = git_clone()
                     system(txt);
                 case {'matlab'}
                     CLONES.hycom2fvcom = gitclone(url,[Edir, 'HYCOM2FVCOM']);
+                end
+                STATUS = 1;
+            end
+        end
+
+        if para_conf.WRF2FVCOM  % SiqiLiOcean/WRF2FVCOM
+            if ~(exist('wrf2fvcom.f90', 'file') == 2) % WRF2FVCOM
+                url = fullfile(git_url, 'SiqiLiOcean/WRF2FVCOM.git');  % https://github.com/SiqiLiOcean/WRF2FVCOM.git
+                disp('---------> Cloning WRF2FVCOM toolbox')
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'WRF2FVCOM');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.hycom2fvcom = gitclone(url,[Edir, 'WRF2FVCOM']);
                 end
                 STATUS = 1;
             end
