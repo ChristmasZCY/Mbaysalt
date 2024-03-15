@@ -1,0 +1,7 @@
+
+{
+    "_schemaVersion": "1.0.0",
+    "copernicusmarine":{
+        "inputs":[
+            {"name":"command", "kind":"positional","type":["choices={'describe','subset','get','login','help','h','--help','v','V','--version'}"],"purpose":"Parameter"}]}
+}
