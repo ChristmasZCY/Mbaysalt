@@ -33,7 +33,7 @@ function [x,y,nv,z,cell_type,cell_data] = read_vtk(fin,varargin)
 
 
     arguments (Input)
-        fin (1,:) {mustBeFile}  
+        fin (1,:) % {mustBeFile}  
     end
     arguments (Repeating)
         varargin
@@ -41,7 +41,6 @@ function [x,y,nv,z,cell_type,cell_data] = read_vtk(fin,varargin)
 
     varargin = read_varargin2(varargin, {'INFO'});
 
-    % fin = './output_mesh.vtk';
     fid=fopen(fin);
     
     % == Read the data to find the line #
@@ -94,8 +93,6 @@ function [x,y,nv,z,cell_type,cell_data] = read_vtk(fin,varargin)
         assignin('caller','nv',nv);
     end
 
-    
-    
     if ~isempty(INFO)
         disp(' ')
         disp('------------------------------------------------')
