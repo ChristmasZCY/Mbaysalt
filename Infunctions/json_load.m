@@ -16,7 +16,7 @@ function jdata = json_load(file,varargin)
     % =================================================================================================================
 
     arguments(Input)
-        file {mustBeFile}
+        file % {mustBeFile}
     end
 
     arguments(Input,Repeating)
@@ -31,7 +31,7 @@ function jdata = json_load(file,varargin)
 
     varargin = read_varargin(varargin,{'method'},{'MATLAB'});
     
-    switch Method_load
+    switch method
         case "MATLAB"
             json_str = fileread(file);
             jdata = jsondecode(json_str);
