@@ -1,5 +1,5 @@
 clm
-pwd = '/Users/christmas/Documents/Code/MATLAB/test3/TMD_Matlab_Toolbox_v2.5/TMD/DATA';
+pwd = '/Users/christmas/Documents/Code/Project/Server_Program/Mbaysalt/Exfunctions/TMDToolbox/TMD/DATA';
 cd(pwd)
 
 %% make control file
