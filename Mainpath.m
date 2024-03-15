@@ -118,6 +118,7 @@ function [FunctionPath,path] = Cmakepath
         "Py"
         "Matesetfunctions"
         "Mapfunctions"
+        "Mimetifunctions"
         ];
     FunI = cellstr(FunI);
     
@@ -184,6 +185,7 @@ end
 
 function Javaaddpath()
     if exist('setup_nctoolbox_java','file') == 2
+        fixed_setup_nctoolbox_java()
         setup_nctoolbox_java()
     end
 end
@@ -413,7 +415,7 @@ function [STATUS, CLONES] = git_clone()
         end
 
         if para_conf.vtkToolbox  % vtkToolbox
-            if ~(exist('vtkRead','file') == 2)
+            if ~(exist('vtkRead','file') == 2) && ~(exist('vtkRead','file') == 3)
                 url = fullfile(git_url, 'KIT-IBT/vtkToolbox.git');  % https://github.com/KIT-IBT/vtkToolbox.git
                 disp('---------> Cloning vtkToolbox toolbox')
                 switch lower(Git.method)
