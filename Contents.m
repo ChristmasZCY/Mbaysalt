@@ -136,6 +136,7 @@
 %   read_gebco_to_sms.m                         -  Read gebco bathymetry to sms format
 %   read_vtk.m                                  -  Read vtk file
 %   write_sms_grd.m                             -  Write sms grd file (Uncompleted)
+%   read_sms_grd.m                              -  Read sms grd file (Uncompleted)
 %   write_vtk.m                                 -  Write vtk file
 %
 %
@@ -174,6 +175,12 @@
 %      wrnc_wind10m.m                           -  Write WRF wind10m netcdf file
 %
 %
+%                               Mimetifunctions -  Functions to mimic other languages commands
+% =================================================================================================================
+%   functionSignatures.json                     -  Function signatures for this folder
+%   copernicusmarine.m                          -  Copernicus Marine data download(mimic copernicusmarine)
+%
+%
 %                                   Inputfiles  -  Input files for toolbox
 % =================================================================================================================
 %   color_precipitation.mat                     -  Color matrix for precipitation
@@ -201,6 +208,8 @@
 %   Example_check_depth.m                       -  Example for check depth
 %   Example_draw_ersem.m                        -  Example for draw ersem
 %   Example_draw_gfvcom_UHSLC_comparison.m      -  Example for draw gfvcom UHSLC comparison
+%   Example_draw_hist_cloud.m                   -  Example for draw histogram and cloud
+%   Example_draw_plot_bar.m                     -  Example for draw bar and plot
 %   Example_draw_sst_ssh_sss.m                  -  Example for draw sst ssh sss
 %   Example_draw_tide.m                         -  Example for draw tide
 %   Example_draw_TMD.m                          -  Example for draw TMD tide
@@ -237,7 +246,8 @@
 %   M_map中文说明.pdf                            -  M_map中文说明
 %   Climate Data Toolbox中文说明.pdf             -  Climate Data Toolbox中文说明
 %   t_tide中文版说明.pdf                         -  t_tide中文版说明
-%   Nctoolbox.zh.pdf                           -  Nctoolbox中文说明
+%   Nctoolbox.zh.pdf                            -  Nctoolbox中文说明
+%   README_TMD.pdf                              -  TMD说明
 %
 %
 %                                  Exfunctions  -  External functions for toolbox
