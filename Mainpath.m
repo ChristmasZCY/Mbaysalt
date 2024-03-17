@@ -18,6 +18,7 @@ function varargout = Mainpath(varargin)
     %       2024-02-05:     Added 'cd' feature, by Christmas;
     %       2024-02-22:     Added Exfunctions-kmz2struct, by Christmas;
     %       2024-02-22:     Added Exfunctions/SupplementFiles for toolox, by Christmas;
+    %       2024-03-17:     Added Exfunctions/inpolygons-pkg for toolox, by Christmas;
     % =================================================================================================================
     % Examples:
     %       Mainpath                        % Add all path
@@ -150,6 +151,7 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/TMDToolbox"
         "Exfunctions/vtkToolbox"
         "Exfunctions/kmz2struct"
+        "Exfunctions/inpolygons-pkg"
         "Exfunctions/Extend/matWRF"
         "Exfunctions/Extend/matFVCOM"
         "Exfunctions/SupplementFiles/matFVCOM"
@@ -441,6 +443,21 @@ function [STATUS, CLONES] = git_clone()
                     system(txt);
                 case {'matlab'}
                     CLONES.kmz2struct = gitclone(url,[Edir, 'kmz2struct']);
+                end
+                STATUS = 1;
+            end
+        end
+        if para_conf.inploygons-pkg  % inploygons-pkg
+            if ~(exist('inpolygons','file') == 2)
+                url = fullfile(git_url, 'kakearney/inpolygons-pkg.git');  % https://github.com/kakearney/inpolygons-pkg.git
+                disp('---------> Cloning inploygons-pkg toolbox')
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'inploygons-pkg');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.kmz2struct = gitclone(url,[Edir, 'inploygons-pkg']);
                 end
                 STATUS = 1;
             end
