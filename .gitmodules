@@ -1,16 +1,16 @@
-[submodule "matFigure"]
+[submodule "Exfunctions/matFigure"]
 	path = Exfunctions/matFigure
 	url = https://github.com/SiqiLiOcean/matFigure.git
 
-[submodule "matFVCOM"]
+[submodule "Exfunctions/matFVCOM"]
 	path = Exfunctions/matFVCOM
 	url = https://github.com/SiqiLiOcean/matFVCOM.git
 
-[submodule "matNC"]
+[submodule "Exfunctions/matNC"]
 	path = Exfunctions/matNC
 	url = https://github.com/SiqiLiOcean/matNC.git
 
-[submodule "matWRF"]
+[submodule "Exfunctions/matWRF"]
 	path = Exfunctions/matWRF
 	url = https://github.com/SiqiLiOcean/matWRF.git
 
@@ -24,7 +24,7 @@
 
 [submodule "Exfunctions/OceanData"]
 	path = Exfunctions/OceanData
-	url = https://github.com/SiqiLiOcean/OceanData.git
+	url = https://github.com/ChristmasZCY/OceanData.git
 
 [submodule "Exfunctions/ZoomPlot"]
 	path = Exfunctions/ZoomPlot
@@ -49,4 +49,8 @@
 [submodule "Exfunctions/WRF2FVCOM"]
 	path = Exfunctions/WRF2FVCOM
 	url = https://github.com/SiqiLiOcean/WRF2FVCOM.git
+
+[submodule "Exfunctions/inpolygons-pkg"]
+	path = Exfunctions/inpolygons-pkg
+	url = https://github.com/kakearney/inpolygons-pkg.git
 
