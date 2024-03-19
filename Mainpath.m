@@ -155,6 +155,7 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/Extend/matWRF"
         "Exfunctions/Extend/matFVCOM"
         "Exfunctions/SupplementFiles/matFVCOM"
+        "Exfunctions/Otherpkgs"
         ];
     FunE = cellstr(FunE);
 
@@ -447,7 +448,7 @@ function [STATUS, CLONES] = git_clone()
                 STATUS = 1;
             end
         end
-        if para_conf.inploygons-pkg  % inploygons-pkg
+        if para_conf.inploygons_pkg  % inploygons-pkg
             if ~(exist('inpolygons','file') == 2)
                 url = fullfile(git_url, 'kakearney/inpolygons-pkg.git');  % https://github.com/kakearney/inpolygons-pkg.git
                 disp('---------> Cloning inploygons-pkg toolbox')
