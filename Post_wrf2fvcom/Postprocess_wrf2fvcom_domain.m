@@ -138,7 +138,7 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
                 clear GridFile_wrf GridFile_std ESMF_NCweightfile ESMFMAFILE ESMF_RegridMethod exe file_weight
 
                 for it = 1: length(Ttimes.time) % time循环
-                    if SWITCH.wind10m
+                    if SWITCH.t2m
                         T2_dst(:,:,it) = esmf_regrid(T2_ori(:,:,it),Weight_2d,'Dims',[length(domain_ll.lon_dst),length(domain_ll.lat_dst)]);
                     end
                     if SWITCH.wind10m

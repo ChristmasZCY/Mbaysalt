@@ -5,7 +5,7 @@ it1 = 1;
 it2 = 576;
 nt = it2 - it1 + 1;
 f = f_load_grid(ffvcom, 'MaxLon', 360, 'Coordinate', 'Geo','Global');
-TMD_model = '/Users/christmas/Documents/Code/MATLAB/test3/TMD_Matlab_Toolbox_v2.5/TMD/DATA/Model_tpx9_1:6_0_360';
+TMD_model = '/Users/christmas/Documents/Code/Project/Server_Program/Mbaysalt/Exfunctions/TMDToolbox/TMD/DATA/Area_define.mat';
 tides = ["M2" "N2" "S2"];
 
 time = f_load_time(ffvcom);
@@ -27,7 +27,7 @@ sta = UHSLC_read(fins, 'tlims', tlims, 'Clean');
 figure
 hold on 
 f_2d_range(f);
-f_2d_boundary(f, 'Color', 'k'); % Global问题
+f_2d_boundary(f, 'Color', 'k');
 plot([sta.lon], [sta.lat], 'bo', 'MarkerFaceColor', 'b', 'MarkerSize', 4)
 % mf_save('UHSLC_stations.png')
 

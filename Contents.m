@@ -289,6 +289,9 @@
 %       Contents.m                              -  Contents for toolbox
 %
 %
+%                                           Otherpkgs
+%       Otherpkgs                               -  Show other packages
+%
 %
 %                                           Py  -  Python scripts for toolbox
 % =================================================================================================================
