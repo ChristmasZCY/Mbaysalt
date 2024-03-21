@@ -1,12 +1,22 @@
-.idea
-.DS_Store
-.vscode
-.gitR
-!**/.gitkeep
+# Git files #
+######################
 ../../.git
-**/*.m~
-**/*.asv
 **/.git
+
+# OS generated files #
+######################
+.idea
+.vscode
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Exfunctions files #
+######################
 Exfunctions/matNC
 Exfunctions/matWRF
 Exfunctions/matFVCOM
@@ -23,9 +33,22 @@ Exfunctions/TMDToolbox
 Exfunctions/vtkToolbox
 Exfunctions/kmz2struct
 Exfunctions/inpolygons-pkg
-Exfunctions/Otherpkgs
 Exfunctions/gsw_matlab_v3_06_16
 Exfunctions/seawater_ver3_3.1
+Exfunctions/Otherpkgs/*
+!Exfunctions/Otherpkgs/Otherpkgs.m
+
+# Data files #
+######################
 Data/*
 !/Savefiles
-!Exfunctions/Otherpkgs/Otherpkgs.m
+
+# Personal files #
+######################
+.gitR
+!**/.gitkeep
+**/*.m~
+**/*.asv
+
+
+
