@@ -19,6 +19,8 @@ function varargout = Mainpath(varargin)
     %       2024-02-22:     Added Exfunctions-kmz2struct, by Christmas;
     %       2024-02-22:     Added Exfunctions/SupplementFiles for toolox, by Christmas;
     %       2024-03-17:     Added Exfunctions/inpolygons-pkg for toolox, by Christmas;
+    %       2024-03-21:     Added seawater, GSW toolbox , by Christmas; 
+    %       2024-03-21:     Extract download,unzip to function, by Christmas; 
     % =================================================================================================================
     % Examples:
     %       Mainpath                        % Add all path
@@ -53,7 +55,7 @@ function varargout = Mainpath(varargin)
         switch lower(varargin{i})
             case 'init'
                 init = true;
-                varargin(i) = [];
+                varargin(i) = []; %#ok<NASGU>
                 break
         end
     end
@@ -62,6 +64,9 @@ function varargout = Mainpath(varargin)
         PATH_contains = getpref('Mbaysalt','PATH_contains');
         PATH_toolbox = getpref('Mbaysalt','PATH_toolbox');
     else
+        if ispref('Mbaysalt')
+            rmpref('Mbaysalt')
+        end
         [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
         setpref('Mbaysalt','PATH_contains',PATH_contains)
         setpref('Mbaysalt','PATH_toolbox',PATH_toolbox)
@@ -156,6 +161,8 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/Extend/matFVCOM"
         "Exfunctions/SupplementFiles/matFVCOM"
         "Exfunctions/Otherpkgs"
+        "Exfunctions/seawater_ver3_3.1"  % https://www.cmar.csiro.au/datacentre/ext_docs/seawater.html
+        "Exfunctions/gsw_matlab_v3_06_16"
         ];
     FunE = cellstr(FunE);
 
@@ -470,29 +477,18 @@ function [STATUS, CLONES] = git_clone()
     % t_tide
     if para_conf.t_tide
         if ~(exist('t_tide', 'file') == 2)  % t_tide
-            if ~(exist([Edir, 't_tide_v1.5beta.zip'], 'file') ==2)  % No cache will download.
+            local_file = [Edir, 't_tide_v1.5beta.zip'];
+            if ~(exist(local_file, 'file') ==2)  % No cache will download.
                 url = 'https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip';
-                if check_command('wget')
-                    txt = ['wget ', url, ' -O ', Edir, 't_tide_v1.5beta.zip'];
-                elseif check_command('curl')
-                    txt = ['curl ', url, ' -o ', Edir, 't_tide_v1.5beta.zip'];
-                else
-                    warning('wget and curl are not installed, t_tide will not be installed');
-                end
                 disp('---------> Downloading t_tide toolbox')
-                disp(txt)
-                system(txt);
+                download_urlfile(url, local_file)
             end
             if ~(exist('t_tide_v1.5beta.zip', 'file') == 2)
                 error('t_tide_v1.5beta.zip is not downloaded, please download it manually');
             else
-                if check_command('unzip')
-                    system(['unzip ', Edir, 't_tide_v1.5beta.zip -d ', Edir, 't_tide']);
-                else
-                    unzip([Edir, 't_tide_v1.5beta.zip'], [Edir, 't_tide']);
-                end
+                unzip_file(local_file, [Edir, 't_tide']);
             end
-            % delete([Edir, 't_tide_v1.5beta.zip']);
+            % delete(local_file);
             STATUS = 1;
         end
     end
@@ -500,29 +496,56 @@ function [STATUS, CLONES] = git_clone()
     % m_map
     if para_conf.m_map
         if ~(exist('m_demo', 'file') ==2)  % m_map
-            if ~(exist([Edir, 'm_map1.4.zip'], 'file') ==2)  % No cache will download.
+            local_file = [Edir, 'm_map1.4.zip'];
+            if ~(exist(local_file, 'file') ==2)  % No cache will download.
                 url = 'https://www.eos.ubc.ca/%7Erich/m_map1.4.zip';
-                if check_command('wget')
-                    txt = ['wget ', url, ' -O ', Edir, 'm_map1.4.zip'];
-                elseif check_command('curl')
-                    txt = ['curl -L ', url, ' -o ', Edir, 'm_map1.4.zip'];
-                else
-                    warning('wget and curl are not installed, m_map will not be installed');
-                end
                 disp('---------> Downloading m_map toolbox')
-                disp(txt)
-                system(txt);
+                download_urlfile(url, local_file)
             end
             if ~(exist('m_map1.4.zip', 'file') == 2)
                     error('m_map1.4.zip is not downloaded, please download it manually');
             else
-                if check_command('unzip')
-                    system(['unzip ', Edir, 'm_map1.4.zip -d ', Edir]);
-                else
-                    unzip([Edir, 'm_map1.4.zip'], [Edir]);
-                end
+                unzip_file(local_file, [Edir]); %#ok<NBRAK2>
             end
-            % delete([Edir, 'm_map1.4.zip']);
+            % delete(local_file);
+            STATUS = 1;
+        end  
+    end
+
+    % GSW Oceanographic Toolbox 
+    if para_conf.GSW  % http://www.teos-10.org/software.htm
+        if ~(exist('gsw_check_functions', 'file') ==2)  % GSW Oceanographic Toolbox 
+            local_file = [Edir, 'gsw_matlab_v3_06_16.zip'];
+            if ~(exist(local_file, 'file') ==2)  % No cache will download.
+                url = 'http://www.teos-10.org/software/gsw_matlab_v3_06_16.zip';
+                disp('---------> Downloading GSW Oceanographic Toolbox');
+                download_urlfile(url, local_file);
+            end
+            if ~(exist('gsw_matlab_v3_06_16.zip', 'file') == 2)
+                    error('gsw_matlab_v3_06_16.zip is not downloaded, please download it manually');
+            else
+                unzip_file(local_file, [Edir, 'gsw_matlab_v3_06_16/']);
+            end
+            % delete(local_file);
+            STATUS = 1;
+        end  
+    end
+
+    % seawater
+    if para_conf.seawater  % https://www.cmar.csiro.au/datacentre/ext_docs/seawater.html
+        if ~(exist('sw_info', 'file') ==2)  % seawater
+            local_file = [Edir, 'seawater_ver3_3.1.zip'];
+            if ~(exist(local_file, 'file') ==2)  % No cache will download.
+                url = 'https://www.marine.csiro.au/datacentre/projects/seawater/seawater_ver3_3.1.zip';
+                disp('---------> Downloading seawater toolbox');
+                download_urlfile(url, local_file)
+            end
+            if ~(exist('seawater_ver3_3.1.zip', 'file') == 2)
+                    error('seawater_ver3_3.1.zip is not downloaded, please download it manually');
+            else
+                unzip_file(local_file, [Edir, 'seawater_ver3_3.1/']);
+            end
+            % delete(local_file);
             STATUS = 1;
         end  
     end
@@ -530,29 +553,18 @@ function [STATUS, CLONES] = git_clone()
     % gshhs
     if para_conf.gshhs
         if ~(exist([Edir,'m_map/data/gshhs_c.b',], 'file') ==2) && (exist([Edir,'m_map/data',], 'file') ==7) % gshhs
-            if ~(exist([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], 'file') ==2)  % No cache will download.
+            local_file = [Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
+            if ~(exist(local_file, 'file') ==2)  % No cache will download.
                 url = 'https://www.ngdc.noaa.gov/mgg/shorelines/data/gshhs/latest/gshhg-bin-2.3.7.zip';
-                if check_command('wget')
-                    txt = ['wget ', url, ' -O ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
-                elseif check_command('curl')
-                    txt = ['curl -L ', url, ' -o ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip'];
-                else
-                    warning('wget and curl are not installed, m_map will not be installed');
-                end
                 disp('---------> Downloading gshhs data')
-                disp(txt)
-                system(txt);
+                download_urlfile(url, local_file)
             end
             if ~(exist([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], 'file') == 2)
                     error('gshhg-bin-2.3.7.zip is not downloaded, please download it manually');
             else
-                if check_command('unzip')
-                    system(['unzip ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip -d ', Edir, 'm_map/data/']);
-                else
-                    unzip([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], [Edir, 'm_map/data/']);
-                end
+                unzip_file(local_file, [Edir, 'm_map/data/']);
             end
-            % delete([Edir, 'm_map/data/gshhg-bin-2.3.7.zip']);
+            % delete(local_file);
             STATUS = 1;
         end  
     end
@@ -578,6 +590,37 @@ function TF = check_command(command)
         TF = true;
     else
         TF = false;
+    end
+end
+
+
+function download_urlfile(urlin, fileOut)
+    if check_command('wget')
+        txt = ['wget ', urlin, ' -O ', fileOut];
+        % txt = ['wget ', url, ' -O ', Edir, 't_tide_v1.5beta.zip'];
+        disp(txt);
+        system(txt);
+    elseif check_command('curl')
+        txt = ['curl -L ', urlin, ' -o ', fileOut];
+        % txt = ['curl ', url, ' -o ', Edir, 't_tide_v1.5beta.zip'];
+        disp(txt);
+        system(txt);
+    else
+        websave(fileOut, url);
+        % warning('wget and curl are not installed, t_tide will not be installed');
+    end
+end
+
+
+function unzip_file(fileIn, dirOut)
+    if check_command('unzip')
+        txt = ['unzip ', fileIn, ' -d ', dirOut];
+        % txt = ['unzip ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip -d ', Edir, 'm_map/data/'];
+        disp(txt);
+        system(txt);
+    else
+        unzip(fileIn, dirOut);
+        % unzip([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], [Edir, 'm_map/data/']);
     end
 end
 
@@ -647,7 +690,7 @@ function fixed_setup_nctoolbox_java()
 end
 
 
-function save_clones(clones)
+function save_clones(clones) %#ok<DEFNU>
     path__ = mfilename("fullpath");
     [path,~]=fileparts(path__);
     Sdir = fullfile(path, 'Savefiles');

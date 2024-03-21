@@ -66,4 +66,33 @@ function status = copernicusmarine(command, varargin)
     status = system(cmd);
 
 end
+
+function example()
+    %https://help.marine.copernicus.eu/en/articles/6761892-how-to-subset-and-download-copernicus-marine-data-via-motu-in-matlab
+    out_dir = './data';
+    username = input('Enter your username: ', "s");
+    password = input('Enter your password: ', "s");
+    serviceId = 'GLOBAL_ANALYSISFORECAST_PHY_001_024';
+    productId = 'cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m';
+    variables = ["--variable thetao"];
+    date_start = '2022-01-01 12:00:00';
+    date_end = '2022-01-07 12:00:00';
+    lon = [-15.26, 5.04]; % lon_min, lon_max
+    lat = [35.57, 51.03]; % lat_min, lat_max
+    depth = ["0", "100"];  % depth_min, depth_max 
+    filename = 'global_20220101_2022_01_07.nc';
+    motu_line = sprintf("python -m motuclient --motu https://nrt.cmems-du.eu/motu_web/Motu", ...
+        " --service-id ", serviceID, "-TDS --product-id ", productID, ...
+        "--longitude-min ", lon(1), "--longitude-max ", lon(2), ...
+        "--latitude-min ", lat(1), "--latitude-max ", lat(2), ...
+        " --date-min ",date_start," --date-max ",date_end, ...
+        " --depth-min ", depth(1), " --depth-max ", depth(2), ...
+        variables(1), ...
+        " --out-dir ", out_dir, " --out-name ", filename, ...
+        " --user ", username, " --pwd ", password);
+    
+    disp(motu_line)
+    
+    system(motu_line)
+end
     
