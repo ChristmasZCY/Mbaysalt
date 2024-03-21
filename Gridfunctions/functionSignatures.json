@@ -66,5 +66,12 @@
       {"name":"h", "type":["numeric"],"purpose":"depth"},
       {"name":"ob", "type":["numeric"],"purpose":"open boundary"},
       {"name":"lb", "type":["numeric"],"purpose":"land boundary"},
-      {"name":"id", "type":["numeric"],"purpose":"node id"}]}
+      {"name":"id", "type":["numeric"],"purpose":"node id"}]},
+  "gshhsb2cst": {
+    "inputs": [
+      {"name":"gsshs_b", "kind":"required","type":["file=*.b"],"purpose":"GSHHS b file to read"},
+      {"name":"cst", "kind":"required","type":["char"],"purpose":"cst file to write"},
+      {"name":"xlims", "kind":"namevalue","type":["numeric"],"purpose":"x limits"},
+      {"name":"ylims", "kind":"namevalue","type":["numeric"],"purpose":"y limits"}],
+    "outputs": []}
 }

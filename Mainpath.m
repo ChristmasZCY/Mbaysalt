@@ -19,7 +19,7 @@ function varargout = Mainpath(varargin)
     %       2024-02-22:     Added Exfunctions-kmz2struct, by Christmas;
     %       2024-02-22:     Added Exfunctions/SupplementFiles for toolox, by Christmas;
     %       2024-03-17:     Added Exfunctions/inpolygons-pkg for toolox, by Christmas;
-    %       2024-03-21:     Added seawater, GSW toolbox , by Christmas; 
+    %       2024-03-21:     Added seawater, GSW, WindRose toolbox , by Christmas; 
     %       2024-03-21:     Extract download,unzip to function, by Christmas; 
     % =================================================================================================================
     % Examples:
@@ -125,12 +125,14 @@ function [FunctionPath,path] = Cmakepath
         "Matesetfunctions"
         "Mapfunctions"
         "Mimetifunctions"
+        "Docs"
         ];
     FunI = cellstr(FunI);
     
     Cdata = path + division + [
         "Inputfiles"
         "Savefiles"
+        "Data"
         ];
     Cdata = cellstr(Cdata);
 
@@ -544,6 +546,25 @@ function [STATUS, CLONES] = git_clone()
                     error('seawater_ver3_3.1.zip is not downloaded, please download it manually');
             else
                 unzip_file(local_file, [Edir, 'seawater_ver3_3.1/']);
+            end
+            % delete(local_file);
+            STATUS = 1;
+        end  
+    end
+
+    % WindRose             % https://ww2.mathworks.cn/matlabcentral/fileexchange/47248-wind-rose
+    if para_conf.WindRose  % https://dpereira.asempyme.com/windrose/
+        if ~(exist('WindRose', 'file') ==2)  % WindRose
+            local_file = [Edir, 'WindRose.zip'];
+            if ~(exist(local_file, 'file') ==2)  % No cache will download.
+                url = 'https://dpereira.asempyme.com/windrose/files/windrose_230215.zip';
+                disp('---------> Downloading WindRose toolbox');
+                download_urlfile(url, local_file)
+            end
+            if ~(exist('WindRose.zip', 'file') == 2)
+                    error('WindRose.zip is not downloaded, please download it manually');
+            else
+                unzip_file(local_file, [Edir, 'WindRose/']);
             end
             % delete(local_file);
             STATUS = 1;

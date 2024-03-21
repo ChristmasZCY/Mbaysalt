@@ -23,3 +23,5 @@ t_tide，t_predict输入的lat是WGS84坐标
 18. 大气状态方程(大气状态方程)
 19. 有关FVCOM开边界在手册的327页
 20. ESMF_RegridWeightGen(https://earthsystemmodeling.org/docs/release/latest/ESMF_refdoc.pdf)
+21. FVCOM要求三角形顺时针
+22. 河流网站 GRDC（Global Runoff Data Centre）：http://www.bafg.de/GRDC/EN/01_GRDC/13_dtbse/database_node.html

@@ -14,6 +14,7 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+*.zip
 
 # Exfunctions files #
 ######################
@@ -40,8 +41,10 @@ Exfunctions/Otherpkgs/*
 
 # Data files #
 ######################
-Data/*
+Data/T_mod.mat
 !/Savefiles
+References/SiqiLi/*
+Htmls/*
 
 # Personal files #
 ######################
@@ -49,6 +52,4 @@ Data/*
 !**/.gitkeep
 **/*.m~
 **/*.asv
-
-
 

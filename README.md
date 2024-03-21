@@ -62,3 +62,6 @@ Mainpath
 - [WRF2FVCOM](https://github.com/SiqiLiOcean/WRF2FVCOM)
 - [joyPlot](https://ww2.mathworks.cn/matlabcentral/fileexchange/75147-joyplot-ridgeline-data-representation)
 - [inpolygons-pkg](https://ww2.mathworks.cn/matlabcentral/fileexchange/7187-inpolygons)
+- [seawater](https://www.cmar.csiro.au/datacentre/ext_docs/seawater.html)
+- [GSW Oceanographic Toolbox](http://www.teos-10.org/software.htm)
+- [WindRose](https://dpereira.asempyme.com/windrose/)
