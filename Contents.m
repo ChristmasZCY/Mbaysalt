@@ -22,7 +22,7 @@
 %   functionSignatures.json                     -  Function signatures for this folder
 %   del_quotation.m                             -  Delete quotation from a string
 %   del_filesep.m                               -  Delete the last filesep from a path
-%   limit_var.m                                 -  Limit the variable in a range
+%   limit_var.m                                 -  Limit the variable in a range (Not recommended, replaced by 'clip')
 %   grep.m                                      -  Grep something from a file (not recommend)
 %   input_yn.m                                  -  Check input yes or no
 %   is_number.m                                 -  Check if a string is a number with regexp
@@ -38,6 +38,7 @@
 %   replace_para.m                              -  Replace parameters in a string or struct
 %   rmfiles.m                                   -  Delete files or directories
 %   set_proxy.m                                 -  Set proxy by system command
+%   ll.m                                        -  Simulated ll command in linux
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures

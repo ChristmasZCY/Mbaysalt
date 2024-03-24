@@ -148,5 +148,6 @@
         "inputs":[
             {"name":"Stage",  "kind":"required", "type":["scalar","logical"], "purpose":"Whether to set proxy"},
             {"name":"Host",  "kind":"namevalue", "type":["char","string"], "purpose":"Proxy host"},
-            {"name":"Port",  "kind":"namevalue", "type":["char","string"], "purpose":"Proxy port"}]}
+            {"name":"Port",  "kind":"namevalue", "type":["char","string"], "purpose":"Proxy port"}]},
+    "ll":{"inputs":[],"outputs":[]}
 }

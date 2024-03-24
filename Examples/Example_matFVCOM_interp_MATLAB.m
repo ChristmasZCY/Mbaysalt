@@ -94,3 +94,10 @@ f_2d_image(f,temp(:,1));
 f_2d_contourf(f,temp(:,1));
 f_2d_mask_boundary(f);
 colorbar
+
+%% GLOBAL_BI
+% lon_global    1D
+% lat_global    1D
+% lon_scs1      2D
+% lat_scs1      2D
+weight = interp_2d_calc_weight("BI", lon_global, lat_global, lon_scs1, lat_scs1);
