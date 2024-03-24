@@ -1,5 +1,5 @@
 function Var = limit_var(var, range, varargin)
-    %       Limit variable to a range.
+    %       Limit variable to a range. (Not recommended, replaced by 'clip')
     % =================================================================================================================
     % Parameter:
     %       var: variable to be limited            || required: True || type: numeric        ||  format: matrix
@@ -28,6 +28,7 @@ function Var = limit_var(var, range, varargin)
         varargin
     end
 
+    warning('Not recommended, replaced by `clip`')
     Var = var;
     lims = minmax(range);
     Var(Var < lims(1)) = lims(1);
