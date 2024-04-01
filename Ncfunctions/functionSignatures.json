@@ -40,5 +40,11 @@
         "outputs":[]},
     "erosion_coast_cal_id":{
         "inputs":[],
-        "outputs":[]}
+        "outputs":[]},
+    "nc_var_exist":{
+        "inputs":[
+            {"name":"fin", "kind":"required","type":["file=*.nc"],"purpose":"netCDF filename"},
+            {"name":"varname", "kind":"required","type":["char"],"purpose":"variable name"}],
+        "outputs":[
+            {"name":"exist", "type":["scalar"], "purpose":"variable exist"}]}
 }

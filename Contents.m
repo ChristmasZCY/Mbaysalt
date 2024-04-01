@@ -39,6 +39,7 @@
 %   rmfiles.m                                   -  Delete files or directories
 %   set_proxy.m                                 -  Set proxy by system command
 %   ll.m                                        -  Simulated ll command in linux
+%   closefile.m                                 -  Close all opened files.
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -128,6 +129,12 @@
 %   make_domain_ll.m                            -  Read and make grid from wrf2fvcom domain file
 %
 %
+%                                   Post_mitgcm -  Functions for handling mitgcm data
+% =================================================================================================================
+%   functionSignatures.json                     -  Function signatures for this folder
+%   Postprocess_MITgcm.m                        -  Read and postprocess mitgcm data to standard format
+%
+%
 %                                Gridfunctions  -  Functions for model grid
 % =================================================================================================================
 %   functionSignatures.json                     -  Function signatures for this folder
@@ -153,7 +160,8 @@
 %                                  Ncfunctions  -  Functions for netcdf
 % =================================================================================================================
 %   functionSignatures.json                     -  Function signatures for this folder
-%      create_nc.m                              -  Create NETCDF file as input
+%   create_nc.m                                 -  Create NETCDF file as input
+%   nc_var_exist.m                              -  Check if the variable exists in the nc file
 %   +netcdf_fvcom                               -  Packages of functions for handling FVCOM netcdf file
 %      wrnc_adt.m                               -  Write adt netcdf file
 %      wrnc_current.m                           -  Write current netcdf file at standard level or sigma level
@@ -203,6 +211,8 @@
 %   Read_file.conf                              -  Config file for Readfunctions/read_ncfile_lltdv
 %   Post_wrf2fvcom.conf                         -  Config file for Post_wrf2fvcom/Postprocess_wrf2fvcom_domain
 %   INSTALL.conf                                -  Config file for INSTALL Mbaysalt_toolbox
+%   Post_mitgcm.conf                            -  Config file for Post_mitgcm/Postprocess_mitgcm
+%
 %
 %
 %                                     Examples  -  Examples for toolbox
@@ -281,6 +291,7 @@
 %   GSW Oceanographic Toolbox   (optional)      -  GSW Oceanographic Toolbox                   ||  http://www.teos-10.org/software.htm
 %   seawater                    (optional)      -  seawater toolbox                            ||  https://www.cmar.csiro.au/datacentre/ext_docs/seawater.html
 %   WindRose                    (optional)      -  WindRose toolbox                            ||  https://dpereira.asempyme.com/windrose/
+%   MITgcmToolbox               (optional)      -  MITgcm matlab toolbox                       ||  hhttps://github.com/MITgcm/MITgcm/tree/master/utils/matlab
 %
 %                                         Extend Exfunctions
 %   matWRF                                      -  Extend matWRF toolbox

@@ -7,7 +7,7 @@
             {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":""},
-            {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo'}"],"purpose":"Coordinate of reading"},
+            {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo','ww3'}"],"purpose":"Coordinate of reading"},
             {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"}],
         "outputs":[
             {"name":"fgrid", "type":["struct"], "purpose":"FVCOM grid"}]},

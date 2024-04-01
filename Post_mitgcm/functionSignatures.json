@@ -1,40 +1,19 @@
 {
     "_schemaVersion": "1.0.0",
-    "make_mask_depth_data":{
-        "inputs":[],
-        "outputs":[]},
-    "make_maskmat":{
-        "inputs":[],
-        "outputs":[]},
-    "mask_depth_data":{
-        "inputs":[],
-        "outputs":[]},
-    "mask2data":{
-        "inputs":[],
-        "outputs":[]},
-    "Postprocess_fvcom_old":{
-        "inputs":[],
-        "outputs":[]},
-    "Postprocess_fvcom":{
+    "Postprocess_MITgcm":{
         "inputs":[
             {"name":"conf_file", "kind":"required","type":["file=*.conf"],"purpose":"Configure filename"},
             {"name":"interval","kind":"required","type":["choices={'daily','hourly'}"],"purpose":"Interval"},
             {"name":"yyyymmdd","kind":"required","type":["scalar"],"purpose":"Start_date(yyyyMMdd)"},
             {"name":"day_length","kind":"required","type":["scalar"],"purpose":"Length of post"}],
         "outputs":[]},
-    "Postprocess_nemuro":{
+    "write_msh":{
         "inputs":[],
         "outputs":[]},
-    "read_conf_fvcom":{
+    "read_msh":{
         "inputs":[],
         "outputs":[]},
-    "siglay_to_3d":{
-        "inputs":[],
-        "outputs":[]},
-    "standard_filename":{
-        "inputs":[],
-        "outputs":[]},
-    "time_to_TIME":{
+    "erosion_coast_cal_id":{
         "inputs":[],
         "outputs":[]}
 }
