@@ -488,14 +488,14 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
 
         %% 岸线侵蚀
         if SWITCH.erosion
-            osprint2('INFO',[pad('Erosion coastline ',45,'right'),'--> ', logical_to_char(SWITCH.erosion)]);
             file_erosion = para_conf.ErosionFile;
             num_erosion = para_conf.Erosion_num;
-            osprint2('INFO',[pad('Erosion coastline total frequency ',45,'right'),'--> ', num2str(num_erosion)]);
+            osprint2('INFO',[pad('Erosion coastline ',Text_len,'right'),'--> ', logical_to_char(SWITCH.erosion)]);
+            osprint2('INFO',[pad('Erosion coastline total frequency ',Text_len,'right'),'--> ', num2str(num_erosion)]);
 
             im = 0;
             while im < num_erosion
-                osprint2('INFO',[pad('Erosion coastline counts ',45,'right'),'--> ', num2str(im+1)]);
+                osprint2('INFO',[pad('Erosion coastline counts ',Text_len,'right'),'--> ', num2str(im+1)]);
                 if SWITCH.make_erosion
                     fields_Velement = fieldnames(Velement);
                     if im == 0
@@ -513,7 +513,6 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                     eval(['I_D_',num2str(im+1),' = load(file_erosion).I_D_',num2str(im+1),';']);
                 end
                 [VAelement,Velement, dimsMax] = separate_var_gt_nd(Velement);
-                keyboard
                 % VAelement = structfun(@(x) erosion_coast_via_id(I_D_1, x,'cycle_dim',4), VAelement, 'UniformOutput', false);
                 eval(['VAelement = structfun(@(x) erosion_coast_via_id(I_D_',num2str(im+1),', x,''cycle_dim'',',num2str(dimsMax),'), VAelement, ''UniformOutput'', false);']);
                 Velement = merge_struct(Velement,VAelement); clear VAelement
@@ -616,28 +615,17 @@ function SWITCH = read_switch(structIn)
     end
 end
 
-function [Struct1,Struct2,dimsMax] = separate_var_gt_nd(structIn)
+function [Struct1,Struct2,dimsMax] = separate_var_gt_nd(structIn, ndim)
     % 将维度最多的变量写入到Struct1中，其余变量写入到Struct2中
     Struct1 = struct; Struct2 = struct;
-    dimsMax = max(cellfun(@ndims,struct2cell(structIn)));
-    key = fieldnames(structIn);
-    for i = 1 : length(key)
-        if ndims(structIn.(key{i})) == dimsMax
-            Struct1.(key{i}) = structIn.(key{i});
-        else
-            Struct2.(key{i}) = structIn.(key{i});
-        end
+    if exist("ndim","var")
+        dimsMax = ndim;
+    else
+        dimsMax = max(cellfun(@ndims,struct2cell(structIn)));
     end
-end
-
-function [Struct1,Struct2] = separate_var_nd_gt_n(structIn,varargin)
-    % 从struct找到第dim维度长度>=n的变量，将变量写入到Struct结构体中,其余变量写入到Struct2中
-    varargin = read_varargin(varargin,{'dim'},{3});  % 默认第三维
-    varargin = read_varargin(varargin,{'n'},{2});  % 默认长度>=2
-    Struct1 = struct; Struct2 = struct;
     key = fieldnames(structIn);
     for i = 1 : length(key)
-        if size(structIn.(key{i}),dim) >= n
+        if ndims(structIn.(key{i})) >= dimsMax
             Struct1.(key{i}) = structIn.(key{i});
         else
             Struct2.(key{i}) = structIn.(key{i});

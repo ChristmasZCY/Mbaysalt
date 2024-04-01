@@ -167,6 +167,8 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/Otherpkgs"
         "Exfunctions/seawater_ver3_3.1"  % https://www.cmar.csiro.au/datacentre/ext_docs/seawater.html
         "Exfunctions/gsw_matlab_v3_06_16"
+        "Exfunctions/inploygons-pkg"
+        "Exfunctions/WindRose"
         "Exfunctions/MITgcmTools"
         ];
     FunE = cellstr(FunE);
@@ -761,6 +763,10 @@ function fixed_matFVCOM()
         % validateFunctionSignaturesJSON(fullfile(path_matFVCOM,'functionSignatures.json'));
     % end
     if STATUS == 1
-        fprintf('\nAs adding files, if it does not take efect, please restart MATLAB\n\n')
+        fprintf('\n')
+        fprintf('=====================================================================\n')
+        fprintf('As adding files, if it does not take efect, please restart MATLAB\n')
+        fprintf('=====================================================================\n')
+        fprintf('\n')
     end
 end
