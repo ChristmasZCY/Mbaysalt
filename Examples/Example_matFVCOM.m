@@ -21,7 +21,8 @@ clf
 g6 = f_2d_cell(f,1:1400);
 % g7 = f_2d_range(f,'Coordinate','geo');
 g7 = f_2d_contour(f,zeta(:,1),'Manual','NoLabel','Global');
-g8 = f_2d_vector(f,u(:,1,1),v(:,1,1),'Vh',0.1,'List',[1:f.nele]);
+[g8,para] = f_2d_vector(f,u(:,1,1),v(:,1,1),'Vh',0.1,'List',[1:f.nele]);
+f_2d_vector_legend(f, 119.46, 34.73, 1, 0,'1 m/s',para)
 g9 = f_2d_vector2(f,u(:,1,1),v(:,1,1));
 % f_2d_vector3(f,u(:,1,1),v(:,1,1));
 
