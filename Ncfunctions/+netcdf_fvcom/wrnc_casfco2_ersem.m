@@ -100,7 +100,7 @@ function wrnc_casfco2_ersem(ncid,Lon,Lat,time,Casfco2,GA_start_date,varargin)
         netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'program_version',['V',num2str(conf.P_Version)]);    % 程序版本号
     end
     if class(conf) == "struct" && isfield(conf,"Switch_ecology")
-        if Switch_ecology
+        if conf.Switch_ecology
             netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'ecology_model',[conf.Ecology_model]);  % 生态模式
         end
     end
