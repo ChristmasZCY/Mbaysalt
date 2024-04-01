@@ -1,0 +1,11 @@
+*       text=auto
+*.txt   text
+*.pdf   binary
+*.zip   binary
+*.jpg   -text
+*.png   binary
+*.xlsx  binary
+*.sh    text eol=lf
+# 对于sh文件，标记为文本文件，在文件入Git库时进行规范化，即行尾为LF。在检出到工作目录时，行尾也不会转换为CRLF（即保持LF）。
+# 文件的行尾自动转换。如果是文本文件，则在文件入Git库时，行尾自动转换为LF。如果已经在入Git库中的文件的行尾是GRLF，则文件在入Git库时，不再转换为LF。
+

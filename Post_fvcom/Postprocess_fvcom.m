@@ -24,13 +24,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-01-25:     Added limit for ecological element(ph, no3, pco2, chlo, casfco2)
     % =================================================================================================================
     % Example:
-    %       Postprocess_fvcom('Post_fvcom.conf','hourly',20230525,1)
-    %       Postprocess_fvcom('Post_fvcom.conf','daily', 20230525,1)
+    %       Postprocess_fvcom('Post_fvcom.conf','hourly',20240401,1)
+    %       Postprocess_fvcom('Post_fvcom.conf','daily', 20240401,1)
     % =================================================================================================================
 
     arguments(Input)
         conf_file {mustBeFile}
-        interval {mustBeNonzeroLengthText}
+        interval {mustBeMember(interval,{'daily','hourly'})} % {mustBeNonzeroLengthText}
         yyyymmdd {mustBeFloat}
         day_length {mustBeFloat}
     end
@@ -92,7 +92,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
     osprint2('INFO', [pad('Date parameter ',45,'right'),'--> ', char(getdate)])  % 输出处理的日期信息
     osprint2('INFO', [pad('Total transfor ',45,'right'),'--> ', num2str(Length),' days'])  % 输出处理的日期信息
-    osprint2('INFO', [pad('Method ',45,'right'),'--> ', Method_interpn])  % 输出插值方法
+    osprint2('INFO', [pad('Interp Method ', 45,'right'),'--> ', Method_interpn])  % 输出插值方法
     osprint2('INFO', [pad(['Transfor ',interval,' variable '],45,'right'), '-->', repmat(' temp',SWITCH.temp),repmat(' salt',SWITCH.salt) ...
         repmat(' zeta',SWITCH.adt),repmat(' u',SWITCH.u),repmat(' v',SWITCH.v), repmat(' w',SWITCH.w), ...
         repmat(' aice',SWITCH.aice), repmat(' ph',SWITCH.ph), repmat(' no3',SWITCH.no3), repmat(' pco2',SWITCH.pco2), ...
@@ -124,6 +124,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.DEBUG  % 如果打开DEBUG模式,则OutputDir中的值都为'./'
             Fun_new_dir = @(x) './';
             OutputDir = structfun(Fun_new_dir,OutputDir,'UniformOutput',false);
+            clear Fun_new_dir
         end
         structfun(@(x) makedirs(x),OutputDir); % 创建文件夹
 

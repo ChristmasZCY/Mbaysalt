@@ -21,6 +21,7 @@ function varargout = Mainpath(varargin)
     %       2024-03-17:     Added Exfunctions/inpolygons-pkg for toolox, by Christmas;
     %       2024-03-21:     Added seawater, GSW, WindRose toolbox , by Christmas; 
     %       2024-03-21:     Extract download,unzip to function, by Christmas; 
+    %       2024-04-01:     Added Post_mitgcm, MITgcmTools, by Christmas; 
     % =================================================================================================================
     % Examples:
     %       Mainpath                        % Add all path
@@ -116,6 +117,7 @@ function [FunctionPath,path] = Cmakepath
         "Post_ww3"
         "Post_tpxo"
         "Post_wrf2fvcom"
+        "Post_mitgcm"
         "Gridfunctions"
         "Exfunctions"
         "Readfunctions"
@@ -165,6 +167,7 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/Otherpkgs"
         "Exfunctions/seawater_ver3_3.1"  % https://www.cmar.csiro.au/datacentre/ext_docs/seawater.html
         "Exfunctions/gsw_matlab_v3_06_16"
+        "Exfunctions/MITgcmTools"
         ];
     FunE = cellstr(FunE);
 
