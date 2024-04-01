@@ -184,7 +184,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             if strcmpi(Ecology_model, '.ERSEM.')
                 ph = double(ncread(ncfile,'O3_pH'));
             end
-            ph = limit_var(ph, [0,14]);
+            ph = clip(ph, 0, 14);  % ph = limit_var(ph, [0,14]);
         end
         if SWITCH.no3 % 是否包含no3
             if strcmpi(Ecology_model, '.ERSEM.')
@@ -192,13 +192,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             elseif strcmpi(Ecology_model, '.NEMURO.')
                 no3 = double(ncread(ncfile,'NO3')); % NO3 氮氧化物
             end
-            no3 = limit_var(no3, [0,400]);
+            no3 = clip(no3, 0, 400);  % no3 = limit_var(no3, [0,400]);
         end
         if SWITCH.pco2 % 是否包含pco2
             if strcmpi(Ecology_model, '.ERSEM.')
                 pco2 = double(ncread(ncfile,'O3_pCO2'));
             end
-            pco2 = limit_var(pco2, [0,10000]);
+            pco2 = clip(pco2, 0, 10000);  % pco2 = limit_var(pco2, [0,10000]);
         end
         if SWITCH.chlo % 是否包含chlorophyll
             if strcmpi(Ecology_model, '.ERSEM.')
@@ -215,13 +215,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 chlo = 1.59 * pp;
                 clear ps pl pp
             end
-            chlo = limit_var(chlo, [0,100]);
+            chlo = clip(chlo, 0, 100);  % chlo = limit_var(chlo, [0,100]);
         end
         if SWITCH.casfco2 % 是否包含海气二氧化碳通量
             if strcmpi(Ecology_model, '.ERSEM.')
                 casfco2 = double(ncread(ncfile,'O3_fair'));
             end
-            casfco2 = limit_var(casfco2, [-300, 300]);
+            casfco2 = clip(casfco2, -300, 300);  % casfco2 = limit_var(casfco2, [-300, 300]);
         end
         if SWITCH.zp  % zooplankton zp 浮游动物
             if strcmpi(Ecology_model, '.NEMURO.')
