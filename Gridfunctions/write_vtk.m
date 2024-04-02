@@ -39,12 +39,20 @@ function write_vtk(fout, x, y, nv, z, cell_type, cell_data, options)
     end
     Coordinate = options.Coordinate;
 
-    switch(min(nv(:)))
-    case 0
-    case 1
-        nv = nv - 1;
-    otherwise
+    if min(nv(:)) >1 || max(nv(:)) ~= length(x)
         error('Wrong nv!')
+    elseif min(nv(:)) == 0
+        nv = nv + 1;
+    end
+
+    if sum(isnan(x)) > 0
+        error("NaN in 'x' !")
+    end
+    if sum(isnan(y)) > 0
+        error("NaN in 'y' !")
+    end
+    if sum(isnan(z)) > 0
+        error("NaN in 'z' !")
     end
        
     fid=fopen(fout,'w');

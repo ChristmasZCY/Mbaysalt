@@ -100,8 +100,6 @@ def call_matlab(_config_file, _date, _during_date):
 	t = matlab.engine.start_matlab()
 	t.addpath(Postprocess_dir)
 	t.run(f'{Postprocess_dir}/Mbaysalt_christmas/Mainpath.m', nargout=0)
-	if Method_interpn == 'Christmas_interp':
-		t.parpool(20)
 	if Switch_Cal_hourly:
 		t.Postprocess_fvcom(_config_file, 'hourly', float(_date), float(_during_date), nargout=0)
 	if Switch_Cal_daily:

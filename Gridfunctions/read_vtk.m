@@ -65,12 +65,10 @@ function [x,y,nv,z,cell_type,cell_data] = read_vtk(fin,varargin)
     cells = textscan(fid, '%d %d %d %d ', k_CELLT-k_CELLS-2, ...
         'headerlines', k_CELLS(1));
     nv = [cells{2},cells{3},cells{4}];
-    switch(min(nv(:)))
-    case 0
-        nv = nv + 1;
-    case 1
-    otherwise
+    if min(nv(:)) >1 || max(nv(:)) ~= length(x)
         error('Wrong nv!')
+    elseif min(nv(:)) == 0
+        nv = nv + 1;
     end
     
     % == Read cell type

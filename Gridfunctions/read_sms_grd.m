@@ -122,6 +122,7 @@ function [x, y, nv, h, ob, lb, tail, id] = read_sms_grd(fin, varargin)
     while ~feof(fid)
         tail{end+1} = fgetl(fid);  %#ok<AGROW>
     end
+    tail = tail';
 
     clear nvc length_node length_cell
     fclose(fid);
