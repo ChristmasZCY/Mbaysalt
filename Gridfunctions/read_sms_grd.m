@@ -1,4 +1,4 @@
-function [x, y, nv, h, ob, lb, id] = read_sms_grd(fin, varargin)
+function [x, y, nv, h, ob, lb, tail, id] = read_sms_grd(fin, varargin)
     %       Read SMS .grd file  -- ascii
     % =================================================================================================================
     % Parameter:
@@ -14,15 +14,18 @@ function [x, y, nv, h, ob, lb, id] = read_sms_grd(fin, varargin)
     %       h: depth                 (optional)   || required: False || type: 1D array  ||  example: [1,2,3,4,5]
     %       ob: open boundary nodes  (optional)   || required: False || type: cell      ||  example: {[1,2,3,4,5],[1,2,3]}
     %       lb: land boundary nodes  (optional)   || required: False || type: cell      ||  example: {[1,2,3,4,5],[1,2,3]}
+    %       tail: tail of file       (optional)   || required: False || type: cell      ||  example: {{},{}}
     %       id: node id              (optional)   || required: False || type: 1D array  ||  example: [1,2,3,4,5]
     % =================================================================================================================
     % Update:
     %       2024-03-15:     Created (just number of boundries == 0), by Christmas;
+    %       2024-04-02:     Added reading open boundary and land boundary,  by Christmas;
+    %       2024-04-02:     Added tail,  by Christmas;
     % =================================================================================================================
     % Example:
-    %       [x,y,nv,h,ob,lb] = read_sms_grd('./input_mesh.grd');
-    %       [x,y,nv,h,ob,lb] = read_sms_grd('./input_mesh.grd', 'INFO');
-    %       [x,y,nv,h,ob,lb] = read_sms_grd('./input_mesh.grd', 'INFO', 'method', 'rewind');
+    %       [x, y, nv, h, ob, lb, tail, id] = read_sms_grd('./input_mesh.grd');
+    %       [x, y, nv, h, ob, lb, tail, id] = read_sms_grd('./input_mesh.grd', 'INFO');
+    %       [x, y, nv, h, ob, lb, tail, id] = read_sms_grd('./input_mesh.grd', 'INFO', 'method', 'rewind');
     %       read_sms_grd('./input_mesh.grd', 'INFO');
     % =================================================================================================================
     
@@ -36,7 +39,7 @@ function [x, y, nv, h, ob, lb, id] = read_sms_grd(fin, varargin)
     
     varargin = read_varargin2(varargin, {'INFO'});
     varargin = read_varargin(varargin, {'method'}, {'rewind'});
-    
+
     fid = fopen(fin);
 
     % data = textscan(fid, '%s', 'Delimiter','\n');
@@ -70,8 +73,57 @@ function [x, y, nv, h, ob, lb, id] = read_sms_grd(fin, varargin)
     clear ixyh
 
     nv = [nvc{3} nvc{4} nvc{5}];
-    clear nvc length_node length_cell
 
+    iline = 2+length_node+length_cell;
+
+    % open boundaries
+    frewind(fid);
+    N_ob = textscan(fid, '%d %s %s %s %s %s',1, 'headerlines', iline);
+    if N_ob{1} == 0
+        ob = {};
+    else
+        ob = cell(N_ob{1},1);
+    end
+    ob_all = textscan(fid, '%d %s %s %s %s %s %s %s',1);
+    iline = iline+2;
+    for i = 1 : length(ob)
+        ob1 = textscan(fid, '%d %s %s %s %s %s %s %s %d',1);
+        ob1_count = ob1{1};
+        ob1_cell = textscan(fid,'%d',ob1_count);
+        ob{i} = ob1_cell{1};
+        iline = iline + 1 + ob1_count;
+    end
+    clear i N_ob ob_all ob1 ob1_count ob1_cell
+
+    % land boundary
+    N_lb = textscan(fid, '%d %s %s %s %s %s',1);
+    if N_lb{1} == 0
+        lb = {};
+    else
+        lb = cell(N_lb{1},1);
+    end
+    lb_all = textscan(fid, '%d %s %s %s %s %s %s %s',1);
+    iline = iline+2;
+    for i = 1 : length(lb)
+        lb1 = textscan(fid, '%d %d %s %s %s %s %s %s %s %d',1);
+        lb1_count = lb1{1};
+        lb1_cell = textscan(fid,'%d',lb1_count);
+        lb{i} = lb1_cell{1};
+        iline = iline + 1 + lb1_count;
+    end
+    clear i N_lb lb_all lb1 lb1_count lb1_cell
+
+    % tail
+    tail = {};
+    frewind(fid);
+    for i = 1:iline
+        fgetl(fid);
+    end
+    while ~feof(fid)
+        tail{end+1} = fgetl(fid);  %#ok<AGROW>
+    end
+
+    clear nvc length_node length_cell
     fclose(fid);
 
     if nargout == 0

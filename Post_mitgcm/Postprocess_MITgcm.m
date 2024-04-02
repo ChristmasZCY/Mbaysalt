@@ -79,8 +79,6 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
         end
         structfun(@(x) makedirs(x),OutputDir); % 创建文件夹
 
-        clear deal_date_dt deal_date % 日期处理中间变量
-
         %                    unloaded(s)    117-mitgcmuv(s)
         % rdmds				324.390431      1218.884205
         % fopen				287.991462		652.899055
@@ -140,34 +138,34 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                 zeta = zeros(numel(GCM_grid.XC), steps);
             end
             for ih = 1 : steps
-                Times(ih) = getdate + hours(ih-1);
+                Times(ih) = deal_date_dt + hours(ih-1);
                 if SWITCH.temp
-                    dmfile(ih).T = fullfile(Inputpath,[char(getdate),'/T.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).T = fullfile(Inputpath,[char(deal_date),'/T.',char(Times(ih))]); % 输入文件
                     t_1 = rdmds(dmfile(ih).T);
                     temp(:,:,ih) = reshape(t_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear t_1
                 end
                 if SWITCH.salt
-                    dmfile(ih).S = fullfile(Inputpath,[char(getdate),'/S.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).S = fullfile(Inputpath,[char(deal_date),'/S.',char(Times(ih))]); % 输入文件
                     s_1 = rdmds(dmfile(ih).S);
                     salt(:,:,ih) = reshape(s_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear s_1
                 end
                 if SWITCH.u
-                    dmfile(ih).U = fullfile(Inputpath,[char(getdate),'/U.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).U = fullfile(Inputpath,[char(deal_date),'/U.',char(Times(ih))]); % 输入文件
                     u_1 = rdmds(dmfile(ih).U);
                     u(:,:,ih) = reshape(u_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear u_1
                 end
                 if SWITCH.v
-                    dmfile(ih).V = fullfile(Inputpath,[char(getdate),'/V.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).V = fullfile(Inputpath,[char(deal_date),'/V.',char(Times(ih))]); % 输入文件
                     v_1 = rdmds(dmfile(ih).V);
                     v(:,:,ih) = reshape(v_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear v_1
                 end
                 if SWITCH.w
-                    dmfile(ih).W = fullfile(Inputpath,[char(getdate),'/W.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).W = fullfile(Inputpath,[char(deal_date),'/W.',char(Times(ih))]); % 输入文件
                     w_1 = rdmds(dmfile(ih).W);
                     w(:,:,ih) = reshape(w_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear w_1
                 end
                 if SWITCH.adt
-                    dmfile(ih).E = fullfile(Inputpath,[char(getdate),'/Eta.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).E = fullfile(Inputpath,[char(deal_date),'/Eta.',char(Times(ih))]); % 输入文件
                     z_1 = rdmds(dmfile(ih).E);
                     zeta(:,ih) = z_1(:); clear z_1
                 end
@@ -212,34 +210,34 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             end
             
             for ih = 1 : steps
-                Times(ih) = getdate + hours(ih-1);
+                Times(ih) = deal_date_dt + hours(ih-1);
                 if SWITCH.temp
-                    dmfile(ih).T = fullfile(Inputpath,[char(getdate),'/T.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).T = fullfile(Inputpath,[char(deal_date),'/T.',char(Times(ih))]); % 输入文件
                     t_1 = fORC([dmfile(ih).T '.data']);
                     temp(:,:,ih) = reshape(t_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear t_1
                 end
                 if SWITCH.salt
-                    dmfile(ih).S = fullfile(Inputpath,[char(getdate),'/S.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).S = fullfile(Inputpath,[char(deal_date),'/S.',char(Times(ih))]); % 输入文件
                     s_1 = fORC([dmfile(ih).S '.data']);
                     salt(:,:,ih) = reshape(s_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear s_1
                 end
                 if SWITCH.u
-                    dmfile(ih).U = fullfile(Inputpath,[char(getdate),'/U.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).U = fullfile(Inputpath,[char(deal_date),'/U.',char(Times(ih))]); % 输入文件
                     u_1 = fORC([dmfile(ih).U '.data']);
                     u(:,:,ih) = reshape(u_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear u_1
                 end
                 if SWITCH.v
-                    dmfile(ih).V = fullfile(Inputpath,[char(getdate),'/V.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).V = fullfile(Inputpath,[char(deal_date),'/V.',char(Times(ih))]); % 输入文件
                     v_1 = fORC([dmfile(ih).V '.data']);
                     v(:,:,ih) = reshape(v_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear v_1
                 end
                 if SWITCH.w
-                    dmfile(ih).W = fullfile(Inputpath,[char(getdate),'/W.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).W = fullfile(Inputpath,[char(deal_date),'/W.',char(Times(ih))]); % 输入文件
                     w_1 = fORC([dmfile(ih).W '.data']);
                     w(:,:,ih) = reshape(w_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear w_1
                 end
                 if SWITCH.adt
-                    dmfile(ih).E = fullfile(Inputpath,[char(getdate),'/Eta.',char(Times(ih))]); % 输入文件
+                    dmfile(ih).E = fullfile(Inputpath,[char(deal_date),'/Eta.',char(Times(ih))]); % 输入文件
                     z_1 = fORC([dmfile(ih).E '.data']);
                     zeta(:,ih) = z_1(:); clear z_1
                 end
@@ -261,6 +259,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             error("Method_read must be one of 'rdmnc', 'ncread', 'gluemncbig', 'fopen', 'rdmds' !")
         end
         clear dr1 dr
+        clear deal_date_dt deal_date % 日期处理中间变量
 
         %% time
         Ttimes = Mateset.Mdatetime(Times);
