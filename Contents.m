@@ -143,8 +143,8 @@
 %   read_2dm_to_website.m                       -  Read 2dm mesh to website format for www.iocean.cn
 %   read_gebco_to_sms.m                         -  Read gebco bathymetry to sms format
 %   read_vtk.m                                  -  Read vtk file
-%   write_sms_grd.m                             -  Write sms grd file (Uncompleted)
-%   read_sms_grd.m                              -  Read sms grd file (Uncompleted)
+%   write_sms_grd.m                             -  Write sms grd file
+%   read_sms_grd.m                              -  Read sms grd file
 %   write_vtk.m                                 -  Write vtk file
 %   gshhsb2cst.m                                -  Convert GSHHS binary to cst, producingOriginalFormat() by Siqi Li
 %

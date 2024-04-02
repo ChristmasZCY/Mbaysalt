@@ -24,12 +24,12 @@
         {"name":"fin", "kind":"required","type":["file=*.vtk"],"purpose":"vtk file to read"},
         {"name":"INFO", "kind":"flag","type":["choices={'INFO'}"],"purpose":"print information of vtk file"}],
     "outputs": [
-        {"name":"x","type":["numeric"],"purpose":"x coordinate"},
-        {"name":"y","type":["numeric"],"purpose":"y coordinate"},
-        {"name":"nv","type":["numeric"],"purpose":"triangle connectivity"},
-        {"name":"z","type":["numeric"],"purpose":"z coordinate"},
-        {"name":"cell_type","type":["numeric"],"purpose":"cell type"},
-        {"name":"cell_data","type":["numeric"],"purpose":"cell data"}]},
+        {"name":"x","type":["scalar"],"purpose":"x coordinate"},
+        {"name":"y","type":["scalar"],"purpose":"y coordinate"},
+        {"name":"nv","type":["scalar"],"purpose":"triangle connectivity"},
+        {"name":"z","type":["scalar"],"purpose":"z coordinate"},
+        {"name":"cell_type","type":["cell"],"purpose":"cell type"},
+        {"name":"cell_data","type":["cell"],"purpose":"cell data"}]},
   "write_vtk": {
     "inputs": [
         {"name":"fout","kind":"required","type":["char"],"purpose":"vtk file to write"},
@@ -49,8 +49,8 @@
       {"name":"y", "kind":"required","type":["numeric"],"purpose":"y coordinate"},
       {"name":"nv", "kind":"required","type":["numeric"],"purpose":"triangle connectivity"},
       {"name":"h", "kind":"positional","type":["numeric"],"purpose":"depth"},
-      {"name":"ob", "kind":"positional","type":["numeric"],"purpose":"open boundary"},
-      {"name":"lb", "kind":"positional","type":["numeric"],"purpose":"land boundary"},
+      {"name":"ob", "kind":"positional","type":["cell"],"purpose":"open boundary"},
+      {"name":"lb", "kind":"positional","type":["cell"],"purpose":"land boundary"},
       {"name":"Coordinate", "kind":"namevalue","type":["choices={'geo','xy'}"],"purpose":"coordinate type"}],
     "outputs": []
   },
@@ -60,13 +60,14 @@
       {"name":"INFO", "kind":"flag","type":["choices={'INFO'}"],"purpose":"print information of vtk file"},
       {"name":"method", "kind":"namevalue","type":["choices={'rewind','ctu'}"],"purpose":"method to read grd file"}],
     "outputs": [
-      {"name":"x", "type":["numeric"],"purpose":"x coordinate"},
-      {"name":"y", "type":["numeric"],"purpose":"y coordinate"},
-      {"name":"nv", "type":["numeric"],"purpose":"triangle connectivity"},
-      {"name":"h", "type":["numeric"],"purpose":"depth"},
-      {"name":"ob", "type":["numeric"],"purpose":"open boundary"},
-      {"name":"lb", "type":["numeric"],"purpose":"land boundary"},
-      {"name":"id", "type":["numeric"],"purpose":"node id"}]},
+      {"name":"x", "type":["scalar"],"purpose":"x coordinate"},
+      {"name":"y", "type":["scalar"],"purpose":"y coordinate"},
+      {"name":"nv", "type":["scalar"],"purpose":"triangle connectivity"},
+      {"name":"h", "type":["scalar"],"purpose":"depth"},
+      {"name":"ob", "type":["cell"],"purpose":"open boundary"},
+      {"name":"lb", "type":["cell"],"purpose":"land boundary"},
+      {"name":"tail", "type":["cell"],"purpose":"tail"},
+      {"name":"id", "type":["scalar"],"purpose":"node id"}]},
   "gshhsb2cst": {
     "inputs": [
       {"name":"gsshs_b", "kind":"required","type":["file=*.b"],"purpose":"GSHHS b file to read"},

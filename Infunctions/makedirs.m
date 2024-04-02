@@ -7,7 +7,12 @@ function makedirs(varargin)
     % Returns:
     %       None
     % =================================================================================================================
+    % Update:
+    %       ****-**-**:     Created, by Christmas;
+    %       2024-04-02:     Added strip, by Christmas;
+    % =================================================================================================================
     % Example:
+    %       makedirs(path1)
     %       makedirs(path1,path2)
     % =================================================================================================================
     
@@ -17,7 +22,7 @@ function makedirs(varargin)
 
     for num = 1: nargin
         if ~exist(varargin{num},'dir') && ~isempty(varargin{num})
-            mkdir(varargin{num});
+            mkdir(strip(varargin{num}));
         end
     end
 
