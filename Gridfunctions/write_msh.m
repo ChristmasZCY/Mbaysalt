@@ -7,7 +7,7 @@ function write_msh(fout, x, y, nv, h, ns, varargin)
     %       y: y coordinate of the grid point                    || required: True  || type: double ||  format: matrix
     %       nv: triangle connectivity of the grid point          || required: True  || type: double ||  format: matrix
     %       h: depth of the grid point                           || required: False || type: double ||  format: matrix
-    %       ns: open boundary of the grid point                  || required: False || type: cell   ||  format: matrix
+    %       ns: open boundary of the grid point                  || required: False || type: double ||  format: matrix
     % =================================================================================================================
     % Returns:
     %       None
@@ -24,18 +24,6 @@ function write_msh(fout, x, y, nv, h, ns, varargin)
     %       write_msh('test.msh', x, y, nv);
     %       write_msh('test.msh', x, y, nv);
     % =================================================================================================================
-    
-    arguments(Input)
-        fout {mustBeTextScalar}
-        x (:,1) {mustBeNumeric}
-        y (:,1) {mustBeNumeric}
-        nv (:,3) {mustBeNumeric}
-        h (:,1)  = zeros(length(x),1);
-        ns (:,1) {cell} = cell(0);
-    end
-    arguments(Input,Repeating)
-        varargin
-    end
 
     varargin = read_varargin(varargin, {'obcFile'}, {''});
     read_varargin(varargin, {'obcPre'}, {'ww3'});
@@ -53,8 +41,6 @@ function write_msh(fout, x, y, nv, h, ns, varargin)
     
     if ~exist('ns', 'var')
         ns = [];
-    else
-        ns = ns{1};
     end
     
     lon = x;

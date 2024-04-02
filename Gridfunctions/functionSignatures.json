@@ -74,5 +74,52 @@
       {"name":"cst", "kind":"required","type":["char"],"purpose":"cst file to write"},
       {"name":"xlims", "kind":"namevalue","type":["numeric"],"purpose":"x limits"},
       {"name":"ylims", "kind":"namevalue","type":["numeric"],"purpose":"y limits"}],
-    "outputs": []}
+    "outputs": []},
+  "read_mike_mesh":{
+    "inputs": [
+      {"name":"fin", "kind":"required","type":["file=*.mesh"],"purpose":"MIKE21 mesh file to read"},
+      {"name":"INFO", "kind":"flag","type":["choices={'INFO'}"],"purpose":"print information of mesh file"}],
+    "outputs": [
+      {"name":"x", "type":["scalar"],"purpose":"x coordinate"},
+      {"name":"y", "type":["scalar"],"purpose":"y coordinate"},
+      {"name":"nv", "type":["scalar"],"purpose":"triangle connectivity"},
+      {"name":"h", "type":["scalar"],"purpose":"depth"},
+      {"name":"bounds", "type":["cell"],"purpose":"boundaries"},
+      {"name":"prj", "type":["char"],"purpose":"projection"},
+      {"name":"tail", "type":["cell"],"purpose":"tail"},
+      {"name":"id", "type":["scalar"],"purpose":"node id"}]},
+  "write_mike_mesh":{
+    "inputs": [
+      {"name":"fout", "kind":"required","type":["char"],"purpose":"MIKE21 mesh file to write"},
+      {"name":"x", "kind":"required","type":["numeric"],"purpose":"x coordinate"},
+      {"name":"y", "kind":"required","type":["numeric"],"purpose":"y coordinate"},
+      {"name":"nv", "kind":"required","type":["numeric"],"purpose":"triangle connectivity"},
+      {"name":"h", "kind":"positional","type":["numeric"],"purpose":"depth"},
+      {"name":"bounds", "kind":"positional","type":["cell"],"purpose":"boundaries"},
+      {"name":"prj", "kind":"namevalue","type":["char"],"purpose":"projection"},
+      {"name":"Coordinate", "kind":"namevalue","type":["cell"],"purpose":"coordinate type"}],
+    "outputs": []},
+    "write_msh":{
+      "inputs":[
+          {"name":"fout","kind":"required","type":["char"],"purpose":"msh file to write"},
+          {"name":"x","kind":"required","type":["numeric"],"purpose":"x coordinate"},
+          {"name":"y","kind":"required","type":["numeric"],"purpose":"y coordinate"},
+          {"name":"nv","kind":"required","type":["numeric"],"purpose":"triangle connectivity"},
+          {"name":"h","kind":"positional","type":["numeric"],"purpose":"depth"},
+          {"name":"ns","kind":"positional","type":["cell"],"purpose":"nesting"},
+          {"name":"obcFile","kind":"namevalue","type":["char"],"purpose":"open boundary list"},
+          {"name":"obcPre","kind":"namevalue","type":["char"],"purpose":"name prefix"}],
+      "outputs":[]},
+  "read_msh":{
+      "inputs":[
+          {"name":"fin","kind":"required","type":["file=*.msh"],"purpose":"msh file to read"},
+          {"name":"INFO","kind":"flag","type":["choices={'INFO'}"],"purpose":"print information of msh file"}],
+      "outputs":[
+          {"name":"x","type":["scalar"],"purpose":"x coordinate"},
+          {"name":"y","type":["scalar"],"purpose":"y coordinate"},
+          {"name":"nv","type":["scalar"],"purpose":"triangle connectivity"},
+          {"name":"h","type":["scalar"],"purpose":"depth"},
+          {"name":"ns","type":["cell"],"purpose":"nesting"},
+          {"name":"tail","type":["cell"],"purpose":"tail"},
+          {"name":"id","type":["scalar"],"purpose":"node id"}]}
 }

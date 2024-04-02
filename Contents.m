@@ -106,8 +106,6 @@
 %   functionSignatures.json                     -  Function signatures for this folder
 %   erosion_coast_cal_id.m                      -  Calculate the erosion of the coast id
 %   erosion_coast_via_id.m                      -  Erosion of the coast via id
-%   read_msh.m                                  -  Read msh file for ww3
-%   write_msh.m                                 -  Write msh file for ww3
 %
 %
 %                                    Post_tpxo  -  Functions for handling tpxo data
@@ -146,6 +144,10 @@
 %   write_sms_grd.m                             -  Write sms grd file
 %   read_sms_grd.m                              -  Read sms grd file
 %   write_vtk.m                                 -  Write vtk file
+%   read_mike_mesh.m                            -  Read MIKE21 mesh file
+%   write_mike_mesh.m                           -  Write MIKE21 mesh file
+%   read_msh.m                                  -  Read msh file for ww3
+%   write_msh.m                                 -  Write msh file for ww3
 %   gshhsb2cst.m                                -  Convert GSHHS binary to cst, producingOriginalFormat() by Siqi Li
 %
 %
@@ -315,6 +317,7 @@
 %                                           Py  -  Python scripts for toolbox
 % =================================================================================================================
 %   Postprocess_fvcom.py                        -  Postprocess fvcom triangle data, contains daily/hourly
+%   gluemncbig.py                               -  Glue mnc files to big mnc file
 %
 %
 %

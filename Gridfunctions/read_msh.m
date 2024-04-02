@@ -1,21 +1,31 @@
-function [x, y, nv, h, ns]=read_msh(fin,varargin)
+function [x, y, nv, h, ns, tail, id] = read_msh(fin,varargin)
     %       Read the msh file
     % =================================================================================================================
     % Parameter:
-    %       fin: file name of the msh file                       || required: True  || type: string ||  format: string
-    %       Nodisp: if display the information of the msh file   || required: False || type: string ||  format: string
-    %       x: x coordinate of the grid point                    || required: True  || type: double ||  format: matrix
-    %       y: y coordinate of the grid point                    || required: True  || type: double ||  format: matrix
-    %       nv: triangle connectivity of the grid point          || required: True  || type: double ||  format: matrix
-    %       h: depth of the grid point                           || required: True  || type: double ||  format: matrix
-    %       ns: open boundary of the grid point                  || required: True  || type: double ||  format: matrix
+    %       fin: input file name                  || required: True  || type: text      ||  example: './x.msh'
+    %       varargin: (optional)
+    %           INFO: whether to disp info        || required: False || type: struct    ||  example: 'INFO'
+    % =================================================================================================================
+    % Returns:
+    %       x: x coordinate                       || required: True  || type: 1D array  ||  example: [1,2,3,4,5]
+    %       y: y coordinate                       || required: True  || type: 1D array  ||  example: [1,2,3,4,5]
+    %       nv: cell around node                  || required: True  || type: 2D array  ||  format:  [:,3]
+    %       h: depth                 (optional)   || required: False || type: 1D array  ||  example: [1,2,3,4,5]
+    %       ns: nesting              (optional)   || required: False || type: cell      ||  example: {[1,2,3,4]}
+    %       tail: tail of file       (optional)   || required: False || type: cell      ||  example: {{},{}}
+    %       id: node id              (optional)   || required: False || type: 1D array  ||  example: [1,2,3,4,5]
+    % =================================================================================================================
+    % Update:
+    %       2023-**-**:     Created, by Christmas;
+    %       2024-04-02:     Converted ns type to cell,  by Christmas;
+    %       2024-04-02:     Added tail id output,   by Christmas;
     % =================================================================================================================
     % Example:
-    %       [x, y, nv, h, ns]=read_msh('test.msh')
-    %       [x, y, nv, h, ns]=read_msh('test.msh','Nodisp')
+    %       [x, y, nv, h, ns, tail, id] = read_msh('test.msh')
+    %       [x, y, nv, h, ns, tail, id] = read_msh('test.msh', 'INFO')
     % =================================================================================================================
 
-    varargin = read_varargin2(varargin,{'Nodisp'});
+    varargin = read_varargin2(varargin,{'INFO'});
 
     fid=fopen(fin);
     
@@ -37,6 +47,7 @@ function [x, y, nv, h, ns]=read_msh(fin,varargin)
     data = textscan(fid, '%d %f %f %f %f', k_EndNotes-k_StartNotes, ...
         'headerlines', k_StartNotes+1);
     clear k_StartNotes k_EndNotes
+    id = data{1};
     x = data{2};
     y = data{3};
     h = data{4};
@@ -50,20 +61,35 @@ function [x, y, nv, h, ns]=read_msh(fin,varargin)
     frewind(fid);  % 光标跳转到开头
     data = textscan(fid, '%d %d %d %d %d %d %f %f %f %f', k_EndEles-k_StartEles, ...
         'headerlines', k_StartEles+1);
-    clear k_StartEles k_EndEles
+
     k_ns = isnan(data{7});
     ns = data{6}(k_ns);
-    nv = [data{7}(length(ns)+1:end), ...
-        data{8}(length(ns)+1:end), ...
-        data{9}(length(ns)+1:end)];
+    ns = {ns};
+    nv = [data{7}(length(ns{1})+1:end), ...
+        data{8}(length(ns{1})+1:end), ...
+        data{9}(length(ns{1})+1:end)];
     clear k_ns
+
+    % tail
+    iline = k_EndEles;
+    tail = {};
+    frewind(fid);
+    for i = 1:iline
+        fgetl(fid);
+    end
+    while ~feof(fid)
+        tail{end+1} = fgetl(fid);  %#ok<AGROW>
+    end
+    tail = tail';
+
+    clear k_StartEles k_EndEles
 
     % check if error
     if node ~= length(x)
         error('read %s error', fin)
     end
     
-    if e_n ~= size(nv, 1) + length(ns)
+    if e_n ~= size(nv, 1) + length(ns{1})
         error('read %s error', fin)
     end
     clear node ele
@@ -71,7 +97,7 @@ function [x, y, nv, h, ns]=read_msh(fin,varargin)
     clear fid data
     
 
-    if isempty(Nodisp)
+    if ~isempty(INFO)
         disp(' ')
         disp('------------------------------------------------')
         disp(['msh file: ' fin])
