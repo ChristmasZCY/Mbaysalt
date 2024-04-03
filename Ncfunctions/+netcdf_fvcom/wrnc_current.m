@@ -153,7 +153,7 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin
     end
 
     % time && TIME
-    % Ttimes = Mateset.Mdatetime(time)
+    % Ttimes = Mdatetime(time)
     [TIME,TIME_reference,TIME_start_date,TIME_end_date,time_filename] = time_to_TIME(time);
 
     % standard_name

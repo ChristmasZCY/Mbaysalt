@@ -1,8 +1,42 @@
 {
     "_schemaVersion": "1.0.0",
-    "erosion_coast_via_id":{
-        "inputs":[],
-        "outputs":[]},
+    "Mdatetime":{
+        "inputs":[
+            {"name":"datetime",  "kind":"required", "type":["datetime"], "purpose":"ttime(datetime)"},
+            {"name":"fmt",  "kind":"namevalue", "type":["char"], "purpose":"Format"},
+            {"name":"units_datetime",  "kind":"namevalue", "type":["datetime"], "purpose":"units(datetime)"},
+            {"name":"units",  "kind":"namevalue", "type":["char"], "purpose":"units(char)"}
+        ],
+        "outputs":[
+            {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Times(all)"}]},
+    "Mdatetime":{
+        "inputs":[
+            {"name":"time",  "kind":"required", "type":["numeric"], "purpose":"ttime(time)"},
+            {"name":"fmt",  "kind":"namevalue", "type":["char"], "purpose":"Format"},
+            {"name":"units_datetime",  "kind":"namevalue", "type":["datetime"], "purpose":"units(datetime)"},
+            {"name":"units",  "kind":"namevalue", "type":["char"], "purpose":"units(char)"}
+        ],
+        "outputs":[
+            {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Times(all)"}]},
+    "Mdatetime":{
+        "inputs":[
+            {"name":"TIME",  "kind":"required", "type":["char"], "purpose":"ttime(text)"},
+            {"name":"fmt",  "kind":"namevalue", "type":["char"], "purpose":"Format"},
+            {"name":"units_datetime",  "kind":"namevalue", "type":["datetime"], "purpose":"units(datetime)"},
+            {"name":"units",  "kind":"namevalue", "type":["char"], "purpose":"units(char)"}
+        ],
+        "outputs":[
+            {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Times(all)"}]},
+    "Mdatetime":{
+        "inputs":[
+            {"name":"datenum",  "kind":"required", "type":["datetime"], "purpose":"ttime(datenum)"},
+            {"name":"fmt",  "kind":"namevalue", "type":["char"], "purpose":"Format"},
+            {"name":"units_datetime",  "kind":"namevalue", "type":["datetime"], "purpose":"units(datetime)"},
+            {"name":"units",  "kind":"namevalue", "type":["char"], "purpose":"units(char)"},
+            {"name":"Cdatenum",  "kind":"flag", "type":["char","choices={'Cdatenum'}"], "purpose":"Switch datenum"}
+        ],
+        "outputs":[
+            {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Times(all)"}]},
     "write_msh":{
         "inputs":[],
         "outputs":[]},

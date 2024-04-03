@@ -100,7 +100,7 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
             V10_dst = zeros(length(domain_ll.lon_dst),length(domain_ll.lat_dst),24);
         end
         
-        Ttimes = Mateset.Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
+        Ttimes = Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
         clear Times
     
         % read NC file attributes

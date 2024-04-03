@@ -27,7 +27,7 @@ classdef Mateset < dynamicprops
                 if endsWith(varargin{1}, '.nc')
                     fnc = varargin{1};
                     varargin(1) = [];
-                    [~,Dims_name, ~] = Mateset.get_Dimensions_from_nc(fnc);
+                    [~,Dims_name, ~] = get_Dimensions_from_nc(fnc);
                     [obj.lon, obj.lat, depth, time] = read_ncfile_lldtv(fnc,'Lon_Name',Dims_name{1},'Lat_Name',Dims_name{2},'Time_Name',Dims_name{3},'Var_Name',{{'None'},{'NaN'}},'INFO');
                     if ~isempty(depth)
                         addprop(obj,'depth');
@@ -35,7 +35,7 @@ classdef Mateset < dynamicprops
                     end
                     [~, obj.element] = Mateset.get_Variables_from_nc(fnc);
                     units = ncreadatt(fnc,'time','units');
-                    obj.Ttimes = Mateset.Mdatetime(time, units);
+                    obj.Ttimes = Mdatetime(time, units);
                 end
             case {'single', 'double'}
                 % lon lat
@@ -44,11 +44,11 @@ classdef Mateset < dynamicprops
                 varargin(1) =[];
                 varargin(1)=[];
                 try
-                    if isa(varargin{1},'datetime')  || isa(varargin{1},'Mateset.Mdatetime')
+                    if isa(varargin{1},'datetime')  || isa(varargin{1},'Mdatetime')
                         % time
                         if isa(varargin{1},'datetime')
-                            obj.Ttimes = Mateset.Mdatetime(varargin{1});
-                        elseif isa(varargin{1},'Mateset.Mdatetime')
+                            obj.Ttimes = Mdatetime(varargin{1});
+                        elseif isa(varargin{1},'Mdatetime')
                             obj.Ttimes = varargin{1};
                         end
                         varargin(1) = [];

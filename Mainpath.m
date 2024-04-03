@@ -3,9 +3,11 @@ function varargout = Mainpath(varargin)
     % =================================================================================================================
     % Parameters:
     %       varargin:       optional parameters      
-    %           add:        add all path                    || required: False|| type: string || format: 'add'
-    %           rm:         remove all path                 || required: False|| type: string || format: 'rm'
-    %           noclone:    add all path without clone git  || required: False|| type: string || format: 'noclone'
+    %           add:        add all path                    || required: False|| type: Text || format: 'add'
+    %           rm:         remove all path                 || required: False|| type: Text || format: 'rm'
+    %           noclone:    add all path without clone git  || required: False|| type: Text || format: 'noclone'
+    %           init:       Initialize                      || required: False|| type: Text || format: 'init',true
+    %           cd:         cd here                         || required: False|| type: Text || format: 'cd'
     % =================================================================================================================
     % Returns:
     %       None

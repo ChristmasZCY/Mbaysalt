@@ -185,6 +185,8 @@
 %   +netcdf_wrf                                 -  Packages of functions for handling WRF netcdf file
 %      wrnc_t2m.m                               -  Write WRF t2m netcdf file
 %      wrnc_wind10m.m                           -  Write WRF wind10m netcdf file
+%   nc_attrName_exist.m                         -  Check if a netcdf file has a str at Attribute Name
+%   nc_attrValue_exist.m                        -  Check if a netcdf file has a str at Attribute Value
 %
 %
 %                               Mimetifunctions -  Functions to mimic other languages commands
@@ -251,8 +253,8 @@
 % =================================================================================================================
 %   functionSignatures.json                     -  Function signatures for this folder
 %   Mateset.m                                   -  Mateset class
+%   Mdatetime.m                                 -  MATLAB datetime class
 %   +Mateset:       
-%      Mdatetime.m                              -  Mateset datetime class
 %      get_Dimensions_from_nc.m                 -  Get dimensions from nc file
 %      get_Variables_from_nc.m                  -  Get variables from nc file
 %
