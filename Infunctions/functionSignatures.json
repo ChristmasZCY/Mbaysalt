@@ -150,5 +150,25 @@
             {"name":"Host",  "kind":"namevalue", "type":["char","string"], "purpose":"Proxy host"},
             {"name":"Port",  "kind":"namevalue", "type":["char","string"], "purpose":"Proxy port"}]},
     "ll":{"inputs":[],"outputs":[]},
-    "closefile":{"inputs":[],"outputs":[]}
+    "closefile":{
+        "inputs":[],
+        "outputs":[
+            {"name":"Struct been closed", "type":["struct"], "purpose":"Struct been closed"}]},
+    "c_load_model":{
+        "inputs":[
+            {"name":"fin",  "kind":"required", "type":["file=*.nc"], "purpose":"Filename(nc)"},
+            {"name":"Global",  "kind":"flag", "type":["choices={'Global'}", "logical"], "purpose":"Global or not"},
+            {"name":"Coordinate",  "kind":"namevalue", "type":["choices={'geo','xy'}"], "purpose":"Coordinate"}],
+        "outputs":[
+            {"name":"GridStruct", "type":["struct"], "purpose":"Model grid struct"},
+            {"name":"VarStruct", "type":["struct"], "purpose":"Model variable struct"},
+            {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Model Ttimes"}]},
+    "c_load_model":{
+        "inputs":[
+            {"name":"fin",  "kind":"required", "type":["file=*.msh,*.2dm"], "purpose":"Filename(2dm,msh)"},
+            {"name":"Global",  "kind":"flag", "type":["choices={'Global'}", "logical"], "purpose":"Global or not"}],
+        "outputs":[
+            {"name":"GridStruct", "type":["struct"], "purpose":"Model grid struct"},
+            {"name":"VarStruct", "type":["struct"], "purpose":"Model variable struct"},
+            {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Model Ttimes"}]}
 }

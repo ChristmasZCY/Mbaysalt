@@ -47,13 +47,13 @@
             {"name":"lon_ori", "kind":"required", "type":["numeric"], "purpose":"Origin longitude"},
             {"name":"value", "kind":"positional", "type":["numeric"], "purpose":"value array","repeating":true}],
         "outputs":[
-            {"name":"lon_dst", "type":["numeric"], "purpose":"Destination longitude"},
-            {"name":"value", "type":["numeric"], "purpose":"value array","repeating":true}]},
+            {"name":"lon_dst", "type":["scalar"], "purpose":"Destination longitude"},
+            {"name":"value", "type":["scalar"], "purpose":"value array","repeating":true}]},
     "ll_to_ll":{
         "inputs":[
             {"name":"lon_ori", "kind":"required", "type":["numeric"], "purpose":"Origin longitude"},
             {"name":"value", "kind":"positional", "type":["numeric"], "purpose":"value array","repeating":true}],
         "outputs":[
-            {"name":"lon_dst", "type":["numeric"], "purpose":"Destination longitude"},
-            {"name":"value", "type":["numeric"], "purpose":"value array","repeating":true}]}
+            {"name":"lon_dst", "type":["scalar"], "purpose":"Destination longitude"},
+            {"name":"value", "type":["scalar"], "purpose":"value array","repeating":true}]}
 }

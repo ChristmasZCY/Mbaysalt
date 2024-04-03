@@ -10,6 +10,7 @@ function makedirs(varargin)
     % Update:
     %       ****-**-**:     Created, by Christmas;
     %       2024-04-02:     Added strip, by Christmas;
+    %       2024-04-03:     Change exist to isfolder, because of exist will search at PATH, by Christmas
     % =================================================================================================================
     % Example:
     %       makedirs(path1)
@@ -21,8 +22,10 @@ function makedirs(varargin)
     end
 
     for num = 1: nargin
-        if ~exist(varargin{num},'dir') && ~isempty(varargin{num})
-            mkdir(strip(varargin{num}));
+        % if ~exist(varargin{num},'dir') && ~isempty(varargin{num})
+        dir1 = strip(convertStringsToChars(varargin{num}));
+        if ~isfolder(dir1) && ~isempty(dir1)
+            mkdir(dir1);
         end
     end
 

@@ -258,7 +258,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         elseif strcmp(interval,"hourly")
             Times = datetime(TIME,'Format','yyyy-MM-dd''T''HH:mm:ssSSSSSS');
         end
-        Ttimes = Mateset.Mdatetime(Times);
+        Ttimes = Mdatetime(Times);
         clear TIME Times
         time = Ttimes.time; % POSIX时间 1970 01 01 shell的date +%s
 

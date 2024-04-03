@@ -262,7 +262,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
         clear deal_date_dt deal_date % 日期处理中间变量
 
         %% time
-        Ttimes = Mateset.Mdatetime(Times);
+        Ttimes = Mdatetime(Times);
         clear TIME Times
         time = Ttimes.time; % POSIX时间 1970 01 01 shell的date +%s
 
