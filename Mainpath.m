@@ -8,6 +8,7 @@ function varargout = Mainpath(varargin)
     %           noclone:    add all path without clone git  || required: False|| type: Text || format: 'noclone'
     %           init:       Initialize                      || required: False|| type: Text || format: 'init',true
     %           cd:         cd here                         || required: False|| type: Text || format: 'cd'
+    %           noset:      no set pref                     || required: False|| type: Text || format: 'noset'
     % =================================================================================================================
     % Returns:
     %       None
@@ -25,6 +26,7 @@ function varargout = Mainpath(varargin)
     %       2024-03-21:     Extract download,unzip to function, by Christmas; 
     %       2024-04-01:     Added Post_mitgcm, MITgcmTools, by Christmas; 
     %       2024-04-03:     Added install DHI-MATLAB-Toolbox,   by Christmas;
+    %       2024-04-04:     Added noset,   by Christmas;
     % =================================================================================================================
     % Examples:
     %       Mainpath                        % Add all path
@@ -34,6 +36,7 @@ function varargout = Mainpath(varargin)
     %       Mainpath('init', true)          % Initialize
     %       Mainpath('add','init', true)    % Initialize and add all path
     %       Mainpath('cd')                  % Change current directory to the path of this function
+    %       Mainpath('noset')               % Do not set pref
     % =================================================================================================================
     
     arguments(Input,Repeating)
@@ -43,7 +46,7 @@ function varargout = Mainpath(varargin)
     cmd = 'add';
     for i = 1: length(varargin)
         switch lower(varargin{i})
-            case {'add','rm','noclone'}
+            case {'add','rm','noclone','noset'}
                 cmd = convertStringsToChars(varargin{i});
                 varargin(i) = [];
                 break
@@ -63,22 +66,29 @@ function varargout = Mainpath(varargin)
                 break
         end
     end
-    % 初始化
-    if ispref('Mbaysalt','PATH_contains') && ispref('Mbaysalt','PATH_toolbox') && ~init
-        PATH_contains = getpref('Mbaysalt','PATH_contains');
-        PATH_toolbox = getpref('Mbaysalt','PATH_toolbox');
-    else
-        if ispref('Mbaysalt')
-            rmpref('Mbaysalt')
-        end
-        [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
-        setpref('Mbaysalt','PATH_contains',PATH_contains)
-        setpref('Mbaysalt','PATH_toolbox',PATH_toolbox)
-    end
 
+    % 初始化
+    switch lower(cmd)
+        case 'noset'
+            [PATH_contains, PATH_toolbox] = Cmakepath;
+        otherwise
+        if ispref('Mbaysalt','PATH_contains') && ispref('Mbaysalt','PATH_toolbox') && ~init
+            PATH_contains = getpref('Mbaysalt','PATH_contains');
+            PATH_toolbox = getpref('Mbaysalt','PATH_toolbox');
+        else
+            if ispref('Mbaysalt')
+                rmpref('Mbaysalt')
+            end
+            [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
+            setpref('Mbaysalt','PATH_contains',PATH_contains)
+            setpref('Mbaysalt','PATH_toolbox',PATH_toolbox)
+        end
+    end
+    
+    STATUS = 0;
     switch lower(cmd)
     case 'add'
-        Caddpath(PATH_contains);             % add all path
+        Caddpath(PATH_contains);              % add all path
         [STATUS, CLONES] = download_pkgs();   % install all pkgs
         if STATUS == 1  % 如果Exfunctions增加了新工具包，则运行重置路径表
             [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
@@ -90,6 +100,8 @@ function varargout = Mainpath(varargin)
         Crmpath(PATH_contains);   % remove all path
         Caddpath(PATH_toolbox);
     case 'noclone'
+        Caddpath(PATH_contains);
+    case 'noset'
         Caddpath(PATH_contains);
     otherwise
         error('parameter error');

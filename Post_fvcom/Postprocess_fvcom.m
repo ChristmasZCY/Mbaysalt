@@ -24,6 +24,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-01-25:     Added limit for ecological element(ph, no3, pco2, chlo, casfco2)
     %       2024-04-01:     Fixed separate var to vertical mask, by Christmas;
     %       2024-04-01:     Added two parameters at conf file, by Christmas;
+    %       2024-04-04:     Added ua va,    by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20240401,1)
@@ -58,9 +59,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     Method_interpn  = para_conf.Method_interpn;         % 插值方法  --> 'Siqi_interp'
     lon_dst         = para_conf.Lon_destination;        % 模型的经度范围  --> [-180,180]
     lat_dst         = para_conf.Lat_destination;        % 模型的纬度范围  --> [20,30]
-    Ecology_model   = para_conf.Ecology_model;          % 生态模型  --> '.ERSEM.' or 'NEMURO'
+    Ecology_model   = para_conf.Ecology_model;          % 生态模型  --> '.ERSEM.' or '.NEMURO.'
     Text_len        = para_conf.Text_len;               % 打印字符的对齐长度
-    SWITCH = read_switch(para_conf); % 读取开关
+    SWITCH          = read_switch(para_conf);           % 读取开关
 
     if ~SWITCH.out_std_level && ~SWITCH.out_sgm_level && ~SWITCH.out_avg_level  % 至少输出一种层
         error('At least one of the three output levels must be selected')
@@ -85,29 +86,32 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
     end
 
-    osprint2('INFO',[pad('Output standard depth ',Text_len,'right'),'--> ', logical_to_char(SWITCH.out_std_level)])
-    osprint2('INFO',[pad('Output sigma levels ',Text_len,'right'),'--> ', logical_to_char(SWITCH.out_sgm_level)])
-    osprint2('INFO',[pad('Output average depth ',Text_len,'right'),'--> ', logical_to_char(SWITCH.out_avg_level)])
+    osprint2('INFO',[pad('Output standard depth ', Text_len,'right'),'--> ', logical_to_char(SWITCH.out_std_level)])
+    osprint2('INFO',[pad('Output sigma levels ',   Text_len,'right'),'--> ', logical_to_char(SWITCH.out_sgm_level)])
+    osprint2('INFO',[pad('Output average depth ',  Text_len,'right'),'--> ', logical_to_char(SWITCH.out_avg_level)])
 
     getdate = datetime(num2str(yyyymmdd),"format","yyyyMMdd"); clear yyyymmdd
     Length = day_length;clear day_length;% 当天开始向后处理的天数
 
-    osprint2('INFO', [pad('Date parameter ',Text_len,'right'),'--> ', char(getdate)])  % 输出处理的日期信息
-    osprint2('INFO', [pad('Total transfor ',Text_len,'right'),'--> ', num2str(Length),' days'])  % 输出处理的日期信息
-    osprint2('INFO', [pad('Interp Method ', Text_len,'right'),'--> ', Method_interpn])  % 输出插值方法
-    osprint2('INFO', [pad(['Transfor ',interval,' variable '],Text_len,'right'), '-->', repmat(' temp',SWITCH.temp),repmat(' salt',SWITCH.salt) ...
-        repmat(' zeta',SWITCH.adt),repmat(' u',SWITCH.u),repmat(' v',SWITCH.v), repmat(' w',SWITCH.w), ...
-        repmat(' aice',SWITCH.aice), repmat(' ph',SWITCH.ph), repmat(' no3',SWITCH.no3), repmat(' pco2',SWITCH.pco2), ...
+    osprint2('INFO', [pad('Date parameter ',Text_len,'right'),'--> ', char(getdate)])           % 输出处理的日期信息
+    osprint2('INFO', [pad('Total transfor ',Text_len,'right'),'--> ', num2str(Length),' days']) % 输出处理的日期信息
+    osprint2('INFO', [pad('Interp Method ', Text_len,'right'),'--> ', Method_interpn])          % 输出插值方法
+    osprint2('INFO', [pad(['Transfor ',interval,' variable '],Text_len,'right'), '-->', ...
+        repmat(' temp',SWITCH.temp), repmat(' salt',SWITCH.salt), repmat(' zeta',SWITCH.adt), ...
+        repmat(' u',SWITCH.u), repmat(' v',SWITCH.v), repmat(' w',SWITCH.w), ...
+        repmat(' ua',SWITCH.ua), repmat(' va',SWITCH.va), repmat(' aice',SWITCH.aice), ...
+        repmat(' ph',SWITCH.ph), repmat(' no3',SWITCH.no3), repmat(' pco2',SWITCH.pco2), ...
         repmat(' chlo',SWITCH.chlo), repmat(' casfco2',SWITCH.casfco2)])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
         deal_date_dt = dateshift(getdate,'start','day',dr1);
         deal_date = char(datetime(deal_date_dt,"format","yyyyMMdd"));
+        ModelOUTD = para_conf.ModelOUTD;
         if strcmp(interval,"daily")
-            ncfile = fullfile(Inputpath,[char(getdate),'/forecast/',file_Mcasename,'_avg_',num2str(dr,'%04d'),'.nc']); % 输入文件
+            ncfile = fullfile(Inputpath,[char(getdate),filesep, ModelOUTD, filesep, file_Mcasename,'_avg_',num2str(dr,'%04d'),'.nc']); % 输入文件
         elseif strcmp(interval,"hourly")
-            ncfile = fullfile(Inputpath,[char(getdate),'/forecast/',file_Mcasename,'_',num2str(dr,'%04d'),'.nc']); % 输入文件
+            ncfile = fullfile(Inputpath,[char(getdate),filesep, ModelOUTD, filesep, file_Mcasename,'_',num2str(dr,'%04d'),'.nc']); % 输入文件
         end
 
         OutputDir.curr = fullfile(Outputpath,'current',interval,deal_date);  % current输出路径
@@ -176,6 +180,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
         if SWITCH.adt
             zeta = double(ncread(ncfile,'zeta'));
+        end
+        if SWITCH.ua
+            ua = double(ncread(ncfile,'ua'));
+        end
+        if SWITCH.ua
+            va = double(ncread(ncfile,'va'));
         end
         if SWITCH.aice % 是否包含海冰密集度
             aice = double(ncread(ncfile,'aice'));
@@ -274,7 +284,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
         clear u v w
 
-        % temp salt zeta u_int v_int w_int
+        % temp salt zeta u_int v_int w_int ua va
 
         switch Method_interpn
             case 'Siqi_interp'
@@ -285,7 +295,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     [Lat_m,Lon_m] = meshgrid(Lat,Lon);
                     tt2 = tic;
                     Weight_2d = interp_2d_calc_weight('TRI',f_nc.x,f_nc.x,f_nc.nv,Lon_m,Lat_m);
-                    delete(file_weight)
+                    rmfiles(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     osprint2('INFO', [pad('Calculate 2d weight costs ',Text_len,'right'),'--> ', num2str(toc(tt2)),' s'])
                     clear Lon_m Lat_m tt2
@@ -301,6 +311,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 end
                 if SWITCH.adt
                     Zeta = interp_2d_via_weight(zeta,Weight_2d);
+                end
+                if SWITCH.ua
+                    Ua = interp_2d_via_weight(ua,Weight_2d);
+                end
+                if SWITCH.adt
+                    Va = interp_2d_via_weight(va,Weight_2d);
                 end
                 if SWITCH.u
                     U = interp_2d_via_weight(u_int,Weight_2d);
@@ -344,7 +360,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 Depth_origin_to_wrf_grid =  interp_2d_via_weight(f_nc.h,Weight_2d);
 
 
-                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo casfco2 zp pp sand
+                clear temp salt zeta ua va u_int v_int w_int aice ph no3 pco2 chlo casfco2 zp pp sand
                 clear file_weight Weight_2d
 
             case 'Siqi_ESMF'
@@ -365,7 +381,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     esmf_regrid_weight(GridFile_fvcom, GridFile_wrf, ESMF_NCweightfile, ...
                                         'exe', exe, 'Src_loc', 'corner', 'Method', ESMF_RegridMethod); % temperature corner
                     Weight_2d = esmf_read_weight(ESMF_NCweightfile);
-                    delete(file_weight)
+                    rmfiles(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     clear Lon_m Lat_m
                     osprint2('INFO', [pad('Calculate 2d weight costs ',Text_len,'right'),'--> ', num2str(toc(tt3)),' s'])
@@ -428,6 +444,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     if SWITCH.adt
                         Zeta(:,:,it) =  esmf_regrid(zeta(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     end
+                    if SWITCH.ua
+                        Ua(:,:,it) =  esmf_regrid(ua(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                    end
+                    if SWITCH.va
+                        Va(:,:,it) =  esmf_regrid(va(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                    end
                     if SWITCH.aice
                         Aice(:,:,it) =  esmf_regrid(aice(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     end
@@ -436,7 +458,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     end
                 end
                 Depth_origin_to_wrf_grid =  esmf_regrid(f_nc.h,Weight_2d,'Dims',[length(Lon),length(Lat)]); % depth of WRF grid
-                clear temp salt zeta u_int v_int w_int aice ph no3 pco2 chlo casfco2 it iz Weight_2d
+                clear temp salt zeta ua va u_int v_int w_int aice ph no3 pco2 chlo casfco2 it iz Weight_2d
             otherwise
                 error('Method_interpn must be Siqi_interp or Siqi_ESMF!')
         end
@@ -451,8 +473,10 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % U                        --> lon*lat*sigma_layer_orig*time (u of fvcom vertical grid)
         % V                        --> lon*lat*sigma_layer_orig*time (v of fvcom vertical grid)
         % W                        --> lon*lat*sigma_layer_orig*time (w of fvcom vertical grid)
-        % Zeta                     --> lon*lat*time (zeta of fvcom vertical grid)
-        % Aice                     --> lon*lat*time (aice of fvcom vertical grid)
+        % Zeta                     --> lon*lat*time (zeta of fvcom grid)
+        % Ua                       --> lon*lat*time (ua of fvcom grid)
+        % Va                       --> lon*lat*time (va of fvcom grid)
+        % Aice                     --> lon*lat*time (aice of fvcom grid)
         % Ph                       --> lon*lat*sigma_layer_orig*time (ph of fvcom vertical grid)
         % No3                      --> lon*lat*sigma_layer_orig*time (no3 of fvcom vertical grid)
         % Pco2                     --> lon*lat*sigma_layer_orig*time (pco2 of fvcom vertical grid)
@@ -462,7 +486,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % sand                     --> lon*lat*sigma_layer_orig*time (sand of fvcom vertical grid)
         % Casfco2                     --> lon*lat*time (casfco2 of fvcom vertical grid)
 
-        if SWITCH.out_sgm_level % 是否输出sigma层
+        if SWITCH.out_sgm_level || SWITCH.out_avg_level % sigma和std都需要sgm计算
             if SWITCH.temp
                 VAelement.Temp_sgm = Temp;
             end
@@ -520,7 +544,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                         end
                         Weight_vertical = interp_vertical_calc_weight(depth_2d_to_1d,repmat(Depth_std,size_2d_to_1d_ll,1)); 
                         Weight_vertical = structfun(@(x) flip2_to_recover(x,F_noNaN), Weight_vertical, 'UniformOutput', false);  % 顺序转换回去
-                        delete(file_weight_vertical); clear F_noNaN depth_2d_to_1d
+                        rmfiles(file_weight_vertical); clear F_noNaN depth_2d_to_1d
                         save(file_weight_vertical, 'Weight_vertical','-v7.3','-nocompression');
                         osprint2('INFO', [pad('Calculate vertical weight costs ',Text_len,'right'),'--> ', num2str(toc(tt4)),' s'])
                     else
@@ -686,9 +710,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     end
             end
         end
-        % Temp Salt U V W Zeta Depth Aice Ph No3 Pco2 Chlo Casfco2 Zp Pp Sand --> std_level
+        % Temp Salt U V W Zeta ua va Depth Aice Ph No3 Pco2 Chlo Casfco2 Zp Pp Sand --> std_level
         if SWITCH.adt
             Velement.Zeta = Zeta;
+        end
+        if SWITCH.ua
+            Velement.Ua = Ua;
+        end
+        if SWITCH.va
+            Velement.Va = Va;
         end
         if SWITCH.aice
             Velement.Aice = Aice;
@@ -782,6 +812,44 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             Delement.Depth_avg = Avg_depth;
         end
         clear Deplev
+        if SWITCH.out_sgm_level && ~SWITCH.out_avg_level
+            if SWITCH.temp
+                VAelement = rmfield(VAelement, 'Temp_sgm');
+            end
+            if SWITCH.salt
+                VAelement = rmfield(VAelement, 'Salt_sgm');
+            end
+            if SWITCH.u
+                VAelement = rmfield(VAelement, 'U_sgm');
+            end
+            if SWITCH.v
+                VAelement = rmfield(VAelement, 'V_sgm');
+            end
+            if SWITCH.w
+                VAelement = rmfield(VAelement, 'W_sgm');
+            end
+            if SWITCH.ph
+               VAelement = rmfield(VAelement, 'pH_sgm');
+            end
+            if SWITCH.no3
+                VAelement = rmfield(VAelement, 'No3_sgm');
+            end
+            if SWITCH.pco2
+                VAelement = rmfield(VAelement, 'Pco2_sgm');
+            end
+            if SWITCH.chlo
+                VAelement = rmfield(VAelement, 'Chlo_sgm');
+            end
+            if SWITCH.zp
+                VAelement = rmfield(VAelement, 'Zp_sgm');
+            end
+            if SWITCH.pp
+                VAelement = rmfield(VAelement, 'Pp_sgm');
+            end
+            if SWITCH.sand
+               VAelement = rmfield(VAelement, 'Sand_sgm');
+            end
+        end
         % <----- avg_level
         % -----> std_level
         if SWITCH.out_std_level
@@ -884,7 +952,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 tt5 = tic;
                 Standard_depth_mask = make_mask_depth_data(Depth_origin_to_wrf_grid, Delement.Depth_std); 
                 [~, Standard_depth_mask] = ll_to_ll(Lon, Standard_depth_mask);
-                delete(file_mask)
+                rmfiles(file_mask)
+                makedirs(fileparts(file_mask));
                 save(file_mask,'Standard_depth_mask','-v7.3','-nocompression');
                 osprint2('INFO', [pad('Calculate depth mask costs ',Text_len,'right'),'--> ', num2str(toc(tt5)),' s'])
             else
@@ -949,7 +1018,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.u || SWITCH.v || SWITCH.w
             file = fullfile(OutputDir.curr,['current',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_current,Velement] = rmfields_key_from_struct(Velement,{'Temp_std','Temp_sgm','Temp_avg','Salt_std','Salt_sgm','Salt_avg','Zeta','Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             [Velement_current,Velement] = getfields_key_from_struct(Velement,{'U_std','U_sgm','U_avg','V_std','V_sgm','V_avg','W_std','W_sgm','W_avg'});
             netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement_current,GA_start_date,'conf',para_conf);
             clear Velement_current ncid file
@@ -958,7 +1026,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.temp
             file = fullfile(OutputDir.temp,['temperature',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_temperature,Velement] = rmfields_key_from_struct(Velement,{'Salt_std','Salt_sgm','Salt_avg','Zeta','Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             [Velement_temperature,Velement] = getfields_key_from_struct(Velement,{'Temp_std','Temp_sgm','Temp_avg'});
             netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement_temperature,GA_start_date,'conf',para_conf)
             clear Velement_temperature ncid file
@@ -967,7 +1034,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.salt
             file = fullfile(OutputDir.salt,['salinity',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_salt,Velement] = rmfields_key_from_struct(Velement,{'Zeta','Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             [Velement_salt,Velement] = getfields_key_from_struct(Velement,{'Salt_std','Salt_sgm','Salt_avg'});
             netcdf_fvcom.wrnc_salt(ncid,Lon,Lat,Delement,time,Velement_salt,GA_start_date,'conf',para_conf);
             clear Velement_salt ncid file
@@ -976,7 +1042,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.adt
             file = fullfile(OutputDir.adt,['adt',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_adt,Velement] = rmfields_key_from_struct(Velement,{'Aice','Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             [Velement_adt,Velement] = getfields_key_from_struct(Velement,{'Zeta'});
             netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Velement_adt.Zeta,GA_start_date,'conf',para_conf);
             clear Velement_adt ncid file
@@ -985,7 +1050,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.aice
             file = fullfile(OutputDir.ice,['ice',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_ice,Velement] = rmfields_key_from_struct(Velement,{'Ph_std','Ph_sgm','Ph_avg','No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             [Velement_ice,Velement] = getfields_key_from_struct(Velement,{'Aice'});
             netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Velement_ice.Aice,GA_start_date,'conf',para_conf);
             clear Velement_ice ncid file
@@ -994,7 +1058,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.ph
             file = fullfile(OutputDir.ph,['ph',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_ph,Velement] = rmfields_key_from_struct(Velement,{'No3_std','No3_sgm','No3_avg','Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             [Velement_ph,Velement] = getfields_key_from_struct(Velement,{'Ph_std','Ph_sgm','Ph_avg'});
             netcdf_fvcom.wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,Velement_ph,GA_start_date,'conf',para_conf);
             clear Velement_ph ncid file
@@ -1002,7 +1065,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.no3
             file = fullfile(OutputDir.no3,['no3',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_no3,Velement] = rmfields_key_from_struct(Velement,{'Pco2_std','Pco2_sgm','Pco2_avg','Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             [Velement_no3,Velement] = getfields_key_from_struct(Velement,{'No3_std','No3_sgm','No3_avg'});
             netcdf_fvcom.wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,Velement_no3,GA_start_date,'conf',para_conf);
             clear Velement_no3 ncid file
@@ -1010,7 +1072,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.pco2
             file = fullfile(OutputDir.pco2,['pco2',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_pco2,Velement] = rmfields_key_from_struct(Velement,{'Chlo_std','Chlo_sgm','Chlo_avg','Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
             [Velement_pco2,Velement] = getfields_key_from_struct(Velement,{'Pco2_std','Pco2_sgm','Pco2_avg'});
             netcdf_fvcom.wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,Velement_pco2,GA_start_date,'conf',para_conf);
             clear Velement_pco2 ncid file
