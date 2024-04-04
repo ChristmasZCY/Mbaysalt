@@ -22,6 +22,7 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc')
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc', 'Global', 'Coordinate', 'geo')
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc', 'Coordinate', 'geo')
+    %       [GridStruct, VarStruct, Ttimes] = c_load_model('wrf2fvcom.nc', 'Coordinate', 'geo')
     % =================================================================================================================
     % Dependencies:
     %       f_load_grid.m
@@ -68,10 +69,13 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             end
             GridStruct.ModelName = 'WW3';
         elseif nc_attrValue_exist(fin, 'FVCOM', 'method','START')
-            GridStruct = f_load_grid(fin, Global,"Coordinate",Coordinate);
+            GridStruct = f_load_grid(fin, Global, "Coordinate", Coordinate);
             GridStruct.ModelName = 'FVCOM';
+        elseif nc_attrValue_exist(fin, 'wrf2fvcom version', 'method','START')
+            GridStruct = w_load_grid(fin, Global, "Coordinate", Coordinate);
+            GridStruct.ModelName = 'WRF2FVCOM';
         else
-            error('Just for WW3 or FVCOM now !!!')
+            error('Just for WRF2FVCOM, WW3 or FVCOM now !!!')
         end
         SWITCH.read_var = true;
     elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh')
@@ -85,73 +89,101 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
     end
 
     if SWITCH.read_var
-        switch upper(GridStruct.ModelName)
-            case 'WW3'
-                if nc_var_exist(fin,'hs')
-                    VarStruct.hs = ncread(fin,'hs');
-                end
-                if nc_var_exist(fin,'dir')
-                    VarStruct.dir = ncread(fin,'dir');
-                end
-                if nc_var_exist(fin,'t02')
-                    VarStruct.t02 = ncread(fin,'t02');
-                end
-                if nc_var_exist(fin,'lm')
-                    VarStruct.lm = ncread(fin,'lm');
-                end
-                if nc_var_exist(fin,'fp')
-                    VarStruct.fp = ncread(fin,'fp');
-                end
-                if nc_var_exist(fin,'hmaxe')
-                    VarStruct.hmaxe = ncread(fin,'hmaxe');
-                end
-                if nc_var_exist(fin,'cge')
-                    VarStruct.hmaxe = ncread(fin,'cge');
-                end
-                if nc_var_exist(fin,'time')
-                    Ttimes = Mdatetime(ncdateread(fin,'time'));
-                end
-                
-            case 'FVCOM'
-                if nc_var_exist(fin,'u')
-                    VarStruct.u = ncread(fin,'u');
-                end
-                if nc_var_exist(fin,'v')
-                    VarStruct.v = ncread(fin,'v');
-                end
-                if nc_var_exist(fin,'ww')
-                    VarStruct.ww = ncread(fin,'ww');
-                end
-                if nc_var_exist(fin,'temp')
-                    VarStruct.temp = ncread(fin,'temp');
-                end
-                if nc_var_exist(fin,'salinity')
-                    VarStruct.salinity = ncread(fin,'salinity');
-                end
-                if nc_var_exist(fin,'zeta')
-                    VarStruct.zeta = ncread(fin,'zeta');
-                end
-                if nc_var_exist(fin,'ua')
-                    VarStruct.ua = ncread(fin,'ua');
-                end
-                if nc_var_exist(fin,'va')
-                    VarStruct.va = ncread(fin,'va');
-                end
-                if nc_var_exist(fin,'Times') || nc_var_exist(fin,'Itime')
-                    if nc_var_exist(fin,'Times')
-                        ftime = f_load_time(fin,'Times');
-                    elseif nc_var_exist(fin,'Itime')
-                        ftime = f_load_time(fin);
-                    end
-                    Ttimes = Mdatetime(ftime,'Cdatenum');
-                end
-            otherwise 
-        end
+        [VarStruct, Ttimes] = read_model_nc(fin, GridStruct);
     else
         VarStruct = struct();
         Ttimes = Mdatetime();
     end
-    
+           
+end
 
-       
+
+function [VarStruct, Ttimes] = read_model_nc(fin, GridStruct)
+    switch upper(GridStruct.ModelName)
+    case 'WW3'
+        if nc_var_exist(fin,'hs')
+            VarStruct.hs = ncread(fin,'hs');
+        end
+        if nc_var_exist(fin,'dir')
+            VarStruct.dir = ncread(fin,'dir');
+            [VarStruct.diru, VarStruct.dirv] = calc_current2uv(1, VarStruct.dir);
+        end
+        if nc_var_exist(fin,'t02')
+            VarStruct.t02 = ncread(fin,'t02');
+        end
+        if nc_var_exist(fin,'lm')
+            VarStruct.lm = ncread(fin,'lm');
+        end
+        if nc_var_exist(fin,'fp')
+            VarStruct.fp = ncread(fin,'fp');
+        end
+        if nc_var_exist(fin,'hmaxe')
+            VarStruct.hmaxe = ncread(fin,'hmaxe');
+        end
+        if nc_var_exist(fin,'cge')
+            VarStruct.hmaxe = ncread(fin,'cge');
+        end
+        if nc_var_exist(fin,'time')
+            Ttimes = Mdatetime(ncdateread(fin,'time'));
+        end
+        
+    case 'FVCOM'
+        if nc_var_exist(fin,'u')
+            VarStruct.u = ncread(fin,'u');
+        end
+        if nc_var_exist(fin,'v')
+            VarStruct.v = ncread(fin,'v');
+        end
+        if nc_var_exist(fin,'ww')
+            VarStruct.ww = ncread(fin,'ww');
+        end
+        if nc_var_exist(fin,'temp')
+            VarStruct.temp = ncread(fin,'temp');
+        end
+        if nc_var_exist(fin,'salinity')
+            VarStruct.salinity = ncread(fin,'salinity');
+        end
+        if nc_var_exist(fin,'zeta')
+            VarStruct.zeta = ncread(fin,'zeta');
+        end
+        if nc_var_exist(fin,'ua')
+            VarStruct.ua = ncread(fin,'ua');
+        end
+        if nc_var_exist(fin,'va')
+            VarStruct.va = ncread(fin,'va');
+        end
+        if nc_var_exist(fin,'Times') || nc_var_exist(fin,'Itime')
+            if nc_var_exist(fin,'Times')
+                ftime = f_load_time(fin,'Times');
+            elseif nc_var_exist(fin,'Itime')
+                ftime = f_load_time(fin);
+            end
+            Ttimes = Mdatetime(ftime,'Cdatenum');
+        end
+    case 'WRF2FVCOM'
+        if nc_var_exist(fin,'T2')
+            VarStruct.T2 = ncread(fin,'T2');
+        end
+        if nc_var_exist(fin,'U10')
+            VarStruct.U10 = ncread(fin,'U10');
+        end
+        if nc_var_exist(fin,'V10')
+            VarStruct.V10 = ncread(fin,'V10');
+        end
+        if nc_var_exist(fin,'SLP')
+            VarStruct.SLP = ncread(fin,'SLP');
+        end
+        if nc_var_exist(fin,'Precipitation')
+            VarStruct.Precipitation = ncread(fin,'Precipitation');
+        end
+        if nc_var_exist(fin,'Evaporation')
+            VarStruct.Evaporation = ncread(fin,'Evaporation');
+        end
+        if nc_var_exist(fin,'Times')
+            Times = ncread(fin, 'Times')';
+            Ttimes = Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
+        end
+
+    otherwise 
+    end
 end

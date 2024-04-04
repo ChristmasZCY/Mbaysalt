@@ -24,6 +24,7 @@ function varargout = Mainpath(varargin)
     %       2024-03-21:     Added seawater, GSW, WindRose toolbox , by Christmas; 
     %       2024-03-21:     Extract download,unzip to function, by Christmas; 
     %       2024-04-01:     Added Post_mitgcm, MITgcmTools, by Christmas; 
+    %       2024-04-03:     Added install DHI-MATLAB-Toolbox,   by Christmas;
     % =================================================================================================================
     % Examples:
     %       Mainpath                        % Add all path
@@ -77,29 +78,33 @@ function varargout = Mainpath(varargin)
 
     switch lower(cmd)
     case 'add'
-        Caddpath(PATH_contains)             % add all path
+        Caddpath(PATH_contains);             % add all path
         [STATUS, CLONES] = git_clone();     % clone all git
         if STATUS == 1  % 如果Exfunctions增加了新工具包，则运行重置路径表
             [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
             setpref('Mbaysalt','PATH_contains',PATH_contains)
             setpref('Mbaysalt','PATH_toolbox',PATH_toolbox)
         end
-        Caddpath(PATH_contains)             % add all path
+        Caddpath(PATH_contains);             % add all path
     case 'rm'
-        Crmpath(PATH_contains)   % remove all path
-        Caddpath(PATH_toolbox)
+        Crmpath(PATH_contains);   % remove all path
+        Caddpath(PATH_toolbox);
     case 'noclone'
-        Caddpath(PATH_contains)
+        Caddpath(PATH_contains);
     otherwise
-        error('parameter error')
+        error('parameter error');
     end
 
     if init
-        Fixed_functions  % Fixed some functions
+        STATUS = Fixed_functions();  % Fixed some functions
+        Install_functions()
     end
 
     if nargout > 0
         varargout{1} = CLONES;
+    end
+    if STATUS == 1
+        print_info()
     end
 
 end
@@ -172,6 +177,7 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/inploygons-pkg"
         "Exfunctions/WindRose"
         "Exfunctions/MITgcmTools"
+        "Exfunctions/DHIMatlabToolbox"
         ];
     FunE = cellstr(FunE);
 
@@ -184,9 +190,9 @@ function [FunctionPath,path] = Cmakepath
     path = {path};
 end
 
-function Caddpath(Path)
+function STATUS = Caddpath(Path)
     cellfun(@addpath, Path);
-    Javaaddpath()  % add java path
+    STATUS = Javaaddpath();  % add java path
 end
 
 
@@ -202,9 +208,9 @@ function Crmpath(Path)
     warning('on',identifier);
 end
 
-function Javaaddpath()
+function STATUS = Javaaddpath()
     if exist('setup_nctoolbox_java','file') == 2
-        fixed_setup_nctoolbox_java()
+        STATUS = fixed_setup_nctoolbox_java();
         setup_nctoolbox_java()
     end
 end
@@ -464,6 +470,7 @@ function [STATUS, CLONES] = git_clone()
                 STATUS = 1;
             end
         end
+
         if para_conf.inploygons_pkg  % inploygons-pkg
             if ~(exist('inpolygons','file') == 2)
                 url = fullfile(git_url, 'kakearney/inpolygons-pkg.git');  % https://github.com/kakearney/inpolygons-pkg.git
@@ -479,8 +486,29 @@ function [STATUS, CLONES] = git_clone()
                 STATUS = 1;
             end
         end
+       
     else
         warning('git is not installed, some functions will not be installed, please install git or set in INSTALL.conf and run Mainpath again.');
+    end
+
+    % DHIMIKE
+    if para_conf.DHIMIKE %%&& ispc % DHIMIKE
+        if ~(exist('read_dfs2', 'file') == 2)  % DHIMIKE
+            local_file = [Edir, 'DHIMatlabToolbox-v19.0.0-20201217.zip'];
+            if ~(exist(local_file, 'file') ==2)  % No cache will download.
+                % url = 'https://github.com/DHI/DHI-MATLAB-Toolbox/releases/download/v19.0.0/DHIMatlabToolbox-v19.0.0-20201217.zip';
+                url = fullfile(git_url, 'DHI/DHI-MATLAB-Toolbox/releases/download/v19.0.0/DHIMatlabToolbox-v19.0.0-20201217.zip');
+                disp('---------> Downloading DHI-MATLAB-Toolbox')
+                download_urlfile(url, local_file)
+            end
+            if ~(exist('DHIMatlabToolbox-v19.0.0-20201217.zip', 'file') == 2)
+                error('DHIMatlabToolbox-v19.0.0-20201217.zip is not downloaded, please download it manually');
+            else
+                unzip_file(local_file, [Edir, 'DHIMatlabToolbox']);
+            end
+            % delete(local_file);
+            STATUS = 1;
+        end
     end
 
     % t_tide
@@ -603,7 +631,6 @@ function [STATUS, CLONES] = git_clone()
 
 end
 
-
 function TF = check_command(command)
     switch computer('arch')
         case {'win32','win64'}
@@ -620,7 +647,6 @@ function TF = check_command(command)
         TF = false;
     end
 end
-
 
 function download_urlfile(urlin, fileOut)
     if check_command('wget')
@@ -639,7 +665,6 @@ function download_urlfile(urlin, fileOut)
     end
 end
 
-
 function unzip_file(fileIn, dirOut)
     if check_command('unzip')
         txt = ['unzip ', fileIn, ' -d ', dirOut];
@@ -651,7 +676,6 @@ function unzip_file(fileIn, dirOut)
         % unzip([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], [Edir, 'm_map/data/']);
     end
 end
-
 
 function Git = read_Git(structIn)
     % 从struct中读取以Git_开头的变量，将变量写入到PATH结构体中
@@ -665,17 +689,25 @@ function Git = read_Git(structIn)
     end
 end
 
-
-function Fixed_functions()
+function STATUS = Fixed_functions()
     % 修正一些函数在高版本matlab中的报错
-    fixed_t_tide()
-    fixed_setup_nctoolbox_java()
-    fixed_matFVCOM()
+    STATUS = 0;
+    STATUS1 = fixed_t_tide();
+    STATUS2 = fixed_setup_nctoolbox_java();
+    STATUS3 = fixed_matFVCOM();
+    if any([STATUS1,STATUS2,STATUS3])
+        STATUS = 1;
+    end
 end
 
+function Install_functions()
+    % Install toolbox
+    % install_DHIMIKE()
+end
 
-function fixed_t_tide()
+function STATUS = fixed_t_tide()
     % 为t_tide工具包的t_tide.m文件添加ref参数
+    STATUS = 0;
     m_filepath = which('t_tide.m');
     if isempty(m_filepath)
         return
@@ -693,11 +725,13 @@ function fixed_t_tide()
     fid = fopen(m_filepath, 'w');  % 将修改后的内容写回文件
     fwrite(fid, newContent);
     fclose(fid);
+    STATUS = 1;
 end
 
 
-function fixed_setup_nctoolbox_java()
+function STATUS = fixed_setup_nctoolbox_java()
     % 修正nctoolbox工具包的setup_nctoolbox_java.m函数在高版本matlab中的报错
+    STATUS = 0;
     m_filepath = which('setup_nctoolbox_java.m');
     if isempty(m_filepath)
         return
@@ -715,30 +749,10 @@ function fixed_setup_nctoolbox_java()
     fid = fopen(m_filepath, 'w');  % 将修改后的内容写回文件
     fwrite(fid, newContent);
     fclose(fid);
+    STATUS = 1;
 end
 
-
-function save_clones(clones) %#ok<DEFNU>
-    path__ = mfilename("fullpath");
-    [path,~]=fileparts(path__);
-    Sdir = fullfile(path, 'Savefiles');
-    Sfile = fullfile(Sdir, 'GitRepository.mat');
-    
-    keys = fieldnames(clones);
-    for i = 1 : length(keys)
-        if exist(Sfile,'file')
-            load(Sfile,'GitRepository')
-            GitRepository.(keys{i}) = clones.(keys{i});
-        else
-            GitRepository = clones;
-        end
-        save(Sfile,'GitRepository',"GitRepository","-mat",'-v7.3')
-    end
-
-end
-
-
-function fixed_matFVCOM()
+function STATUS = fixed_matFVCOM()
     % 为matFVCOM添加Contents.m和functionSignatures.json
     STATUS = 0;
     m_filepath = which('f_load_grid');
@@ -764,11 +778,48 @@ function fixed_matFVCOM()
     % if ~isempty(T)
         % validateFunctionSignaturesJSON(fullfile(path_matFVCOM,'functionSignatures.json'));
     % end
-    if STATUS == 1
-        fprintf('\n')
-        fprintf('=====================================================================\n')
-        fprintf('As adding files, if it does not take efect, please restart MATLAB\n')
-        fprintf('=====================================================================\n')
-        fprintf('\n')
+end
+
+function save_clones(clones) %#ok<DEFNU>
+    path__ = mfilename("fullpath");
+    [path,~]=fileparts(path__);
+    Sdir = fullfile(path, 'Savefiles');
+    Sfile = fullfile(Sdir, 'GitRepository.mat');
+    
+    keys = fieldnames(clones);
+    for i = 1 : length(keys)
+        if exist(Sfile,'file')
+            load(Sfile,'GitRepository')
+            GitRepository.(keys{i}) = clones.(keys{i});
+        else
+            GitRepository = clones;
+        end
+        save(Sfile,'GitRepository',"GitRepository","-mat",'-v7.3')
     end
+
+end
+
+function install_DHIMIKE
+    %  https://github.com/DHI/DHI-MATLAB-Toolbox
+    if ispc
+        %{
+        1. wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+        2. Change InstallPackages.bat line 1 with nuget.exe path
+        3. Run InstallPackages.bat
+        4. Run BuildBin.bat
+        5. cd MatlabDfsUtil
+        6. Run MatlabDfsUtilBuild.bat
+        7. cp MatlabDfsUtil.dll mbin/
+        8. Run CreateZip.bat (optional)
+        %}
+    end
+end
+
+
+function print_info()
+    fprintf('\n')
+    fprintf('=====================================================================\n')
+    fprintf('As adding files, if it does not take efect, please restart MATLAB\n')
+    fprintf('=====================================================================\n')
+    fprintf('\n')
 end
