@@ -62,7 +62,7 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin
             end
         end
     elseif length(fieldnames(Delement)) == 2  % Delement --> Bathy Siglay  || Depth_std Depth_avg
-        if ~isfield(Delemeng, 'Bathy') || ~isfield(Delemeng, 'Siglay')
+        if ~isfield(Delement, 'Bathy') || ~isfield(Delement, 'Siglay')
             SWITCH.std = true;
             SWITCH.sgm = false;
             SWITCH.avg = true;
