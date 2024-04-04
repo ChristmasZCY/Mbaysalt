@@ -79,7 +79,7 @@ function varargout = Mainpath(varargin)
     switch lower(cmd)
     case 'add'
         Caddpath(PATH_contains);             % add all path
-        [STATUS, CLONES] = git_clone();     % clone all git
+        [STATUS, CLONES] = download_pkgs();   % install all pkgs
         if STATUS == 1  % 如果Exfunctions增加了新工具包，则运行重置路径表
             [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
             setpref('Mbaysalt','PATH_contains',PATH_contains)
@@ -216,7 +216,7 @@ function STATUS = Javaaddpath()
 end
 
 
-function [STATUS, CLONES] = git_clone()
+function [STATUS, CLONES] = download_pkgs()
     STATUS = 0;
     path__ = mfilename("fullpath");
     [path,~]=fileparts(path__);
