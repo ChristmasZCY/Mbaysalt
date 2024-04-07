@@ -69,14 +69,14 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,varargin)
     end
 
     fields = fieldnames(Velement);
-    if ismember(fields,{'U_sgm','U_std','U_avg'})
-        SWITCH.V = true;
+    if any(ismember(fields,{'U_sgm','U_std','U_avg'}))
+        SWITCH.u = true;
     end
-    if ismember(fields,{'V_sgm','V_std','V_avg'})
-        SWITCH.V = true;
+    if any(ismember(fields,{'V_sgm','V_std','V_avg'}))
+        SWITCH.v = true;
     end
-    if ismember(fields,{'W_sgm','W_std','W_avg'})
-        SWITCH.V = true;
+    if any(ismember(fields,{'W_sgm','W_std','W_avg'}))
+        SWITCH.w = true;
     end
     clear fields
     
@@ -374,7 +374,7 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,varargin)
         fields = fieldnames(NC);
         for iname = 1 : length(fields)
             %  netcdf.putAtt(ncid, varid_GA, 'source', conf.P_Source); % 数据源
-            netcdf.putAtt(ncid, varid_GA, fields(iname), NC.(fields(iname)));
+            netcdf.putAtt(ncid, varid_GA, fields{iname}, NC.(fields{iname}));
         end
     end
     netcdf.putAtt(ncid, varid_GA, 'product_name', S_name);  % 文件名
@@ -391,7 +391,7 @@ function NC = read_NC(structIn)
     key = fieldnames(structIn);
     for i = 1 : length(key)
         if ~isempty(regexp(key{i},'^NC_','once'))
-            NC.(key{i}(8:end)) = structIn.(key{i});
+            NC.(key{i}(4:end)) = structIn.(key{i});
         end
     end
 end

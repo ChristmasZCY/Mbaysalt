@@ -102,7 +102,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         repmat(' u',SWITCH.u), repmat(' v',SWITCH.v), repmat(' w',SWITCH.w), ...
         repmat(' ua',SWITCH.ua), repmat(' va',SWITCH.va), repmat(' aice',SWITCH.aice), ...
         repmat(' ph',SWITCH.ph), repmat(' no3',SWITCH.no3), repmat(' pco2',SWITCH.pco2), ...
-        repmat(' chlo',SWITCH.chlo), repmat(' casfco2',SWITCH.casfco2)])  % 打印处理的变量
+        repmat(' chlo',SWITCH.chlo), repmat(' casfco2',SWITCH.casfco2), repmat(' zp',SWITCH.zp), ...
+        repmat(' pp',SWITCH.pp), repmat(' sand',SWITCH.sand)])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
@@ -169,7 +170,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             if strcmpi(Ecology_model, '.ERSEM.')
                 ph = double(ncread(ncfile,'O3_pH'));
             end
-            fncValue_nzt.ph = clip(ph, 0, 14);  % ph = limit_var(ph, [0,14]);
+            fncValue_nzt.ph = limit_var(ph, [0,14]);
             clear ph
             OutputDir.ph = fullfile(Outputpath,'ph',interval,deal_date);  % ph输出路径
         end
@@ -179,7 +180,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             elseif strcmpi(Ecology_model, '.NEMURO.')
                 no3 = double(ncread(ncfile,'NO3')); % NO3 氮氧化物
             end
-            fncValue_nzt.no3 = clip(no3, 0, 400);  % no3 = limit_var(no3, [0,400]);
+            fncValue_nzt.no3 = limit_var(no3, [0,400]);
             clear no3
             OutputDir.no3 = fullfile(Outputpath,'no3',interval,deal_date);  % no3输出路径
         end
@@ -187,7 +188,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             if strcmpi(Ecology_model, '.ERSEM.')
                 pco2 = double(ncread(ncfile,'O3_pCO2'));
             end
-            fncValue_nzt.pco2 = clip(pco2, 0, 10000);  % pco2 = limit_var(pco2, [0,10000]);
+            fncValue_nzt.pco2 = limit_var(pco2, [0,10000]);
             clear pco2
             OutputDir.pco2 = fullfile(Outputpath,'pco2',interval,deal_date);  % pco2输出路径
         end
@@ -206,7 +207,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 chlo = 1.59 * pp;
                 clear ps pl pp
             end
-            fncValue_nzt.chlo = clip(chlo, 0, 100);  % chlo = limit_var(chlo, [0,100]);
+            fncValue_nzt.chlo = limit_var(chlo, [0,100]);
             clear chlo
             OutputDir.chlo = fullfile(Outputpath,'chlorophyll',interval,deal_date);  % chlorophyll输出路径
         end
@@ -214,7 +215,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             if strcmpi(Ecology_model, '.ERSEM.')
                 casfco2 = double(ncread(ncfile,'O3_fair'));
             end
-            fncValue_nt.casfco2 = clip(casfco2, -300, 300);  % casfco2 = limit_var(casfco2, [-300, 300]);
+            fncValue_nt.casfco2 = limit_var(casfco2, [-300, 300]);
             clear casfco2
             OutputDir.casfco2 = fullfile(Outputpath,'casfco2',interval,deal_date);  % casfco2输出路径
         end
@@ -290,6 +291,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
 
         clear u v w ua va
+
+        if ~exist("fncValue_nt", "var")
+            fncValue_nt = struct();
+        end
+        if ~exist("fncValue_nzt", "var")
+            fncValue_nzt = struct();
+        end
 
         % Lon                    --> x*1
         % Lat                    --> y*1
@@ -507,7 +515,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % -----> sgm_level
         if SWITCH.out_sgm_level 
             Level_sgm  = int64(Level_sgm);
-            if min(Level_sgm) < 1 || max(Level_sgm) > size(Store_coor.Deplay,3)
+            if min(Level_sgm) < 1 || max(Level_sgm) > f_nc.kbm1
                 error('Level_sgm exceed the range of sigma level')
             end
             % OutValue.Temp_sgm = Store_coor.Temp_sgm(:,:,Level_sgm,:);
@@ -608,6 +616,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % OutValue_xyzt --> *_sgm *_std *_avg
         % OutValue_xyt -->  Zeta Ua Va Aice Casfco2
 
+        if ~exist("OutValue_xyt", "var")
+            OutValue_xyt = struct();
+        end
+        if ~exist("OutValue_xyzt", "var")
+            OutValue_xyzt = struct();
+        end
+
 
         %% mask vertical data
         if SWITCH.out_std_level
@@ -659,8 +674,11 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     evalc(['I_D_',num2str(im+1),' = load(file_erosion).I_D_',num2str(im+1),';']);
                 end
                 % [OutValue_more_dim,OutValue_less_dim,dimsMax] = separate_var_gt_nd(OutValue_xyzt); clear OutValue_xyzt
-                % OutValue = structfun(@(x) erosion_coast_via_id(I_D_1, x,'cycle_dim',dimsMax), OutValue_more_dim, 'UniformOutput', false);
+                % OutValue = structfun(@(x) erosion_coast_via_id(I_D_1, x,'cycle_dim',dimsMax), OutValue_xyzt, 'UniformOutput', false);
                 dimsMax = max(cellfun(@ndims,struct2cell(OutValue_xyzt)));
+                if dimsMax <= 2
+                    dimsMax = 3;
+                end
                 eval(['OutValue_xyzt = structfun(@(x) erosion_coast_via_id(I_D_',num2str(im+1),', x,''cycle_dim'',',num2str(dimsMax),'), OutValue_xyzt, ''UniformOutput'', false);']);
                 im = im+1;
             end
@@ -779,7 +797,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.sand
             file = fullfile(OutputDir.sand,['sand',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [sand_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Pp_std','Pp_sgm','Pp_avg'});
+            [sand_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_sand_nemuro(ncid,Lon,Lat,Delement,time,sand_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
             clear Velement_csand ncid file
         end

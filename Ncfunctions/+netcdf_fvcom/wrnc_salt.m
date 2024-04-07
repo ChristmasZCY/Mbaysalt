@@ -215,11 +215,11 @@ function wrnc_salt(ncid,Lon,Lat,Delement,time,Velement,varargin)
         fields = fieldnames(NC);
         for iname = 1 : length(fields)
             %  netcdf.putAtt(ncid, varid_GA, 'source', conf.P_Source); % 数据源
-            netcdf.putAtt(ncid, varid_GA, fields(iname), NC.(fields(iname)));
+            netcdf.putAtt(ncid, varid_GA, fields{iname}, NC.(fields{iname}));
         end
     end
     netcdf.putAtt(ncid, varid_GA, 'product_name', S_name);  % 文件名
-    netcdf.putAtt(ncid, varid_GA, 'history',      ['Created by Matlab at ' char(datetime("now","Inputformat","yyyy-MM-dd HH:mm:SS"))]); % 操作历史记录
+    netcdf.putAtt(ncid, varid_GA, 'history', ['Created by Matlab at ' char(datetime("now","Inputformat","yyyy-MM-dd HH:mm:SS"))]);  % 操作历史记录
     netcdf.close(ncid);  % 关闭nc文件
     return 
 end
@@ -232,7 +232,7 @@ function NC = read_NC(structIn)
     key = fieldnames(structIn);
     for i = 1 : length(key)
         if ~isempty(regexp(key{i},'^NC_','once'))
-            NC.(key{i}(8:end)) = structIn.(key{i});
+            NC.(key{i}(4:end)) = structIn.(key{i});
         end
     end
 end
