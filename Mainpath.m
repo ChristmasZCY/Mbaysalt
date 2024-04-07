@@ -64,12 +64,8 @@ function varargout = Mainpath(varargin)
         switch lower(varargin{i})
         case 'init'
             init = logical(varargin{i+1});
-            varargin(i) = [];
-            varargin(i+1) = [];
         case 'noset'
             noset = logical(varargin{i+1});
-            varargin(i) = [];
-            varargin(i+1) = [];
         end
     end
 
@@ -113,7 +109,11 @@ function varargout = Mainpath(varargin)
     end
 
     if init
-        STATUS = Fixed_functions();  % Fixed some functions
+        try
+            STATUS = Fixed_functions();  % Fixed some functions
+        catch ME1
+            STATUS = 0;
+        end
         Install_functions()
     end
 
