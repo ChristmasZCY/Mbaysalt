@@ -10,6 +10,7 @@ function Standard_depth_mask = make_mask_depth_data(grid_depth, standard_depth)
     %       Standard_depth_mask = make_mask_depth_data(grid_depth, standard_depth);
     % =================================================================================================================
 
+    % 向下为正！！！
     % standard为[0,5,10,20,30,50,70,100,150,200,300,500,1000,1500,2000,3000]的标准层深度
     % grid为网格层深度, 制作mask, 用于mask掉standard>grid的数据
     % grid 为 lon*lat*1
