@@ -3,6 +3,8 @@
     "_schemaVersion": "1.0.0",
     "Mainpath":{
         "inputs":[
-            {"name":"Parameter", "kind":"positional","type":["choices={'rm','noclone','add','cd','noset'}"],"purpose":"Parameter"},
-            {"name":"Init", "kind":"namevalue","type":["logical","scalar"],"purpose":"Initialization"}]}
+            {"name":"Parameter", "kind":"positional","type":["choices={'rm','noclone','add','cd'}"],"purpose":"Parameter"},
+            {"name":"Init", "kind":"namevalue","type":["logical","scalar"],"purpose":"Initialization"},
+            {"name":"noset", "kind":"namevalue","type":["logical","scalar"],"purpose":"Do not set pref"}],
+        "outputs":[]}
 }

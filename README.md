@@ -49,6 +49,7 @@ Mainpath
 - [matFigure](https://github.com/SiqiLiOcean/matFigure)
 - [matNC](https://github.com/SiqiLiOcean/matNC)
 - [HYCOM2FVCOM](https://github.com/SiqiLiOcean/HYCOM2FVCOM)
+- [htool](https://github.com/SiqiLiOcean/htool)
 - [struct2ini](https://ww2.mathworks.cn/matlabcentral/fileexchange/22079-struct2ini)
 - [m_map](https://www.eoas.ubc.ca/~rich/map.html)
 - [t_tide](https://www.eoas.ubc.ca/~rich/#T_Tide)
