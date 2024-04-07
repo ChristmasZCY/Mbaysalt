@@ -97,7 +97,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     osprint2('INFO', [pad('Total transfor ',Text_len,'right'),'--> ', num2str(Length),' days']) % 输出处理的日期信息
     osprint2('INFO', [pad('Interp Method ', Text_len,'right'),'--> ', Method_interpn])          % 输出插值方法
     osprint2('INFO', [pad(['Transfor ',interval,' variable '],Text_len,'right'), '-->', ...
-        repmat(' temp',SWITCH.temp), repmat(' salt',SWITCH.salt), repmat(' zeta',SWITCH.adt), ...
+        repmat(' temp',SWITCH.temp), repmat(' salt',SWITCH.salt), repmat(' zeta',SWITCH.zeta), ...
         repmat(' u',SWITCH.u), repmat(' v',SWITCH.v), repmat(' w',SWITCH.w), ...
         repmat(' ua',SWITCH.ua), repmat(' va',SWITCH.va), repmat(' aice',SWITCH.aice), ...
         repmat(' ph',SWITCH.ph), repmat(' no3',SWITCH.no3), repmat(' pco2',SWITCH.pco2), ...
@@ -113,11 +113,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         elseif strcmp(interval,"hourly")
             ncfile = fullfile(Inputpath,[char(getdate),filesep, ModelOUTD, filesep, file_Mcasename,'_',num2str(dr,'%04d'),'.nc']); % 输入文件
         end
+        clear  ModelOUTD
 
         OutputDir.curr = fullfile(Outputpath,'current',interval,deal_date);  % current输出路径
         OutputDir.salt = fullfile(Outputpath,'sea_salinity',interval,deal_date);  % salinity输出路径
         OutputDir.temp = fullfile(Outputpath,'sea_temperature',interval,deal_date);  % temperature输出路径
-        OutputDir.adt = fullfile(Outputpath,'adt',interval,deal_date);  % adt输出路径
+        OutputDir.zeta = fullfile(Outputpath,'adt',interval,deal_date);  % adt输出路径
         OutputDir.ice = fullfile(Outputpath,'aice',interval,deal_date);  % aice输出路径
         OutputDir.ph = fullfile(Outputpath,'ph',interval,deal_date);  % ph输出路径
         OutputDir.no3 = fullfile(Outputpath,'no3',interval,deal_date);  % no3输出路径
@@ -150,16 +151,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
         clear dr1 dr
 
-        if f_nc.MaxLon == 180 && max(lon_dst,[],'all') > 180  % 判断是否需要转换经度，并记录change_maxlon开关
-            Lon = ll_to_ll(lon_dst);
-            SWITCH.change_maxlon = true;
-        elseif f_nc.MaxLon == 360 && min(lon_dst,[],'all') < 0
-            Lon = ll_to_ll(lon_dst);
-            SWITCH.change_maxlon = true;
-        else
-            Lon = lon_dst;
-            SWITCH.change_maxlon = false;
-        end
+        Lon = lon_dst;
         Lat = lat_dst;
 
         % read nc file
@@ -178,13 +170,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.w
             w = double(ncread(ncfile, 'ww'));
         end
-        if SWITCH.adt
+        if SWITCH.zeta
             zeta = double(ncread(ncfile,'zeta'));
         end
         if SWITCH.ua
             ua = double(ncread(ncfile,'ua'));
         end
-        if SWITCH.ua
+        if SWITCH.va
             va = double(ncread(ncfile,'va'));
         end
         if SWITCH.aice % 是否包含海冰密集度
@@ -281,21 +273,45 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.w
             w_int = f_interp_cell2node(f_nc, w);
         end
+        if SWITCH.ua
+            ua_int = f_interp_cell2node(f_nc, ua);
+        end
+        if SWITCH.va
+            va_int = f_interp_cell2node(f_nc, va);
+        end
 
-        clear u v w
+        clear u v w ua va
 
-        % temp salt zeta u_int v_int w_int ua va
+        % Lon           --> x*1
+        % Lat           --> y*1
+        % Ttimes        --> t*1
+        % temp          --> node*sgm*t
+        % salt          --> node*sgm*t   
+        % zeta          --> node*t
+        % u_int         --> node*sgm*t
+        % v_int         --> node*sgm*t
+        % w_int         --> node*sgm*t
+        % ua            --> node*t
+        % va            --> node*t
+        % aice          --> node*t
+        % ph            --> node*sgm*t
+        % no3           --> node*sgm*t
+        % pco2          --> node*sgm*t
+        % chlo          --> node*sgm*t
+        % casfco2       --> node*t
+        % zp            --> node*sgm*t
+        % pp            --> node*sgm*t
+        % sand          --> node*sgm*t
 
         switch Method_interpn
             case 'Siqi_interp'
-
                 % weight
                 file_weight = para_conf.WeightFile_Siqi_interp;
                 if SWITCH.make_weight
                     [Lat_m,Lon_m] = meshgrid(Lat,Lon);
                     tt2 = tic;
                     Weight_2d = interp_2d_calc_weight('TRI',f_nc.x,f_nc.x,f_nc.nv,Lon_m,Lat_m);
-                    rmfiles(file_weight)
+                    makedirs(fileparts(file_weight)); rmfiles(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     osprint2('INFO', [pad('Calculate 2d weight costs ',Text_len,'right'),'--> ', num2str(toc(tt2)),' s'])
                     clear Lon_m Lat_m tt2
@@ -309,14 +325,14 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 if SWITCH.salt
                     Salt = interp_2d_via_weight(salt,Weight_2d);
                 end
-                if SWITCH.adt
+                if SWITCH.zeta
                     Zeta = interp_2d_via_weight(zeta,Weight_2d);
                 end
                 if SWITCH.ua
-                    Ua = interp_2d_via_weight(ua,Weight_2d);
+                    Ua = interp_2d_via_weight(ua_int,Weight_2d);
                 end
-                if SWITCH.adt
-                    Va = interp_2d_via_weight(va,Weight_2d);
+                if SWITCH.va
+                    Va = interp_2d_via_weight(va_int,Weight_2d);
                 end
                 if SWITCH.u
                     U = interp_2d_via_weight(u_int,Weight_2d);
@@ -354,18 +370,22 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 if SWITCH.sand
                     Sand = interp_2d_via_weight(sand,Weight_2d);
                 end
-                Deplev = interp_2d_via_weight(f_nc.deplevc,Weight_2d);  % each sigma level depth(31) node
-                Depth = interp_2d_via_weight(f_nc.deplay,Weight_2d);
-                Siglay = interp_2d_via_weight(f_nc.siglay,Weight_2d);
-                Depth_origin_to_wrf_grid =  interp_2d_via_weight(f_nc.h,Weight_2d);
+                Depth_xy =  interp_2d_via_weight(f_nc.h,Weight_2d);
+                % SWITCH
+                if SWITCH.out_avg_level
+                    Deplev = interp_2d_via_weight(f_nc.deplevc,Weight_2d);  % each sigma level depth(31) node
+                end
+                if SWITCH.out_std_level
+                    Deplay = interp_2d_via_weight(f_nc.deplay,Weight_2d);   % each sigma layer depth(30) node
+                end
+                if SWITCH.out_sgm_level
+                    Siglay = interp_2d_via_weight(f_nc.siglay,Weight_2d);
+                end
 
-
-                clear temp salt zeta ua va u_int v_int w_int aice ph no3 pco2 chlo casfco2 zp pp sand
+                clear temp salt zeta ua_int va_int u_int v_int w_int aice ph no3 pco2 chlo casfco2 zp pp sand
                 clear file_weight Weight_2d
 
             case 'Siqi_ESMF'
-
-                % weight
                 file_weight = para_conf.WeightFile_Siqi_ESMF;
                 if SWITCH.make_weight
                     exe = para_conf.ESMF_exe;
@@ -377,11 +397,11 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     [Lat_m,Lon_m] = meshgrid(Lat,Lon);  % 注意: Lat放在前面
                     tt3 = tic;
                     esmf_write_grid(GridFile_fvcom , 'FVCOM', f_nc.x,f_nc.y,f_nc.nv);
-                    esmf_write_grid(GridFile_wrf, 'WRF', Lon_m,Lat_m);
+                    esmf_write_grid(GridFile_wrf,    'WRF',   Lon_m,Lat_m);
                     esmf_regrid_weight(GridFile_fvcom, GridFile_wrf, ESMF_NCweightfile, ...
                                         'exe', exe, 'Src_loc', 'corner', 'Method', ESMF_RegridMethod); % temperature corner
                     Weight_2d = esmf_read_weight(ESMF_NCweightfile);
-                    rmfiles(file_weight)
+                    makedirs(fileparts(file_weight)); rmfiles(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     clear Lon_m Lat_m
                     osprint2('INFO', [pad('Calculate 2d weight costs ',Text_len,'right'),'--> ', num2str(toc(tt3)),' s'])
@@ -390,10 +410,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 end
                 clear GridFile_fvcom GridFile_wrf ESMF_NCweightfile ESMFMAFILE ESMF_RegridMethod exe file_weight tt3
 
-                % for it = 1: size(temp,3) % time
-                for it = 1: length(time)
-                    % for iz = 1 : size(temp,2) % depth
-                    for iz = 1: f_nc.kbm1
+                for it = 1 : length(time)  % for it = 1: size(temp,3) % time
+                    for iz = 1 : f_nc.kbm1  % for iz = 1 : size(temp,2) % depth
                         if SWITCH.temp
                             Temp(:,:,iz,it) =  esmf_regrid(temp(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                         end
@@ -431,8 +449,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                             Sand(:,:,iz,it) = interp_2d_via_weight(sand(:,iz,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                         end
                         if it == 1  % 不随time变化，只需要计算一次
-                            Depth(:,:,iz) =  esmf_regrid(f_nc.deplay(:,iz),Weight_2d,'Dims',[length(Lon),length(Lat)]);
-                            Siglay(:,:,iz) =  esmf_regrid(f_nc.siglay(:,iz),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                            if SWITCH.out_std_level
+                                Deplay(:,:,iz) =  esmf_regrid(f_nc.deplay(:,iz),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                            end
+                            if SWITCH.out_sgm_level
+                                Siglay(:,:,iz) =  esmf_regrid(f_nc.siglay(:,iz),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                            end
                         end
                     end
                     if SWITCH.out_avg_level
@@ -441,14 +463,14 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                         end
                     end
                     % 不随深度变化
-                    if SWITCH.adt
+                    if SWITCH.zeta
                         Zeta(:,:,it) =  esmf_regrid(zeta(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     end
                     if SWITCH.ua
-                        Ua(:,:,it) =  esmf_regrid(ua(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                        Ua(:,:,it) =  esmf_regrid(ua_int(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     end
                     if SWITCH.va
-                        Va(:,:,it) =  esmf_regrid(va(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
+                        Va(:,:,it) =  esmf_regrid(va_int(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     end
                     if SWITCH.aice
                         Aice(:,:,it) =  esmf_regrid(aice(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
@@ -457,491 +479,355 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                         Casfco2(:,:,it) =  esmf_regrid(casfco2(:,it),Weight_2d,'Dims',[length(Lon),length(Lat)]);
                     end
                 end
-                Depth_origin_to_wrf_grid =  esmf_regrid(f_nc.h,Weight_2d,'Dims',[length(Lon),length(Lat)]); % depth of WRF grid
-                clear temp salt zeta ua va u_int v_int w_int aice ph no3 pco2 chlo casfco2 it iz Weight_2d
+                Depth_xy =  esmf_regrid(f_nc.h,Weight_2d,'Dims',[length(Lon),length(Lat)]); % depth of WRF grid
+                clear temp salt zeta ua_int va_int u_int v_int w_int aice ph no3 pco2 chlo casfco2 sand zp pp it iz Weight_2d
             otherwise
                 error('Method_interpn must be Siqi_interp or Siqi_ESMF!')
         end
-        % lon                      --> 1*lon                                --- wrnc(function) lon
-        % lat                      --> 1*lat                                --- wrnc(function) lat
-        % Depth_origin_to_wrf_grid --> lon*lat(bathy)                       --- wrnc(function) bathy
-        % Depth_std                --> 1*level (standard depth)             --- wrnc(function) depth
-        % Depth                    --> lon*lat*sigma_layer_orig (depth of fvcom vertical grid)
-        % Deplev                   --> lon*lat*sigma_level_orig (each sigma level depth(31))
-        % Temp                     --> lon*lat*sigma_layer_orig*time (temperature of fvcom vertical grid)
-        % Salt                     --> lon*lat*sigma_layer_orig*time (salinity of fvcom vertical grid)
-        % U                        --> lon*lat*sigma_layer_orig*time (u of fvcom vertical grid)
-        % V                        --> lon*lat*sigma_layer_orig*time (v of fvcom vertical grid)
-        % W                        --> lon*lat*sigma_layer_orig*time (w of fvcom vertical grid)
-        % Zeta                     --> lon*lat*time (zeta of fvcom grid)
-        % Ua                       --> lon*lat*time (ua of fvcom grid)
-        % Va                       --> lon*lat*time (va of fvcom grid)
-        % Aice                     --> lon*lat*time (aice of fvcom grid)
-        % Ph                       --> lon*lat*sigma_layer_orig*time (ph of fvcom vertical grid)
-        % No3                      --> lon*lat*sigma_layer_orig*time (no3 of fvcom vertical grid)
-        % Pco2                     --> lon*lat*sigma_layer_orig*time (pco2 of fvcom vertical grid)
-        % Chlo                     --> lon*lat*sigma_layer_orig*time (chlorophyll of fvcom vertical grid)
-        % Pp                       --> lon*lat*sigma_layer_orig*time (phytoplankton of fvcom vertical grid)
-        % Zp                       --> lon*lat*sigma_layer_orig*time (zooplankton of fvcom vertical grid)
-        % sand                     --> lon*lat*sigma_layer_orig*time (sand of fvcom vertical grid)
-        % Casfco2                     --> lon*lat*time (casfco2 of fvcom vertical grid)
 
-        if SWITCH.out_sgm_level || SWITCH.out_avg_level % sigma和std都需要sgm计算
-            if SWITCH.temp
-                VAelement.Temp_sgm = Temp;
-            end
-            if SWITCH.salt
-                VAelement.Salt_sgm = Salt;
-            end
-            if SWITCH.u
-                VAelement.U_sgm = U;
-            end
-            if SWITCH.v
-                VAelement.V_sgm = V;
-            end
-            if SWITCH.w
-                VAelement.W_sgm = W;
-            end
-            if SWITCH.ph
-                VAelement.Ph_sgm = Ph;
-            end
-            if SWITCH.no3
-                VAelement.No3_sgm = No3;
-            end
-            if SWITCH.pco2
-                VAelement.Pco2_sgm = Pco2;
-            end
-            if SWITCH.chlo
-                VAelement.Chlo_sgm = Chlo;
-            end
-            if SWITCH.zp
-                VAelement.Zp_sgm = Zp;
-            end
-            if SWITCH.pp
-                VAelement.Pp_sgm = Pp;
-            end
-            if SWITCH.sand
-                VAelement.Sand_sgm = Sand;
-            end
+        % -----> Store
+        Store.Lon           = Lon;              % --> x*1
+        Store.Lat           = Lat;              % --> y*1
+        Store.Depth_xy      = Depth_xy;         % --> x*y             Depth Grid(Bathy)
+        Store.Depth_std     = Depth_std;        % --> 1*level         (standard depth)
+        Store.Ttimes        = Ttimes;           % --> t*1
+        if SWITCH.out_avg_level
+            Store.Deplev        = Deplev;       % --> x*y*sgv         each sigma level depth(31) node
         end
-
-        if SWITCH.out_std_level  % 是否转换到标准层
-            switch Method_interpn 
-                case {'Siqi_interp', 'Siqi_ESMF'}
-                    %weight
-                    file_weight_vertical = para_conf.WeightFile_vertical;
-                    size_2d_to_1d_ll = size(Depth,1)*size(Depth,2);  % num of lon*lat
-
-                    if SWITCH.make_weight
-                        tt4 = tic;
-                        % Weight_vertical = interp_vertical_calc_weight(f_nc.deplay,repmat(Depth_std,f_nc.node,1));
-                        depth_2d_to_1d = reshape(Depth,size_2d_to_1d_ll,[]);
-                        F_noNaN = find(~isnan(depth_2d_to_1d(:,1)),1);  % 找到第一个不是NaN的数字，否则interp_vertical_calc_weight会报错
-                        if isempty(F_noNaN)
-                            osprint2('ERROR', 'Depth is all NaN'); error('Depth is all NaN')
-                        elseif F_noNaN ~= 1
-                            depth_2d_to_1d = [depth_2d_to_1d(F_noNaN:end,:); depth_2d_to_1d(1:F_noNaN-1,:)];
-                        end
-                        Weight_vertical = interp_vertical_calc_weight(depth_2d_to_1d,repmat(Depth_std,size_2d_to_1d_ll,1)); 
-                        Weight_vertical = structfun(@(x) flip2_to_recover(x,F_noNaN), Weight_vertical, 'UniformOutput', false);  % 顺序转换回去
-                        rmfiles(file_weight_vertical); clear F_noNaN depth_2d_to_1d
-                        save(file_weight_vertical, 'Weight_vertical','-v7.3','-nocompression');
-                        osprint2('INFO', [pad('Calculate vertical weight costs ',Text_len,'right'),'--> ', num2str(toc(tt4)),' s'])
-                    else
-                        Weight_vertical = load(file_weight_vertical).Weight_vertical;
-                    end
-                    clear file_weight_vertical tt4
-
-                    % WRF grid --> FVCOM grid
-                    if SWITCH.temp
-                        Temp1 = reshape(Temp,[size_2d_to_1d_ll,size(Temp,[3,4])]);clear Temp
-                    end
-                    if SWITCH.salt
-                        Salt1 = reshape(Salt,[size_2d_to_1d_ll,size(Salt,[3,4])]);clear Salt
-                    end
-                    if SWITCH.u
-                        U1 = reshape(U,[size_2d_to_1d_ll,size(U,[3,4])]);clear U
-                    end
-                    if SWITCH.v
-                        V1 = reshape(V,[size_2d_to_1d_ll,size(V,[3,4])]);clear V
-                    end
-                    if SWITCH.w
-                        W1 = reshape(W,[size_2d_to_1d_ll,size(W,[3,4])]);clear W
-                    end
-                    if SWITCH.ph
-                        Ph1 = reshape(Ph,[size_2d_to_1d_ll,size(Ph,[3,4])]);clear Ph
-                    end
-                    if SWITCH.no3
-                        No31 = reshape(No3,[size_2d_to_1d_ll,size(No3,[3,4])]);clear No3
-                    end
-                    if SWITCH.pco2
-                        Pco21 = reshape(Pco2,[size_2d_to_1d_ll,size(Pco2,[3,4])]);clear Pco2
-                    end
-                    if SWITCH.chlo
-                        Chlo1 = reshape(Chlo,[size_2d_to_1d_ll,size(Chlo,[3,4])]);clear Chlo
-                    end
-                    if SWITCH.zp
-                        Zp1 = reshape(Zp,[size_2d_to_1d_ll,size(Zp,[3,4])]);clear Zp
-                    end
-                    if SWITCH.pp
-                        Pp1 = reshape(Pp,[size_2d_to_1d_ll,size(Pp,[3,4])]);clear Pp
-                    end
-                    if SWITCH.sand
-                        Sand1 = reshape(Sand,[size_2d_to_1d_ll,size(Sand,[3,4])]);clear Sand
-                    end
-
-                    % make empty matrix
-                    if SWITCH.temp
-                        Temp = zeros(size_2d_to_1d_ll,length(Depth_std),size(Temp1,3));
-                    end
-                    if SWITCH.salt
-                        Salt = zeros(size_2d_to_1d_ll,length(Depth_std),size(Salt1,3));
-                    end
-                    if SWITCH.u
-                        U = zeros(size_2d_to_1d_ll,length(Depth_std),size(U1,3));
-                    end
-                    if SWITCH.v
-                        V = zeros(size_2d_to_1d_ll,length(Depth_std),size(V1,3));
-                    end
-                    if SWITCH.w
-                        W = zeros(size_2d_to_1d_ll,length(Depth_std),size(W1,3));
-                    end
-                    if SWITCH.ph
-                        Ph = zeros(size_2d_to_1d_ll,length(Depth_std),size(Ph1,3));
-                    end
-                    if SWITCH.no3
-                        No3 = zeros(size_2d_to_1d_ll,length(Depth_std),size(No31,3));
-                    end
-                    if SWITCH.pco2
-                        Pco2 = zeros(size_2d_to_1d_ll,length(Depth_std),size(Pco21,3));
-                    end
-                    if SWITCH.chlo
-                        Chlo = zeros(size_2d_to_1d_ll,length(Depth_std),size(Chlo1,3));
-                    end
-                    if SWITCH.zp
-                        Zp = zeros(size_2d_to_1d_ll,length(Depth_std),size(Zp1,3));
-                    end
-                    if SWITCH.pp
-                        Pp = zeros(size_2d_to_1d_ll,length(Depth_std),size(Pp1,3));
-                    end
-                    if SWITCH.sand
-                        Sand = zeros(size_2d_to_1d_ll,length(Depth_std),size(Sand1,3));
-                    end
-                    clear size_2d_to_1d_ll
-
-                    % interp with FVCOM grid
-                    % for it = 1:size(Temp1,3) % size(Temp1,3) -- time
-                    for it = 1:length(time) 
-                        if SWITCH.temp
-                            Temp(:,:,it) = interp_vertical_via_weight(Temp1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.salt
-                            Salt(:,:,it) = interp_vertical_via_weight(Salt1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.u
-                            U(:,:,it) = interp_vertical_via_weight(U1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.v
-                            V(:,:,it) = interp_vertical_via_weight(V1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.w
-                            W(:,:,it) = interp_vertical_via_weight(W1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.ph
-                            Ph(:,:,it) = interp_vertical_via_weight(Ph1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.no3
-                            No3(:,:,it) = interp_vertical_via_weight(No31(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.pco2
-                            Pco2(:,:,it) = interp_vertical_via_weight(Pco21(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.chlo
-                            Chlo(:,:,it) = interp_vertical_via_weight(Chlo1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.zp
-                            Zp(:,:,it) = interp_vertical_via_weight(Zp1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.pp
-                            Pp(:,:,it) = interp_vertical_via_weight(Pp1(:,:,it),Weight_vertical);
-                        end
-                        if SWITCH.sand
-                            Sand(:,:,it) = interp_vertical_via_weight(Sand1(:,:,it),Weight_vertical);
-                        end
-                    end
-                    clear Temp1 Salt1 U1 V1 W1 Ph1 No31 Pco21 Chlo1 Zp1 Pp1 Sand1 it
-                    clear Weight_vertical
-
-                    if SWITCH.temp
-                        Temp = reshape(Temp,[size(Depth,[1,2]),size(Temp,[2,3,4])]);
-                    end
-                    if SWITCH.salt
-                        Salt = reshape(Salt,[size(Depth,[1,2]),size(Salt,[2,3,4])]);
-                    end
-                    if SWITCH.u
-                        U = reshape(U,[size(Depth,[1,2]),size(U,[2,3,4])]);
-                    end
-                    if SWITCH.v
-                        V = reshape(V,[size(Depth,[1,2]),size(V,[2,3,4])]);
-                    end
-                    if SWITCH.w
-                        W = reshape(W,[size(Depth,[1,2]),size(W,[2,3,4])]);
-                    end
-                    if SWITCH.ph
-                        Ph = reshape(Ph,[size(Depth,[1,2]),size(Ph,[2,3,4])]);
-                    end
-                    if SWITCH.no3
-                        No3 = reshape(No3,[size(Depth,[1,2]),size(No3,[2,3,4])]);
-                    end
-                    if SWITCH.pco2
-                        Pco2 = reshape(Pco2,[size(Depth,[1, 2]),size(Pco2,[2,3,4])]);
-                    end
-                    if SWITCH.chlo
-                        Chlo = reshape(Chlo,[size(Depth,[1,2]),size(Chlo,[2,3,4])]);
-                    end
-                    if SWITCH.zp
-                        Zp = reshape(Zp,[size(Depth,[1,2]),size(Zp,[2,3,4])]);
-                    end
-                    if SWITCH.pp
-                        Pp = reshape(Pp,[size(Depth,[1,2]),size(Pp,[2,3,4])]);
-                    end
-                    if SWITCH.sand
-                        Sand = reshape(Sand,[size(Depth,[1,2]),size(Sand,[2,3,4])]);
-                    end
-            end
+        if SWITCH.out_std_level
+            Store.Deplay        = Deplay;       % --> x*y*sgm         each sigma layer depth(30) node
         end
-        % Temp Salt U V W Zeta ua va Depth Aice Ph No3 Pco2 Chlo Casfco2 Zp Pp Sand --> std_level
-        if SWITCH.adt
-            Velement.Zeta = Zeta;
+        if SWITCH.out_sgm_level
+            Store.Siglay        = Siglay;       % --> x*y*sgm         each sigma layer   %  (30) node
+        end
+        if SWITCH.temp 
+            Store.Temp_sgm      = Temp;         % --> x*y*sgm*t
+        end
+        if SWITCH.salt
+            Store.Salt_sgm      = Salt;         % --> x*y*sgm*t
+        end
+        if SWITCH.u
+            Store.U_sgm         = U;            % --> x*y*sgm*t
+        end
+        if SWITCH.v
+            Store.V_sgm         = V;            % --> x*y*sgm*t
+        end
+        if SWITCH.w
+            Store.W_sgm         = W;            % --> x*y*sgm*t
+        end
+        if SWITCH.ph
+            Store.Ph_sgm        = Ph;           % --> x*y*sgm*t
+        end
+        if SWITCH.no3
+            Store.No3_sgm       = No3;          % --> x*y*sgm*t
+        end
+        if SWITCH.pco2
+            Store.Pco2_sgm      = Pco2;         % --> x*y*sgm*t
+        end
+        if SWITCH.chlo
+            Store.Chlo_sgm      = Chlo;         % --> x*y*sgm*t
+        end
+        if SWITCH.zp
+            Store.Zp_sgm        = Zp;           % --> x*y*sgm*t
+        end
+        if SWITCH.pp
+            Store.Pp_sgm        = Pp;           % --> x*y*sgm*t
+        end
+        if SWITCH.sand
+            Store.Sand_sgm      = Sand;         % --> x*y*sgm*t
+        end
+        if SWITCH.zeta
+            Store.Zeta          = Zeta;         % --> x*y*t
         end
         if SWITCH.ua
-            Velement.Ua = Ua;
+            Store.Ua            = Ua;           % --> x*y*t
         end
         if SWITCH.va
-            Velement.Va = Va;
+            Store.Va            = Va;           % --> x*y*t
         end
         if SWITCH.aice
-            Velement.Aice = Aice;
+            Store.Aice          = Aice;         % --> x*y*t
         end
         if SWITCH.casfco2
-            Velement.Casfco2 = Casfco2;
+            Store.Casfco2       = Casfco2;      % --> x*y*t
         end
+        clear Depth_xy out_avg_level out_std_level out_sgm_level
+        clear Siglay Deplev
+        clear Temp Salt U V W Ph No3 Pco2 Chlo Zp Pp Sand Zeta Ua Va Aice Casfco2 
+        % <----- Store
+
+        % -----> 2D
+        if SWITCH.zeta
+            OutValue.Zeta = Store.Zeta;
+        end
+        if SWITCH.ua
+            OutValue.Ua = Store.Ua;
+        end
+        if SWITCH.va
+            OutValue.Va = Store.Va;
+        end
+        if SWITCH.aice
+            OutValue.Aice = Store.Aice;
+        end
+        if SWITCH.casfco2
+            OutValue.Casfco2 = Store.Casfco2;
+        end
+        % <----- 2D
+
+        % -----> sgm_level
+        if SWITCH.out_sgm_level 
+            Level_sgm  = int64(Level_sgm);
+            if min(Level_sgm) < 1 || max(Level_sgm) > size(Deplay,3)
+                error('Level_sgm exceed the range of sigma level')
+            end
+            if SWITCH.temp
+                OutValue.Temp_sgm = Store.Temp_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.salt
+                OutValue.Salt_sgm = Store.Salt_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.u
+                OutValue.U_sgm = Store.U_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.v
+                OutValue.V_sgm = Store.V_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.w
+                OutValue.W_sgm = Store.W_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.ph
+                OutValue.Ph_sgm = Store.Ph_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.no3
+                OutValue.No3_sgm = Store.No3_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.pco2
+                OutValue.Pco2_sgm = Store.Pco2_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.chlo
+                OutValue.Chlo_sgm = Store.Chlo_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.zp
+                OutValue.Zp_sgm = Store.Zp_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.pp
+                OutValue.Pp_sgm = Store.Pp_sgm(:,:,Level_sgm,:);
+            end
+            if SWITCH.sand
+                OutValue.Sand_sgm = Store.Sand_sgm(:,:,Level_sgm,:);
+            end
+            Delement.Siglay = Store.Siglay(:,:,Level_sgm);
+            Delement.Bathy  = Store.Depth_xy;
+        end
+        % <----- sgm_level
+        % -----> std_level
+        if SWITCH.out_std_level  % 是否转换到标准层
+            file_weight_vertical = para_conf.WeightFile_vertical;
+            size_2d_to_1d_ll = size(Store.Deplay,1)*size(Store.Deplay,2);  % num of lon*lat
+
+            if SWITCH.make_weight
+                tt4 = tic;
+                % Weight_vertical = interp_vertical_calc_weight(f_nc.deplay,repmat(Depth_std,f_nc.node,1));
+                depth_2d_to_1d = reshape(Store.Deplay,size_2d_to_1d_ll,[]);
+                F_noNaN = find(~isnan(depth_2d_to_1d(:,1)),1);  % 找到第一个不是NaN的数字，否则interp_vertical_calc_weight会报错
+                if isempty(F_noNaN)
+                    osprint2('ERROR', 'Depth is all NaN'); error('Depth is all NaN')
+                elseif F_noNaN ~= 1
+                    depth_2d_to_1d = [depth_2d_to_1d(F_noNaN:end,:); depth_2d_to_1d(1:F_noNaN-1,:)];
+                end
+                Weight_vertical = interp_vertical_calc_weight(depth_2d_to_1d,repmat(Store.Depth_std,size_2d_to_1d_ll,1)); 
+                Weight_vertical = structfun(@(x) flip2_to_recover(x,F_noNaN), Weight_vertical, 'UniformOutput', false);  % 顺序转换回去
+                makedirs(fileparts(file_weight_vertical));rmfiles(file_weight_vertical); clear F_noNaN depth_2d_to_1d
+                save(file_weight_vertical, 'Weight_vertical','-v7.3','-nocompression');
+                osprint2('INFO', [pad('Calculate vertical weight costs ',Text_len,'right'),'--> ', num2str(toc(tt4)),' s'])
+            else
+                Weight_vertical = load(file_weight_vertical).Weight_vertical;
+            end
+            clear file_weight_vertical size_2d_to_1d_ll tt4
+
+            fields = fieldnames(Weight_vertical);
+            for i = 1: length(fields)
+                Weight_vertical.(fields{i}) = repmat(Weight_vertical.(fields{i}),length(Ttimes.time),1);
+                % Weight_vertical.id1 = repmat(Weight_vertical.id1,length(?),1);
+            end
+            clear fields i
+            
+            if SWITCH.temp
+                Temp_xytz1 = permute(Store.Temp_sgm,[1,2,4,3]);
+                Temp_xytz_l2 = reshape(Temp_xytz1,[],size(Temp_xytz1,4));
+                Temp_xytz_l2 = interp_vertical_via_weight(Temp_xytz_l2,Weight_vertical);
+                Temp_xytz2 = reshape(Temp_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.Temp_std = permute(Temp_xytz2,[1,2,4,3]); clear Temp_xytz* Temp_xytz_l*
+            end
+            if SWITCH.salt
+                Salt_xytz1 = permute(Store.Salt_sgm,[1,2,4,3]);
+                Salt_xytz_l2 = reshape(Salt_xytz1,[],size(Salt_xytz1,4));
+                Salt_xytz_l2 = interp_vertical_via_weight(Salt_xytz_l2,Weight_vertical);
+                Salt_xytz2 = reshape(Salt_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.Salt_std = permute(Salt_xytz2,[1,2,4,3]); clear Salt_xytz* Salt_xytz_l*
+            end
+            if SWITCH.u
+                U_xytz1 = permute(Store.U_sgm,[1,2,4,3]);
+                U_xytz_l2 = reshape(U_xytz1,[],size(U_xytz1,4));
+                U_xytz_l2 = interp_vertical_via_weight(U_xytz_l2,Weight_vertical);
+                U_xytz2 = reshape(U_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.U_std = permute(U_xytz2,[1,2,4,3]); clear U_xytz* U_xytz_l*
+            end
+            if SWITCH.v
+                V_xytz1 = permute(Store.V_sgm,[1,2,4,3]);
+                V_xytz_l2 = reshape(V_xytz1,[],size(V_xytz1,4));
+                V_xytz_l2 = interp_vertical_via_weight(V_xytz_l2,Weight_vertical);
+                V_xytz2 = reshape(V_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.V_std = permute(V_xytz2,[1,2,4,3]); clear V_xytz* V_xytz_l*
+            end
+            if SWITCH.w
+                W_xytz1 = permute(Store.W_sgm,[1,2,4,3]);
+                W_xytz_l2 = reshape(W_xytz1,[],size(W_xytz1,4));
+                W_xytz_l2 = interp_vertical_via_weight(W_xytz_l2,Weight_vertical);
+                W_xytz2 = reshape(W_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.W_std = permute(W_xytz2,[1,2,4,3]); clear W_xytz* W_xytz_l*
+            end
+            if SWITCH.ph
+                Ph_xytz1 = permute(Store.Ph_sgm,[1,2,4,3]);
+                Ph_xytz_l2 = reshape(Ph_xytz1,[],size(Ph_xytz1,4));
+                Ph_xytz_l2 = interp_vertical_via_weight(Ph_xytz_l2,Weight_vertical);
+                Ph_xytz2 = reshape(Ph_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.Ph_std = permute(Ph_xytz2,[1,2,4,3]); clear Ph_xytz* Ph_xytz_l*
+            end
+            if SWITCH.no3
+                No3_xytz1 = permute(Store.No3_sgm,[1,2,4,3]);
+                No3_xytz_l2 = reshape(No3_xytz1,[],size(No3_xytz1,4));
+                No3_xytz_l2 = interp_vertical_via_weight(No3_xytz_l2,Weight_vertical);
+                No3_xytz2 = reshape(No3_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.No3_std = permute(No3_xytz2,[1,2,4,3]); clear No3_xytz* No3_xytz_l*
+            end
+            if SWITCH.pco2
+                Pco2_xytz1 = permute(Store.Pco2_sgm,[1,2,4,3]);
+                Pco2_xytz_l2 = reshape(Pco2_xytz1,[],size(Pco2_xytz1,4));
+                Pco2_xytz_l2 = interp_vertical_via_weight(Pco2_xytz_l2,Weight_vertical);
+                Pco2_xytz2 = reshape(Pco2_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.Pco2_std = permute(Pco2_xytz2,[1,2,4,3]); clear Pco2_xytz* Pco2_xytz_l*
+            end
+            if SWITCH.chlo
+                Chlo_xytz1 = permute(Store.Chlo_sgm,[1,2,4,3]);
+                Chlo_xytz_l2 = reshape(Chlo_xytz1,[],size(Chlo_xytz1,4));
+                Chlo_xytz_l2 = interp_vertical_via_weight(Chlo_xytz_l2,Weight_vertical);
+                Chlo_xytz2 = reshape(Chlo_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.Chlo_std = permute(Chlo_xytz2,[1,2,4,3]); clear Chlo_xytz* Chlo_xytz_l*
+            end
+            if SWITCH.zp
+                Zp_xytz1 = permute(Store.Zp_sgm,[1,2,4,3]);
+                Zp_xytz_l2 = reshape(Zp_xytz1,[],size(Zp_xytz1,4));
+                Zp_xytz_l2 = interp_vertical_via_weight(Zp_xytz_l2,Weight_vertical);
+                Zp_xytz2 = reshape(Zp_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.Zp_std = permute(Zp_xytz2,[1,2,4,3]); clear Zp_xytz* Zp_xytz_l*
+            end
+            if SWITCH.pp
+                Pp_xytz1 = permute(Store.Pp_sgm,[1,2,4,3]);
+                Pp_xytz_l2 = reshape(Pp_xytz1,[],size(Pp_xytz1,4));
+                Pp_xytz_l2 = interp_vertical_via_weight(Pp_xytz_l2,Weight_vertical);
+                Pp_xytz2 = reshape(Pp_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.Pp_std = permute(Pp_xytz2,[1,2,4,3]); clear Pp_xytz* Pp_xytz_l*
+            end
+            if SWITCH.sand
+                Sand_xytz1 = permute(Store.Sand_sgm,[1,2,4,3]);
+                Sand_xytz_l2 = reshape(Sand_xytz1,[],size(Sand_xytz1,4));
+                Sand_xytz_l2 = interp_vertical_via_weight(Sand_xytz_l2,Weight_vertical);
+                Sand_xytz2 = reshape(Sand_xytz_l2,[length(Lon),length(Lat),length(Ttimes.time),length(Depth_std)]);
+                OutValue.Sand_std = permute(Sand_xytz2,[1,2,4,3]); clear Sand_xytz* Sand_xytz_l*
+            end     
+            clear Weight_vertical
+            Delement.Depth_std  = Store.Depth_std;
+        end
+        % <----- std_level
+        % Temp Salt U V W Zeta ua va Depth Aice Ph No3 Pco2 Chlo Casfco2 Zp Pp Sand --> std_level
         % -----> avg_level
         if SWITCH.out_avg_level
             for idep = 1: size(Avg_depth,1)
-                Deplev_use = Deplev;
+                Deplev_use = Store.Deplev;
                 Deplev_use(Deplev_use < min(Avg_depth(idep,:))) = NaN;
                 Deplev_use(Deplev_use > max(Avg_depth(idep,:))) = NaN;
                 Deplev_interval = Deplev_use(:,:,2:end) - Deplev_use(:,:,1:end-1);  % 两层的差，每层的厚度
                 sum_depth_avg = sum(Deplev_interval,3,"omitnan");
                 coefficient = Deplev_interval./sum_depth_avg;
+                % Store为原始sgm层数，OutValue中是输出的
                 if SWITCH.temp
-                    Velement.Temp_avg(:,:,idep,:)= sum(coefficient.*VAelement.Temp_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.Temp_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.Temp_avg,3),1]);  % 1800*3600*2*24
-                    Velement.Temp_avg(land_mask) = NaN;
+                    OutValue.Temp_avg(:,:,idep,:)= sum(coefficient.*Store.Temp_sgm,3,"omitnan");
+                    land_mask = isnan(Store.Temp_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.Temp_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.Temp_avg(land_mask) = NaN;
                 end
                 if SWITCH.salt
-                    Velement.Salt_avg(:,:,idep,:)= sum(coefficient.*VAelement.Salt_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.Salt_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.Salt_avg,3),1]);  % 1800*3600*2*24
-                    Velement.Salt_avg(land_mask) = NaN;
+                    OutValue.Salt_avg(:,:,idep,:)= sum(coefficient.*Store.Salt_sgm,3,"omitnan");
+                    land_mask = isnan(Store.Salt_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.Salt_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.Salt_avg(land_mask) = NaN;
                 end
                 if SWITCH.u
-                    Velement.U_avg(:,:,idep,:)= sum(coefficient.*VAelement.U_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.U_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.U_avg,3),1]);  % 1800*3600*2*24
-                    Velement.U_avg(land_mask) = NaN;
+                    OutValue.U_avg(:,:,idep,:)= sum(coefficient.*Store.U_sgm,3,"omitnan");
+                    land_mask = isnan(Store.U_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.U_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.U_avg(land_mask) = NaN;
                 end
                 if SWITCH.v
-                    Velement.V_avg(:,:,idep,:)= sum(coefficient.*VAelement.V_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.V_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.V_avg,3),1]);  % 1800*3600*2*24
-                    Velement.V_avg(land_mask) = NaN;
+                    OutValue.V_avg(:,:,idep,:)= sum(coefficient.*Store.V_sgm,3,"omitnan");
+                    land_mask = isnan(Store.V_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.V_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.V_avg(land_mask) = NaN;
                 end
                 if SWITCH.w
-                    Velement.W_avg(:,:,idep,:)= sum(coefficient.*VAelement.W_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.W_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.W_avg,3),1]);  % 1800*3600*2*24
-                    Velement.W_avg(land_mask) = NaN;
+                    OutValue.W_avg(:,:,idep,:)= sum(coefficient.*Store.W_sgm,3,"omitnan");
+                    land_mask = isnan(Store.W_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.W_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.W_avg(land_mask) = NaN;
                 end
                 if SWITCH.ph
-                    Velement.Ph_avg(:,:,idep,:)= sum(coefficient.*VAelement.Ph_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.Ph_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.Ph_avg,3),1]);  % 1800*3600*2*24
-                    Velement.Ph_avg(land_mask) = NaN;
+                    OutValue.Ph_avg(:,:,idep,:)= sum(coefficient.*Store.Ph_sgm,3,"omitnan");
+                    land_mask = isnan(Store.Ph_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.Ph_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.Ph_avg(land_mask) = NaN;
                 end
                 if SWITCH.no3
-                    Velement.No3_avg(:,:,idep,:)= sum(coefficient.*VAelement.No3_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.No3_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.No3_avg,3),1]);  % 1800*3600*2*24
-                    Velement.No3_avg(land_mask) = NaN;
+                    OutValue.No3_avg(:,:,idep,:)= sum(coefficient.*Store.No3_sgm,3,"omitnan");
+                    land_mask = isnan(Store.No3_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.No3_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.No3_avg(land_mask) = NaN;
                 end
                 if SWITCH.pco2
-                    Velement.Pco2_avg(:,:,idep,:)= sum(coefficient.*VAelement.Pco2_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.Pco2_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.Pco2_avg,3),1]);  % 1800*3600*2*24
-                    Velement.Pco2_avg(land_mask) = NaN;
+                    OutValue.Pco2_avg(:,:,idep,:)= sum(coefficient.*Store.Pco2_sgm,3,"omitnan");
+                    land_mask = isnan(Store.Pco2_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.Pco2_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.Pco2_avg(land_mask) = NaN;
                 end
                 if SWITCH.chlo
-                    Velement.Chlo_avg(:,:,idep,:)= sum(coefficient.*VAelement.Chlo_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.Chlo_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.Chlo_avg,3),1]);  % 1800*3600*2*24
-                    Velement.Chlo_avg(land_mask) = NaN;
+                    OutValue.Chlo_avg(:,:,idep,:)= sum(coefficient.*Store.Chlo_sgm,3,"omitnan");
+                    land_mask = isnan(Store.Chlo_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.Chlo_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.Chlo_avg(land_mask) = NaN;
                 end
                 if SWITCH.zp
-                    Velement.Zp_avg(:,:,idep,:)= sum(coefficient.*VAelement.Zp_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.Zp_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.Zp_avg,3),1]);  % 1800*3600*2*24
-                    Velement.Zp_avg(land_mask) = NaN;
+                    OutValue.Zp_avg(:,:,idep,:)= sum(coefficient.*Store.Zp_sgm,3,"omitnan");
+                    land_mask = isnan(Store.Zp_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.Zp_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.Zp_avg(land_mask) = NaN;
                 end
                 if SWITCH.pp
-                    Velement.Pp_avg(:,:,idep,:)= sum(coefficient.*VAelement.Pp_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.Pp_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.Pp_avg,3),1]);  % 1800*3600*2*24
-                    Velement.Pp_avg(land_mask) = NaN;
+                    OutValue.Pp_avg(:,:,idep,:)= sum(coefficient.*Store.Pp_sgm,3,"omitnan");
+                    land_mask = isnan(Store.Pp_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.Pp_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.Pp_avg(land_mask) = NaN;
                 end
                 if SWITCH.sand
-                    Velement.Sand_avg(:,:,idep,:)= sum(coefficient.*VAelement.Sand_sgm,3,"omitnan");
-                    land_mask = isnan(VAelement.Sand_sgm(:,:,1,:));  % 1800*3600*1*24
-                    land_mask = repmat(land_mask,[1,1,size(Velement.Sand_avg,3),1]);  % 1800*3600*2*24
-                    Velement.Sand_avg(land_mask) = NaN;
+                    OutValue.Sand_avg(:,:,idep,:)= sum(coefficient.*Store.Sand_sgm,3,"omitnan");
+                    land_mask = isnan(Store.Sand_sgm(:,:,1,:));  % 1800*3600*1*24
+                    land_mask = repmat(land_mask,[1,1,size(OutValue.Sand_avg,3),1]);  % 1800*3600*2*24
+                    OutValue.Sand_avg(land_mask) = NaN;
                 end
                 clear Deplev_use Deplev_interval sum_depth_avg coefficient close land_mask idep
             end
             Delement.Depth_avg = Avg_depth;
         end
-        clear Deplev
-        if SWITCH.out_sgm_level && ~SWITCH.out_avg_level
-            if SWITCH.temp
-                VAelement = rmfield(VAelement, 'Temp_sgm');
-            end
-            if SWITCH.salt
-                VAelement = rmfield(VAelement, 'Salt_sgm');
-            end
-            if SWITCH.u
-                VAelement = rmfield(VAelement, 'U_sgm');
-            end
-            if SWITCH.v
-                VAelement = rmfield(VAelement, 'V_sgm');
-            end
-            if SWITCH.w
-                VAelement = rmfield(VAelement, 'W_sgm');
-            end
-            if SWITCH.ph
-               VAelement = rmfield(VAelement, 'pH_sgm');
-            end
-            if SWITCH.no3
-                VAelement = rmfield(VAelement, 'No3_sgm');
-            end
-            if SWITCH.pco2
-                VAelement = rmfield(VAelement, 'Pco2_sgm');
-            end
-            if SWITCH.chlo
-                VAelement = rmfield(VAelement, 'Chlo_sgm');
-            end
-            if SWITCH.zp
-                VAelement = rmfield(VAelement, 'Zp_sgm');
-            end
-            if SWITCH.pp
-                VAelement = rmfield(VAelement, 'Pp_sgm');
-            end
-            if SWITCH.sand
-               VAelement = rmfield(VAelement, 'Sand_sgm');
-            end
-        end
         % <----- avg_level
-        % -----> std_level
-        if SWITCH.out_std_level
-            if SWITCH.temp
-                Velement.Temp_std = Temp; 
-            end
-            if SWITCH.salt
-                Velement.Salt_std = Salt;
-            end
-            if SWITCH.u
-                Velement.U_std = U; 
-            end
-            if SWITCH.v
-                Velement.V_std = V;
-            end
-            if SWITCH.w
-                Velement.W_std = W; 
-            end
-            if SWITCH.ph
-                Velement.Ph_std = Ph;
-            end
-            if SWITCH.no3
-                Velement.No3_std = No3;
-            end
-            if SWITCH.pco2
-                Velement.Pco2_std = Pco2;
-            end
-            if SWITCH.chlo
-                Velement.Chlo_std = Chlo;
-            end
-            if SWITCH.zp
-                Velement.Zp_std = Zp;
-            end
-            if SWITCH.pp
-                Velement.Pp_std = Pp;
-            end
-            if SWITCH.sand
-                Velement.Sand_std = Sand;
-            end
-            Delement.Depth_std = Depth_std;
-        end
-        clear Temp Salt U V W Zeta Aice Ph No3 Pco2 Chlo Casfco2 Zp Pp Sand
-        % <----- std_level
-        % -----> sgm_level
-        if SWITCH.out_sgm_level
-            Level_sgm  = int64(Level_sgm);
-            if min(Level_sgm) < 1 || max(Level_sgm) > size(Depth,3)
-                error('Level_sgm exceed the range of sigma level')
-            end
-            if SWITCH.temp
-                Velement.Temp_sgm = VAelement.Temp_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.salt
-                Velement.Salt_sgm = VAelement.Salt_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.u
-                Velement.U_sgm = VAelement.U_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.v
-                Velement.V_sgm = VAelement.V_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.w
-                Velement.W_sgm = VAelement.W_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.ph
-                Velement.Ph_sgm = VAelement.Ph_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.no3
-                Velement.No3_sgm = VAelement.No3_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.pco2
-                Velement.Pco2_sgm = VAelement.Pco2_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.chlo
-                Velement.Chlo_sgm = VAelement.Chlo_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.zp
-                Velement.Zp_sgm = VAelement.Zp_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.pp
-                Velement.Pp_sgm = VAelement.Pp_sgm(:,:,Level_sgm,:);
-            end
-            if SWITCH.sand
-                Velement.Sand_sgm = VAelement.Sand_sgm(:,:,Level_sgm,:);
-            end
-            Delement.Siglay = Siglay(:,:,Level_sgm); clear Siglay
-
-            Delement.Bathy = Depth_origin_to_wrf_grid;
-        end
-        clear VAelement
-        % <----- sgm_level
-
         clear ncfile
 
         %% mask vertical data
@@ -950,10 +836,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             file_mask = para_conf.MaskVerticalmatFile;
             if SWITCH.make_mask
                 tt5 = tic;
-                Standard_depth_mask = make_mask_depth_data(Depth_origin_to_wrf_grid, Delement.Depth_std); 
-                [~, Standard_depth_mask] = ll_to_ll(Lon, Standard_depth_mask);
-                rmfiles(file_mask)
-                makedirs(fileparts(file_mask));
+                Standard_depth_mask = make_mask_depth_data(Store.Depth_xy, Store.Depth_std); 
+                makedirs(fileparts(file_mask)); rmfiles(file_mask)
                 save(file_mask,'Standard_depth_mask','-v7.3','-nocompression');
                 osprint2('INFO', [pad('Calculate depth mask costs ',Text_len,'right'),'--> ', num2str(toc(tt5)),' s'])
             else
@@ -961,14 +845,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             end
             clear file_mask tt5
             if SWITCH.vertical_mask
-                [VAelement,VBelement] = separate_var_by_name(Velement,'_std');
-                VAelement = structfun(@(x) mask_depth_data(Standard_depth_mask, x), VAelement, 'UniformOutput', false);
-                Velement = merge_struct(VAelement,VBelement);
-                clear VAelement VBelement
+                [OutValue_std,OutValue_other] = separate_var_by_name(OutValue,'_std');clear OutValue
+                OutValue_std = structfun(@(x) mask_depth_data(Standard_depth_mask, x), OutValue_std, 'UniformOutput', false);
+                OutValue = merge_struct(OutValue_std,OutValue_other);
+                clear OutValue_std OutValue_other
                 clear Standard_depth_mask
             end
         end
-        clear Depth_origin_to_wrf_grid
 
         %% 岸线侵蚀
         if SWITCH.erosion
@@ -980,15 +863,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             while im < num_erosion
                 osprint2('INFO',[pad('Erosion coastline counts ',Text_len,'right'),'--> ', num2str(im+1)]);
                 if SWITCH.make_erosion
-                    fields_Velement = fieldnames(Velement);
+                    fields = fieldnames(OutValue);
                     if im == 0
-                        % I_D_1 = erosion_coast_cal_id(Lon, Lat, Velement.Temp_sgm, 16, 5);
-                        I_D_1 = erosion_coast_cal_id(lon_dst, lat_dst, Velement.(fields_Velement{1}), 16, 5);
+                        % I_D_1 = erosion_coast_cal_id(Lon, Lat, OutValue.Temp_sgm, 16, 5);
+                        I_D_1 = erosion_coast_cal_id(lon_dst, lat_dst, OutValue.(fields{1}), 16, 5);
                         rmfiles(file_erosion);
                         save(file_erosion, 'I_D_1', '-v7.3','-nocompression');
                     else
-                        % I_D_2 = erosion_coast_cal_id(lon_dst, lat_dst, Velement.(fields_Velement{1}), 16, 5);
-                        eval( ['I_D_',num2str(im+1),' = erosion_coast_cal_id(lon_dst, lat_dst, Velement.',fields_Velement{1},', 16, 5);']);
+                        % I_D_2 = erosion_coast_cal_id(lon_dst, lat_dst, OutValue.(fields{1}), 16, 5);
+                        eval( ['I_D_',num2str(im+1),' = erosion_coast_cal_id(lon_dst, lat_dst, OutValue.',fields{1},', 16, 5);']);
                         % save(file_erosion, 'I_D_2', '-append','-nocompression');
                         eval(['save(file_erosion, ''I_D_',num2str(im+1),''', ''-append'',''-nocompression'');']);
                     end
@@ -996,13 +879,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     % I_D_1 = load(file_erosion).I_D_1;
                     eval(['I_D_',num2str(im+1),' = load(file_erosion).I_D_',num2str(im+1),';']);
                 end
-                [VAelement,Velement,dimsMax] = separate_var_gt_nd(Velement);
-                % VAelement = structfun(@(x) erosion_coast_via_id(I_D_1, x,'cycle_dim',dimsMax), VAelement, 'UniformOutput', false);
-                eval(['VAelement = structfun(@(x) erosion_coast_via_id(I_D_',num2str(im+1),', x,''cycle_dim'',',num2str(dimsMax),'), VAelement, ''UniformOutput'', false);']);
-                Velement = merge_struct(Velement,VAelement); clear VAelement
+                [OutValue_more_dim,OutValue_less_dim,dimsMax] = separate_var_gt_nd(OutValue); clear OutValue
+                % OutValue = structfun(@(x) erosion_coast_via_id(I_D_1, x,'cycle_dim',dimsMax), OutValue_more_dim, 'UniformOutput', false);
+                eval(['OutValue_more_dim = structfun(@(x) erosion_coast_via_id(I_D_',num2str(im+1),', x,''cycle_dim'',',num2str(dimsMax),'), OutValue_more_dim, ''UniformOutput'', false);']);
+                OutValue = merge_struct(OutValue_more_dim, OutValue_less_dim);
                 im = im+1;
             end
-            clear I_D_* file_erosion fields_Velement dimsMax im num_erosion
+            clear I_D_* file_erosion fields dimsMax im num_erosion  OutValue_more_dim  OutValue_less_dim
         end
 
         %% global attribute start date
@@ -1013,111 +896,107 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             osprint2('WARNING','Stopping writing netcdf file!')
             keyboard
         end
+        clear Store
 
         %% 写入
         if SWITCH.u || SWITCH.v || SWITCH.w
             file = fullfile(OutputDir.curr,['current',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_current,Velement] = getfields_key_from_struct(Velement,{'U_std','U_sgm','U_avg','V_std','V_sgm','V_avg','W_std','W_sgm','W_avg'});
-            netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement_current,GA_start_date,'conf',para_conf);
-            clear Velement_current ncid file
+            [current_Struct,OutValue] = getfields_key_from_struct(OutValue,{'U_std','U_sgm','U_avg','V_std','V_sgm','V_avg','W_std','W_sgm','W_avg','Ua','Va'});
+            netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,current_Struct,GA_start_date,'conf',para_conf);
+            clear current_Struct ncid file
         end
 
         if SWITCH.temp
             file = fullfile(OutputDir.temp,['temperature',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_temperature,Velement] = getfields_key_from_struct(Velement,{'Temp_std','Temp_sgm','Temp_avg'});
-            netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,Velement_temperature,GA_start_date,'conf',para_conf)
-            clear Velement_temperature ncid file
+            [temperature_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Temp_std','Temp_sgm','Temp_avg'});
+            netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,temperature_Struct,GA_start_date,'conf',para_conf)
+            clear temperature_Struct ncid file
         end
 
         if SWITCH.salt
             file = fullfile(OutputDir.salt,['salinity',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_salt,Velement] = getfields_key_from_struct(Velement,{'Salt_std','Salt_sgm','Salt_avg'});
-            netcdf_fvcom.wrnc_salt(ncid,Lon,Lat,Delement,time,Velement_salt,GA_start_date,'conf',para_conf);
-            clear Velement_salt ncid file
+            [salt_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Salt_std','Salt_sgm','Salt_avg'});
+            netcdf_fvcom.wrnc_salt(ncid,Lon,Lat,Delement,time,salt_Struct,GA_start_date,'conf',para_conf);
+            clear salt_Struct ncid file
         end
 
-        if SWITCH.adt
-            file = fullfile(OutputDir.adt,['adt',OutputRes,'.nc']);
+        if SWITCH.zeta
+            file = fullfile(OutputDir.zeta,['adt',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_adt,Velement] = getfields_key_from_struct(Velement,{'Zeta'});
-            netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Velement_adt.Zeta,GA_start_date,'conf',para_conf);
-            clear Velement_adt ncid file
+            [zeta_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Zeta'});
+            netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,zeta_Struct.Zeta,GA_start_date,'conf',para_conf);
+            clear zeta_Struct ncid file
         end
 
         if SWITCH.aice
             file = fullfile(OutputDir.ice,['ice',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_ice,Velement] = getfields_key_from_struct(Velement,{'Aice'});
-            netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Velement_ice.Aice,GA_start_date,'conf',para_conf);
-            clear Velement_ice ncid file
+            [aice_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Aice'});
+            netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,aice_Struct.Aice,GA_start_date,'conf',para_conf);
+            clear aice_Struct ncid file
         end
 
         if SWITCH.ph
             file = fullfile(OutputDir.ph,['ph',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_ph,Velement] = getfields_key_from_struct(Velement,{'Ph_std','Ph_sgm','Ph_avg'});
-            netcdf_fvcom.wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,Velement_ph,GA_start_date,'conf',para_conf);
-            clear Velement_ph ncid file
+            [ph_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Ph_std','Ph_sgm','Ph_avg'});
+            netcdf_fvcom.wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,ph_Struct,GA_start_date,'conf',para_conf);
+            clear ph_Struct ncid file
         end
         if SWITCH.no3
             file = fullfile(OutputDir.no3,['no3',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_no3,Velement] = getfields_key_from_struct(Velement,{'No3_std','No3_sgm','No3_avg'});
-            netcdf_fvcom.wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,Velement_no3,GA_start_date,'conf',para_conf);
-            clear Velement_no3 ncid file
+            [no3_Struct,OutValue] = getfields_key_from_struct(OutValue,{'No3_std','No3_sgm','No3_avg'});
+            netcdf_fvcom.wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,no3_Struct,GA_start_date,'conf',para_conf);
+            clear no3_Struct ncid file
         end
         if SWITCH.pco2
             file = fullfile(OutputDir.pco2,['pco2',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [Velement_pco2,Velement] = getfields_key_from_struct(Velement,{'Pco2_std','Pco2_sgm','Pco2_avg'});
-            netcdf_fvcom.wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,Velement_pco2,GA_start_date,'conf',para_conf);
-            clear Velement_pco2 ncid file
+            [pco2_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Pco2_std','Pco2_sgm','Pco2_avg'});
+            netcdf_fvcom.wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,pco2_Struct,GA_start_date,'conf',para_conf);
+            clear pco2_Struct ncid file
         end
         if SWITCH.chlo
             file = fullfile(OutputDir.chlo,['chlorophyll',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_chlo,Velement] = rmfields_key_from_struct(Velement,{'Casfco2','Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
-            [Velement_chlo,Velement] = getfields_key_from_struct(Velement,{'Chlo_std','Chlo_sgm','Chlo_avg'});
-            netcdf_fvcom.wrnc_chlo_ersem(ncid,Lon,Lat,Delement,time,Velement_chlo,GA_start_date,'conf',para_conf);
-            clear Velement_chlo ncid file
+            [chlo_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Chlo_std','Chlo_sgm','Chlo_avg'});
+            netcdf_fvcom.wrnc_chlo_ersem(ncid,Lon,Lat,Delement,time,chlo_Struct,GA_start_date,'conf',para_conf);
+            clear chlo_Struct ncid file
         end
         if SWITCH.casfco2
             file = fullfile(OutputDir.casfco2,['casfco2',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_casfco2,Velement] = rmfields_key_from_struct(Velement,{'Zp_std','Zp_sgm','Zp_avg','Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
-            [Velement_casfco2,Velement] = getfields_key_from_struct(Velement,{'Casfco2'});
-            netcdf_fvcom.wrnc_casfco2_ersem(ncid,Lon,Lat,time,Velement_casfco2.Casfco2,GA_start_date,'conf',para_conf);
-            clear Velement_casfco2 ncid file
+            [casfco2_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Casfco2'});
+            netcdf_fvcom.wrnc_casfco2_ersem(ncid,Lon,Lat,time,casfco2_Struct.Casfco2,GA_start_date,'conf',para_conf);
+            clear casfco2_Struct ncid file
         end
         if SWITCH.zp
             file = fullfile(OutputDir.zp,['zooplankton',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_zp,Velement] = rmfields_key_from_struct(Velement,{'Pp_std','Pp_sgm','Pp_avg','Sand_std','Sand_sgm','Sand_avg'});
-            [Velement_zp,Velement] = getfields_key_from_struct(Velement,{'Zp_std','Zp_sgm','Zp_avg'});
-            netcdf_fvcom.wrnc_zp_nemuro(ncid,Lon,Lat,Delement,time,Velement_zp,GA_start_date,'conf',para_conf);
-            clear Velement_zp ncid file
+            [zp_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Zp_std','Zp_sgm','Zp_avg'});
+            netcdf_fvcom.wrnc_zp_nemuro(ncid,Lon,Lat,Delement,time,zp_Struct,GA_start_date,'conf',para_conf);
+            clear zp_Struct ncid file
         end
         if SWITCH.pp
             file = fullfile(OutputDir.pp,['phytoplankton',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_pp,Velement] = rmfields_key_from_struct(Velement,{'Sand_std','Sand_sgm','Sand_avg'});
-            [Velement_pp,Velement] = getfields_key_from_struct(Velement,{'Pp_std','Pp_sgm','Pp_avg'});
-            netcdf_fvcom.wrnc_pp_nemuro(ncid,Lon,Lat,Delement,time,Velement_pp,GA_start_date,'conf',para_conf);
-            clear Velement_pp ncid file
+            [pp_struct,OutValue] = getfields_key_from_struct(OutValue,{'Pp_std','Pp_sgm','Pp_avg'});
+            netcdf_fvcom.wrnc_pp_nemuro(ncid,Lon,Lat,Delement,time,pp_struct,GA_start_date,'conf',para_conf);
+            clear pp_struct ncid file
         end
         if SWITCH.sand
             file = fullfile(OutputDir.sand,['sand',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            % [Velement_sand,Velement] = rmfields_key_from_struct(Velement,{''});
-            [Velement_sand,Velement] = getfields_key_from_struct(Velement,{'Pp_std','Pp_sgm','Pp_avg'});
-            netcdf_fvcom.wrnc_sand_nemuro(ncid,Lon,Lat,Delement,time,Velement_sand,GA_start_date,'conf',para_conf);
+            [sand_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Pp_std','Pp_sgm','Pp_avg'});
+            netcdf_fvcom.wrnc_sand_nemuro(ncid,Lon,Lat,Delement,time,sand_Struct,GA_start_date,'conf',para_conf);
             clear Velement_csand ncid file
         end
 
-        clear Lon Lat Depth time TIME TIME_* Ttimes Velement
+        clear Lon Lat Deplay time TIME TIME_* Ttimes OutValue
         clear time_filename
         clear OutputDir_*
         clear GA_start_date
@@ -1204,7 +1083,7 @@ function [Struct1,Struct2] = separate_var_by_name(structIn, txt)
     Struct1 = struct();
     Struct2 = struct();
 
-    % 直接遍历并检查字段名是否包含 '_std'
+    % 直接遍历并检查字段名是否包含 'txt'
     for field = fieldnames(structIn)'
         if contains(field{1}, txt)
             Struct1.(field{1}) = structIn.(field{1});

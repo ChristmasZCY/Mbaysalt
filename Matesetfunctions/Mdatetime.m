@@ -16,6 +16,7 @@ classdef Mdatetime
     %       ****-**-**:     Created, by Christmas;
     %       2024-04-03:     Added datenum, by Christmas
     %       2024-04-03:     Added Mdatetime(), by Christmas
+    %       2024-04-04:     Rewrite length , by Christmas
     % =================================================================================================================
     % Example:
     %       Ttime = Mdatetime(Times)
@@ -86,6 +87,10 @@ classdef Mdatetime
             obj.TIME_str = string(obj.TIME);
             obj.TIME_char = char(obj.TIME);
             
+        end
+
+        function len = length(obj)
+            len = length(obj.time);
         end
 
         %% 当某一个属性被更改，其余一起更改(已废弃)

@@ -202,9 +202,9 @@ function [FunctionPath,path] = Cmakepath
     path = {path};
 end
 
-function STATUS = Caddpath(Path)
+function Caddpath(Path)
     cellfun(@addpath, Path);
-    STATUS = Javaaddpath();  % add java path
+    Javaaddpath();  % add java path
 end
 
 
@@ -220,9 +220,9 @@ function Crmpath(Path)
     warning('on',identifier);
 end
 
-function STATUS = Javaaddpath()
+function Javaaddpath()
     if exist('setup_nctoolbox_java','file') == 2
-        STATUS = fixed_setup_nctoolbox_java();
+        % STATUS = fixed_setup_nctoolbox_java();
         setup_nctoolbox_java()
     end
 end
