@@ -54,3 +54,7 @@
 	path = Exfunctions/inpolygons-pkg
 	url = https://github.com/kakearney/inpolygons-pkg.git
 
+[submodule "Exfunctions/htool"]
+	path = Exfunctions/htool
+	url = https://github.com/SiqiLiOcean/htool.git
+

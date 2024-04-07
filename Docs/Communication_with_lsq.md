@@ -47,5 +47,7 @@
 35. MITgcm的exf包中的apressure为WRF中的PSFC
 36. [swdown*(1-albedo)+glw-0.95*5.67*10-8*(tsk)**4      这个就是计算净辐射的公式，我的比辐射率取为0.95](https://bbs.06climate.com/forum.php?mod=viewthread&tid=18079)
 37. [MITgcm同时打开mnc和二进制](https://mitgcm.readthedocs.io/en/latest/getting_started/getting_started.html#input-output-files) 在`data`的`PARM03`部分添加`outputTypesInclusive=.TRUE.,`
+38. 热启动还能导入网格吗 --> 不能
+39. 为什么会采用UTM，因为双精度会计算的慢，单精度如果经纬度的话精确度低，所以会采用UTM
 
           

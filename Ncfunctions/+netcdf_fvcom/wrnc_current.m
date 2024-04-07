@@ -1,31 +1,32 @@
-function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin)
+function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,varargin)
     %       This function is used to write the current data u/v/w(optional) to the netcdf file at std or sigma levels.
     % =================================================================================================================
     % Parameter:
-    %       ncid:            netcdf file id          || required: True  || type: int    || format: 1
-    %       Lon:             longitude               || required: True  || type: double || format: [120.5, 121.5]
-    %       Lat:             latitude                || required: True  || type: double || format: [30.5, 31.5]
-    %       Delement:        depth struct            || required: True  || type: struct || format: struct
-    %           .Depth_std:  depth of standard level || required: False || type: double || format: vector
-    %           .Bathy:      bathy of ocean          || required: False || type: double || format: vector
-    %           .Siglay:     levels of siglay        || required: False || type: double || format: matrix
-    %           .Depth_avg:  depth of average level  || required: False || type: double || example: [0,100;20,300]
-    %       time:            time                    || required: True  || type: double || format: posixtime
-    %       Velement:        value struct            || required: True  || type: struct || format: struct
-    %           .U_std:      u at standard levels    || required: False || type: double || format: matrix
-    %           .V_std:      v at standard levels    || required: True  || type: double || format: matrix
-    %           .W_std:      w at standard levels    || required: False || type: double || format: matrix
-    %           .U_sgm:      u at sigma levels       || required: False || type: double || format: matrix
-    %           .V_sgm:      v at sigma levels       || required: False || type: double || format: matrix
-    %           .W_sgm:      w at sigma levels       || required: False || type: double || format: matrix
-    %           .U_avg:      u at average levels     || required: False || type: double || format: matrix
-    %           .V_avg:      v at average levels     || required: False || type: double || format: matrix
-    %           .W_avg:      w at average levels     || required: False || type: double || format: matrix
-    %           .Ua   :      u at all average levels || required: False || type: double || format: matrix
-    %           .Va   :      v at all average levels || required: False || type: double || format: matrix
-    %       GA_start_date:   time of forecast start  || required: True  || type: string || format: '2023-05-30_00:00:00'
+    %       ncid:            netcdf file id          || required: True  || type: int       || format: 1
+    %       Lon:             longitude               || required: True  || type: double    || format: [120.5, 121.5]
+    %       Lat:             latitude                || required: True  || type: double    || format: [30.5, 31.5]
+    %       Delement:        depth struct            || required: True  || type: struct    || format: struct
+    %           .Depth_std:  depth of standard level || required: False || type: double    || format: vector
+    %           .Bathy:      bathy of ocean          || required: False || type: double    || format: vector
+    %           .Siglay:     levels of siglay        || required: False || type: double    || format: matrix
+    %           .Depth_avg:  depth of average level  || required: False || type: double    || example: [0,100;20,300]
+    %       time:            time                    || required: True  || type: double    || format: posixtime
+    %       Velement:        value struct            || required: True  || type: struct    || format: struct
+    %           .U_std:      u at standard levels    || required: False || type: double    || format: matrix
+    %           .V_std:      v at standard levels    || required: True  || type: double    || format: matrix
+    %           .W_std:      w at standard levels    || required: False || type: double    || format: matrix
+    %           .U_sgm:      u at sigma levels       || required: False || type: double    || format: matrix
+    %           .V_sgm:      v at sigma levels       || required: False || type: double    || format: matrix
+    %           .W_sgm:      w at sigma levels       || required: False || type: double    || format: matrix
+    %           .U_avg:      u at average levels     || required: False || type: double    || format: matrix
+    %           .V_avg:      v at average levels     || required: False || type: double    || format: matrix
+    %           .W_avg:      w at average levels     || required: False || type: double    || format: matrix
+    %           .Ua   :      u at all average levels || required: False || type: double    || format: matrix
+    %           .Va   :      v at all average levels || required: False || type: double    || format: matrix
     %       varargin:        optional parameters     
-    %           conf:        configuration struct    || required: False || type: struct || format: struct
+    %           conf:        configuration struct    || required: False || type: namevalue || format: struct
+    %           INFO:        Whether print msg       || required: False || type: flag      || format: 'INFO' 
+    %           Text_len:    Length of msg str       || required: False || type: namevalue || format: 'Text_len',45 
     % =================================================================================================================
     % Returns:
     %       None
@@ -36,11 +37,15 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin
     %       2024-04-07:     Added ua va, change judge input levels, by Christmas;
     % =================================================================================================================
     % Example:
-    %       netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date)
-    %       netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,'conf',conf)
+    %       netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement)
+    %       netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement,'conf',conf)
+    %       netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement,'conf',conf,'INFO')
+    %       netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,Velement,'conf',conf,'INFO','Text_len',45)
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'conf'},{false});
+    varargin = read_varargin2(varargin,{'INFO'});
+    varargin = read_varargin(varargin,{'Text_len'},{false});
 
     SWITCH.std = false;
     SWITCH.sgm = false;
@@ -55,11 +60,11 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin
         Depth_std = Delement.Depth_std;
     end
     if isfield(Delement,'Bathy') && isfield(Delement,'Siglay')
-        SWITCH.sgm = true;  % Depth_std
+        SWITCH.sgm = true;  % Bathy Siglay
         Bathy = Delement.Bathy; Siglay = Delement.Siglay;
     end
     if isfield(Delement,'Depth_avg')
-        SWITCH.avg = true;  % Depth_std
+        SWITCH.avg = true;  % Depth_avg
         Depth_avg = Delement.Depth_avg;
     end
 
@@ -88,7 +93,13 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin
     % standard_name
     ResName = num2str(1/mean(diff(Lon),"omitnan"), '%2.f');
     S_name = standard_filename('current',Lon,Lat,time_filename,ResName); % 标准文件名
-    osprint2('INFO', ['Transfor --> ',S_name])
+    if ~isempty(INFO)
+        if ~Text_len
+            osprint2('INFO', ['Transfor --> ', S_name]);
+        else
+            osprint2('INFO', [pad('Transfor ', Text_len, 'right'),'--> ', S_name]);
+        end
+    end
 
     % 定义维度
     londimID  = netcdf.defDim(ncid, 'longitude', length(Lon));                        % 定义lon维度
@@ -358,15 +369,29 @@ function wrnc_current(ncid,Lon,Lat,Delement,time,Velement,GA_start_date,varargin
 
     % 写入global attribute
     varid_GA = netcdf.getConstant('NC_GLOBAL');
+    if ~isempty(conf)
+        NC = read_NC(conf);
+        fields = fieldnames(NC);
+        for iname = 1 : length(fields)
+            %  netcdf.putAtt(ncid, varid_GA, 'source', conf.P_Source); % 数据源
+            netcdf.putAtt(ncid, varid_GA, fields(iname), NC.(fields(iname)));
+        end
+    end
     netcdf.putAtt(ncid, varid_GA, 'product_name', S_name);  % 文件名
-    if class(conf) == "struct" && isfield(conf,"P_Source")
-        netcdf.putAtt(ncid, varid_GA, 'source', conf.P_Source);  % 数据源
-    end
-    netcdf.putAtt(ncid, varid_GA, 'start',   GA_start_date);  % 起报时间
     netcdf.putAtt(ncid, varid_GA, 'history', ['Created by Matlab at ' char(datetime("now","Inputformat","yyyy-MM-dd HH:mm:SS"))]);  % 操作历史记录
-    if class(conf) == "struct" && isfield(conf,"P_Version")
-        netcdf.putAtt(ncid, varid_GA, 'program_version', ['V',num2str(conf.P_Version)]);  % 程序版本号
-    end
     netcdf.close(ncid);  % 关闭nc文件
     return 
+end
+
+
+function NC = read_NC(structIn)
+    % 从structIn中读取以NC_开头的变量，将变量写入到SWITCH结构体中
+    % eg: 将structIn中的NC_source写入到SWITCH.source中
+    NC = struct();
+    key = fieldnames(structIn);
+    for i = 1 : length(key)
+        if ~isempty(regexp(key{i},'^NC_','once'))
+            NC.(key{i}(8:end)) = structIn.(key{i});
+        end
+    end
 end
