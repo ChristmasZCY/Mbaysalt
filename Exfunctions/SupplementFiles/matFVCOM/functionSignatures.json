@@ -6,7 +6,7 @@
             {"name":"Gridfile", "kind":"required","type":["file=*.nc,*.2dm,*.dat"],"purpose":"netCDF, grd.dat, 2dm"},
             {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
-            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":""},
+            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":"MaxLon"},
             {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo','ww3'}"],"purpose":"Coordinate of reading"},
             {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"}],
         "outputs":[

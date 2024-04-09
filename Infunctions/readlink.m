@@ -1,4 +1,4 @@
-function [Ofile, YN] = readlinks(file)
+function [Ofile, YN] = readlink(file)
     %       Simulation of unix command "readlink"
     % =================================================================================================================
     % Parameters:
@@ -9,7 +9,7 @@ function [Ofile, YN] = readlinks(file)
     %       YN: whether link or not                 || required: True || type: logical || example: 1
     % =================================================================================================================
     % Example:
-    %       [Ofile, YN] = readlinks('D:\data\mask.nc')
+    %       [Ofile, YN] = readlink('D:\data\mask.nc')
     % =================================================================================================================
 
     arguments(Input)

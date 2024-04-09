@@ -198,16 +198,21 @@
         "inputs":[
             {"name":"fin", "kind":"required","type":["file=*.nc"],"purpose":"netCDF filename"},
             {"name":"attr_str", "kind":"required","type":["char"],"purpose":"attribute string"},
-            {"name":"variable", "kind":"flag","type":["char"],"purpose":"variable name"},
+            {"name":"variable", "kind":"positional","type":["char"],"purpose":"variable name"},
             {"name":"method", "kind":"namevalue","type":["char","choices={'AUTO','START','END','STRCMP','CONTAINS'}"],"purpose":"method to search attribute"}],
         "outputs":[
             {"name":"exist", "type":["logical"], "purpose":"attribute exist"}]},
-    "nc_attrName_exist":{
+    "nc_attrValue_exist":{
         "inputs":[
-            {"name":"fin", "kind":"required","type":["file=*.nc"],"purpose":"netCDF filename"},
+            {"name":"fin", "kind":"required","type":["char","file=*.nc,*00"],"purpose":"netCDF filename"},
             {"name":"attr_str", "kind":"required","type":["char"],"purpose":"attribute string"},
-            {"name":"variable", "kind":"flag","type":["char"],"purpose":"variable name"},
+            {"name":"variable", "kind":"positional","type":["char"],"purpose":"variable name"},
             {"name":"method", "kind":"namevalue","type":["char","choices={'AUTO','START','END','STRCMP','CONTAINS'}"],"purpose":"method to search attribute"}],
         "outputs":[
-            {"name":"exist", "type":["logical"], "purpose":"attribute exist"}]}
+            {"name":"exist", "type":["logical"], "purpose":"attribute exist"}]},
+    "isNetcdfFile":{
+        "inputs":[
+            {"name":"fin", "kind":"required","type":["file"],"purpose":"netCDF filename"}],
+        "outputs":[
+            {"name":"isNetcdf", "type":["logical"], "purpose":"is netCDF file"}]}
 }

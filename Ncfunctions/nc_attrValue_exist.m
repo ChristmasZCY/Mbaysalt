@@ -13,6 +13,7 @@ function STATUS = nc_attrValue_exist(fin, attr_str, varargin)
     % =================================================================================================================
     % Update:
     %       2024-04-03:     Created, by Christmas;
+    %       2024-04-09:     Added subfunction, as startWith don't accept double,    by Christmas;
     % =================================================================================================================
     % Example:
     %       STATUS = nc_attrValue_exist('test.nc', 'FVCOM')
@@ -60,19 +61,79 @@ function STATUS = nc_attrValue_exist(fin, attr_str, varargin)
     switch upper(method)
     case 'AUTO'
         if contains(attr_str,{'*','?','+'})  % *WAVEWATCH*
-            STATUS = any(cellfun(@(name) ~isempty(regexp(name, attr_str, 'once')), AttributeValues));
+            STATUS = any(cellfun(@(name) ~isempty(regexp_char(name, attr_str, 'once')), AttributeValues));
         else
             STATUS = any(strcmp(AttributeValues, attr_str));
         end
     case 'START'
-        STATUS = any(cellfun(@(x) startsWith(x, attr_str), AttributeValues));
+        STATUS = any(cellfun(@(x) startsWith_char(x, attr_str), AttributeValues));
     case 'END'
-        STATUS = any(cellfun(@(x) endsWith(x, attr_str), AttributeValues));
+        STATUS = any(cellfun(@(x) endsWith_char(x, attr_str), AttributeValues));
     case 'STRCMP'
         STATUS = any(cellfun(@(x) strcmp(x, attr_str), AttributeValues));
     case 'CONTAINS'
-        STATUS = any(cellfun(@(x) contains(x, attr_str), AttributeValues));
+        STATUS = any(cellfun(@(x) contains_char(x, attr_str), AttributeValues));
     otherwise 
         error("Method_read must be one of 'AUTO', 'START', 'END', 'STRCMP', 'CONTAINS' !")
     end
+end
+
+
+function TF = startsWith_char(str,pat)
+    if isnumeric(str)
+        str = num2str(str);
+    else
+        str = convertStringsToChars(str);
+    end
+    if isnumeric(pat)
+        pat = num2str(pat);
+    else
+        pat = convertStringsToChars(pat);
+    end
+    TF = startsWith(str,pat);
+end
+
+
+function TF = endsWith_char(str,pat)
+    if isnumeric(str)
+        str = num2str(str);
+    else
+        str = convertStringsToChars(str);
+    end
+    if isnumeric(pat)
+        pat = num2str(pat);
+    else
+        pat = convertStringsToChars(pat);
+    end
+    TF = endsWith(str,pat);
+end
+
+
+function TF = contains_char(str,pat)
+    if isnumeric(str)
+        str = num2str(str);
+    else
+        str = convertStringsToChars(str);
+    end
+    if isnumeric(pat)
+        pat = num2str(pat);
+    else
+        pat = convertStringsToChars(pat);
+    end
+    TF = contains(str,pat);
+end
+
+
+function TF = regexp_char(str,pat,varargin)
+    if isnumeric(str)
+        str = num2str(str);
+    else
+        str = convertStringsToChars(str);
+    end
+    if isnumeric(pat)
+        pat = num2str(pat);
+    else
+        pat = convertStringsToChars(pat);
+    end
+    TF = regexp(str,pat,varargin{:});
 end

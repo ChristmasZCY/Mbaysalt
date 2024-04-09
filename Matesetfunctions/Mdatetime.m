@@ -28,12 +28,12 @@ classdef Mdatetime
     % =================================================================================================================
 
     properties
-        time
-        Times
-        TIME
-        TIME_str
-        TIME_char
-        datenum
+        time        % posixtime
+        Times       % datetime
+        TIME        % char
+        TIME_str    % str
+        TIME_char   % char
+        datenum     % datenum
         units = 'seconds since 1970-01-01 00:00:00'
         units_datetime = datetime(1970,1,1,0,0,0);
         fmt = 'yyyy-MM-dd HH:mm:ss'
@@ -44,7 +44,7 @@ classdef Mdatetime
             varargin = read_varargin(varargin,{'fmt'},{obj.fmt}); obj.fmt = fmt;
             varargin = read_varargin(varargin,{'units'},{obj.units}); obj.units = units;
             varargin = read_varargin(varargin,{'units_datetime'},{obj.units_datetime}); obj.units_datetime = units_datetime;
-            varargin = read_varargin2(varargin,{'Cdatenum'});
+            varargin = read_varargin2(varargin,{'Cdatenum'}); %#ok<NASGU>
 
             obj.time = [];
             obj.datenum = [];
@@ -77,7 +77,7 @@ classdef Mdatetime
                         end
                         obj.time = posixtime(obj.Times);
                 end
-                obj.datenum = datenum(obj.Times);
+                obj.datenum = datenum(obj.Times); %#ok<DATNM>
             else
                 obj.datenum = ttime;
                 obj.Times = datetime(obj.datenum, 'ConvertFrom','datenum');
@@ -86,6 +86,7 @@ classdef Mdatetime
             end
             obj.TIME_str = string(obj.TIME);
             obj.TIME_char = char(obj.TIME);
+            obj.Times = datetime(obj.Times, 'Format', obj.fmt);
             
         end
 
@@ -95,10 +96,19 @@ classdef Mdatetime
 
         %% 当某一个属性被更改，其余一起更改(已废弃)
         % Times被更改
-        function obj = set.Times(obj,value)
-            obj.Times = value;
-            obj.time = posixtime(obj.Times);
-            obj.TIME = char(datetime(obj.Times,'Format',obj.fmt));
+        function obj = set.fmt(obj,value)
+            if ~isempty(obj.Times)
+                obj.fmt = value;
+                obj.Times = datetime(obj.Times,'Format',value); %#ok<*MCSUP>
+                obj.TIME = char(datetime(obj.Times));
+                obj.TIME_str = string(obj.TIME);
+                obj.TIME_char = char(datetime(obj.Times));
+                obj.units_datetime = datetime(obj.units_datetime,'Format',value);
+                obj.time = posixtime(obj.Times);
+                obj.TIME = char(datetime(obj.Times,'Format',obj.fmt));
+            else
+                obj.fmt = value;
+            end
         end
 
             

@@ -1,9 +1,15 @@
 function ncid = create_nc(fin, mode, varargin)
-    %       create a NETCDF4 file
+    %       Create a NETCDF4 file
     % =================================================================================================================
     % Parameter:
-    %       fin:             file name               || required: True || type: string || format: 'test.nc'
-    %       mode:            file mode               || required: True || type: string || format: 'NETCDF4'
+    %       fin:             file name               || required: True || type: string  || format: 'test.nc'
+    %       mode:            file mode               || required: True || type: string  || format: 'NETCDF4'
+    % =================================================================================================================
+    % Returns:
+    %       ncid:            file id                 || required: True || type: integer || format: 1
+    % =================================================================================================================
+    % Update:
+    %       ****-**-**:     Created, by Christmas;
     % =================================================================================================================
     % Example:
     %       ncid = create_nc('test.nc', 'NETCDF4')
