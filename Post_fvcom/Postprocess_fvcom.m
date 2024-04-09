@@ -25,6 +25,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-04-01:     Fixed separate var to vertical mask, by Christmas;
     %       2024-04-01:     Added two parameters at conf file, by Christmas;
     %       2024-04-04:     Added ua va,    by Christmas;
+    %       2024-04-08:     Fixed 'struct()' to struct(''),    by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20240401,1)
@@ -204,7 +205,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 ps = double(ncread(ncfile,'PS')); % PS 小型浮游植物
                 pl = double(ncread(ncfile,'PL')); % PL 大型浮游植物
                 pp = ps+pl; % phytoplankton pp 浮游植物
-                chlo = 1.59 * pp;
+                % chlo = 1.38 * pp;  % Chunlin Yang
+                chlo = 1.59 * pp;  % Haiqing Yu
                 clear ps pl pp
             end
             fncValue_nzt.chlo = limit_var(chlo, [0,100]);
@@ -293,10 +295,10 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         clear u v w ua va
 
         if ~exist("fncValue_nt", "var")
-            fncValue_nt = struct();
+            fncValue_nt = struct('');
         end
         if ~exist("fncValue_nzt", "var")
-            fncValue_nzt = struct();
+            fncValue_nzt = struct('');
         end
 
         % Lon                    --> x*1
@@ -492,6 +494,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         clear Depth_xy
         clear Siglay Deplev Deplay
         clear wncValue_xyt wncValue_xyzt
+
+        if ~exist("Store_xyzt","var")
+            Store_xyzt = struct('');
+        end
+        if ~exist("Store_xyt","var")
+            Store_xyt = struct('');
+        end
         % <----- Store
 
         % -----> 2D
@@ -617,10 +626,10 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % OutValue_xyt -->  Zeta Ua Va Aice Casfco2
 
         if ~exist("OutValue_xyt", "var")
-            OutValue_xyt = struct();
+            OutValue_xyt = struct('');
         end
         if ~exist("OutValue_xyzt", "var")
-            OutValue_xyzt = struct();
+            OutValue_xyzt = struct('');
         end
 
 
@@ -639,11 +648,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             end
             clear file_mask tt5
             if SWITCH.vertical_mask
-                [OutValue_std,OutValue_other] = separate_var_by_name(OutValue_xyzt,'_std');clear OutValue
-                OutValue_std = structfun(@(x) mask_depth_data(Standard_depth_mask, x), OutValue_std, 'UniformOutput', false);
-                OutValue_xyzt = merge_struct(OutValue_std, OutValue_other);
-                clear OutValue_std OutValue_other
-                clear Standard_depth_mask
+                if ~isempty(OutValue_xyzt)
+                    [OutValue_std,OutValue_other] = separate_var_by_name(OutValue_xyzt,'_std');clear OutValue
+                    OutValue_std = structfun(@(x) mask_depth_data(Standard_depth_mask, x), OutValue_std, 'UniformOutput', false);
+                    OutValue_xyzt = merge_struct(OutValue_std, OutValue_other);
+                    clear OutValue_std OutValue_other
+                    clear Standard_depth_mask
+                end
             end
         end
 
@@ -657,7 +668,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             while im < num_erosion
                 osprint2('INFO',[pad('Erosion coastline counts ',Text_len,'right'),'--> ', num2str(im+1)]);
                 if SWITCH.make_erosion
-                    fields = fieldnames(OutValue_xyzt);
+                    if ~isempty(OutValue_xyzt)
+                        fields = fieldnames(OutValue_xyzt);
+                    else
+                        osprint2('INFO',[pad('No need to Erosion ',Text_len,'right'),'--> ', 'No xyzt value']);
+                        break
+                    end
                     if im == 0
                         % I_D_1 = erosion_coast_cal_id(Lon, Lat, OutValue_xyzt.Temp_sgm, 16, 5);
                         I_D_1 = erosion_coast_cal_id(lon_dst, lat_dst, OutValue_xyzt.(fields{1}), 16, 5);
@@ -701,7 +717,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
 
         if ~exist('Delement','var')  % 当至输出ua va
-            Delement = struct();
+            Delement = struct('');
         end
 
         %% 写入
@@ -848,11 +864,11 @@ end
 function SWITCH = read_switch(structIn)
     % 从structIn中读取以SWITCH_开头的变量，将变量写入到SWITCH结构体中
     % eg: 将structIn中的Switch_erosion写入到SWITCH.erosion中
-    SWITCH = struct();
+    SWITCH = struct('');
     key = fieldnames(structIn);
     for i = 1 : length(key)
         if ~isempty(regexp(key{i},'^Switch_','once'))
-            SWITCH.(key{i}(8:end)) = structIn.(key{i});
+            SWITCH(1).(key{i}(8:end)) = structIn.(key{i});
         end
     end
 end
@@ -868,37 +884,37 @@ function [Struct1,Struct2,dimsMax] = separate_var_gt_nd(structIn, ndim)
     key = fieldnames(structIn);
     for i = 1 : length(key)
         if ndims(structIn.(key{i})) >= dimsMax
-            Struct1.(key{i}) = structIn.(key{i});
+            Struct1(1).(key{i}) = structIn.(key{i});
         else
-            Struct2.(key{i}) = structIn.(key{i});
+            Struct2(1).(key{i}) = structIn.(key{i});
         end
     end
 end
 
 function [Struct1,Struct2] = separate_var_gt_nd_old(structIn,ndim)
     % 从struct中读取以维度>=ndim的变量，将变量写入到Struct1结构体中,其余变量写入到Struct2中
-    Struct1 = struct; Struct2 = struct;
+    Struct1 = struct(''); Struct2 = struct('');
     key = fieldnames(structIn);
     for i = 1 : length(key)
         if length(size(structIn.(key{i}))) >= ndim && ~isvector(structIn.(key{i}))
-            Struct1.(key{i}) = structIn.(key{i});
+            Struct1(1).(key{i}) = structIn.(key{i});
         else
-            Struct2.(key{i}) = structIn.(key{i});
+            Struct2(1).(key{i}) = structIn.(key{i});
         end
     end
 end
 
 function [Struct1,Struct2] = separate_var_by_name(structIn, txt)
     % 从struct中分离含有txt的键值对，将含有txt的键值对写入到Struct1中，其余写入到Struct2中
-    Struct1 = struct();
-    Struct2 = struct();
+    Struct1 = struct('');
+    Struct2 = struct('');
 
     % 直接遍历并检查字段名是否包含 'txt'
     for field = fieldnames(structIn)'
         if contains(field{1}, txt)
-            Struct1.(field{1}) = structIn.(field{1});
+            Struct1(1).(field{1}) = structIn.(field{1});
         else
-            Struct2.(field{1}) = structIn.(field{1});
+            Struct2(1).(field{1}) = structIn.(field{1});
         end
     end
 
@@ -929,14 +945,14 @@ end
 
 function [Struct1,Struct2] = getfields_key_from_struct(structIn,keysIn)
     % Struct1 --> 从struct中保留指定key的变量 | Struct2 --> 从struct中删除指定key的变量 
-    Struct1 = struct();
-    Struct2 = struct();
+    Struct1 = struct('');
+    Struct2 = struct('');
     key = fieldnames(structIn);
     for i = 1 : length(key)
         if any(strcmp(key{i},keysIn))
-            Struct1.(key{i}) = structIn.(key{i});
+            Struct1(1).(key{i}) = structIn.(key{i});
         else
-            Struct2.(key{i}) = structIn.(key{i});
+            Struct2(1).(key{i}) = structIn.(key{i});
         end
     end
 end

@@ -3,7 +3,7 @@
     "_schemaVersion": "1.0.0",
     "read_conf":{
         "inputs":[
-            {"name":"confFile",  "kind":"required", "type":["file"], "purpose":"Configure filename"}],
+            {"name":"confFile",  "kind":"required", "type":["file=*.conf"], "purpose":"Configure filename"}],
         "outputs":[
             {"name":"conf_para(1*1)", "type":["struct"], "purpose":"Configure Structure (1*1)"},
             {"name":"conf_para(name,value)", "type":["struct"], "purpose":"Configure Structure (n*1)"}]},
@@ -133,7 +133,7 @@
     "rmfiles":{
         "inputs":[
             {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":true}]},
-    "readlinks":{
+    "readlink":{
         "inputs":[
             {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":true}],
         "outputs":[
@@ -158,7 +158,8 @@
         "inputs":[
             {"name":"fin",  "kind":"required", "type":["file=*.nc"], "purpose":"Filename(nc)"},
             {"name":"Global",  "kind":"flag", "type":["choices={'Global'}", "logical"], "purpose":"Global or not"},
-            {"name":"Coordinate",  "kind":"namevalue", "type":["choices={'geo','xy'}"], "purpose":"Coordinate"}],
+            {"name":"Coordinate",  "kind":"namevalue", "type":["choices={'geo','xy'}"], "purpose":"Coordinate"},
+            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":"MaxLon"}],
         "outputs":[
             {"name":"GridStruct", "type":["struct"], "purpose":"Model grid struct"},
             {"name":"VarStruct", "type":["struct"], "purpose":"Model variable struct"},
@@ -166,7 +167,8 @@
     "c_load_model":{
         "inputs":[
             {"name":"fin",  "kind":"required", "type":["file=*.msh,*.2dm"], "purpose":"Filename(2dm,msh)"},
-            {"name":"Global",  "kind":"flag", "type":["choices={'Global'}", "logical"], "purpose":"Global or not"}],
+            {"name":"Global",  "kind":"flag", "type":["choices={'Global'}", "logical"], "purpose":"Global or not"},
+            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":"MaxLon"}],
         "outputs":[
             {"name":"GridStruct", "type":["struct"], "purpose":"Model grid struct"},
             {"name":"VarStruct", "type":["struct"], "purpose":"Model variable struct"},

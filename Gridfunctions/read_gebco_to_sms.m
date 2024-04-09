@@ -1,26 +1,28 @@
-function read_gebco_to_sms(res)
+function read_gebco_to_sms(fin, fout, lon_range, lat_range, res)
     %       read gebco file and write to xyz file, res=1 means 1/240 degree, res=2 means 1/120 degree and so on
     % =================================================================================================================
     % Parameter:
-    %       res: resolution of gebco file  || required: True || type: int || format: 3
+    %       fin: gebco file path                 || required: True || type: string || example: 'gebco.nc'
+    %       fout: xyz file path                  || required: True || type: string || example: 'gebco.xyz'
+    %       lon_range: longitude range to select || required: True || type: int || example: [100 120]
+    %       lat_range: latitude range to select  || required: True || type: int || example: [20 30]
+    %       res: resolution of gebco file        || required: True || type: int || example:  3
+    % =================================================================================================================
+    % Returns:
+    %       None
+    % =================================================================================================================
+    % Update:
+    %       ****-**-**:     Created, by Christmas;
+    %       2024-04-08:     Change input parameter to lon_range, lat_range, res, by Christmas;
     % =================================================================================================================
     % Example:
-    %       read_gebco_to_sms(2)
+    %       read_gebco_to_sms('gebco.nc','gebco.xyz',[100 120],[20 30],3)
     % =================================================================================================================
 
-    para_conf = read_conf("Grid_functions.conf");
-    file = para_conf.gebcoNCfile;
-    lon1 = para_conf.lon_west;
-    lon2 = para_conf.lon_east;
-    lat1 = para_conf.lat_south;
-    lat2 = para_conf.lat_north;
-    xyz_name = para_conf.xyz_name;
-    Outpath_dir = para_conf.save_path;    
-    
-    xyz_file = fullfile(Outpath_dir,xyz_name);
-    Lon = [lon1 lon2];
-    Lat = [lat1 lat2];
-    clear lon1 lon2 lat1 lat2 xyz_name Outpath_dir
+    file = fin;
+
+    Lon = lon_range;
+    Lat = lat_range;
 
     lon = ncread(file,'lon');
     lat = ncread(file,'lat');
@@ -45,12 +47,12 @@ function read_gebco_to_sms(res)
     lat = reshape(lat,[],1);
     ele = reshape(ele,[],1);
 
-    lon(ele>10) = [];
-    lat(ele>10) = [];
-    ele(ele>10) = [];
+    % lon(ele>10) = [];
+    % lat(ele>10) = [];
+    % ele(ele>10) = [];
     % ele(ele>0) = -0.5;
 
-    fid = fopen(xyz_file,"w+");
+    fid = fopen(fout,"w+");
     fprintf(fid,'%12.8f %12.8f %12.8f \n',[lon';lat';ele']);
     fclose(fid);
 

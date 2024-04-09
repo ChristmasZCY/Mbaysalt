@@ -39,6 +39,8 @@ Exfunctions/seawater_ver3_3.1
 Exfunctions/DHIMatlabToolbox
 Exfunctions/Otherpkgs/*
 !Exfunctions/Otherpkgs/Otherpkgs.m
+Docs/Communication.md
+Docs/pics
 
 # Data files #
 ######################
