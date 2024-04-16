@@ -307,7 +307,8 @@
         ]},
     "w_2d_mask_boundary":{
         "inputs":[
-            {"name":"wgrid","kind":"required","type":["struct"],"purpose":"WRF Grid"}],
+            {"name":"wgrid","kind":"required","type":["struct"],"purpose":"WRF Grid"},
+            {"name":"facecolor","kind":"namevalue","type":["char"],"purpose":"facecolor"}],
         "outputs":[
             {"name":"h","type":["polyshape"],"purpose":"Polygon"}]},
     "w_2d_mesh":{

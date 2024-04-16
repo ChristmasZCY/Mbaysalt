@@ -47,6 +47,7 @@
 %   replace_para.m                              -  Replace parameters in a string or struct
 %   rmfiles.m                                   -  Delete files or directories
 %   set_proxy.m                                 -  Set proxy by system command
+%   calc_validation.m                           -  Calculate the validation of the model
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -249,6 +250,8 @@
 %   Example_tidal_analysis.m                    -  Example for tidal analysis
 %   Example_TMD.m                               -  Example for TMD toolbox
 %   Example_WindRose.m                          -  Example for WindRose toolbox
+%   Example_scaterdensity_Wcx.m                 -  Example for scatterdensity by Wcx
+%   Example_read_draw_christmas.m               -  Example for read and draw by Christmas
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
@@ -323,7 +326,10 @@
 %
 %
 %                                           Otherpkgs
-%       Otherpkgs                               -  Show other packages
+%   Otherpkgs                                   -  Show other packages
+%       Otherpkgs.m                             -  Show other packages
+%       scatplot.m                              -  Scatter plot with colorbar  || https://ww2.mathworks.cn/matlabcentral/fileexchange/8577-scatplot
+%   
 %
 %
 %                                           Py  -  Python scripts for toolbox
