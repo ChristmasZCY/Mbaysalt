@@ -135,9 +135,10 @@
             {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":true}]},
     "readlink":{
         "inputs":[
-            {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":true}],
+            {"name":"File",  "kind":"required", "type":["file"], "purpose":"Filename", "repeating":false}],
         "outputs":[
-            {"name":"Origin file", "type":["file"], "purpose":"Origin file", "repeating":true}]},
+            {"name":"YN", "type":["logical"], "purpose":"Exist or not"},
+            {"name":"Origin file", "type":["file"], "purpose":"Origin file", "repeating":false}]},
     "limit_var":{
         "inputs":[
             {"name":"Var",  "kind":"required", "type":["numeric"], "purpose":"Variable"},
@@ -172,5 +173,11 @@
         "outputs":[
             {"name":"GridStruct", "type":["struct"], "purpose":"Model grid struct"},
             {"name":"VarStruct", "type":["struct"], "purpose":"Model variable struct"},
-            {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Model Ttimes"}]}
+            {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Model Ttimes"}]},
+    "calc_validation":{
+        "inputs":[
+            {"name":"Model",  "kind":"required", "type":["struct"], "purpose":"Model Data"},
+            {"name":"Observation",  "kind":"required", "type":["struct"], "purpose":"Real Data"}],
+        "outputs":[
+            {"name":"Validation", "type":["struct"], "purpose":"Validation Struct"}]}
 }

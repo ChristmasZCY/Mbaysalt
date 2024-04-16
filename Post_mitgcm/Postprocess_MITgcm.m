@@ -12,12 +12,17 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
     % =================================================================================================================
     % Update:
     %       2024-03-26:     Created, by Christmas;
-    %       ****-**-**:             , by Christmas;
+    %       2024-04-15:     Added AngleSN,AngleCS for u v, by Christmas;
+    %       2024-04-15:     Changed SWITCH.u SWITCH.v to SWITCH.uv, by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_MITgcm('Post_mitgcm.conf', 'hourly', 20240401, 1)
     %       Postprocess_MITgcm('Post_mitgcm.conf', 'daily', 20240401, 1)
     % =================================================================================================================
+    % Reference:
+    %       https://github.com/MITgcm/MITgcm/blob/master/utils/matlab/cs_grid/rotate_uv2uvEN.m (line 146 to end)
+    % =================================================================================================================
+
 
     arguments(Input)
         conf_file {mustBeFile}
@@ -61,7 +66,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
     osprint2('INFO', [pad('Interp Method ',Text_len,'right'),'--> ', Method_interpn])                      % 输出插值方法
     osprint2('INFO', [pad('Read Method ',Text_len,'right'),'--> ', Method_read])                    % 输出读取方法
     osprint2('INFO', [pad(['Transfor ',interval,' variable '],Text_len,'right'), '-->', repmat(' temp',SWITCH.temp),repmat(' salt',SWITCH.salt) ...
-        repmat(' adt',SWITCH.adt),repmat(' u',SWITCH.u),repmat(' v',SWITCH.v), repmat(' w',SWITCH.w)])  % 打印处理的变量
+        repmat(' adt',SWITCH.adt),repmat(' uv',SWITCH.uv), repmat(' w',SWITCH.w)])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
@@ -103,9 +108,13 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                 if SWITCH.read_ll_from_dmeta
                     XC = rdmds(para_conf.XCFile);
                     YC = rdmds(para_conf.YCFile);
+                    AngleCS = rdmds(para_conf.AngleCSFile);
+                    AngleSN = rdmds(para_conf.AngleSNFile);
                     GCM_grid.XC = XC(:);
                     GCM_grid.YC = YC(:);
                     GCM_grid.RC = squeeze(rdmds(para_conf.RCFile));
+                    GCM_grid.AngleCS = AngleCS;
+                    GCM_grid.AngleSN = AngleSN;
                     GCM_grid.Bathy = fORC(para_conf.BathyFile);
                     makedirs(fileparts(GCMgridFile));
                     save(GCMgridFile, 'GCM_grid', '-v7.3', '-nocompression');
@@ -125,10 +134,8 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             if SWITCH.salt
                 salt = zeros(numel(GCM_grid.XC), length(GCM_grid.RC), steps);
             end
-            if SWITCH.u
+            if SWITCH.uv2698
                 u    = zeros(numel(GCM_grid.XC), length(GCM_grid.RC), steps);
-            end
-            if SWITCH.v
                 v    = zeros(numel(GCM_grid.XC), length(GCM_grid.RC), steps);
             end
             if SWITCH.w
@@ -137,6 +144,9 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             if SWITCH.adt
                 zeta = zeros(numel(GCM_grid.XC), steps);
             end
+            AngleCS = repmat(GCM_grid.AngleCS, [1,length(GCM_grid.RC),steps]);
+            AngleSN = repmat(GCM_grid.AngleSN, [1,length(GCM_grid.RC),steps]);
+
             for ih = 1 : steps
                 Times(ih) = deal_date_dt + hours(ih-1);
                 if SWITCH.temp
@@ -149,15 +159,17 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                     s_1 = rdmds(dmfile(ih).S);
                     salt(:,:,ih) = reshape(s_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear s_1
                 end
-                if SWITCH.u
+                if SWITCH.uv
                     dmfile(ih).U = fullfile(Inputpath,[char(deal_date),'/U.',char(Times(ih))]); % 输入文件
-                    u_1 = rdmds(dmfile(ih).U);
-                    u(:,:,ih) = reshape(u_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear u_1
-                end
-                if SWITCH.v
                     dmfile(ih).V = fullfile(Inputpath,[char(deal_date),'/V.',char(Times(ih))]); % 输入文件
-                    v_1 = rdmds(dmfile(ih).V);
-                    v(:,:,ih) = reshape(v_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear v_1
+                    u_xyz = rdmds(dmfile(ih).U); 
+                    v_xyz = rdmds(dmfile(ih).V);
+                    u_nz = reshape(u_xyz,numel(GCM_grid.XC),length(GCM_grid.RC)); clear u_xyz
+                    v_nz = reshape(v_xyz,numel(GCM_grid.XC),length(GCM_grid.RC)); clear v_xyz
+                    u_nz = AngleCS.*u_nz - AngleSN.*v_nz;
+                    v_nz = AngleSN.*u_nz + AngleCS.*v_nz;
+                    u(:,:,ih) = u_nz; clear u_nz
+                    v(:,:,ih) = v_nz; clear v_nz
                 end
                 if SWITCH.w
                     dmfile(ih).W = fullfile(Inputpath,[char(deal_date),'/W.',char(Times(ih))]); % 输入文件
@@ -170,7 +182,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                     zeta(:,ih) = z_1(:); clear z_1
                 end
             end
-            clear ih
+            clear ih clear AngleCS AngleSN
         case 'fopen'
             if dr == 1 % 只有第一次需要读取经纬度
                 GCMgridFile = para_conf.GCMgridFile; % 经纬度文件  --> 'XCYCRC.mat'
@@ -178,6 +190,8 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                     GCM_grid.XC = fORC([para_conf.XCFile, '.data']);
                     GCM_grid.YC = fORC([para_conf.YCFile, '.data']);
                     GCM_grid.RC = fORC([para_conf.RCFile, '.data']);
+                    GCM_grid.AngleCS = fORC([para_conf.AngleCSFile, '.data']);
+                    GCM_grid.AngleSN = fORC([para_conf.AngleSNFile, '.data']);
                     GCM_grid.Bathy = fORC(para_conf.BathyFile);
                     makedirs(fileparts(GCMgridFile));
                     save(GCMgridFile, 'GCM_grid', '-v7.3', '-nocompression');
@@ -196,10 +210,8 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             if SWITCH.salt
                 salt = zeros(numel(GCM_grid.XC), length(GCM_grid.RC), steps);
             end
-            if SWITCH.u
+            if SWITCH.uv
                 u    = zeros(numel(GCM_grid.XC), length(GCM_grid.RC), steps);
-            end
-            if SWITCH.v
                 v    = zeros(numel(GCM_grid.XC), length(GCM_grid.RC), steps);
             end
             if SWITCH.w
@@ -208,6 +220,8 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             if SWITCH.adt
                 zeta = zeros(numel(GCM_grid.XC), steps);
             end
+            AngleCS = repmat(GCM_grid.AngleCS, [1,length(GCM_grid.RC),steps]);
+            AngleSN = repmat(GCM_grid.AngleSN, [1,length(GCM_grid.RC),steps]);
             
             for ih = 1 : steps
                 Times(ih) = deal_date_dt + hours(ih-1);
@@ -221,15 +235,17 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                     s_1 = fORC([dmfile(ih).S '.data']);
                     salt(:,:,ih) = reshape(s_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear s_1
                 end
-                if SWITCH.u
+                if SWITCH.uv
                     dmfile(ih).U = fullfile(Inputpath,[char(deal_date),'/U.',char(Times(ih))]); % 输入文件
-                    u_1 = fORC([dmfile(ih).U '.data']);
-                    u(:,:,ih) = reshape(u_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear u_1
-                end
-                if SWITCH.v
                     dmfile(ih).V = fullfile(Inputpath,[char(deal_date),'/V.',char(Times(ih))]); % 输入文件
+                    u_1 = fORC([dmfile(ih).U '.data']);
                     v_1 = fORC([dmfile(ih).V '.data']);
-                    v(:,:,ih) = reshape(v_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear v_1
+                    u_nz = reshape(u_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear u_1
+                    v_nz = reshape(v_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear v_1
+                    u_nz = AngleCS.*u_nz - AngleSN.*v_nz;
+                    v_nz = AngleSN.*u_nz + AngleCS.*v_nz;
+                    u(:,:,ih) = u_nz; clear u_nz
+                    v(:,:,ih) = v_nz; clear v_nz
                 end
                 if SWITCH.w
                     dmfile(ih).W = fullfile(Inputpath,[char(deal_date),'/W.',char(Times(ih))]); % 输入文件
@@ -242,6 +258,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                     zeta(:,ih) = z_1(:); clear z_1
                 end
             end
+            clear ih AngleCS AngleSN
         case {'gluemncbig', 'ncread'}
             error('not completed!')
             system('cd /home/ocean/ForecastSystem/GCM_Global/Model/verification/llc_540_auto/run/mncall/ && ./gluemncbig -o X.nc state*.nc -2');
@@ -294,10 +311,8 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                 if SWITCH.adt
                     Zeta = interp_2d_via_weight(zeta,Weight_2d);
                 end
-                if SWITCH.u
+                if SWITCH.uv
                     U = interp_2d_via_weight(u,Weight_2d);
-                end
-                if SWITCH.v
                     V = interp_2d_via_weight(v,Weight_2d);
                 end
                 if SWITCH.w
@@ -319,10 +334,8 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             if SWITCH.salt
                 Salt = mean(Salt,4);
             end
-            if SWITCH.u
+            if SWITCH.uv
                 U = mean(U,4);
-            end
-            if SWITCH.v
                 V = mean(V,4);
             end
             if SWITCH.w
@@ -388,7 +401,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                         clear Salt_mntz Salt_linear Salt_linear_std Salt_std_mntz Salt
                         Salt = Salt_std; clear Salt_std
                     end
-                    if SWITCH.u
+                    if SWITCH.uv
                         U_mntz = permute(U,[1,2,4,3]);
                         U_linear = reshape(U_mntz, [length(lon_dst)*length(lat_dst)*steps, size(U_mntz,4)]);
                         U_linear_std = interp_vertical_via_weight(U_linear, Weight_vertical);
@@ -396,8 +409,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                         U_std = permute(U_std_mntz, [1,2,4,3]);
                         clear U_mntz U_linear U_linear_std U_std_mntz U
                         U = U_std; clear U_std
-                    end
-                    if SWITCH.v
+
                         V_mntz = permute(V,[1,2,4,3]);
                         V_linear = reshape(V_mntz, [length(lon_dst)*length(lat_dst)*steps, size(V_mntz,4)]);
                         V_linear_std = interp_vertical_via_weight(V_linear, Weight_vertical);
@@ -439,10 +451,8 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             if SWITCH.salt
                 Velement.Salt_std = Salt;
             end
-            if SWITCH.u
+            if SWITCH.uv
                 Velement.U_std = U; 
-            end
-            if SWITCH.v
                 Velement.V_std = V;
             end
             if SWITCH.w
@@ -531,7 +541,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
         end
 
         %% 写入
-        if SWITCH.u || SWITCH.v || SWITCH.w
+        if SWITCH.uv || SWITCH.w
             file = fullfile(OutputDir.curr,['current',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
             [Velement_current,Velement] = rmfields_key_from_struct(Velement,{'Temp_std','Salt_std','Zeta'});

@@ -4,7 +4,7 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
     % Parameters:
     %       fin:            input file name                 || required: True || type: Text   || format: '*.nc'
     %       varargin:       optional parameters      
-    %           Global:     Switiching global or local      || required: False|| type: Text   || example: 'Global'
+    %           Global:     Switch global or local          || required: False|| type: Text   || example: 'Global'
     %           Coordinate: Coordinate system               || required: False|| type: Text   || format: 'Coordinate', 'geo'
     %           MaxLon:     MaxLon                          || required: False|| type: Text   || format: 'MaxLon', 180
     % =================================================================================================================
@@ -17,13 +17,13 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
     %       2024-04-03:     Created, by Christmas; 
     % =================================================================================================================
     % Examples:
-    %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.nc')
-    %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.nc', 'Global', 'Coordinate', 'geo')
-    %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.nc', 'Global')
-    %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc','MaxLon', 180)
-    %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc', 'Global', 'Coordinate', 'geo')
-    %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc', 'Coordinate', 'geo')
-    %       [GridStruct, VarStruct, Ttimes] = c_load_model('wrf2fvcom.nc', 'Coordinate', 'geo','MaxLon', 180)
+    %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.nc');
+    %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.nc', 'Global', 'Coordinate', 'geo');
+    %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.nc', 'Global');
+    %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc','MaxLon', 180);
+    %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc', 'Global', 'Coordinate', 'geo');
+    %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc', 'Coordinate', 'geo');
+    %       [GridStruct, VarStruct, Ttimes] = c_load_model('wrf2fvcom.nc', 'Coordinate', 'geo','MaxLon', 180);
     % =================================================================================================================
     % Dependencies:
     %       f_load_grid.m
@@ -143,7 +143,11 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
             Ttimes = Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
         end
     case 'STANDARD'
-        varList = {'ua', 'va', 'salinity_std', 'salinity_sgm', 'salinity_avg', 'temperature_std', 'temperature_sgm', 'temperature_avg', '', '', ''};
+        varList = {'ua', 'va', ...
+                   'salinity_std', 'salinity_sgm', 'salinity_avg', ...
+                   'temperature_std', 'temperature_sgm', 'temperature_avg', ...
+                   'u_std', 'u_sgm', 'u_avg', ...
+                   'v_std', 'v_sgm', 'v_avg'};
         VarStruct = read_var_list(fin, varList);
         if nc_var_exist(fin, 'time')
             time = ncdateread(fin, 'time');
