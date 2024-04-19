@@ -33,6 +33,7 @@ function S = calc_validation(model, observation, varargin)
     %       https://blog.csdn.net/u011594486/article/details/43666871 --> RMS | RMSE
     %       https://datascience.stackexchange.com/questions/106178/how-could-we-interpret-a-si-scatter-index-and-rmse --> SI
     %       https://doi.org/10.1109/IGARSS.2018.8517731 --> SI
+    %       https://doi.org/10.1016/j.horiz.2024.100098 --> RMSE MABE PRMSE MAPE
     % =================================================================================================================
 
     arguments (Input)

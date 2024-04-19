@@ -1,0 +1,15 @@
+{
+  "_schemaVersion": "1.0.0",
+  "create_obc_from_MITgcmllc540": {
+    "inputs": [
+      {"name":"conf_file", "kind":"required","type":["file=*.conf"],"purpose":"configuration file"},
+      {"name":"yyyMMdd", "kind" : "required", "type":["scalar"],"purpose":"yyyyMMdd"}],
+    "outputs": []
+  },
+  "WRFforcing2gcm": {
+    "inputs": [
+      {"name":"conf_file", "kind":"required","type":["file=*.conf"],"purpose":"configuration file"},
+      {"name":"yyyMMdd", "kind" : "required", "type":["scalar"],"purpose":"yyyyMMdd"}],
+    "outputs": []
+  }
+}

@@ -37,8 +37,6 @@ Exfunctions/inpolygons-pkg
 Exfunctions/gsw_matlab_v3_06_16
 Exfunctions/seawater_ver3_3.1
 Exfunctions/DHIMatlabToolbox
-Exfunctions/Otherpkgs/*
-!Exfunctions/Otherpkgs/Otherpkgs.m
 Docs/Communication.md
 Docs/pics
 
