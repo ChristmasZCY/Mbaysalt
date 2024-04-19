@@ -166,10 +166,10 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                     v_xyz = rdmds(dmfile(ih).V);
                     u_nz = reshape(u_xyz,numel(GCM_grid.XC),length(GCM_grid.RC)); clear u_xyz
                     v_nz = reshape(v_xyz,numel(GCM_grid.XC),length(GCM_grid.RC)); clear v_xyz
-                    u_nz = AngleCS.*u_nz - AngleSN.*v_nz;
-                    v_nz = AngleSN.*u_nz + AngleCS.*v_nz;
-                    u(:,:,ih) = u_nz; clear u_nz
-                    v(:,:,ih) = v_nz; clear v_nz
+                    u_nz_ll = AngleCS.*u_nz - AngleSN.*v_nz;
+                    v_nz_ll = AngleSN.*u_nz + AngleCS.*v_nz;
+                    u(:,:,ih) = u_nz_ll; clear u_nz_ll u_nz
+                    v(:,:,ih) = v_nz_ll; clear v_nz_ll v_nz
                 end
                 if SWITCH.w
                     dmfile(ih).W = fullfile(Inputpath,[char(deal_date),'/W.',char(Times(ih))]); % 输入文件
@@ -242,10 +242,10 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                     v_1 = fORC([dmfile(ih).V '.data']);
                     u_nz = reshape(u_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear u_1
                     v_nz = reshape(v_1,numel(GCM_grid.XC),length(GCM_grid.RC)); clear v_1
-                    u_nz = AngleCS.*u_nz - AngleSN.*v_nz;
-                    v_nz = AngleSN.*u_nz + AngleCS.*v_nz;
-                    u(:,:,ih) = u_nz; clear u_nz
-                    v(:,:,ih) = v_nz; clear v_nz
+                    u_nz_ll = AngleCS.*u_nz - AngleSN.*v_nz;
+                    v_nz_ll = AngleSN.*u_nz + AngleCS.*v_nz;
+                    u(:,:,ih) = u_nz_ll; clear u_nz_ll u_nz
+                    v(:,:,ih) = v_nz_ll; clear v_nz_ll v_nz
                 end
                 if SWITCH.w
                     dmfile(ih).W = fullfile(Inputpath,[char(deal_date),'/W.',char(Times(ih))]); % 输入文件

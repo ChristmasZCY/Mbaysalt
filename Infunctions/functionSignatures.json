@@ -179,5 +179,13 @@
             {"name":"Model",  "kind":"required", "type":["struct"], "purpose":"Model Data"},
             {"name":"Observation",  "kind":"required", "type":["struct"], "purpose":"Real Data"}],
         "outputs":[
-            {"name":"Validation", "type":["struct"], "purpose":"Validation Struct"}]}
+            {"name":"Validation", "type":["struct"], "purpose":"Validation Struct"}]},
+    "calc_casfco2":{
+        "inputs":[
+            {"name":"windSpeed",  "kind":"required", "type":["scalar"], "purpose":"Wind Speed"},
+            {"name":"SST",  "kind":"required", "type":["scalar"], "purpose":"SST"},
+            {"name":"SSS",  "kind":"required", "type":["scalar"], "purpose":"SSS"},
+            {"name":"D_pCO2",  "kind":"required", "type":["scalar"], "purpose":"D_pCO2"}],
+        "outputs":[
+            {"name":"FCO2", "type":["scalar"], "purpose":"scalar"}]}
 }

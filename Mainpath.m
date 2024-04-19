@@ -28,6 +28,7 @@ function varargout = Mainpath(varargin)
     %       2024-04-03:     Added install DHI-MATLAB-Toolbox,   by Christmas;
     %       2024-04-04:     Added noset,   by Christmas;
     %       2024-04-07:     Fixed init, change noset,    by Christmas;
+    %       2024-04-18:     Added lanczosfilter, CallCodes, by Christmas;
     % =================================================================================================================
     % Examples:
     %       Mainpath                        % Add all path
@@ -152,6 +153,7 @@ function [FunctionPath,path] = Cmakepath
         "Mapfunctions"
         "Mimetifunctions"
         "Docs"
+        "CallCodes"
         ];
     FunI = cellstr(FunI);
     
@@ -196,6 +198,7 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/WindRose"
         "Exfunctions/MITgcmTools"
         "Exfunctions/DHIMatlabToolbox"
+        "Exfunctions/lanczosfilter"
         ];
     FunE = cellstr(FunE);
 
