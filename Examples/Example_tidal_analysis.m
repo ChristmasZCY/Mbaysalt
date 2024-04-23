@@ -1,4 +1,4 @@
-%%
+%% Method 1
 clm
 rayleigh = ['M2  '; 'N2  '; 'S2  '; 'K2  '; 'K1  '; 'O1  '; 'P1  '; 'Q1  '];
 fin = '/home/ocean/ForecastSystem/FVCOM_Global_v2/Run/20240306/output/hindcast_0001.nc';
@@ -28,3 +28,8 @@ for in = 1 : fn.node
 end
 mod2 = mod0 - mod1 - T_mod.ref; 
 mod3 = pl66tn(mod2, 1, 33);
+
+%% Method 2
+[NAME,FREQ,TIDECON,XOUT]=t_tide(1:10,'start time',[2016,1,1,0,0,0],'latitude',22,'rayleigh',['M2']);
+zhenfu=TIDECON(:,1);
+chijiao=TIDECON(:,3);

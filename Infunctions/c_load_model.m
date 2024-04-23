@@ -129,7 +129,9 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
             Ttimes = Mdatetime();
         end
     case 'WRF2FVCOM'
-        varList = {'T2', 'U10', 'V10', 'SLP', 'Precipitation', 'Evaporation', '', '', '', '', ''};
+        varList = {'T2', 'U10', 'V10', 'SLP', 'Precipitation', 'Evaporation', ...
+                   'Stress_U', 'Stress_V', 'Net_Heat', 'Shortwave', 'Longwave', ...
+                   'Sensible', 'Latent', 'SPQ', 'SAT', 'cloud_cover'};
         VarStruct = read_var_list(fin, varList);
         if nc_var_exist(fin, 'Times')
             Times = ncread(fin, 'Times')';

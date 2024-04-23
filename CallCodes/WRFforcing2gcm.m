@@ -37,7 +37,7 @@ function WRFforcing2gcm(conf_file, yyyymmdd)
     lon_s = para_conf.Lon_source';
     lat_s = para_conf.Lat_source';
     Indir = para_conf.ForcingDir;
-    Outdir = para_conf.ModelDir;
+    Outdir = fullfile(para_conf.ModelDir, 'forcing');
     makedirs(Outdir)
     ddt = datetime(num2str(yyyymmdd),"Format","yyyyMMdd");
     fin = fullfile(Indir, char(ddt), 'globalforcing.nc');
@@ -67,9 +67,9 @@ function WRFforcing2gcm(conf_file, yyyymmdd)
     spq_1   = interpn(lon_g, lat_g, 1:size(u10_0, 3), spq_0,  lon_s, lat_s, (1:size(u10_0, 3)));
 
     write_bin(fullfile(Outdir,'Precipitation'),  prec_1, 'w', 'b', 'float32')
-    write_bin(fullfile(Outdir,'T2m'),            t2m_1,  'w', 'b', 'float32')
-    write_bin(fullfile(Outdir,'Shortwave'),      sw_1,   'w', 'b', 'float32')
-    write_bin(fullfile(Outdir,'Longwave'),       lw_1,   'w', 'b', 'float32')
+    write_bin(fullfile(Outdir,'T2'),             t2m_1,  'w', 'b', 'float32')
+    write_bin(fullfile(Outdir,'Shortwave'),     -sw_1,   'w', 'b', 'float32')
+    write_bin(fullfile(Outdir,'Longwave'),      -lw_1,   'w', 'b', 'float32')
     write_bin(fullfile(Outdir,'U10'),            u10_1,  'w', 'b', 'float32')
     write_bin(fullfile(Outdir,'V10'),            v10_1,  'w', 'b', 'float32')
     write_bin(fullfile(Outdir,'SLP'),            slp_1,  'w', 'b', 'float32')
@@ -77,7 +77,7 @@ function WRFforcing2gcm(conf_file, yyyymmdd)
     write_bin(fullfile(Outdir,'Net_Heat'),       nh_1,   'w', 'b', 'float32')
     write_bin(fullfile(Outdir,'SPQ'),            spq_1,  'w', 'b', 'float32')
 
-    osprint2('INFO', 'U10 V10 T2m SLP Shortwave Longwave Precipitation SPQ Net_Heat Evaporation have been interpolated and written to')
+    osprint2('INFO', '"U10 V10 T2 SLP Shortwave Longwave Precipitation SPQ Net_Heat Evaporation" have been interpolated and written to')
     osprint2('INFO', sprintf('Outdir:  %s', Outdir))
 end
 

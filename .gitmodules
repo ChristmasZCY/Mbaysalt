@@ -58,3 +58,7 @@
 	path = Exfunctions/htool
 	url = https://github.com/SiqiLiOcean/htool.git
 
+[submodule "Exfunctions/TMDToolbox_v3_0"]
+	path = Exfunctions/TMDToolbox_v3_0
+	url = https://github.com/chadagreene/Tide-Model-Driver.git
+

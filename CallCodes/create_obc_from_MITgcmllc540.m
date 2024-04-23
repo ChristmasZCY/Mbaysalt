@@ -24,9 +24,9 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     para_conf = read_conf(conf_file);
     Method_interpn = para_conf.Method_interpn;  % 'Siqi_interp' or 'knnsearch' 插值方法
     GCMll540_grid = para_conf.NestingGridFile_1;  % Nesting grid file
-    GCMSCS_XCFile = para_conf.GCMSCS_XCFile; % GCMSCS grid file
-    GCMSCS_YCFile = para_conf.GCMSCS_YCFile; % GCMSCS grid file
-    GCMSCS_RCFile = para_conf.GCMSCS_RCFile; % GCMSCS grid file
+    XCFile = para_conf.XCFile;  % GCMSCS grid file
+    YCFile = para_conf.YCFile;  % GCMSCS grid file
+    RCFile = para_conf.RCFile;  % GCMSCS grid file
     Inputpath = para_conf.NestingDir_1;  % Nesting输入文件路径
     Outputpath = para_conf.ModelDir;  % 输出文件路径
 
@@ -38,26 +38,27 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     XCNesting_1 = GridNesting_1.XC;
     YCNesting_1 = GridNesting_1.YC;
     RCNesting_1 = GridNesting_1.RC;
+    AngleCSNesting_1 = GridNesting_1.AngleCS;
+    AngleSNNesting_1 = GridNesting_1.AngleSN;
 
-    XC_dst = rdmds(GCMSCS_XCFile);
-    YC_dst = rdmds(GCMSCS_YCFile);
-    RC_dst = squeeze(rdmds(GCMSCS_RCFile));
-    AngleCS = rdmds(para_conf.AngleCSFile);
-    AngleSN = rdmds(para_conf.AngleSNFile);
+    XC_dst = rdmds(XCFile);
+    YC_dst = rdmds(YCFile);
+    RC_dst = squeeze(rdmds(RCFile));
 
     dmfile = struct();
-    steps = 24;
+    steps = 25;
     Times = NaT(steps,1);
     Times.Format = 'yyyyMMddHH';
     T1 = zeros(numel(GridNesting_1.XC), length(GridNesting_1.RC), steps);
     S1 = zeros(numel(GridNesting_1.XC), length(GridNesting_1.RC), steps);
     U1 = zeros(numel(GridNesting_1.XC), length(GridNesting_1.RC), steps);
     V1 = zeros(numel(GridNesting_1.XC), length(GridNesting_1.RC), steps);
-    AngleCS = repmat(AngleCS, [1,length(GridNesting_1.RC),steps]);
-    AngleSN = repmat(AngleSN, [1,length(GridNesting_1.RC),steps]);
+    AngleCS = repmat(AngleCSNesting_1, [1,length(GridNesting_1.RC)]);
+    AngleSN = repmat(AngleSNNesting_1, [1,length(GridNesting_1.RC)]);
 
     for ih = 1 : steps
         Times(ih) = ddt + hours(ih-1);
+        disp(['Reading data at time: ', char(Times(ih))])
         dmfile(ih).T = fullfile(Inputpath,[char(ddt),'/T.',char(Times(ih))]); % 输入文件
         t1 = fORC([dmfile(ih).T '.data']);
         T1(:,:,ih) = reshape(t1,numel(GridNesting_1.XC),length(GridNesting_1.RC)); clear t1

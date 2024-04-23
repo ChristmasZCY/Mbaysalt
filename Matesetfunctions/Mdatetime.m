@@ -141,7 +141,7 @@ classdef Mdatetime
             %}
             obj.time = value;
             Times_new = cftime(obj.time, obj.units);
-            if ~isempty(obj.Times) && ~isnat(obj.Times)
+            if ~isempty(obj.Times) % && ~isnat(obj.Times)
                 if ~isequaln(Times_new, obj.Times)
                     obj.Times = cftime(obj.time,obj.units);
                     obj.time = posixtime(obj.Times);
