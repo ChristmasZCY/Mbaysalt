@@ -187,5 +187,25 @@
             {"name":"SSS",  "kind":"required", "type":["scalar"], "purpose":"SSS"},
             {"name":"D_pCO2",  "kind":"required", "type":["scalar"], "purpose":"D_pCO2"}],
         "outputs":[
-            {"name":"FCO2", "type":["scalar"], "purpose":"scalar"}]}
+            {"name":"FCO2", "type":["scalar"], "purpose":"scalar"}]},
+    "calc_contour_area":{
+        "inputs":[
+            {"name":"C",  "kind":"required", "type":["handle"], "purpose":"cout"},
+            {"name":"num",  "kind":"required", "type":["numeric"], "purpose":"number of areas"}],
+        "outputs":[
+            {"name":"Area", "type":["scalar"], "purpose":"Area"}]},
+    "calc_contour_area":{
+        "inputs":[
+            {"name":"h",  "kind":"required", "type":["handle"], "purpose":"handle"},
+            {"name":"num",  "kind":"positional", "type":["numeric"], "purpose":"number of areas"}],
+        "outputs":[
+            {"name":"Area", "type":["scalar"], "purpose":"Area"}]},
+    "calc_nearest_node":{
+        "inputs":[
+            {"name":"fgrid",  "kind":"required", "type":["struct"], "purpose":"FVCOM grid"},
+            {"name":"lon_dst",  "kind":"required", "type":["numeric"], "purpose":"lon destination"},
+            {"name":"lat_dst",  "kind":"required", "type":["numeric"], "purpose":"lat destination"}],
+        "outputs":[
+            {"name":"Node", "type":["scalar"], "purpose":"Node number"},
+            {"name":"Distance", "type":["scalar"], "purpose":"Distance"}]}
 }

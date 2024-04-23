@@ -8,7 +8,7 @@ function [Lon,varargout] = ll_to_ll(lon,varargin)
     %       varargout{n}: changed value  || required: True || type: double || format: martix
     % =================================================================================================================
     % Example:
-    %       [Lon,temp,salt] = ll_to_ll(lon,temp,salt)
+    %       [Lon,temp,salt] = ll_to_ll(lon,temp,salt);
     % =================================================================================================================
 
     % check input
@@ -19,6 +19,10 @@ function [Lon,varargout] = ll_to_ll(lon,varargin)
     % check lon and lat
     if ~isvector(lon)
         error('ll_to_ll:input','lon must be vector.');
+    end
+
+    if length(unique(lon)) ~= length(lon)
+        error('ll_to_ll:input','There is same value at lon.');
     end
 
     % check lon and lat format
@@ -102,7 +106,7 @@ function [Lon,varargout] = ll_to_ll(lon,varargin)
     % 可以看出，ele 的最后一个维度的大小就是 varargout 的length, 但是由于输入的变量的维度数不同，所以需要使方法来拆分 ele
     % ================
 
-    if length(varargin) == 1
+    if isscalar(varargin)  % length(varargin) == 1
         varargout{1} = ele;
     else
         switch Method_split_ele

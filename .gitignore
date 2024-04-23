@@ -31,6 +31,8 @@ Exfunctions/m_map1.4.zip
 Exfunctions/nctoolbox
 Exfunctions/cdt
 Exfunctions/TMDToolbox
+Exfunctions/TMDToolbox_v2_5
+Exfunctions/TMDToolbox_v3_0
 Exfunctions/vtkToolbox
 Exfunctions/kmz2struct
 Exfunctions/inpolygons-pkg
@@ -45,6 +47,8 @@ Docs/pics
 Data/T_mod.mat
 !/Savefiles
 References/SiqiLi/*
+References/serofeev/*
+References/Vim键盘图.gif
 Htmls/*
 
 # Personal files #

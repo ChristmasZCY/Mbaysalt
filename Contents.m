@@ -49,6 +49,8 @@
 %   set_proxy.m                                 -  Set proxy by system command
 %   calc_validation.m                           -  Calculate the validation of the model
 %   calc_casfco2.m                              -  Calculate the casfco2, thr windSpeed SST SSS, teached by Lijun Song
+%   calc_contour_area.m                         -  Calculate the area of the contour
+%   calc_nearest_node.m                         -  Calculate the nearest node and distance from FVCOM grid
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -253,6 +255,10 @@
 %   Example_WindRose.m                          -  Example for WindRose toolbox
 %   Example_scaterdensity_Wcx.m                 -  Example for scatterdensity by Wcx
 %   Example_read_draw_christmas.m               -  Example for read and draw by Christmas
+%   Example_filter.m                            -  Example for filter
+%   Example_smooth.m                            -  Example for smooth
+%   Example_nctoolbox.m                         -  Example for nctoolbox
+%   Example_ellipse.m                           -  Example for ellipse
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
@@ -309,9 +315,10 @@
 %   m_map                                       -  m_map toolbox(v1.4o)                        ||  https://www.eoas.ubc.ca/~rich/map.html  &&  https://www.eoas.ubc.ca/~rich/mapug.html
 %   CDT                                         -  Climate Data Toolbox                        ||  https://github.com/chadagreene/CDT
 %   t_tide                                      -  T_Tide Harmonic Analysis Toolbox(v1.5beta)  ||  https://www.eoas.ubc.ca/~rich/#T_Tide
-%   nctoolbox                                   -  NCTOOLBOX                                   ||  https://github.com/nctoolbox/nctoolbox
+%   nctoolbox                                   -  NCTOOLBOX                                   ||  https://github.com/nctoolbox/nctoolbox | http://nctoolbox.github.io/nctoolbox/
 %   ZoomPlot                    (optional)      -  ZoomPlot toolbox                            ||  https://github.com/iqiukp/ZoomPlot-MATLAB
-%   TMD                         (optional)      -  Tidal Model Driver                          ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/75599-tide-model-driver-tmd-version-2-5-toolbox-for-matlab
+%   TMD_v2.5                    (optional)      -  Tidal Model Driver                          ||  https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5 | https://www.mathworks.com/matlabcentral/fileexchange/75599-tide-model-driver-tmd-version-2-5-toolbox-for-matlab
+%   TMD_v3.0                    (optional)      -  Tidal Model Driver                          ||  https://github.com/chadagreene/Tide-Model-Driver | https://www.mathworks.com/matlabcentral/fileexchange/133417-tide-model-driver-tmd-version-3-0
 %   vtkToolbox                  (optional)      -  VTK toolbox                                 ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/94993-vtktoolbox
 %   kmz2struct                  (optional)      -  kmz2struct toolbox                          ||  https://github.com/njellingson/kmz2struct
 %   inpolygons-pkg              (optional)      -  inpolygons-pkg toolbox                      ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/7187-inpolygons
@@ -320,6 +327,7 @@
 %   WindRose                    (optional)      -  WindRose toolbox                            ||  https://dpereira.asempyme.com/windrose/
 %   MITgcmToolbox               (optional)      -  MITgcm matlab toolbox                       ||  hhttps://github.com/MITgcm/MITgcm/tree/master/utils/matlab
 %   LanczosFilter               (optional)      -  LanczosFilter                               ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/14041-lanczosfilter-m
+%   ellipse                     (optional)      -  ellipse toolbox                             ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/289-ellipse-m
 %
 %                                         Extend Exfunctions
 %   matWRF                                      -  Extend matWRF toolbox

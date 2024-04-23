@@ -29,6 +29,8 @@ function varargout = Mainpath(varargin)
     %       2024-04-04:     Added noset,   by Christmas;
     %       2024-04-07:     Fixed init, change noset,    by Christmas;
     %       2024-04-18:     Added lanczosfilter, CallCodes, by Christmas;
+    %       2024-04-23:     Changed TMDToolbox to TMDToolbox_v2_5,  by Christmas;
+    %       2024-04-23:     Added TMDToolbox_v3_0, ellipse,  by Christmas;
     % =================================================================================================================
     % Examples:
     %       Mainpath                        % Add all path
@@ -184,7 +186,8 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/FVCOM_NML"
         "Exfunctions/htool"
         "Exfunctions/ZoomPlot"
-        "Exfunctions/TMDToolbox"
+        "Exfunctions/TMDToolbox_v2_5"
+        "Exfunctions/TMDToolbox_v3_0"
         "Exfunctions/vtkToolbox"
         "Exfunctions/kmz2struct"
         "Exfunctions/inpolygons-pkg"
@@ -199,6 +202,7 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/MITgcmTools"
         "Exfunctions/DHIMatlabToolbox"
         "Exfunctions/lanczosfilter"
+        "Exfunctions/ellipse"
         ];
     FunE = cellstr(FunE);
 
@@ -444,17 +448,33 @@ function [STATUS, CLONES] = download_pkgs()
             end
         end
 
-        if para_conf.TMDToolbox  % TMDToolbox
+        if para_conf.TMDToolbox_v2_5  % TMDToolbox_v2.5
             if ~(exist('TMD','file') == 2)
                 url = fullfile(git_url, 'EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git');  % https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git
-                disp('---------> Cloning TMDToolbox toolbox')
+                disp('---------> Cloning TMDToolbox_v2_5 toolbox')
                 switch lower(Git.method)
                 case {'cmd'}
-                    txt = sprintf('git clone %s %s%s', url, Edir, 'TMDToolbox');
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'TMDToolbox_v2_5');
                     disp(txt)
                     system(txt);
                 case {'matlab'}
-                    CLONES.tmdtoolbox = gitclone(url,[Edir, 'TMDToolbox']);
+                    CLONES.tmdtoolbox = gitclone(url,[Edir, 'TMDToolbox_v2_5']);
+                end
+                STATUS = 1;
+            end
+        end
+
+        if para_conf.TMDToolbox_v3_0  % TMDToolbox_v3_0
+            if ~(exist('TPXO9_atlas_v5_to_NetCDF','file') == 2)
+                url = fullfile(git_url, 'chadagreene/Tide-Model-Driver.git');  % git clone https://github.com/chadagreene/Tide-Model-Driver.git
+                disp('---------> Cloning TMDToolbox_v3_0 toolbox')
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'TMDToolbox_v3_0');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.tmdtoolbox = gitclone(url,[Edir, 'TMDToolbox_v3_0']);
                 end
                 STATUS = 1;
             end
