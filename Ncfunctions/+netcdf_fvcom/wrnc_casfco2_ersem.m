@@ -96,7 +96,7 @@ function wrnc_casfco2_ersem(ncid,Lon,Lat,time,Casfco2,varargin)
     netcdf.putAtt(ncid, TIME_id, 'end_date',   TIME_end_date);   % 时间char
 
     netcdf.putAtt(ncid, casfco2_id, 'units',       'mmol C/m^2/d');                  % CASFco2
-    netcdf.putAtt(ncid, casfco2_id, 'long_name',   'Carbonate air-sea flux of CO2'); % CASFco2
+    netcdf.putAtt(ncid, casfco2_id, 'long_name',   'Carbonate air-sea flux of CO2, negative when ocean loses CO2'); % CASFco2
     netcdf.putAtt(ncid, casfco2_id, 'coordinates', 'longitude latitude time');        % CASFco2
     netcdf.putAtt(ncid, casfco2_id, 'clim',         [-300,300])
 

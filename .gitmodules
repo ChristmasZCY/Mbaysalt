@@ -14,51 +14,79 @@
 	path = Exfunctions/matWRF
 	url = https://github.com/SiqiLiOcean/matWRF.git
 
-[submodule "Exfunctions/nctoolbox"]
-	path = Exfunctions/nctoolbox
-	url = https://github.com/nctoolbox/nctoolbox.git
-
-[submodule "Exfunctions/FVCOM_NML"]
-	path = Exfunctions/FVCOM_NML
-	url = https://github.com/SiqiLiOcean/FVCOM_NML.git
-
-[submodule "Exfunctions/OceanData"]
-	path = Exfunctions/OceanData
-	url = https://github.com/ChristmasZCY/OceanData.git
-
-[submodule "Exfunctions/ZoomPlot"]
-	path = Exfunctions/ZoomPlot
-	url = https://github.com/iqiukp/ZoomPlot-MATLAB.git
-
-[submodule "Exfunctions/vtkToolbox"]
-	path = Exfunctions/vtkToolbox
-	url = https://github.com/KIT-IBT/vtkToolbox.git
-
-[submodule "Exfunctions/TMDToolbox"]
-	path = Exfunctions/TMDToolbox
-	url = https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git
-
 [submodule "Exfunctions/HYCOM2FVCOM"]
 	path = Exfunctions/HYCOM2FVCOM
 	url = https://github.com/SiqiLiOcean/HYCOM2FVCOM.git
-
-[submodule "Exfunctions/kmz2struct"]
-	path = Exfunctions/kmz2struct
-	url = https://github.com/njellingson/kmz2struct.git
 
 [submodule "Exfunctions/WRF2FVCOM"]
 	path = Exfunctions/WRF2FVCOM
 	url = https://github.com/SiqiLiOcean/WRF2FVCOM.git
 
+[submodule "Exfunctions/OceanData"]
+	path = Exfunctions/OceanData
+	url = https://github.com/ChristmasZCY/OceanData.git
+
+[submodule "Exfunctions/FVCOM_NML"]
+	path = Exfunctions/FVCOM_NML
+	url = https://github.com/SiqiLiOcean/FVCOM_NML.git
+
+[submodule "Exfunctions/nctoolbox"]
+	path = Exfunctions/nctoolbox
+	url = https://github.com/nctoolbox/nctoolbox.git
+
+[submodule "Exfunctions/cdt"]
+	path = Exfunctions/cdt
+	url = https://github.com/chadagreene/CDT.git
+
+[submodule "Exfunctions/vtkToolbox"]
+	path = Exfunctions/vtkToolbox
+	url = https://github.com/KIT-IBT/vtkToolbox.git
+
+[submodule "Exfunctions/TMDToolbox_v2_5"]
+	path = Exfunctions/TMDToolbox_v2_5
+	url = https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git
+
+[submodule "Exfunctions/TMDToolbox_v3_0"]
+	path = Exfunctions/TMDToolbox_v3_0
+	url = https://github.com/chadagreene/Tide-Model-Driver.git
+
+[submodule "Exfunctions/kmz2struct"]
+	path = Exfunctions/kmz2struct
+	url = https://github.com/njellingson/kmz2struct.git
+
 [submodule "Exfunctions/inpolygons-pkg"]
 	path = Exfunctions/inpolygons-pkg
 	url = https://github.com/kakearney/inpolygons-pkg.git
+
+[submodule "Exfunctions/JSONLab"]
+	path = Exfunctions/JSONLab
+	url = https://github.com/fangq/jsonlab.git
+
+[submodule "Exfunctions/OceanMesh2D"]
+	path = Exfunctions/OceanMesh2D
+	url = https://github.com/CHLNDDEV/OceanMesh2D.git
+
+[submodule "Exfunctions/ann_wrapper"]
+	path = Exfunctions/ann_wrapper
+	url = https://github.com/shaibagon/ann_wrapper.git
+
+[submodule "Exfunctions/ZoomPlot"]
+	path = Exfunctions/ZoomPlot
+	url = https://github.com/iqiukp/ZoomPlot-MATLAB
 
 [submodule "Exfunctions/htool"]
 	path = Exfunctions/htool
 	url = https://github.com/SiqiLiOcean/htool.git
 
-[submodule "Exfunctions/TMDToolbox_v3_0"]
-	path = Exfunctions/TMDToolbox_v3_0
-	url = https://github.com/chadagreene/Tide-Model-Driver.git
+[submodule "Exfunctions/export_fig"]
+	path = Exfunctions/export_fig
+	url = https://github.com/altmany/export_fig.git
+
+[submodule "Exfunctions/plot_google_map"]
+	path = Exfunctions/plot_google_map
+	url = https://github.com/zoharby/plot_google_map.git
+
+[submodule "Exfunctions/genpath2"]
+	path = Exfunctions/genpath2
+	url = https://github.com/ssordopalacios/matlab-genpath2
 

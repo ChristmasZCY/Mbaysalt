@@ -6,5 +6,11 @@
             {"name":"Parameter", "kind":"positional","type":["choices={'rm','noclone','add','cd'}"],"purpose":"Parameter"},
             {"name":"Init", "kind":"namevalue","type":["logical","scalar"],"purpose":"Initialization"},
             {"name":"noset", "kind":"namevalue","type":["logical","scalar"],"purpose":"Do not set pref"}],
+        "outputs":[]},
+    "ST_Mbaysalt": {
+        "inputs":[
+            {"name":"Parameter", "kind":"positional","type":["choices={'rm','noclone','add','cd'}"],"purpose":"Parameter"},
+            {"name":"init", "kind":"flag","type":["choices={'init'}"],"purpose":"Initialization"}],
         "outputs":[]}
 }
+

@@ -18,27 +18,42 @@ Thumbs.db
 
 # Exfunctions files #
 ######################
+Exfunctions/matFigure
+Exfunctions/matFVCOM
 Exfunctions/matNC
 Exfunctions/matWRF
-Exfunctions/matFVCOM
-Exfunctions/matFigure
-Exfunctions/FVCOM_NML
+Exfunctions/HYCOM2FVCOM
+Exfunctions/WRF2FVCOM
 Exfunctions/OceanData
-Exfunctions/t_tide
-Exfunctions/m_map
-Exfunctions/*.zip
-Exfunctions/m_map1.4.zip
+Exfunctions/FVCOM_NML
 Exfunctions/nctoolbox
 Exfunctions/cdt
-Exfunctions/TMDToolbox
+Exfunctions/vtkToolbox
 Exfunctions/TMDToolbox_v2_5
 Exfunctions/TMDToolbox_v3_0
-Exfunctions/vtkToolbox
 Exfunctions/kmz2struct
 Exfunctions/inpolygons-pkg
-Exfunctions/gsw_matlab_v3_06_16
+Exfunctions/JSONLab
+Exfunctions/OceanMesh2D
+Exfunctions/ann_wrapper
+Exfunctions/ZoomPlot
+Exfunctions/htool
+Exfunctions/export_fig
+
+Exfunctions/m_map
+Exfunctions/t_tide
+Exfunctions/gshhs/
+Exfunctions/etopo1/
 Exfunctions/seawater_ver3_3.1
+Exfunctions/gsw_matlab_v3_06_16
+Exfunctions/WindRose
+Exfunctions/mexcdf
 Exfunctions/DHIMatlabToolbox
+
+Exfunctions/mexcdf-svn-r4054/
+Exfunctions/*.zip
+
+# Docs files #
 Docs/Communication.md
 Docs/pics
 
@@ -57,4 +72,3 @@ Htmls/*
 !**/.gitkeep
 **/*.m~
 **/*.asv
-

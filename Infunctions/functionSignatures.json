@@ -207,5 +207,28 @@
             {"name":"lat_dst",  "kind":"required", "type":["numeric"], "purpose":"lat destination"}],
         "outputs":[
             {"name":"Node", "type":["scalar"], "purpose":"Node number"},
-            {"name":"Distance", "type":["scalar"], "purpose":"Distance"}]}
+            {"name":"Distance", "type":["scalar"], "purpose":"Distance"}]},
+    "cutout_xy":{
+        "inputs":[
+            {"name":"xlims",  "kind":"required", "type":["vector", "numeric"], "purpose":"xlims"},
+            {"name":"ylims",  "kind":"required", "type":["vector", "numeric"], "purpose":"ylims"},
+            {"name":"x_src",  "kind":"required", "type":["numeric"], "purpose":"x Source"},
+            {"name":"y_src",  "kind":"required", "type":["numeric"], "purpose":"y Source"},
+            {"name":"v_src",  "kind":"required", "type":["numeric"], "purpose":"value Source"}],
+        "outputs":[
+            {"name":"x_dst", "type":["scalar"], "purpose":"x Destination"},
+            {"name":"y_dst", "type":["scalar"], "purpose":"y Destination"},
+            {"name":"v_dst", "type":["scalar"], "purpose":"value Destination"},
+            {"name":"SIZE",  "type":["struct"], "purpose":"SIZE of all"},
+            {"name":"NO",  "type":["struct"], "purpose":"index of left"}]},
+    "zoom_ploygon":{
+        "inputs":[
+            {"name":"x_src",  "kind":"required", "type":["numeric"], "purpose":"x Source"},
+            {"name":"y_src",  "kind":"required", "type":["numeric"], "purpose":"y Source"},
+            {"name":"figOn",  "kind":"flag", "type":["choices={'figOn'}"], "purpose":"figOn or not"},
+            {"name":"varargin",  "kind":"required", "type":["vector", "numeric"], "purpose":"varargin for polybuffer", "repeating":true}],
+        "outputs":[
+            {"name":"x_dst", "type":["scalar"], "purpose":"x Destination"},
+            {"name":"y_dst", "type":["scalar"], "purpose":"y Destination"},
+            {"name":"bdy", "type":["struct"], "purpose":"boundary"}]}
 }

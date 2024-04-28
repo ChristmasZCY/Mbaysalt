@@ -30,7 +30,8 @@ function varargout = Mainpath(varargin)
     %       2024-04-07:     Fixed init, change noset,    by Christmas;
     %       2024-04-18:     Added lanczosfilter, CallCodes, by Christmas;
     %       2024-04-23:     Changed TMDToolbox to TMDToolbox_v2_5,  by Christmas;
-    %       2024-04-23:     Added TMDToolbox_v3_0, ellipse,  by Christmas;
+    %       2024-04-23:     Added TMDToolbox_v3_0, ellipse, JSONLab, MEXNC,  by Christmas;
+    %       2024-04-26:     Added OceanMesh2D, ann_wrapper,  by Christmas;
     % =================================================================================================================
     % Examples:
     %       Mainpath                        % Add all path
@@ -96,7 +97,7 @@ function varargout = Mainpath(varargin)
         [STATUS, CLONES] = download_pkgs();   % install all pkgs
         if STATUS == 1  % 如果Exfunctions增加了新工具包，则运行重置路径表
             [PATH_contains, PATH_toolbox] = Cmakepath;  % get all path
-            if isempty(noset)
+            if ~noset
                 setpref('Mbaysalt','PATH_contains',PATH_contains)
                 setpref('Mbaysalt','PATH_toolbox',PATH_toolbox)
             end
@@ -203,12 +204,18 @@ function [FunctionPath,path] = Cmakepath
         "Exfunctions/DHIMatlabToolbox"
         "Exfunctions/lanczosfilter"
         "Exfunctions/ellipse"
+        % "Exfunctions/mexcdf"
+        "Exfunctions/JSONLab"
+        % "Exfunctions/OceanMesh2D"
+        % "Exfunctions/ann_wrapper"
         ];
     FunE = cellstr(FunE);
 
     fun_genpath2 = path + division + 'Exfunctions/genpath2';
     addpath(fun_genpath2);
-    FunE = cellfun(@genpath2,FunE,repmat({".git"},length(FunE),1),'UniformOutput', false);
+
+    % FunE = cellfun(@genpath2,FunE,repmat({'.git'},length(FunE),1),'UniformOutput', false);
+    FunE = cellfun(@genpath2,FunE,repmat({{'.git', '.svn'}},length(FunE),1),'UniformOutput', false);
     FunE (cellfun (@isempty,FunE))= [];
 
     FunctionPath = [path; FunI; Cdata; FunE; fun_genpath2];
@@ -217,7 +224,9 @@ end
 
 function Caddpath(Path)
     cellfun(@addpath, Path);
-    Javaaddpath();  % add java path
+    if length(Path) > 1  % PATH_contains才会运行
+        Javaaddpath();  % add java path
+    end
 end
 
 
@@ -522,7 +531,55 @@ function [STATUS, CLONES] = download_pkgs()
                     disp(txt)
                     system(txt);
                 case {'matlab'}
-                    CLONES.kmz2struct = gitclone(url,[Edir, 'inploygons-pkg']);
+                    CLONES.inploygons_pkg = gitclone(url,[Edir, 'inploygons-pkg']);
+                end
+                STATUS = 1;
+            end
+        end
+
+        if para_conf.JSONLab  % JSONLab
+            if ~(exist('loadjson','file') == 2)
+                url = fullfile(git_url, 'fangq/jsonlab.git');  % https://github.com/fangq/jsonlab.git
+                disp('---------> Cloning JSONLab toolbox')
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'JSONLab');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.JSONLab = gitclone(url,[Edir, 'JSONLab']);
+                end
+                STATUS = 1;
+            end
+        end
+
+        if para_conf.OceanMesh2D  % OceanMesh2D
+            if ~(exist('setup_oceanmesh2d','file') == 2)
+                url = fullfile(git_url, 'CHLNDDEV/OceanMesh2D.git');  % https://github.com/CHLNDDEV/OceanMesh2D.git
+                disp('---------> Cloning OceanMesh2D toolbox')
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'OceanMesh2D');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.OceanMesh2D = gitclone(url,[Edir, 'OceanMesh2D']);
+                end
+                STATUS = 1;
+            end
+        end
+
+        if para_conf.ann_wrapper  % ann_wrapper
+            if ~(exist('ann_class_compile','file') == 2)
+                url = fullfile(git_url, 'shaibagon/ann_wrapper.git');  % https://github.com/shaibagon/ann_wrapper.git
+                disp('---------> Cloning ann_wrapper toolbox')
+                switch lower(Git.method)
+                case {'cmd'}
+                    txt = sprintf('git clone %s %s%s', url, Edir, 'ann_wrapper');
+                    disp(txt)
+                    system(txt);
+                case {'matlab'}
+                    CLONES.ann_wrapper = gitclone(url,[Edir, 'ann_wrapper']);
                 end
                 STATUS = 1;
             end
@@ -581,18 +638,18 @@ function [STATUS, CLONES] = download_pkgs()
                 download_urlfile(url, local_file)
             end
             if ~(exist('m_map1.4.zip', 'file') == 2)
-                    error('m_map1.4.zip is not downloaded, please download it manually');
+                error('m_map1.4.zip is not downloaded, please download it manually');
             else
                 unzip_file(local_file, [Edir]); %#ok<NBRAK2>
             end
             % delete(local_file);
             STATUS = 1;
-        end  
+        end
     end
 
-    % GSW Oceanographic Toolbox 
+    % GSW Oceanographic Toolbox
     if para_conf.GSW  % http://www.teos-10.org/software.htm
-        if ~(exist('gsw_check_functions', 'file') ==2)  % GSW Oceanographic Toolbox 
+        if ~(exist('gsw_check_functions', 'file') ==2)  % GSW Oceanographic Toolbox
             local_file = [Edir, 'gsw_matlab_v3_06_16.zip'];
             if ~(exist(local_file, 'file') ==2)  % No cache will download.
                 url = 'http://www.teos-10.org/software/gsw_matlab_v3_06_16.zip';
@@ -600,13 +657,13 @@ function [STATUS, CLONES] = download_pkgs()
                 download_urlfile(url, local_file);
             end
             if ~(exist('gsw_matlab_v3_06_16.zip', 'file') == 2)
-                    error('gsw_matlab_v3_06_16.zip is not downloaded, please download it manually');
+                error('gsw_matlab_v3_06_16.zip is not downloaded, please download it manually');
             else
-                unzip_file(local_file, [Edir, 'gsw_matlab_v3_06_16/']);
+                unzip_file(local_file, [Edir, 'gsw_matlab_v3_06_16']);
             end
             % delete(local_file);
             STATUS = 1;
-        end  
+        end
     end
 
     % seawater
@@ -619,13 +676,13 @@ function [STATUS, CLONES] = download_pkgs()
                 download_urlfile(url, local_file)
             end
             if ~(exist('seawater_ver3_3.1.zip', 'file') == 2)
-                    error('seawater_ver3_3.1.zip is not downloaded, please download it manually');
+                error('seawater_ver3_3.1.zip is not downloaded, please download it manually');
             else
-                unzip_file(local_file, [Edir, 'seawater_ver3_3.1/']);
+                unzip_file(local_file, [Edir, 'seawater_ver3_3.1']);
             end
             % delete(local_file);
             STATUS = 1;
-        end  
+        end
     end
 
     % WindRose             % https://ww2.mathworks.cn/matlabcentral/fileexchange/47248-wind-rose
@@ -638,15 +695,37 @@ function [STATUS, CLONES] = download_pkgs()
                 download_urlfile(url, local_file)
             end
             if ~(exist('WindRose.zip', 'file') == 2)
-                    error('WindRose.zip is not downloaded, please download it manually');
+                error('WindRose.zip is not downloaded, please download it manually');
             else
-                unzip_file(local_file, [Edir, 'WindRose/']);
+                unzip_file(local_file, [Edir, 'WindRose']);
             end
             % delete(local_file);
             STATUS = 1;
-        end  
+        end
     end
-    
+
+    % MEXNC             % https://sourceforge.net/code-snapshots/svn/m/me/mexcdf/svn/mexcdf-svn-r4054.zip
+    if para_conf.MEXNC  % https://sourceforge.net/p/mexcdf/svn/HEAD/tree/
+        if ~(exist('netcdf.m', 'file') ==2)  % MEXNC
+            local_file = [Edir, 'mexcdf-svn-r4054.zip'];
+            % TODO: YN
+            if ~(exist(local_file, 'file') ==2)  % No cache will download.
+                url = 'https://sourceforge.net/code-snapshots/svn/m/me/mexcdf/svn/mexcdf-svn-r4054.zip';
+                disp('---------> Downloading MEXNC toolbox');
+                download_urlfile(url, local_file)
+            end
+            if ~(exist('mexcdf-svn-r4054.zip', 'file') == 2)
+                error('mexcdf-svn-r4054.zip is not downloaded, please download it manually');
+            else
+                rmfiles([Edir, 'mexcdf-svn-r4054/'], [Edir, 'mexcdf'])
+                unzip_file(local_file, [Edir, '/']);  % mexcdf-svn-r4054
+                move_mexcdf_branch([Edir, 'mexcdf-svn-r4054'], [Edir, 'mexcdf']);
+            end
+            % delete(local_file);
+            STATUS = 1;
+        end
+    end
+
     % gshhs
     if para_conf.gshhs
         if ~(exist([Edir,'m_map/data/gshhs_c.b',], 'file') ==2) && (exist([Edir,'m_map/data',], 'file') ==7) % gshhs
@@ -657,13 +736,13 @@ function [STATUS, CLONES] = download_pkgs()
                 download_urlfile(url, local_file)
             end
             if ~(exist([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], 'file') == 2)
-                    error('gshhg-bin-2.3.7.zip is not downloaded, please download it manually');
+                error('gshhg-bin-2.3.7.zip is not downloaded, please download it manually');
             else
-                unzip_file(local_file, [Edir, 'm_map/data/']);
+                unzip_file(local_file, [Edir, 'm_map/data']);
             end
             % delete(local_file);
             STATUS = 1;
-        end  
+        end
     end
 
     % etopo1
@@ -718,16 +797,29 @@ function unzip_file(fileIn, dirOut)
     end
 end
 
-function Git = read_Git(structIn)
-    % 从struct中读取以Git_开头的变量，将变量写入到PATH结构体中
+function S2 = read_start(structIn, prefix)
+    % 从struct中读取以prefix_开头的变量，将变量写入到PATH结构体中
     % eg: 将struct中的Git_path写入到Git.path中
-    Git = struct();
+    S2 = struct();
     key = fieldnames(structIn);
+    pattern = sprintf('^%s_', prefix);  % ^Git_
     for i = 1 : length(key)
-        if ~isempty(regexp(key{i},'^Git_','once'))
-            Git.(key{i}(5:end)) = structIn.(key{i});
+        if ~isempty(regexp(key{i},pattern,'once'))
+            S2.(key{i}(length(pattern):end)) = structIn.(key{i});
         end
     end
+end
+
+function Git = read_Git(structIn)
+    Git = read_start(structIn,'Git');
+end
+
+function INSTALL = read_INSTALL(structIn)
+    INSTALL = read_start(structIn,'INSTALL');
+end
+
+function SETPATH = read_SETPATH(structIn)
+    SETPATH = read_start(structIn,'SETPATH');
 end
 
 function STATUS = Fixed_functions()
@@ -736,7 +828,8 @@ function STATUS = Fixed_functions()
     STATUS1 = fixed_t_tide();
     STATUS2 = fixed_setup_nctoolbox_java();
     STATUS3 = fixed_matFVCOM();
-    if any([STATUS1,STATUS2,STATUS3])
+    STATUS4 = fixed_MEXNC();
+    if any([STATUS1,STATUS2,STATUS3,STATUS4])
         STATUS = 1;
     end
 end
@@ -744,6 +837,7 @@ end
 function Install_functions()
     % Install toolbox
     % install_DHIMIKE()
+    install_ann_wrapper()
 end
 
 function STATUS = fixed_t_tide()
@@ -854,6 +948,53 @@ function install_DHIMIKE
         8. Run CreateZip.bat (optional)
         %}
     end
+end
+
+function STATUS = move_mexcdf_branch(Afolder, Ufolder)
+    % STATUS = 0;
+    Dir1 = {'mexnc', 'netcdf_toolbox', 'snctools'};
+    makedirs(Ufolder)  % [Edir, 'mexcdf']
+    for d = Dir1
+        copyfile(fullfile(Afolder, d{1}, '/trunk/*'), fullfile(Ufolder, d{1}))  % Afolder --> [Edir, 'mexcdf-svn-r4054']
+    end
+    rmfiles(Afolder)
+    clear d
+    STATUS = 1;
+end
+
+function STATUS = fixed_MEXNC()
+    % 为MEXNC工具包的ncmex.m文件添加ref参数
+    STATUS = 0;
+    m_filepath = which('ncmex.m');
+    if isempty(m_filepath)
+        return
+    end
+    % 备份源文件
+    path_DIR = fileparts(m_filepath);
+    m_filecopy = fullfile(path_DIR,'ncmex_origin.m');
+    if ~ exist(m_filecopy,'file')
+        copyfile(m_filepath,m_filecopy);
+    end
+    fileContent = fileread(m_filepath);  % 读取文件内容
+    searchStr = "error(' ## Unrecognized Matlab version.')";  % 定义要查找的字符串
+    replaceStr = "fcn = 'mexcdf53';";  % 定义替换后的字符串
+    newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
+    fid = fopen(m_filepath, 'w');  % 将修改后的内容写回文件
+    fwrite(fid, newContent);
+    fclose(fid);
+    STATUS = 1;
+end
+
+function install_ann_wrapper()
+    if exist('ann_class_compile','file') == 2
+        PWD = pwd();
+        m_filepath = which('ann_class_compile.m');
+        cd(fileparts(m_filepath))
+        ann_class_compile()
+        cd(PWD)
+        return
+    end
+
 end
 
 
