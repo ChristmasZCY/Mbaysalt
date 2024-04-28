@@ -39,6 +39,7 @@ Exfunctions/ann_wrapper
 Exfunctions/ZoomPlot
 Exfunctions/htool
 Exfunctions/export_fig
+Exfunctions/genpath2
 
 Exfunctions/m_map
 Exfunctions/t_tide
