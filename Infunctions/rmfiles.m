@@ -25,7 +25,7 @@ function rmfiles(varargin)
         file = strip(convertStringsToChars(varargin{num}));
         % if exist(file, 'file') || exist(file, 'dir')
         if isfolder(file)
-            rmdir(file);
+            rmdir(file, 's');
         elseif isfile(file)
             delete(file);
         end

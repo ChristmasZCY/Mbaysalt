@@ -28,7 +28,7 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     YCFile = para_conf.YCFile;  % GCMSCS grid file
     RCFile = para_conf.RCFile;  % GCMSCS grid file
     Inputpath = para_conf.NestingDir_1;  % Nesting输入文件路径
-    Outputpath = para_conf.ModelDir;  % 输出文件路径
+    Outputpath = fullfile(para_conf.ModelDir, 'obcs');  % 输出文件路径
 
     ddt = datetime(num2str(yyyymmdd),'InputFormat','yyyyMMdd');
     ddt.Format = 'yyyyMMdd';
@@ -49,30 +49,30 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     steps = 25;
     Times = NaT(steps,1);
     Times.Format = 'yyyyMMddHH';
-    T1 = zeros(numel(GridNesting_1.XC), length(GridNesting_1.RC), steps);
-    S1 = zeros(numel(GridNesting_1.XC), length(GridNesting_1.RC), steps);
-    U1 = zeros(numel(GridNesting_1.XC), length(GridNesting_1.RC), steps);
-    V1 = zeros(numel(GridNesting_1.XC), length(GridNesting_1.RC), steps);
-    AngleCS = repmat(AngleCSNesting_1, [1,length(GridNesting_1.RC)]);
-    AngleSN = repmat(AngleSNNesting_1, [1,length(GridNesting_1.RC)]);
+    T1 = zeros(numel(XCNesting_1), length(RCNesting_1), steps);
+    S1 = zeros(numel(XCNesting_1), length(RCNesting_1), steps);
+    U1 = zeros(numel(XCNesting_1), length(RCNesting_1), steps);
+    V1 = zeros(numel(XCNesting_1), length(RCNesting_1), steps);
+    AngleCS = repmat(AngleCSNesting_1, [1,length(RCNesting_1)]);
+    AngleSN = repmat(AngleSNNesting_1, [1,length(RCNesting_1)]);
 
     for ih = 1 : steps
         Times(ih) = ddt + hours(ih-1);
         disp(['Reading data at time: ', char(Times(ih))])
         dmfile(ih).T = fullfile(Inputpath,[char(ddt),'/T.',char(Times(ih))]); % 输入文件
         t1 = fORC([dmfile(ih).T '.data']);
-        T1(:,:,ih) = reshape(t1,numel(GridNesting_1.XC),length(GridNesting_1.RC)); clear t1
+        T1(:,:,ih) = reshape(t1,numel(XCNesting_1),length(RCNesting_1)); clear t1
 
         dmfile(ih).S = fullfile(Inputpath,[char(ddt),'/S.',char(Times(ih))]); % 输入文件
         s1 = fORC([dmfile(ih).S '.data']);
-        S1(:,:,ih) = reshape(s1,numel(GridNesting_1.XC),length(GridNesting_1.RC)); clear s1
+        S1(:,:,ih) = reshape(s1,numel(XCNesting_1),length(RCNesting_1)); clear s1
 
         dmfile(ih).U = fullfile(Inputpath,[char(ddt),'/U.',char(Times(ih))]); % 输入文件
         dmfile(ih).V = fullfile(Inputpath,[char(ddt),'/V.',char(Times(ih))]); % 输入文件
         u_1 = fORC([dmfile(ih).U '.data']);
         v_1 = fORC([dmfile(ih).V '.data']);
-        u_nz = reshape(u_1,numel(GridNesting_1.XC),length(GridNesting_1.RC)); clear u_1
-        v_nz = reshape(v_1,numel(GridNesting_1.XC),length(GridNesting_1.RC)); clear v_1
+        u_nz = reshape(u_1,numel(XCNesting_1),length(RCNesting_1)); clear u_1
+        v_nz = reshape(v_1,numel(XCNesting_1),length(RCNesting_1)); clear v_1
         u_nz_ll = AngleCS.*u_nz - AngleSN.*v_nz;
         v_nz_ll = AngleSN.*u_nz + AngleCS.*v_nz;
         U1(:,:,ih) = u_nz_ll; clear u_nz_ll u_nz
@@ -84,11 +84,27 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     V1_ntz = permute(V1,[1,3,2]);
     T1_ntz = permute(T1,[1,3,2]);
     S1_ntz = permute(S1,[1,3,2]);
+
+    % select region --> START
+    U1_ntz(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:)),:,:) = [];
+    V1_ntz(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:)),:,:) = [];
+    T1_ntz(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:)),:,:) = [];
+    S1_ntz(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:)),:,:) = [];
+    YCNesting_1(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:))) = [];
+    XCNesting_1(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:))) = [];
+    
+    U1_ntz(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:)),:,:) = [];
+    V1_ntz(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:)),:,:) = [];
+    T1_ntz(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:)),:,:) = [];
+    S1_ntz(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:)),:,:) = [];
+    XCNesting_1(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:))) = [];
+    YCNesting_1(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:))) = [];
     
     U1_ntz_linear = reshape(U1_ntz, [], length(RCNesting_1));
     V1_ntz_linear = reshape(V1_ntz, [], length(RCNesting_1));
     T1_ntz_linear = reshape(T1_ntz, [], length(RCNesting_1));
     S1_ntz_linear = reshape(S1_ntz, [], length(RCNesting_1));
+    % END <-- select region
     
     %% Vertical interp weigth
     tic
@@ -105,10 +121,10 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     S2_ntz_linear = interp_vertical_via_weight(S1_ntz_linear, weight_v);
     toc
 
-    U2_ntz = reshape(U2_ntz_linear, length(GridNesting_1.XC), steps, length(RC_dst));
-    V2_ntz = reshape(V2_ntz_linear, length(GridNesting_1.XC), steps, length(RC_dst));
-    T2_ntz = reshape(T2_ntz_linear, length(GridNesting_1.XC), steps, length(RC_dst));
-    S2_ntz = reshape(S2_ntz_linear, length(GridNesting_1.XC), steps, length(RC_dst));
+    U2_ntz = reshape(U2_ntz_linear, length(XCNesting_1), steps, length(RC_dst));
+    V2_ntz = reshape(V2_ntz_linear, length(XCNesting_1), steps, length(RC_dst));
+    T2_ntz = reshape(T2_ntz_linear, length(XCNesting_1), steps, length(RC_dst));
+    S2_ntz = reshape(S2_ntz_linear, length(XCNesting_1), steps, length(RC_dst));
 
     %% Gird interp weigth
     switch Method_interpn
@@ -156,6 +172,8 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     write_obc(V_obs, 'V_obc_llc', 'pathdir', Outputpath);
     write_obc(T_obs, 'T_obc_llc', 'pathdir', Outputpath);
     write_obc(S_obs, 'S_obc_llc', 'pathdir', Outputpath);
+
+    clear XCNesting_1 YCNesting_1 RCNesting_1
 end
 
 function Var = get_obc_from_region(var)

@@ -39,4 +39,8 @@ function jdata = json_load(file,varargin)
             jdata = loadjson(file);
     end
 
+    if ~isfield(jdata,'FILEPATH')
+        jdata.FILEPATH = file;
+    end
+
 end
