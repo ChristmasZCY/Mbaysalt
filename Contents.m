@@ -53,6 +53,7 @@
 %   calc_nearest_node.m                         -  Calculate the nearest node and distance from FVCOM grid
 %   cutout_xy.m                                 -  Cutout small region from a large region
 %   zoom_ploygon.m                              -  Zoom the polygon
+%   calc_model_time_step.m                      -  Calculate mode time step
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures

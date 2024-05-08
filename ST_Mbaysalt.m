@@ -12,24 +12,7 @@ function ST_Mbaysalt(varargin)
     % Returns:
     % =================================================================================================================
     % Updates:
-    %       2023-**-**:     Created, by Christmas;
-    %       2023-12-27:     Added check_command, OceanData, FVCOM_NML, by Christmas;
-    %       2024-01-02:     Added path pref, by Christmas;
-    %       2024-01-31:     Added gitclone(built-in) and return clones info, by Christmas;
-    %       2024-02-05:     Added 'cd' feature, by Christmas;
-    %       2024-02-22:     Added Exfunctions-kmz2struct, by Christmas;
-    %       2024-02-22:     Added Exfunctions/SupplementFiles for toolbox, by Christmas;
-    %       2024-03-17:     Added Exfunctions/inpolygons-pkg for toolbox, by Christmas;
-    %       2024-03-21:     Added seawater, GSW, WindRose toolbox , by Christmas; 
-    %       2024-03-21:     Extract download,unzip to function, by Christmas; 
-    %       2024-04-01:     Added Post_mitgcm, MITgcmTools, by Christmas; 
-    %       2024-04-03:     Added install DHI-MATLAB-Toolbox,   by Christmas;
-    %       2024-04-04:     Added noset,   by Christmas;
-    %       2024-04-07:     Fixed init, change noset,    by Christmas;
-    %       2024-04-18:     Added lanczosfilter, CallCodes, by Christmas;
-    %       2024-04-23:     Changed TMDToolbox to TMDToolbox_v2_5,  by Christmas;
-    %       2024-04-23:     Added TMDToolbox_v3_0, ellipse, JSONLab, mexcdf,  by Christmas;
-    %       2024-04-26:     Added OceanMesh2D, ann_wrapper,  by Christmas;
+    %       ****-**-**:     See Mainpath.m
     %       2024-04-26:     Code Refactoring, by Christmas;
     % =================================================================================================================
     % Examples:
@@ -100,6 +83,9 @@ function ST_Mbaysalt(varargin)
     
     if init
         STATUS = Fixed_functions(Jstruct);
+        if ispref('Mbaysalt')  % Fixed Mainpath 
+            rmpref('Mbaysalt')
+        end
     else
         STATUS = 0;
     end
@@ -285,6 +271,7 @@ function STATUS = install_ann_wrapper(Jstruct)
         cd(fileparts(m_filepath))
         ann_class_compile()
         cd(PWD)
+        STATUS = 1;
     end
     return
 end
@@ -340,7 +327,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
                 if ~(exist(pkg.CHECK{1},pkg.CHECK{2}) == str2double(pkg.CHECK{3})) && pkg.SETPATH  % 如果不同时判断pkg.SETPATH 当pkg.INSATLL && ~pkg.SETPATH 由于不在路径中检测不到会重复下载
                     pkg_url = replace(pkg.URL,'https://github.com',del_filesep(Git.mirror));  % mirror           
                     sprintf('---------> Cloning %s toolbox into %s', field, pkg.PATH)
-                    CLONES.(field) = git_clone(Git.method, pkg_url, pkg_path);
+                    CLONES(1).(field) = git_clone(Git.method, pkg_url, pkg_path);
                     STATUS1.(field) = 1;
                 end
                 clearvars txt field field_cell

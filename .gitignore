@@ -61,6 +61,7 @@ Docs/pics
 # Data files #
 ######################
 Data/T_mod.mat
+Data/api_key.mat
 !/Savefiles
 References/SiqiLi/*
 References/serofeev/*

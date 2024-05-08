@@ -290,7 +290,7 @@
         "matFVCOM": true,
         "mexcdf": true,
         "m_gshhs": true,
-        "ann_wrapper": false,
+        "ann_wrapper": true,
         "DHIMIKE": false},
     "supplement": {
         "matFVCOM": {
