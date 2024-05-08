@@ -302,7 +302,6 @@
 %
 %                                  Exfunctions  -  External functions for toolbox
 % =================================================================================================================
-%   git_clone.sh                                -  Clone git repository
 %   %%  Github
 %   matFigure                                   -  Figure toolbox                              ||  https://github.com/SiqiLiOcean/matFigure
 %   matFVCOM                                    -  FVCOM toolbox                               ||  https://github.com/SiqiLiOcean/matFVCOM
