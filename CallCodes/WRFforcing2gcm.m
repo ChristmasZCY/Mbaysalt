@@ -34,8 +34,8 @@ function WRFforcing2gcm(conf_file, yyyymmdd)
     end
 
     para_conf = read_conf(conf_file);
-    lon_s = para_conf.Lon_source';
-    lat_s = para_conf.Lat_source';
+    lon_s = calc_grid(para_conf.xStart, fORC(para_conf.dxFile));
+    lat_s = calc_grid(para_conf.yStart, fORC(para_conf.dyFile));
     Indir = para_conf.ForcingDir;
     Outdir = fullfile(para_conf.ModelDir, 'forcing');
     makedirs(Outdir)
@@ -94,3 +94,21 @@ function write_bin(filename, var, mode, machinefmt, precision)
     
 end
 
+function out = fORC(fin)
+    fid = fopen(fin);
+    if fid == -1
+        error(['File not found: ',fin])
+    end
+    out = fread(fid, inf, 'float32','b');
+    fclose(fid);
+end
+
+function pS = calc_grid(pStrat, dd)
+    % 根据起始点pointStart和每两个点的间距dd，计算网格点
+    % pStrat: 起始点 为一个数值
+    % dd: 间距 为一个1D数组
+    % 返回值：网格点 为一个1D数组
+    pS = pStrat + cumsum(dd);
+    return
+
+end

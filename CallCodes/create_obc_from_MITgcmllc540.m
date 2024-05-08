@@ -24,8 +24,8 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     para_conf = read_conf(conf_file);
     Method_interpn = para_conf.Method_interpn;  % 'Siqi_interp' or 'knnsearch' 插值方法
     GCMll540_grid = para_conf.NestingGridFile_1;  % Nesting grid file
-    XCFile = para_conf.XCFile;  % GCMSCS grid file
-    YCFile = para_conf.YCFile;  % GCMSCS grid file
+%    XCF.ile = para_conf.XCFile;  % GCMSCS grid file
+%    YCFile = para_conf.YCFile;  % GCMSCS grid file
     RCFile = para_conf.RCFile;  % GCMSCS grid file
     Inputpath = para_conf.NestingDir_1;  % Nesting输入文件路径
     Outputpath = fullfile(para_conf.ModelDir, 'obcs');  % 输出文件路径
@@ -41,8 +41,11 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     AngleCSNesting_1 = GridNesting_1.AngleCS;
     AngleSNNesting_1 = GridNesting_1.AngleSN;
 
-    XC_dst = rdmds(XCFile);
-    YC_dst = rdmds(YCFile);
+    XC_dst = calc_grid(para_conf.xStart, fORC(para_conf.dxFile));
+    YC_dst = calc_grid(para_conf.yStart, fORC(para_conf.dyFile));
+    [YC_dst, XC_dst] = meshgrid(YC_dst, XC_dst);
+%    XC_dst = rdmds(XCFile);
+%    YC_dst = rdmds(YCFile);
     RC_dst = squeeze(rdmds(RCFile));
 
     dmfile = struct();
@@ -86,19 +89,19 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     S1_ntz = permute(S1,[1,3,2]);
 
     % select region --> START
-    U1_ntz(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:)),:,:) = [];
-    V1_ntz(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:)),:,:) = [];
-    T1_ntz(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:)),:,:) = [];
-    S1_ntz(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:)),:,:) = [];
-    YCNesting_1(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:))) = [];
-    XCNesting_1(XCNesting_1<min(XC_dst(:)) | XCNesting_1>max(XC_dst(:))) = [];
+    U1_ntz(XCNesting_1<min(XC_dst(:))-1 | XCNesting_1>max(XC_dst(:))+1,:,:) = [];
+    V1_ntz(XCNesting_1<min(XC_dst(:))-1 | XCNesting_1>max(XC_dst(:))+1,:,:) = [];
+    T1_ntz(XCNesting_1<min(XC_dst(:))-1 | XCNesting_1>max(XC_dst(:))+1,:,:) = [];
+    S1_ntz(XCNesting_1<min(XC_dst(:))-1 | XCNesting_1>max(XC_dst(:))+1,:,:) = [];
+    YCNesting_1(XCNesting_1<min(XC_dst(:))-1 | XCNesting_1>max(XC_dst(:))+1) = [];
+    XCNesting_1(XCNesting_1<min(XC_dst(:))-1 | XCNesting_1>max(XC_dst(:))+1) = [];
     
-    U1_ntz(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:)),:,:) = [];
-    V1_ntz(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:)),:,:) = [];
-    T1_ntz(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:)),:,:) = [];
-    S1_ntz(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:)),:,:) = [];
-    XCNesting_1(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:))) = [];
-    YCNesting_1(YCNesting_1<min(YC_dst(:)) | YCNesting_1>max(YC_dst(:))) = [];
+    U1_ntz(YCNesting_1<min(YC_dst(:))-1 | YCNesting_1>max(YC_dst(:))+1,:,:) = [];
+    V1_ntz(YCNesting_1<min(YC_dst(:))-1 | YCNesting_1>max(YC_dst(:))+1,:,:) = [];
+    T1_ntz(YCNesting_1<min(YC_dst(:))-1 | YCNesting_1>max(YC_dst(:))+1,:,:) = [];
+    S1_ntz(YCNesting_1<min(YC_dst(:))-1 | YCNesting_1>max(YC_dst(:))+1,:,:) = [];
+    XCNesting_1(YCNesting_1<min(YC_dst(:))-1 | YCNesting_1>max(YC_dst(:))+1) = [];
+    YCNesting_1(YCNesting_1<min(YC_dst(:))-1 | YCNesting_1>max(YC_dst(:))+1) = [];
     
     U1_ntz_linear = reshape(U1_ntz, [], length(RCNesting_1));
     V1_ntz_linear = reshape(V1_ntz, [], length(RCNesting_1));
@@ -218,3 +221,12 @@ function out = fORC(fin)
     fclose(fid);
 end
 
+function pS = calc_grid(pStrat, dd)
+    % 根据起始点pointStart和每两个点的间距dd，计算网格点
+    % pStrat: 起始点 为一个数值
+    % dd: 间距 为一个1D数组
+    % 返回值：网格点 为一个1D数组
+    pS = pStrat + cumsum(dd);
+    return
+
+end
