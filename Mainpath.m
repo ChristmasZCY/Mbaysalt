@@ -48,6 +48,8 @@ function varargout = Mainpath(varargin)
         varargin
     end
 
+    warning('Not recommended now, please use "ST_Mbaysalt" instead of "Mainpath"!');
+
     cmd = 'add';
     for i = 1: length(varargin)
         switch lower(varargin{i})

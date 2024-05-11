@@ -80,8 +80,13 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             % (\.\d+)?：这是一个可选组，匹配点后跟一个或多个数字，代表次版本号。
             GridStruct = w_load_grid(fin,Global, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'WRF';
+        elseif nc_attrValue_exist(fin,'CF-1.6') && nc_attrValue_exist(fin,'ecmwf/mars-client/bin/grib_to_netcdf.bin','method','CONTAINS')
+            lon = ncread(fin, 'longitude');
+            lat = ncread(fin, 'latitude');
+            GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
+            GridStruct.ModelName = 'ECMWF';
         else
-            error('Just for WRF, WRF2FVCOM, WW3, FVCOM or Standard now !!!')
+            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF or Standard now !!!')
         end
         SWITCH.read_var = true;
     elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh')
@@ -157,6 +162,12 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
             Ttimes = Mdatetime(time);
         else
             Ttimes = Mdatetime();
+        end
+    case 'ECMWF'
+        varList = {'u10', 'v10', '', '', '', '', '', '', '', '', ''};
+        VarStruct = read_var_list(fin, varList);
+        if nc_var_exist(fin, 'time')
+            Ttimes = Mdatetime(ncdateread(fin, 'time'));
         end
     otherwise
         warning('Want read, but read nothing !!! ');
