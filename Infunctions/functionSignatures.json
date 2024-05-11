@@ -237,5 +237,66 @@
             {"name":"lon",  "kind":"required", "type":["numeric"], "purpose":"longitude"},
             {"name":"lat",  "kind":"required", "type":["numeric"], "purpose":"latitude"}],
         "outputs":[
-            {"name":"Time step", "type":["struct"], "purpose":"Time step"}]}
+            {"name":"Time step", "type":["struct"], "purpose":"Time step"}]},
+    "calc_geodistance": {
+        "inputs": [
+            {"name": "lon1", "kind": "required", "type": ["numeric"], "purpose": "lonArray1"},
+            {"name": "lat1", "kind": "required", "type": ["numeric"], "purpose": "latArray1"},
+            {"name": "lon2", "kind": "required", "type": ["numeric"], "purpose": "lonArray2"},
+            {"name": "lat2", "kind": "required", "type": ["numeric"], "purpose": "latArray2"}],
+        "outputs": [
+            {"name": "d", "type": ["scalar"], "purpose": "Distance"},
+            {"name": "dx", "type": ["scalar"], "purpose": "dx"},
+            {"name": "dy", "type": ["scalar"], "purpose": "dy"}]},
+    "calc_typhoonMove": {
+        "inputs": [
+            {"name": "lonC", "kind": "required", "type": ["numeric"], "purpose": "Lon_tyCenter"},
+            {"name": "latC", "kind": "required", "type": ["numeric"], "purpose": "Lat_tyCenter"},
+            {"name": "ddt_time", "kind": "required", "type": ["datetime"], "purpose": "ddt_time"},
+            {"name": "FillNan_off", "kind": "flag", "type": ["char","choices={'FillNan_off'}"], "purpose": "FillNan_off"}],
+        "outputs": [
+            {"name": "UV_center", "type": ["scalar"], "purpose": "Center of UV"},
+            {"name": "uE", "type": ["scalar"], "purpose": "u-east"},
+            {"name": "vN", "type": ["scalar"], "purpose": "v-north"}]},
+    "calc_overlayWind": {
+        "inputs": [
+            {"name": "Uh", "kind": "required", "type": ["numeric"], "purpose": "U_holland"},
+            {"name": "Vh", "kind": "required", "type": ["numeric"], "purpose": "V_holland"},
+            {"name": "Ug", "kind": "required", "type": ["numeric"], "purpose": "U_grid"},
+            {"name": "Vg", "kind": "required", "type": ["numeric"], "purpose": "V_grid"},
+            {"name": "c", "kind": "required", "type": ["numeric"], "purpose": "c"},
+            {"name": "method", "kind": "namevalue", "type": ["char","choices={'0814'}"], "purpose": "method"}],
+        "outputs": [
+            {"name": "u_dst", "type": ["scalar"], "purpose": "u_dst"},
+            {"name": "v_dst", "type": ["scalar"], "purpose": "v_dst"}]},
+    "calc_windHolland": {
+        "inputs": [
+            {"name": "Lon_grid", "kind": "required", "type": ["numeric"], "purpose": "Lon_grid"},
+            {"name": "Lat_grid", "kind": "required", "type": ["numeric"], "purpose": "Lat_grid"},
+            {"name": "lonC", "kind": "required", "type": ["numeric"], "purpose": "Lon_tyCenter"},
+            {"name": "latC", "kind": "required", "type": ["numeric"], "purpose": "Lat_tyCenter"},
+            {"name": "UV_tyCenter", "kind": "required", "type": ["numeric"], "purpose": "UV_tyCenter"},
+            {"name": "P0_tyCenter", "kind": "required", "type": ["numeric"], "purpose": "P0_tyCenter"},
+            {"name": "uE", "kind": "required", "type": ["numeric"], "purpose": "u-east"},
+            {"name": "vN", "kind": "required", "type": ["numeric"], "purpose": "v-north"},
+            {"name": "omiga", "kind": "namevalue", "type": ["numeric"], "purpose": "omiga"},
+            {"name": "P", "kind": "namevalue", "type": ["numeric"], "purpose": "pressure"},
+            {"name": "rou_a", "kind": "namevalue", "type": ["numeric"], "purpose": "rou_a"},
+            {"name": "C1", "kind": "namevalue", "type": ["numeric"], "purpose": "C1"},
+            {"name": "C2", "kind": "namevalue", "type": ["numeric"], "purpose": "C2"},
+            {"name": "betaa", "kind": "namevalue", "type": ["numeric"], "purpose": "beta"},
+            {"name": "INFO", "kind": "namevalue", "type": ["char","choices={'cprintf','osprint2','disp','fprintf','sprintf'}"], "purpose": "INFO"}],
+        "outputs": [
+            {"name": "Uh", "type": ["scalar"], "purpose": "U_holland"},
+            {"name": "Vh", "type": ["scalar"], "purpose": "V_holland"},
+            {"name": "c", "type": ["scalar"], "purpose": "c"}]},
+    "calc_adjust_winddir": {
+        "inputs": [
+            {"name": "lon_grid", "kind": "required", "type": ["numeric"], "purpose": "lon_grid"},
+            {"name": "lat_grid", "kind": "required", "type": ["numeric"], "purpose": "lat_grid"},
+            {"name": "lonC", "kind": "required", "type": ["numeric"], "purpose": "lon_tyCenter"},
+            {"name": "latC", "kind": "required", "type": ["numeric"], "purpose": "Lat_tyCenter"},
+            {"name": "spd", "kind": "required", "type": ["numeric"], "purpose": "windSpeed"},
+            {"name": "betaa", "kind": "required", "type": ["numeric"], "purpose": "beta"},
+            {"name": "C2", "kind": "required", "type": ["numeric"], "purpose": "C2"}]}
 }
