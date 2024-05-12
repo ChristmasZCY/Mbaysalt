@@ -298,5 +298,13 @@
             {"name": "latC", "kind": "required", "type": ["numeric"], "purpose": "Lat_tyCenter"},
             {"name": "spd", "kind": "required", "type": ["numeric"], "purpose": "windSpeed"},
             {"name": "betaa", "kind": "required", "type": ["numeric"], "purpose": "beta"},
-            {"name": "C2", "kind": "required", "type": ["numeric"], "purpose": "C2"}]}
+            {"name": "C2", "kind": "required", "type": ["numeric"], "purpose": "C2"}],
+        "outputs": [
+            {"name": "u", "type": ["scalar"], "purpose": "u"},
+            {"name": "v", "type": ["scalar"], "purpose": "v"}]},
+    "len":{
+        "inputs": [
+            {"name": "x", "kind": "required", "type": ["vector", "numeric"], "purpose": "x"}],
+        "outputs": [
+            {"name": "len", "type": ["scalar"], "purpose": "Length"}]}
 }

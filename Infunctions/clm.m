@@ -15,7 +15,7 @@ function clm(varargin)
     % =================================================================================================================
 
     arguments(Input,Repeating)
-        varargin
+        varargin {mustBeMember(varargin,{'clear','close all','clc'})}
     end
 
     if nargin == 0

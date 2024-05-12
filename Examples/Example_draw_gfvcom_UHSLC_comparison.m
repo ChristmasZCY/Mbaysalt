@@ -14,6 +14,20 @@ zeta = ncread(ffvcom, 'zeta', [1 it1], [Inf nt]);
 
 tlims = minmax(time);
 
+% download
+outdir = './data/';
+xlims = minmax(f.x);
+ylims = minmax(f.y);
+info = UHSLC_info('xlims', xlims, 'ylims', ylims);  % Get the data information
+ID = [info.id];
+UHSLC_download(ID, outdir);  % Download the data
+
+% Create the file list
+fins = arrayfun(@(x) [outdir '/UHSLC_zeta_' convertStringsToChars(x) '.nc'], ID, 'UniformOutput', false);
+
+% Read the data
+out = UHSLC_read(fins, 'tlims', tlims, 'Clean');
+
 % Create the file list
 ins = dir('./data/UHSLC_zeta_*');
 for i = 1 : length(ins)
@@ -22,7 +36,6 @@ end
 
 % Read the data
 sta = UHSLC_read(fins, 'tlims', tlims, 'Clean');
-
 
 figure
 hold on 
