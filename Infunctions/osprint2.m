@@ -44,7 +44,7 @@ function osprint2(level, message, options)
     mess_disp = [message,' '];
 
     switch level
-        case 'WARNING'
+        case {'WARNING','WARN'}
             color_l = '*[255, 165, 0]';
             color_m = [1,0.5,0];
         case 'INFO'
