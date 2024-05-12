@@ -61,8 +61,6 @@ Docs/pics
 # Data files #
 ######################
 Data/*
-!Data/.gitkeep
-!/Savefiles
 References/SiqiLi/*
 References/serofeev/*
 References/Vim键盘图.gif
