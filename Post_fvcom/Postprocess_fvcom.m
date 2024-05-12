@@ -26,6 +26,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-04-01:     Added two parameters at conf file, by Christmas;
     %       2024-04-04:     Added ua va,    by Christmas;
     %       2024-04-08:     Fixed 'struct()' to struct(''),    by Christmas;
+    %       2024-05-12:     Added check isempty(fncValue_nzt) in Siqi_interp,   by Christmas;
+    %       2024-05-12:     Fixed 'f_nc.x,f_nc.x' to 'f_nc.x,f_nc.y',   by Christmas;
+    %       2024-05-12:     Added disp info,   by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20240401,1)
@@ -116,7 +119,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         elseif strcmp(interval,"hourly")
             ncfile = fullfile(Inputpath,[char(getdate),filesep, ModelOUTD, filesep, file_Mcasename,'_',num2str(dr,'%04d'),'.nc']); % 输入文件
         end
-        clear  ModelOUTD
+        osprint2('INFO', [pad('Reading from ', Text_len,'right'),'--> ', ncfile]);
+        clear ModelOUTD
 
         if dr == 1 % 只有第一次需要读取经纬度
             SWITCH.read_ll_from_nc = para_conf.Switch_read_ll_from_nc; % 是否从nc文件中读取经纬度  --> True
@@ -129,6 +133,19 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 f_nc = load(ll_file).f_nc;
             end
             clear ll_file SWITCH.read_ll_from_nc
+
+            format_fmt = format;
+            format('longG');
+            f_res = minmax(f_calc_resolution(f_nc,para_conf.Load_Coordinate));
+            osprint2('INFO', [pad('Ori lon range ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(f_nc.x)))]);
+            osprint2('INFO', [pad('Ori lat range ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(f_nc.y)))]);
+            osprint2('INFO', [pad('Ori res range ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(f_res)))]);
+            osprint2('INFO', [pad('Dst lon range ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(lon_dst)))]);
+            osprint2('INFO', [pad('Dst lat range ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(lat_dst)))]);
+            osprint2('INFO', [pad('Dst res range (lon) ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(diff(lon_dst))))]);
+            osprint2('INFO', [pad('Dst res range (lat) ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(diff(lat_dst))))]);
+            format(format_fmt);
+            clear f_res format_fmt
         end
         clear dr1 dr
 
@@ -330,7 +347,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 if SWITCH.make_weight
                     [Lat_m,Lon_m] = meshgrid(Lat,Lon);
                     tt2 = tic;
-                    Weight_2d = interp_2d_calc_weight('TRI',f_nc.x,f_nc.x,f_nc.nv,Lon_m,Lat_m);
+                    Weight_2d = interp_2d_calc_weight('TRI',f_nc.x,f_nc.y,f_nc.nv,Lon_m,Lat_m);
                     makedirs(fileparts(file_weight)); rmfiles(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     osprint2('INFO', [pad('Calculate 2d weight costs ',Text_len,'right'),'--> ', num2str(toc(tt2)),' s'])
@@ -340,8 +357,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 end
 
                 % Temp = interp_2d_via_weight(temp,Weight_2d);
-                wncValue_xyt  = structfun(@(field) interp_2d_via_weight(field, Weight_2d), fncValue_nt, 'UniformOutput', false);
-                wncValue_xyzt = structfun(@(field) interp_2d_via_weight(field, Weight_2d), fncValue_nzt, 'UniformOutput', false);
+                if ~isempty(fncValue_nt)
+                    wncValue_xyt  = structfun(@(field) interp_2d_via_weight(field, Weight_2d), fncValue_nt, 'UniformOutput', false);
+                end
+                if ~isempty(fncValue_nzt)
+                    wncValue_xyzt = structfun(@(field) interp_2d_via_weight(field, Weight_2d), fncValue_nzt, 'UniformOutput', false);
+                end
                 Depth_xy =  interp_2d_via_weight(f_nc.h,Weight_2d);
                 % SWITCH
                 if SWITCH.out_avg_level
@@ -666,14 +687,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             osprint2('INFO',[pad('Erosion coastline total frequency ',Text_len,'right'),'--> ', num2str(num_erosion)]);
             im = 0;
             while im < num_erosion
-                osprint2('INFO',[pad('Erosion coastline counts ',Text_len,'right'),'--> ', num2str(im+1)]);
                 if SWITCH.make_erosion
                     if ~isempty(OutValue_xyzt)
                         fields = fieldnames(OutValue_xyzt);
                     else
-                        osprint2('INFO',[pad('No need to Erosion ',Text_len,'right'),'--> ', 'No xyzt value']);
+                        osprint2('WARNING',[pad('Erosion coastline error1-1 ',Text_len-3,'right'),'--> ', 'No need to Erosion: No xyzt value']);
+                        osprint2('WARNING',[pad('Erosion coastline error1-2 ',Text_len-3,'right'),'--> ', sprintf('Please set %s:Switch_erosion to ''.FALSE.''', conf_file)]);
                         break
                     end
+                    osprint2('INFO',[pad('Erosion coastline counts ',Text_len,'right'),'--> ', num2str(im+1)]);
                     if im == 0
                         % I_D_1 = erosion_coast_cal_id(Lon, Lat, OutValue_xyzt.Temp_sgm, 16, 5);
                         I_D_1 = erosion_coast_cal_id(lon_dst, lat_dst, OutValue_xyzt.(fields{1}), 16, 5);

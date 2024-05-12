@@ -14,6 +14,7 @@ function ST_Mbaysalt(varargin)
     % Updates:
     %       ****-**-**:     See Mainpath.m
     %       2024-04-26:     Code Refactoring, by Christmas;
+    %       2024-05-12:     Added check git:mirror, by Christmas
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                        % Add all path
@@ -325,7 +326,12 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
         if Git.TF && Git.CHECK
             if pkg.INSTALL
                 if ~(exist(pkg.CHECK{1},pkg.CHECK{2}) == str2double(pkg.CHECK{3})) && pkg.SETPATH  % 如果不同时判断pkg.SETPATH 当pkg.INSATLL && ~pkg.SETPATH 由于不在路径中检测不到会重复下载
-                    pkg_url = replace(pkg.URL,'https://github.com',del_filesep(Git.mirror));  % mirror           
+                    if isfield(Git,'mirror')
+                        pkg_url = replace(pkg.URL,'https://github.com',del_filesep(Git.mirror));  % mirror
+                    else
+                        pkg_url = pkg.URL;
+                    end
+                    
                     sprintf('---------> Cloning %s toolbox into %s', field, pkg.PATH)
                     CLONES(1).(field) = git_clone(Git.method, pkg_url, pkg_path);
                     STATUS1.(field) = 1;
@@ -543,7 +549,7 @@ function fun = ABANDON()
     function save_clones(clones)
         path__ = mfilename("fullpath");
         [path,~]=fileparts(path__);
-        Sdir = fullfile(path, 'Savefiles');
+        Sdir = fullfile(path, 'Data');
         Sfile = fullfile(Sdir, 'GitRepository.mat');
         keys = fieldnames(clones);
         for i = 1 : length(keys)
