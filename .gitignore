@@ -39,7 +39,9 @@ Exfunctions/ann_wrapper
 Exfunctions/ZoomPlot
 Exfunctions/htool
 Exfunctions/export_fig
+Exfunctions/plot_google_map
 Exfunctions/genpath2
+Exfunctions/irfu-matlab
 
 Exfunctions/m_map
 Exfunctions/t_tide

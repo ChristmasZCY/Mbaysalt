@@ -2,22 +2,23 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
     %       To load model data
     % =================================================================================================================
     % Parameters:
-    %       fin:            input file name                 || required: True || type: Text   || format: '*.nc'
-    %       varargin:       optional parameters      
-    %           Global:     Switch global or local          || required: False|| type: Text   || example: 'Global'
-    %           Coordinate: Coordinate system               || required: False|| type: Text   || format: 'Coordinate', 'geo'
-    %           MaxLon:     MaxLon                          || required: False|| type: Text   || format: 'MaxLon', 180
+    %       fin:            input file name                 || required: True || type: Text       || example: '*.nc'
+    %       varargin:       optional parameters     
+    %           Global:     Switch global or local          || required: False|| type: flag       || example: 'Global'
+    %           Coordinate: Coordinate system               || required: False|| type: namevalue  || example: 'Coordinate', 'geo'
+    %           MaxLon:     MaxLon                          || required: False|| type: namevalue  || example: 'MaxLon', 180
     % =================================================================================================================
     % Returns:
-    %       GridStruct:    Model Grid Struct                || required: False|| type: struct || example: 
-    %       VarStruct:     Model Variable Struct            || required: False|| type: struct || example: 
-    %       Ttimes:        Model Ttimes                     || required: False|| type: struct || example: 
+    %       GridStruct:    Model Grid Struct                || required: False|| type: struct     || example: 
+    %       VarStruct:     Model Variable Struct            || required: False|| type: struct     || example: 
+    %       Ttimes:        Model Ttimes                     || required: False|| type: struct     || example: 
     % =================================================================================================================
     % Updates:
-    %       2024-04-03:     Created, by Christmas; 
+    %       2024-04-03:     Created,                        by Christmas; 
+    %       2024-05-13:     Added calculating uv2sd, sd2uv, by Christmas;
     % =================================================================================================================
     % Examples:
-    %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.nc');
+    %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.2dm');
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.nc', 'Global', 'Coordinate', 'geo');
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.nc', 'Global');
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc','MaxLon', 180);
@@ -113,8 +114,8 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
     case 'WW3'
         varList = {'hs', 'dir', 't02', 'lm', 'fp', 'hmaxe', 'cge', '', '', '', ''};
         VarStruct = read_var_list(fin, varList);
-        if nc_var_exist(fin, 'dir')
-            [VarStruct.diru, VarStruct.dirv] = calc_current2uv(1, VarStruct.dir);
+        if all(isfield(VarStruct,{'dir'}))
+            [VarStruct.dir_u, VarStruct.dir_v] = calc_sd2uv(1, VarStruct.dir, "ww3");
         end
         if nc_var_exist(fin, 'time')
             Ttimes = Mdatetime(ncdateread(fin, 'time'));
@@ -123,6 +124,12 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
     case 'FVCOM'
         varList = {'u', 'v', 'ww', 'temp', 'salinity', 'zeta', 'ua', 'va', '', '', ''};
         VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'u', 'v'}))
+            [VarStruct.uv_spd, VarStruct.uv_dir] = calc_uv2sd(VarStruct.u, VarStruct.v, "current");
+        end
+        if all(isfield(VarStruct,{'ua', 'va'}))
+            [VarStruct.uva_spd, VarStruct.uva_dir] = calc_uv2sd(VarStruct.ua, VarStruct.va, "current");
+        end
         if nc_var_exist(fin, 'Times') || nc_var_exist(fin, 'Itime')
             if nc_var_exist(fin, 'Times')
                 ftime = f_load_time(fin, 'Times');
@@ -138,6 +145,9 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
                    'Stress_U', 'Stress_V', 'Net_Heat', 'Shortwave', 'Longwave', ...
                    'Sensible', 'Latent', 'SPQ', 'SAT', 'cloud_cover'};
         VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'U10', 'V10'}))
+            [VarStruct.UV10_spd, VarStruct.UV10_dir] = calc_uv2sd(VarStruct.U10, VarStruct.V10, "wind");
+        end
         if nc_var_exist(fin, 'Times')
             Times = ncread(fin, 'Times')';
             Ttimes = Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
@@ -145,6 +155,9 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
     case 'WRF'
         varList = {'T2', 'U10', 'V10', '', '', '', '', '', '', '', ''};
         VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'U10', 'V10'}))
+            [VarStruct.UV10_spd, VarStruct.UV10_dir] = calc_uv2sd(VarStruct.U10, VarStruct.V10, "wind");
+        end
         if nc_var_exist(fin, 'Times')
             Times = ncread(fin, 'Times')';
             Ttimes = Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
@@ -166,6 +179,9 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
     case 'ECMWF'
         varList = {'u10', 'v10', '', '', '', '', '', '', '', '', ''};
         VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'u10', 'v10'}))
+            [VarStruct.uv10_spd, VarStruct.uv10_dir] = calc_uv2sd(VarStruct.u10, VarStruct.v10, "wind");
+        end
         if nc_var_exist(fin, 'time')
             Ttimes = Mdatetime(ncdateread(fin, 'time'));
         end

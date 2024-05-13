@@ -9,8 +9,8 @@
         "outputs":[]},
     "ST_Mbaysalt": {
         "inputs":[
-            {"name":"Parameter", "kind":"positional","type":["choices={'rm','noclone','add','cd'}"],"purpose":"Parameter"},
-            {"name":"init", "kind":"flag","type":["choices={'init'}"],"purpose":"Initialization"}],
+            {"name":"init", "kind":"flag","type":["choices={'init'}"],"purpose":"Initialization"},
+            {"name":"Parameter", "kind":"positional","type":["choices={'rm','noclone','add','cd'}"],"purpose":"Parameter"}],
         "outputs":[]}
 }
 

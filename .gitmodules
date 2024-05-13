@@ -90,3 +90,6 @@
 	path = Exfunctions/genpath2
 	url = https://github.com/ssordopalacios/matlab-genpath2
 
+[submodule "Exfunctions/irfu-matlab"]
+	path = Exfunctions/irfu-matlab
+	url = https://github.com/irfu/irfu-matlab.git

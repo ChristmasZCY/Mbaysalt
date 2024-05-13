@@ -3,7 +3,7 @@ classdef Mdatetime
     % =================================================================================================================
     % Parameter:
     %      ttime:               time                    || required: True || type: datetime or posixtime or char or string
-    %       varargin:           optional parameters
+    %       varargin:   (optional)
     %           fmt:            format of datetime      || required: False|| type: char      || default: 'fmt','yyyy-MM-dd HH:mm:ss'
     %           units:          units of posixtime      || required: False|| type: char      || default: 'units','seconds since 1970-01-01 00:00:00'
     %           units_datetime: units of datetime       || required: False|| type: datetime  || default: 'units_datetime',datetime(1970,1,1,0,0,0)
@@ -13,11 +13,12 @@ classdef Mdatetime
     %       None
     % =================================================================================================================
     % Update:
-    %       ****-**-**:     Created, by Christmas;
-    %       2024-04-03:     Added datenum, by Christmas
-    %       2024-04-03:     Added Mdatetime(), by Christmas
-    %       2024-04-04:     Rewrite length , by Christmas
-    %       2024-04-15:     Added set value, by Christmas
+    %       ****-**-**:     Created,                            by Christmas;
+    %       2024-04-03:     Added datenum,                      by Christmas;
+    %       2024-04-03:     Added Mdatetime(),                  by Christmas;
+    %       2024-04-04:     Rewrite length ,                    by Christmas;
+    %       2024-04-15:     Added set value,                    by Christmas;
+    %       2024-05-13:     Change judge method at 'set.TIME',  by Christmas;
     % =================================================================================================================
     % Example:
     %       Ttimes = Mdatetime(Times)
@@ -38,6 +39,9 @@ classdef Mdatetime
         units = 'seconds since 1970-01-01 00:00:00'
         units_datetime = datetime(1970,1,1,0,0,0);
         fmt = 'yyyy-MM-dd HH:mm:ss'
+    end
+
+    properties (SetAccess=private)
     end
 
     methods
@@ -93,9 +97,21 @@ classdef Mdatetime
         end
     end
 
-    methods
+    methods (Hidden=true)
         function len = length(obj)
-            len = length(obj.time);
+            len = length(obj.Times);
+        end
+        function len = len(obj)
+            len = length(obj.Times);
+        end
+        function [M,I] = min(obj)
+            [M,I] = min(obj.Times);
+        end
+        function [M,I] = max(obj)
+            [M,I] = max(obj.Times);
+        end
+        function tf = isnat(obj)
+            tf = isnat(obj.Times);
         end
     end
 
@@ -194,13 +210,18 @@ classdef Mdatetime
             % fmt                   O
             %}
             obj.TIME = value;
-            try
-                Times_new = datetime(obj.TIME,"Format",obj.fmt);
-            catch
-                Times_new = datetime(obj.TIME);
-            end
-            if ~isequaln(Times_new, obj.Times)
-                obj.Times = Times_new;
+            % --> Christmas, Change judge method
+            % try
+            %     Times_new = datetime(obj.TIME,"Format",obj.fmt);
+            % catch
+            %     Times_new = datetime(obj.TIME);
+            % end
+            % if ~isequaln(Times_new, obj.Times)
+            %     obj.Times = Times_new;
+            TIME_old = char(obj.Times);
+            if ~isequaln(TIME_old, obj.TIME)
+                obj.Times = datetime(obj.TIME,"Format",obj.fmt);
+                % <-- Christmas
                 obj.Times.Format = obj.fmt;
                 obj.time = posixtime(obj.Times);
                 obj.TIME_str = string(obj.Times);
