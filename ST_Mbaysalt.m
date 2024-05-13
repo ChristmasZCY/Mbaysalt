@@ -15,6 +15,8 @@ function ST_Mbaysalt(varargin)
     %       ****-**-**:     See Mainpath.m
     %       2024-04-26:     Code Refactoring, by Christmas;
     %       2024-05-12:     Added check git:mirror, by Christmas
+    %       2024-05-12:     Added improve:minmax, by Christmas
+    %       2024-05-12:     Judged init first, by Christmas
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                        % Add all path
@@ -42,7 +44,15 @@ function ST_Mbaysalt(varargin)
             return
         end
     end
-    init  = false;
+
+    if ispref('Mbaysalt','init')
+        init = getpref('Mbaysalt','init');
+        if strcmp(init,'DONE')
+            init = false;
+        end
+    else
+        init = true;
+    end
     for i = 1 : length(varargin)
         switch lower(varargin{i})
         case 'init'
@@ -84,9 +94,10 @@ function ST_Mbaysalt(varargin)
     
     if init
         STATUS = Fixed_functions(Jstruct);
-        if ispref('Mbaysalt')  % Fixed Mainpath 
-            rmpref('Mbaysalt')
+        if ispref('Mbaysalt','PATH_toolbox')  % Fixed Mainpath 
+            rmpref('Mbaysalt');
         end
+        setpref('Mbaysalt','init','DONE')
     else
         STATUS = 0;
     end
@@ -201,9 +212,13 @@ function STATUS = supplement_matFVCOM(Jstruct)
     files_out = fullfile(path_out,string(Jstruct.supplement.matFVCOM.FILES));
     STATUS_list = zeros(length(files_in),1);
     for i = 1 : length(files_in)
-        file_in = files_in(1);
-        file_out = files_out(1);
-        if ~exist(file_out,"file")
+        file_in = files_in(i);
+        file_out = files_out(i);
+        file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
+        if ~exist(file_out,"file") && ismember(file_basename,["Contents.m","functionSignatures.json"])
+            copyfile(file_in,file_out);
+            STATUS_list(i) = 1;
+        elseif ismember(file_basename,["minmax.m","//"])
             copyfile(file_in,file_out);
             STATUS_list(i) = 1;
         else
@@ -525,7 +540,7 @@ end
 function print_info()
     fprintf('\n')
     fprintf('=====================================================================\n')
-    fprintf('As adding files, if it does not take efect, please restart MATLAB\n')
+    fprintf('As adding files, if it does not take efect, please restart MATLAB    \n')
     fprintf('=====================================================================\n')
     fprintf('\n')
 end

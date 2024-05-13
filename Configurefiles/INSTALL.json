@@ -238,7 +238,14 @@
             "BRANCH": "master",
             "URL": "https://github.com/ssordopalacios/matlab-genpath2.git",
             "PATH": "Exfunctions/genpath2",
-            "CHECK": ["genpath2.m","file","2"]}},
+            "CHECK": ["genpath2.m","file","2"]},
+        "irfu_matlab": {
+            "INSTALL": true,
+            "SETPATH": false,
+            "BRANCH": "master",
+            "URL": "https://github.com/irfu/irfu-matlab.git",
+          "PATH": "Exfunctions/irfu-matlab",
+          "CHECK": ["irf_cdf_read.m","file","2"]}},
     "modules": {
         "PATH": [
             "Prefunctions",
@@ -277,25 +284,30 @@
             "Exfunctions/ellipse",
             "Exfunctions/genpath_exclude",
             "Exfunctions/Otherpkgs"]}},
-    "git": {
-        "path": "/usr/bin/git",
-        "mirror": "https://githubfast.com/",
-        "method": "AUTO",
-        "method_1": "MATLAB",
-        "method_2": "CMD"},
-    "improve": {
-        "t_tide": true,
-        "setup_nctoolbox_java": true,
-        "matFVCOM": true,
-        "mexcdf": true,
-        "m_gshhs": true,
-        "ann_wrapper": true,
-        "DHIMIKE": false},
-    "supplement": {
-        "matFVCOM": {
-            "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
-            "PATH_OUT": "Exfunctions/matFVCOM",
-            "FILES": ["Contents.m","functionSignatures.json"]}}
+ "git": {
+     "path": "/usr/bin/git",
+     "mirror": "https://githubfast.com/",
+     "method": "AUTO",
+     "method_1": "MATLAB",
+     "method_2": "CMD"},
+ "improve": {
+     "t_tide": true,
+     "setup_nctoolbox_java": true,
+     "matFVCOM": true,
+     "mexcdf": true,
+     "m_gshhs": true,
+     "ann_wrapper": true,
+     "DHIMIKE": false,
+     "minmax": true},
+ "supplement": {
+     "matFVCOM": {
+         "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
+         "PATH_OUT": "Exfunctions/matFVCOM",
+         "FILES": ["Contents.m","functionSignatures.json","minmax.m"]}},
+ "@@comments":{
+    "A":  "2024-04-26:  Created, by Christmas;",
+    "B":  "2024-05-13:, Added improve:minmax, by Christmas;",
+    "C":  "2024-05-14:, Added gitclone:irfu_matlab, by Christmas;"}
 }
 
 

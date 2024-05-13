@@ -67,6 +67,8 @@
 %   calc_adjust_winddir.m                       -  Adjust the wind direction at typhoon
 %   calc_adjust_winddir_readme.mlx              -  README for Adjust the wind direction at typhoon
 %   len.m                                       -  As length
+%   calc_uv2sd                                  -  Calculate velocity to speed and direction
+%   calc_sd2uv                                  -  Calculate speed and direction to vector velocity
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -272,6 +274,7 @@
 %   Example_smooth.m                            -  Example for smooth
 %   Example_nctoolbox.m                         -  Example for nctoolbox
 %   Example_ellipse.m                           -  Example for ellipse
+%   Example_inpolygons.m                        -  Example for inpolygons
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
@@ -335,6 +338,7 @@
 %   export_fig                  (optional)      -  export_fig toolbox                          ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/23629-export_fig/
 %   plot_google_map             (optional)      -  plot_google_map toolbox                     ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/27627-zoharby-plot_google_map || https://github.com/zoharby/plot_google_map
 %   genpath2                                    -  genpath2 toolbox                            ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/72791-genpath2
+%   irfu-matlab                 (optional)      -  irfu-matlab toolbox                         ||  https://github.com/irfu/irfu-matlab
 %
 %   %% Download
 %   m_map                                       -  m_map toolbox(v1.4o)                        ||  https://www.eoas.ubc.ca/~rich/map.html  &&  https://www.eoas.ubc.ca/~rich/mapug.html

@@ -15,9 +15,21 @@
 
 1. Shell/Powershell/Command Prompt.
 
+   If you intend to use it without pushing code then to simply download the code from the command line run
    ```shell
    git clone https://github.com/ChristmasZCY/Mbaysalt.git
    ```
+   
+   If you want only the latest version and not the full repository run
+   ```shell
+    git clone --depth=1 https://github.com/ChristmasZCY/Mbaysalt.git
+   ```  
+   
+   Any time you want to update the code to the latest version, run from the command line
+    ```shell
+    git pull
+    ```
+
 2. Change Exfunctions install switch which you want to open.
 
    ```shell
@@ -71,6 +83,7 @@
 - [htool](https://github.com/SiqiLiOcean/htool)
 - [export_fig](https://ww2.mathworks.cn/matlabcentral/fileexchange/23629-export_fig/)
 - [genpath2](https://github.com/ssordopalacios/matlab-genpath2)
+- [irfu-matlab](https://github.com/irfu/irfu-matlab)
 
 
 - [m_map](https://www.eoas.ubc.ca/~rich/map.html)
