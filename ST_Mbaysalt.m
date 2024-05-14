@@ -366,7 +366,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
                     end
                     
                     sprintf('---------> Cloning %s toolbox into %s', field, pkg.PATH)
-                    CLONES(1).(field) = git_clone(Git.method, pkg_url, pkg_path);
+                    CLONES(1).(field) = git_clone(Git, pkg_url, pkg_path);
                     STATUS1.(field) = 1;
                 end
                 clearvars txt field field_cell
@@ -504,15 +504,21 @@ function unzip_file(fileIn, dirOut)
     end
 end
 
-function CLONE = git_clone(method, pkg_url, pkg_path)
-    CLONE = 'cmd';
+function CLONE = git_clone(Git, pkg_url, pkg_path)
+    CLONE = '';
+    method = Git.method;
+    Depth  = Git.DEPTH;
     switch lower(method)
     case {'cmd'}
-        txt = sprintf('git clone %s %s%s', pkg_url, pkg_path);
+        if Depth == 0
+            txt = sprintf('git clone %s %s', pkg_url, pkg_path);
+        else
+            txt = sprintf('git clone --depth %d %s %s', Depth, pkg_url, pkg_path);
+        end
         disp(txt)
         system(txt);
     case {'matlab'}
-        CLONE = gitclone(pkg_url, pkg_path);
+        CLONE = gitclone(pkg_url, pkg_path, 'Depth', only_new);
     end
 end
 

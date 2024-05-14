@@ -81,6 +81,7 @@
         "matFigure": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/SiqiLiOcean/matFigure.git",
             "PATH": "Exfunctions/matFigure",
@@ -88,6 +89,7 @@
         "matFVCOM": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/SiqiLiOcean/matFVCOM.git",
             "PATH": "Exfunctions/matFVCOM",
@@ -95,6 +97,7 @@
         "matNC": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/SiqiLiOcean/matNC.git",
             "PATH": "Exfunctions/matNC",
@@ -102,6 +105,7 @@
         "matWRF": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/SiqiLiOcean/matWRF.git",
             "PATH": "Exfunctions/matWRF",
@@ -109,6 +113,7 @@
         "HYCOM2FVCOM": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/SiqiLiOcean/HYCOM2FVCOM.git",
             "PATH": "Exfunctions/HYCOM2FVCOM",
@@ -116,6 +121,7 @@
         "WRF2FVCOM": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/SiqiLiOcean/WRF2FVCOM.git",
             "PATH": "Exfunctions/WRF2FVCOM",
@@ -123,6 +129,7 @@
         "OceanData": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/ChristmasZCY/OceanData.git",
             "PATH": "Exfunctions/OceanData",
@@ -130,6 +137,7 @@
         "FVCOM_NML": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/SiqiLiOcean/FVCOM_NML.git",
             "PATH": "Exfunctions/FVCOM_NML",
@@ -137,6 +145,7 @@
         "nctoolbox": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": true,
             "BRANCH": "master",
             "URL": "https://github.com/nctoolbox/nctoolbox.git",
             "PATH": "Exfunctions/nctoolbox",
@@ -144,6 +153,7 @@
         "cdt": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/chadagreene/CDT.git",
             "PATH": "Exfunctions/cdt",
@@ -151,6 +161,7 @@
         "vtkToolbox": {
             "INSTALL": true,
             "SETPATH": false,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/KIT-IBT/vtkToolbox.git",
             "PATH": "Exfunctions/vtkToolbox",
@@ -158,6 +169,7 @@
         "TMDToolbox_v2_5": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git",
             "PATH": "Exfunctions/TMDToolbox_v2_5",
@@ -165,6 +177,7 @@
         "TMDToolbox_v3_0": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/chadagreene/Tide-Model-Driver.git",
             "PATH": "Exfunctions/TMDToolbox_v3_0",
@@ -172,6 +185,7 @@
         "kmz2struct": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/njellingson/kmz2struct.git",
             "PATH": "Exfunctions/kmz2struct",
@@ -179,6 +193,7 @@
         "inpolygons_pkg": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/kakearney/inpolygons-pkg.git",
             "PATH": "Exfunctions/inpolygons-pkg",
@@ -186,6 +201,7 @@
         "JSONLab": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/fangq/jsonlab.git",
             "PATH": "Exfunctions/JSONLab",
@@ -193,6 +209,7 @@
         "OceanMesh2D": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/CHLNDDEV/OceanMesh2D.git",
             "PATH": "Exfunctions/OceanMesh2D",
@@ -200,6 +217,7 @@
         "ann_wrapper": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/shaibagon/ann_wrapper.git",
             "PATH": "Exfunctions/ann_wrapper",
@@ -207,6 +225,7 @@
         "ZoomPlot": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/iqiukp/ZoomPlot-MATLAB",
             "PATH": "Exfunctions/ZoomPlot",
@@ -214,6 +233,7 @@
         "htool": {
             "INSTALL": true,
             "SETPATH": false,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/SiqiLiOcean/htool.git",
             "PATH": "Exfunctions/htool",
@@ -221,6 +241,7 @@
         "export_fig": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/altmany/export_fig.git",
             "PATH": "Exfunctions/export_fig",
@@ -228,6 +249,7 @@
         "plot_google_map": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/zoharby/plot_google_map.git",
             "PATH": "Exfunctions/plot_google_map",
@@ -235,6 +257,7 @@
         "genpath2": {
             "INSTALL": true,
             "SETPATH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/ssordopalacios/matlab-genpath2.git",
             "PATH": "Exfunctions/genpath2",
@@ -242,6 +265,7 @@
         "irfu_matlab": {
             "INSTALL": true,
             "SETPATH": false,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/irfu/irfu-matlab.git",
           "PATH": "Exfunctions/irfu-matlab",
