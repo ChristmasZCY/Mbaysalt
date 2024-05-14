@@ -231,19 +231,31 @@
             {"name":"x_dst", "type":["scalar"], "purpose":"x Destination"},
             {"name":"y_dst", "type":["scalar"], "purpose":"y Destination"},
             {"name":"bdy", "type":["struct"], "purpose":"boundary"}]},
-    "calc_model_time_step":{
+    "calc_timeStepWW3":{
         "inputs":[
             {"name":"fmin",  "kind":"required", "type":["numeric","choices={0.0418,0.0373}"], "purpose":"frequency min"},
             {"name":"lon",  "kind":"required", "type":["numeric"], "purpose":"longitude"},
             {"name":"lat",  "kind":"required", "type":["numeric"], "purpose":"latitude"}],
         "outputs":[
             {"name":"Time step", "type":["struct"], "purpose":"Time step"}]},
+    "calc_timeStepWW3": {
+        "inputs": [
+            {"name": "fmin", "kind": "required", "type": ["numeric","choices={0.0418,0.0373}"], "purpose": "frequency min"},
+            {"name": "lon", "kind": "required", "type": ["numeric"], "purpose": "longitude"},
+            {"name": "lat", "kind": "required", "type": ["numeric"], "purpose": "latitude"},
+            {"name": "nv", "kind": "required", "type": ["numeric"], "purpose": "nv"},
+            {"name": "h", "kind": "required", "type": ["numeric"], "purpose": "h"},
+            {"name": "ns", "kind": "required", "type": ["cell"], "purpose": "ns"},
+            {"name": "figOn", "kind": "flag", "type": ["choices={'figOn'}"], "purpose": "figOn or not"}],
+      "outputs": [
+        {"name": "Time step", "type": ["struct"], "purpose": "Time step"}]},
     "calc_geodistance": {
         "inputs": [
             {"name": "lon1", "kind": "required", "type": ["numeric"], "purpose": "lonArray1"},
             {"name": "lat1", "kind": "required", "type": ["numeric"], "purpose": "latArray1"},
             {"name": "lon2", "kind": "required", "type": ["numeric"], "purpose": "lonArray2"},
-            {"name": "lat2", "kind": "required", "type": ["numeric"], "purpose": "latArray2"}],
+            {"name": "lat2", "kind": "required", "type": ["numeric"], "purpose": "latArray2"},
+            {"name": "method", "kind": "namevalue", "type": ["char","choices={'common','MATLAB'}"], "purpose": "method"}],
         "outputs": [
             {"name": "d", "type": ["scalar"], "purpose": "Distance"},
             {"name": "dx", "type": ["scalar"], "purpose": "dx"},
@@ -322,5 +334,14 @@
         {"name": "method", "kind": "required", "type": ["char","choices={'current','wind','wave','ww3'}"], "purpose": "calculation method"}],
         "outputs": [
             {"name": "u", "type": ["scalar"], "purpose": "U velocity"},
-            {"name": "v", "type": ["scalar"], "purpose": "V velocity"}]}
+            {"name": "v", "type": ["scalar"], "purpose": "V velocity"}]},
+    "calc_waveSpeed": {
+        "inputs": [
+            {"name": "f", "kind": "required", "type": ["numeric"], "purpose": "frequency"},
+            {"name": "h", "kind": "required", "type": ["numeric"], "purpose": "depth"},
+            {"name": "method", "kind": "required", "type": ["char","choices={1,2,3}"], "purpose": "calculation method"}],
+        "outputs": [
+            {"name": "C", "type": ["scalar"], "purpose": "wave phase speed"},
+            {"name": "Cg", "type": ["scalar"], "purpose": "wave group speed"},
+            {"name": "L", "type": ["scalar"], "purpose": "wave length"}]}
 }

@@ -1,4 +1,4 @@
-function [x, y, nv, h, ns, tail, id] = read_msh(fin,varargin)
+function [x, y, nv, h, ns, tail, id] = read_msh(fin, varargin)
     %       Read the msh file
     % =================================================================================================================
     % Parameter:

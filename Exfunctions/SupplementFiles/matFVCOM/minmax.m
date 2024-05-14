@@ -7,16 +7,16 @@ varmax = max(var(:));
 
 
 % n = size(var);
-% 
+%
 % nd = length(n);
-% 
+%
 % varmin = var;
 % varmax = var;
 % for i = 1 : nd
-%     
+%
 %     varmin = min(varmin);
 %     varmax = max(varmax);
-%     
+%
 % end
 
 if ismember(class(var), ["datetime","Mdatetime"])  % isa(var,"datetime")

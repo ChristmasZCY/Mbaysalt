@@ -15,7 +15,7 @@ function ST_Mbaysalt(varargin)
     %       ****-**-**:     See Mainpath.m
     %       2024-04-26:     Code Refactoring, by Christmas;
     %       2024-05-12:     Added check git:mirror, by Christmas
-    %       2024-05-12:     Added improve:minmax, by Christmas
+    %       2024-05-12:     Added improve:minmax, submodule gitclone:irfu_matlab, by Christmas
     %       2024-05-12:     Judged init first, by Christmas
     % =================================================================================================================
     % Examples:
@@ -152,6 +152,9 @@ function STATUS = Fixed_functions(Jstruct)
     end
     if Jstruct.improve.DHIMIKE
         STATUS_list = [STATUS_list,install_DHIMIKE(Jstruct)];
+    end
+    if Jstruct.improve.irfu_matlab
+        STATUS_list = [STATUS_list,install_irfu_matlab(Jstruct)];
     end
     STATUS = any(STATUS_list);
 end
@@ -311,6 +314,21 @@ function STATUS = install_DHIMIKE(Jsruct) %#ok<INUSD>
     end
 end
 
+function STATUS = install_irfu_matlab(Jstruct)
+    % 安装 ann_wrapper
+    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.irfu_matlab.PATH,'irf.m');  % which('irf.m');
+    if ~exist(m_filepath,"file")
+        STATUS = 0;
+    else
+        PWD = pwd();
+        cd(fileparts(m_filepath))
+        irf();
+        cd(PWD)
+        STATUS = 1;
+    end
+    return
+end
+
 function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
     % packages.gitclone --> START
     fields_gitclone = fieldnames(Jstruct.packages.gitclone)';
@@ -331,12 +349,12 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
             continue
         elseif isequal(control, 'noclone')
             if pkg.SETPATH
-                addpath(genpath2(pkg_path,{'.git', '.svn'}))
+                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
             end
             continue
         end
         if pkg.SETPATH
-            addpath(genpath2(pkg_path,{'.git', '.svn'}))
+            addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
         end
         if Git.TF && Git.CHECK
             if pkg.INSTALL
@@ -354,7 +372,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
                 clearvars txt field field_cell
             end
             if pkg.SETPATH
-                addpath(genpath2(pkg_path,{'.git', '.svn'}))
+                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
             end  
         end
 
@@ -378,12 +396,12 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
             continue
         elseif isequal(control, 'noclone')
             if pkg.SETPATH
-                addpath(genpath2(pkg_path,{'.git', '.svn'}))
+                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
             end
             continue
         end
         if pkg.SETPATH
-            addpath(genpath2(pkg_path,{'.git', '.svn'}))
+            addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
         end
         if ~(exist(pkg.CHECK{1},pkg.CHECK{2}) == str2double(pkg.CHECK{3})) && pkg.INSTALL && pkg.SETPATH  % 如果不同时判断pkg.SETPATH 当pkg.INSATLL && ~pkg.SETPATH 由于不在路径中检测不到会重复下载
             pkg_localfile = fullfile(PATH.basepath, pkg.LOCALFILE);
@@ -409,7 +427,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
                 end
                 % delete(local_file);
                 if pkg.SETPATH
-                    addpath(genpath2(pkg_path,{'.git', '.svn'}))
+                    addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
                 end
             end
             STATUS1.(field) = 1;
