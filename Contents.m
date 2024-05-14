@@ -16,6 +16,7 @@
 %
 % Toolbox contents
 %
+%   install.sh                                  -  Install the toolbox
 %   Contents.m                                  -  This file
 %   Mainpath.m                                  -  Set main path for toolbox (not recommend)
 %   ST_Mbaysalt.m                               -  Set toolbox path
@@ -56,7 +57,7 @@
 %   calc_nearest_node.m                         -  Calculate the nearest node and distance from FVCOM grid
 %   cutout_xy.m                                 -  Cutout small region from a large region
 %   zoom_ploygon.m                              -  Zoom the polygon
-%   calc_model_time_step.m                      -  Calculate mode time step
+%   calc_timeStepWW3.m                          -  Calculate WW3 time step
 %   calc_typhoonMove.m                          -  Calculate the typhoon move
 %   calc_geodistance.m                          -  Calculate the geodistance between arrays of lon/lat
 %   calc_geodistance_readme.mlx                 -  README for Calculate the geodistance between arrays of lon/lat
@@ -69,6 +70,7 @@
 %   len.m                                       -  As length
 %   calc_uv2sd                                  -  Calculate velocity to speed and direction
 %   calc_sd2uv                                  -  Calculate speed and direction to vector velocity
+%   calc_waveSpeed.m                            -  Calculate wave speed and length
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -275,6 +277,7 @@
 %   Example_nctoolbox.m                         -  Example for nctoolbox
 %   Example_ellipse.m                           -  Example for ellipse
 %   Example_inpolygons.m                        -  Example for inpolygons
+%   Example_calc_timeStep.m                     -  Example for calc_timeStep
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom

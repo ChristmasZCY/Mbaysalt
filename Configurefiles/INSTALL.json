@@ -298,7 +298,8 @@
      "m_gshhs": true,
      "ann_wrapper": true,
      "DHIMIKE": false,
-     "minmax": true},
+     "minmax": true,
+     "irfu_matlab": true},
  "supplement": {
      "matFVCOM": {
          "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",

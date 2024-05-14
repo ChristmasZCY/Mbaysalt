@@ -86,11 +86,16 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'ECMWF';
+        elseif nc_attrValue_exist(fin,'CMEMS','method','START') && nc_attrValue_exist(fin,'marine.copernicus.eu','method','CONTAINS')
+            lon = ncread(fin, 'longitude');
+            lat = ncread(fin, 'latitude');
+            GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
+            GridStruct.ModelName = 'CMEMS';
         else
-            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF or Standard now !!!')
+            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, CMEMS or Standard now !!!')
         end
         SWITCH.read_var = true;
-    elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh')
+    elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh') || endsWith(fin, '.14')
         GridStruct = f_load_grid(fin, 'Global');
         GridStruct.ModelName = fin(end-2:end);
         SWITCH.read_var = false;
@@ -168,7 +173,8 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
                    'temperature_std', 'temperature_sgm', 'temperature_avg', ...
                    'u_std', 'u_sgm', 'u_avg', ...
                    'v_std', 'v_sgm', 'v_avg', ...
-                   'chlo_std', 'chlo_sgm', 'chlo_avg'};
+                   'chlo_std', 'chlo_sgm', 'chlo_avg', ...
+                   'adt'};
         VarStruct = read_var_list(fin, varList);
         if nc_var_exist(fin, 'time')
             time = ncdateread(fin, 'time');
@@ -181,6 +187,15 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         VarStruct = read_var_list(fin, varList);
         if all(isfield(VarStruct,{'u10', 'v10'}))
             [VarStruct.uv10_spd, VarStruct.uv10_dir] = calc_uv2sd(VarStruct.u10, VarStruct.v10, "wind");
+        end
+        if nc_var_exist(fin, 'time')
+            Ttimes = Mdatetime(ncdateread(fin, 'time'));
+        end
+    case 'CMEMS'
+        varList = {'adt', 'ugos', 'vgos', '', '', '', '', '', '', '', ''};
+        VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'ugos', 'vgos'}))
+            [VarStruct.uvgos_spd, VarStruct.uvgos_dir] = calc_uv2sd(VarStruct.ugos, VarStruct.vgos, "current");
         end
         if nc_var_exist(fin, 'time')
             Ttimes = Mdatetime(ncdateread(fin, 'time'));
