@@ -217,15 +217,20 @@ function STATUS = supplement_matFVCOM(Jstruct)
     for i = 1 : length(files_in)
         file_in = files_in(i);
         file_out = files_out(i);
-        file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
-        if ~exist(file_out,"file") && ismember(file_basename,["Contents.m","functionSignatures.json"])
-            copyfile(file_in,file_out);
-            STATUS_list(i) = 1;
-        elseif ismember(file_basename,["minmax.m","//"])
+        % file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
+        % file_basename = Jstruct.supplement.matFVCOM.FILES{i};
+        if ~exist(file_out,"file")
             copyfile(file_in,file_out);
             STATUS_list(i) = 1;
         else
-            STATUS_list(i) = 0;
+            if ~readlink(file_out)
+                file_out_bak = strcat(file_out,'_bak');
+                if ~exist(file_out_bak,"file")  % backup
+                    copyfile(file_out,file_out_bak);
+                end
+                copyfile(file_in,file_out);
+                STATUS_list(i) = 1;
+            end
         end
     end
     STATUS = any(STATUS_list);
