@@ -328,11 +328,12 @@
      "matFVCOM": {
          "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
          "PATH_OUT": "Exfunctions/matFVCOM",
-         "FILES": ["Contents.m","functionSignatures.json","minmax.m"]}},
+         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m"]}},
  "@@comments":{
     "A":  "2024-04-26:  Created, by Christmas;",
     "B":  "2024-05-13:, Added improve:minmax, by Christmas;",
-    "C":  "2024-05-14:, Added gitclone:irfu_matlab, by Christmas;"}
+    "C":  "2024-05-14:, Added gitclone:irfu_matlab, by Christmas;",
+    "D":  "2024-05-15:, Added supplement:matFVCOM:FILES:*, by Christmas;"}
 }
 
 

@@ -27,6 +27,8 @@ function [YN, Ofile] = readlink(file)
         Ofile
     end
 
+    file = convertStringsToChars(file);
+
     if startsWith(file, './') || ~contains(file, '/')
         file = fullfile(pwd, file);
     end
