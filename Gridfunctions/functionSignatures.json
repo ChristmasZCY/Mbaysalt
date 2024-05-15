@@ -121,5 +121,17 @@
           {"name":"h","type":["scalar"],"purpose":"depth"},
           {"name":"ns","type":["cell"],"purpose":"nesting"},
           {"name":"tail","type":["cell"],"purpose":"tail"},
-          {"name":"id","type":["scalar"],"purpose":"node id"}]}
+          {"name":"id","type":["scalar"],"purpose":"node id"}]},
+  "gshhs2": {
+    "inputs": [
+      {"name":"gshhsfile", "kind":"required","type":["file=*.b"],"purpose":"GSHHS b file to read"}],
+    "outputs": [
+      {"name": "poly_coast", "type": ["polyshape"], "purpose": "polygons of coastline"}]},
+  "gshhs2": {
+    "inputs": [
+      {"name":"gshhsfile", "kind":"required","type":["file=*.b"],"purpose":"GSHHS b file to read"},
+      {"name":"ylims", "kind":"required","type":["numeric"],"purpose":"y lims"},
+      {"name":"xlims", "kind":"required","type":["numeric"],"purpose":"x lims"}],
+    "outputs": [
+      {"name": "poly_coast", "type": ["polyshape"], "purpose": "polygons of coastline"}]}
 }

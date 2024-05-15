@@ -37,12 +37,16 @@
         ],
         "outputs":[
             {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Times(all)"}]},
-    "write_msh":{
-        "inputs":[],
-        "outputs":[]},
-    "read_msh":{
-        "inputs":[],
-        "outputs":[]},
+    "CHGrid":{
+        "inputs":[
+            {"name":"GridStruct",  "kind":"required", "type":["struct"], "purpose":"GridStruct"}],
+        "outputs":[
+            {"name":"grid", "type":["CHGrid"], "purpose":"CHGrid"}]},
+    "gridDraw":{
+        "inputs":[
+            {"name":"GridStruct",  "kind":"required", "type":["struct"], "purpose":"GridStruct"}],
+        "outputs":[
+            {"name":"draw", "type":["gridDraw"], "purpose":"GridStruct"}]},
     "erosion_coast_cal_id":{
         "inputs":[],
         "outputs":[]}

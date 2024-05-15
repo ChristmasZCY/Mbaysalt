@@ -62,42 +62,47 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             else
                 GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
             end
-            GridStruct.ModelName = 'WW3';
+            GridStruct.ModelName = 'WW3'; GridStruct.grid = 'TRI';
         elseif nc_attrValue_exist(fin, 'FVCOM', 'method','START')
             GridStruct = f_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'FVCOM';
+            GridStruct.ModelName = 'FVCOM'; GridStruct.grid = 'TRI';
         elseif nc_attrValue_exist(fin, 'wrf2fvcom version', 'method','START')
             GridStruct = w_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'WRF2FVCOM';
+            GridStruct.ModelName = 'WRF2FVCOM'; GridStruct.grid = 'GRID';
         elseif nc_attrName_exist(fin, 'product_name', 'method','START')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'Standard';
+            GridStruct.ModelName = 'Standard'; GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'WRF\s*(V\d+(\.\d+)?)?\s*MODEL')
             % 匹配{"WRF V4.4 MODEL", "WRF V4.1 MODEL", "WRF V1.2 MODEL", "WRF MODEL", "WRFMODEL"};
             % \s*：匹配零个或多个空白字符。
             % (V\d+(\.\d+)?)?：这是一个整体作为可选部分的组，匹配版本号。\d+：匹配一个或多个数字，代表主版本号。
             % (\.\d+)?：这是一个可选组，匹配点后跟一个或多个数字，代表次版本号。
             GridStruct = w_load_grid(fin,Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'WRF';
+            GridStruct.ModelName = 'WRF'; GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'CF-1.6') && nc_attrValue_exist(fin,'ecmwf/mars-client/bin/grib_to_netcdf.bin','method','CONTAINS')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'ECMWF';
+            GridStruct.ModelName = 'ECMWF'; GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'CMEMS','method','START') && nc_attrValue_exist(fin,'marine.copernicus.eu','method','CONTAINS')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'CMEMS';
+            GridStruct.ModelName = 'CMEMS'; GridStruct.grid = 'GRID';
+    elseif nc_attrValue_exist(fin,'CCMP','method','CONTAINS') && nc_attrValue_exist(fin,'RSS','method','CONTAINS')
+            lon = ncread(fin, 'longitude');
+            lat = ncread(fin, 'latitude');
+            GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
+            GridStruct.ModelName = 'CCMP-RSS'; GridStruct.grid = 'GRID';
         else
-            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, CMEMS or Standard now !!!')
+            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, CMEMS, CCMP-RSS or Standard now !!!')
         end
         SWITCH.read_var = true;
     elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh') || endsWith(fin, '.14')
         GridStruct = f_load_grid(fin, 'Global');
-        GridStruct.ModelName = fin(end-2:end);
+        GridStruct.ModelName = fin(end-2:end); GridStruct.grid = 'TRI';
         SWITCH.read_var = false;
     else
         warning('No set file format !!! ');
@@ -200,6 +205,16 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         if nc_var_exist(fin, 'time')
             Ttimes = Mdatetime(ncdateread(fin, 'time'));
         end
+    case 'CCMP-RSS'
+        varList = {'uwnd', 'vwnd', '', '', '', '', '', '', '', '', ''};
+        VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'uwnd', 'vwnd'}))
+            [VarStruct.uvwnd_spd, VarStruct.uvwnd_dir] = calc_uv2sd(VarStruct.uwnd, VarStruct.vwnd, "wind");
+        end
+        if nc_var_exist(fin, 'time')
+            Ttimes = Mdatetime(ncdateread(fin, 'time'));
+        end
+
     otherwise
         warning('Want read, but read nothing !!! ');
         VarStruct = struct('');
