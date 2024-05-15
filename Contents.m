@@ -71,6 +71,7 @@
 %   calc_uv2sd                                  -  Calculate velocity to speed and direction
 %   calc_sd2uv                                  -  Calculate speed and direction to vector velocity
 %   calc_waveSpeed.m                            -  Calculate wave speed and length
+%   lodadata.m                                  -  Load data from a file
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -172,6 +173,7 @@
 %   write_msh.m                                 -  Write msh file for ww3
 %   write_sms_grd.m                             -  Write sms grd file
 %   write_vtk.m                                 -  Write vtk file
+%   gshhs2.m                                    -  Fixed gshhs only for [-180 195], gshhs2 for [-540 540]
 %
 %
 %                                Readfunctions  -  Functions for reading data
@@ -278,6 +280,7 @@
 %   Example_ellipse.m                           -  Example for ellipse
 %   Example_inpolygons.m                        -  Example for inpolygons
 %   Example_calc_timeStep.m                     -  Example for calc_timeStep
+%   Example_loaddata.m                          -  Example for loaddata
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
@@ -291,7 +294,9 @@
 % -----------------------------------------------------------------------------------------------------------------
 %   functionSignatures.json                     -  Function signatures for this folder
 %   Mateset.m                                   -  Mateset class
-%   Mdatetime.m                                 -  MATLAB datetime class
+%   @Mdatetime                                  -  MATLAB datetime class
+%   @Mgrid                                      -  MATLAB grid class
+%   @Mdraw                                      -  MATLAB draw class
 %   +Mateset:       
 %      get_Dimensions_from_nc.m                 -  Get dimensions from nc file
 %      get_Variables_from_nc.m                  -  Get variables from nc file

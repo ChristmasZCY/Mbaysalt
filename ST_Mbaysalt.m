@@ -261,7 +261,7 @@ function STATUS = fixed_m_gshhs(Jstruct)
     % 更改m_map工具包的m_gshhs.m文件的FILNAME
     m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.download.m_map.PATH,'m_gshhs.m');  % which('m_gshhs.m');
     gshhsc_path = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.download.gshhs.PATH,'gshhs_c.b');
-    gshhs_filepath = fileparts(gshhsc_path);
+    gshhs_filepath = [fileparts(gshhsc_path) filesep];
     if ~(exist(m_filepath,"file") && exist(gshhsc_path,"file"))
         STATUS = 0;
         return  
@@ -273,10 +273,12 @@ function STATUS = fixed_m_gshhs(Jstruct)
         copyfile(m_filepath,m_filecopy);
     end
     fileContent = fileread(m_filepath);  % 读取文件内容
-    searchStr = "FILNAME=[fileparts(which('m_gshhs.m')) '/data/'];";  % 定义要查找的字符串
-    replaceStr = sprintf("%s \nFILNAME = '%s';",searchStr, gshhs_filepath);  % 定义替换后的字符串
-    newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
-    fOWC(m_filepath, 'w', newContent);
+    if isempty(grep(m_filepath,gshhs_filepath))
+        searchStr = "FILNAME=[fileparts(which('m_gshhs.m')) '/data/'];";  % 定义要查找的字符串
+        replaceStr = sprintf("%% %s \nFILNAME = '%s';",searchStr, gshhs_filepath);  % 定义替换后的字符串
+        newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
+        fOWC(m_filepath, 'w', newContent);
+    end
     STATUS = 1;
 end
 

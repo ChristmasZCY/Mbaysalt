@@ -343,5 +343,9 @@
         "outputs": [
             {"name": "C", "type": ["scalar"], "purpose": "wave phase speed"},
             {"name": "Cg", "type": ["scalar"], "purpose": "wave group speed"},
-            {"name": "L", "type": ["scalar"], "purpose": "wave length"}]}
+            {"name": "L", "type": ["scalar"], "purpose": "wave length"}]},
+    "loaddata": {
+        "inputs": [
+            {"name": "filename", "kind": "positional", "type": ["file"], "purpose": "Filename"}],
+        "outputs": []}
 }

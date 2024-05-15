@@ -23,7 +23,7 @@ function [list_content,line_id] = grep(file, text)
         line_id {double}
     end
 
-    warning('This function is not recommend');
+    % warning('This function is not recommend');
 
     file = convertStringsToChars(file);
     text = convertStringsToChars(text);
