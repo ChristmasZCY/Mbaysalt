@@ -288,7 +288,7 @@
 %   Post_nemuro.conf                            -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_Wenzhou.conf                           -  Example for Post_fvcom/Postprocess_fvcom
 %   stations.xml                                -  Example of xml file
-%   xy.vtk                                      -  Example of vtk file
+%   example.vtk                                 -  Example of vtk file
 %
 %
 %                             Matesetfunctions  -  Functions for Mateset
