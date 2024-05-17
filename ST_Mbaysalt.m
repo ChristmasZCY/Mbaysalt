@@ -13,10 +13,11 @@ function ST_Mbaysalt(varargin)
     % =================================================================================================================
     % Updates:
     %       ****-**-**:     See Mainpath.m
-    %       2024-04-26:     Code Refactoring, by Christmas;
-    %       2024-05-12:     Added check git:mirror, by Christmas
-    %       2024-05-12:     Added improve:minmax, submodule gitclone:irfu_matlab, by Christmas
-    %       2024-05-12:     Judged init first, by Christmas
+    %       2024-04-26:     Code Refactoring,                                       by Christmas;
+    %       2024-05-12:     Added check git:mirror,                                 by Christmas;
+    %       2024-05-12:     Added improve:minmax, submodule gitclone:irfu_matlab,   by Christmas;
+    %       2024-05-12:     Judged init first,                                      by Christmas;
+    %       2024-05-16:     Added improve:m_etopo2,                                 by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                        % Add all path
@@ -146,6 +147,9 @@ function STATUS = Fixed_functions(Jstruct)
     end
     if Jstruct.improve.m_gshhs
         STATUS_list = [STATUS_list,fixed_m_gshhs(Jstruct)];
+    end
+    if Jstruct.improve.m_etopo2
+        STATUS_list = [STATUS_list,fixed_m_etopo2(Jstruct)];
     end
     if Jstruct.improve.ann_wrapper
         STATUS_list = [STATUS_list,install_ann_wrapper(Jstruct)];
@@ -281,6 +285,31 @@ function STATUS = fixed_m_gshhs(Jstruct)
     if isempty(grep(m_filepath,gshhs_filepath))
         searchStr = "FILNAME=[fileparts(which('m_gshhs.m')) '/data/'];";  % 定义要查找的字符串
         replaceStr = sprintf("%% %s \nFILNAME = '%s';",searchStr, gshhs_filepath);  % 定义替换后的字符串
+        newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
+        fOWC(m_filepath, 'w', newContent);
+    end
+    STATUS = 1;
+end
+
+function STATUS = fixed_m_etopo2(Jstruct)
+    % 更改m_map工具包的m_etopo2.m文件的FILNAME
+    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.download.m_map.PATH,'m_etopo2.m');  % which('m_etopo2.m');
+    etopo2_path = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.download.etopo1.PATH,'etopo1_ice_g_i2.bin');
+    etopo2_filepath = [fileparts(etopo2_path) filesep];
+    if ~(exist(m_filepath,"file") && exist(etopo2_path,"file"))
+        STATUS = 0;
+        return  
+    end
+    % 备份源文件
+    path_DIR = fileparts(m_filepath);
+    m_filecopy = fullfile(path_DIR,'m_etopo2_origin.m');
+    if ~exist(m_filecopy,'file')
+        copyfile(m_filepath,m_filecopy);
+    end
+    fileContent = fileread(m_filepath);  % 读取文件内容
+    if isempty(grep(m_filepath,etopo2_filepath))
+        searchStr = 'PATHNAME=''/ocean/rich/more/mmapbase/etopo2v2/'';   % Be sure to end the path with a "/" or';  % 定义要查找的字符串
+        replaceStr = sprintf("%% %s \n PATHNAME = '%s';",searchStr, etopo2_filepath);  % 定义替换后的字符串
         newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
         fOWC(m_filepath, 'w', newContent);
     end

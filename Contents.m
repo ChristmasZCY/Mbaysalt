@@ -281,6 +281,7 @@
 %   Example_inpolygons.m                        -  Example for inpolygons
 %   Example_calc_timeStep.m                     -  Example for calc_timeStep
 %   Example_loaddata.m                          -  Example for loaddata
+%   Example_taylordiag.m                        -  Example for taylordiag
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
@@ -347,6 +348,7 @@
 %   plot_google_map             (optional)      -  plot_google_map toolbox                     ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/27627-zoharby-plot_google_map || https://github.com/zoharby/plot_google_map
 %   genpath2                                    -  genpath2 toolbox                            ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/72791-genpath2
 %   irfu-matlab                 (optional)      -  irfu-matlab toolbox                         ||  https://github.com/irfu/irfu-matlab
+%   WW3-tools                   (optional)      -  WW3-tools toolbox                           ||  https://github.com/NOAA-EMC/WW3-tools
 %
 %   %% Download
 %   m_map                                       -  m_map toolbox(v1.4o)                        ||  https://www.eoas.ubc.ca/~rich/map.html  &&  https://www.eoas.ubc.ca/~rich/mapug.html
@@ -367,8 +369,11 @@
 %   iniconfig                   (optional)      -  INI Config toolbox                          ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/24992-ini-config
 %   MITgcmTools                 (optional)      -  MITgcm matlab toolbox                       ||  https://github.com/MITgcm/MITgcm/tree/master/utils/matlab
 %   LanczosFilter               (optional)      -  LanczosFilter                               ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/14041-lanczosfilter-m
-%   ellipse                     (optional)      -  ellipse toolbox                             ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/289-ellipse-m
-%   genpath_exclude             (optional)      -  genpath_exclude toolbox                     ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/22209-genpath_exclude
+%   ellipse                     (optional)      -  ellipse                                     ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/289-ellipse-m
+%   genpath_exclude             (optional)      -  genpath_exclude                             ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/22209-genpath_exclude
+%   taylordiagram               (optional)      -  taylordiagram                               ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/20559-taylor-diagram
+%   guillaumemaze               (optional)      -  guillaumemaze                               ||  http://code.google.com/p/guillaumemaze/
+%   perfectPolarPlot            (optional)      -  perfectPolarPlot                            ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/73967-perfect-polar-plots
 %
 %                                         Extend Exfunctions
 %   matWRF                                      -  Extend matWRF toolbox

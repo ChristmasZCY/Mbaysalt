@@ -269,7 +269,15 @@
             "BRANCH": "master",
             "URL": "https://github.com/irfu/irfu-matlab.git",
           "PATH": "Exfunctions/irfu-matlab",
-          "CHECK": ["irf_cdf_read.m","file","2"]}},
+          "CHECK": ["irf_cdf_read.m","file","2"]},
+        "WW3_tools": {
+            "INSTALL": true,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "develop",
+            "URL": "https://github.com/NOAA-EMC/WW3-tools.git",
+            "PATH": "Exfunctions/WW3-tools",
+            "CHECK": ["WW3_mesh_write.m","file","2"]}},
     "modules": {
         "PATH": [
             "Prefunctions",
@@ -307,6 +315,9 @@
             "Exfunctions/lanczosfilter",
             "Exfunctions/ellipse",
             "Exfunctions/genpath_exclude",
+            "Exfunctions/taylordiagram",
+            "Exfunctions/guillaumemaze",
+            "Exfunctions/perfectPolarPlot",
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",
@@ -320,6 +331,7 @@
      "matFVCOM": true,
      "mexcdf": true,
      "m_gshhs": true,
+     "m_etopo2": true,
      "ann_wrapper": true,
      "DHIMIKE": false,
      "minmax": true,
@@ -330,10 +342,11 @@
          "PATH_OUT": "Exfunctions/matFVCOM",
          "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m"]}},
  "@@comments":{
-    "A":  "2024-04-26:  Created, by Christmas;",
-    "B":  "2024-05-13:, Added improve:minmax, by Christmas;",
-    "C":  "2024-05-14:, Added gitclone:irfu_matlab, by Christmas;",
-    "D":  "2024-05-15:, Added supplement:matFVCOM:FILES:*, by Christmas;"}
+    "A": "2024-04-26:  Created, by Christmas;",
+    "B": "2024-05-13:, Added improve:minmax, by Christmas;",
+    "C": "2024-05-14:, Added gitclone:irfu_matlab, by Christmas;",
+    "D": "2024-05-15:, Added supplement:matFVCOM:FILES:*, by Christmas;",
+    "E": "2024-05-16:  Added improve:m_etopo2, by Christmas;"}
 }
 
 

@@ -25,7 +25,7 @@ function clm(varargin)
     else
         str = varargin{1};
         if strcmp(str, 'clear')
-            evalin('base', 'clear');
+            evalin('base', 'clear all');
         elseif strcmp(str, 'clc')
             clc
         elseif strcmp(str, 'close all')

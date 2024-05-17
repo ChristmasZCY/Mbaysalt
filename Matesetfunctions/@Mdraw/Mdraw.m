@@ -2,11 +2,15 @@ classdef Mdraw
 
     properties(Access=private)
         GridStruct
+        VarStruct
     end
 
     methods
-        function obj = Mdraw(GridStruct)
+        function obj = Mdraw(GridStruct, VarStruct)
             obj.GridStruct = GridStruct;
+            if exist("Varsrtuct", "var")
+                obj.VarStruct = VarStruct;
+            end
         end
 
         function h = range(obj, varargin)

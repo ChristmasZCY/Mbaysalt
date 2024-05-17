@@ -19,6 +19,6 @@ function Dgrid = make_domain_ll(fin,varargin)
 
     Dgrid.lon_ori = Wgrid.x;
     Dgrid.lat_ori = Wgrid.y;
-    Dgrid.lon_dst = (d.lon(1):mean([d.lon(3),d.lat(3)]):d.lon(2))';
+    Dgrid.lon_dst = (d.lon(1):d.lon(3):d.lon(2))';
     Dgrid.lat_dst = (d.lat(1):d.lat(3):d.lat(2))';
 end

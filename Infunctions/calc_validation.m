@@ -12,12 +12,13 @@ function S = calc_validation(model, observation, varargin)
     %           S.R:        Correlation coefficient
     %           S.Bias:     Bias
     %           S.SSE:      Sum of squared errors
-    %           S.MSE:      Mean square error
-    %           S.RMSE:     Root mean square error
+    %           S.MSE:      Mean square error       反映模拟与实测的偏差
+    %           S.RMSE:     Root mean square error  计算模拟和实测的偏差值，衡量模拟与实测的离散程度
     %           S.ACCU:     Accuracy
-    %           S.MAE:      Mean absolute error
+    %           S.MAE:      Mean absolute error     计算模拟与实测的绝对偏差，衡量模拟结果的精准度
     %           S.MAPE:     Mean absolute percentage error
     %           S.SI:       Scatter index
+    %           S.MRE:      Mean Relative Error     计算绝对误差与模拟值之比，反映模拟误差与模拟值占比
     % =================================================================================================================
     % Update:
     %       2024-04-13:     Created, by Christmas;
@@ -83,6 +84,10 @@ function S = calc_validation(model, observation, varargin)
 
     % SI   散度指数 --> [0,+∞), 值越大误差越大
     S.SI = std(dif,"omitnan") /mean(observation);
+    
+    % MRE 平均相对误差   相对误差（相对误差是指误差相对于真实值的比例）绝对值的平均值 
+    % MRE可以反映相对误差的大小，但是不能反映绝对误差的大小。
+    S.MRE = sum(abs(dif)/observation)/len;
 
     return
 end

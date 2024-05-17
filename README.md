@@ -27,7 +27,7 @@
    
    Any time you want to update the code to the latest version, run from the command line
     ```shell
-    git pull
+    git pull (--unshallow)
     ```
 
 2. Change Exfunctions install switch which you want to open.
@@ -84,6 +84,7 @@
 - [export_fig](https://ww2.mathworks.cn/matlabcentral/fileexchange/23629-export_fig/)
 - [genpath2](https://github.com/ssordopalacios/matlab-genpath2)
 - [irfu-matlab](https://github.com/irfu/irfu-matlab)
+- [WW3-tools](https://github.com/NOAA-EMC/WW3-tools)
 
 
 - [m_map](https://www.eoas.ubc.ca/~rich/map.html)
@@ -104,6 +105,9 @@
 - [LanczosFilter](https://ww2.mathworks.cn/matlabcentral/fileexchange/14041-lanczosfilter-m)
 - [ellipse](https://ww2.mathworks.cn/matlabcentral/fileexchange/289-ellipse-m)
 - [genpath_exclude](https://ww2.mathworks.cn/matlabcentral/fileexchange/22209-genpath_exclude)
+- [taylordiagram](https://ww2.mathworks.cn/matlabcentral/fileexchange/20559-taylor-diagram)
+- [guillaumemaze](http://code.google.com/p/guillaumemaze/)
+- [perfectPolarPlot](https://ww2.mathworks.cn/matlabcentral/fileexchange/73967-perfect-polar-plots)
 
 </details>
 
