@@ -179,8 +179,11 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
                    'u_std', 'u_sgm', 'u_avg', ...
                    'v_std', 'v_sgm', 'v_avg', ...
                    'chlo_std', 'chlo_sgm', 'chlo_avg', ...
-                   'adt'};
+                   'adt','swh'};
         VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'ua', 'va'}))
+            [VarStruct.uva_spd, VarStruct.uva_dir] = calc_uv2sd(VarStruct.ua, VarStruct.va, "current");
+        end
         if nc_var_exist(fin, 'time')
             time = ncdateread(fin, 'time');
             Ttimes = Mdatetime(time);

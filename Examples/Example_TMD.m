@@ -1,5 +1,5 @@
 clm
-pwd = '/Users/christmas/Documents/Code/Project/Server_Program/Mbaysalt/Exfunctions/TMDToolbox/TMD/DATA';
+pwd = '/Users/christmas/Documents/Code/Project/Server_Program/Mbaysalt/Exfunctions/TMDToolbox_v2_5/TMD/DATA';
 cd(pwd)
 
 %% make control file
@@ -15,7 +15,7 @@ writelines(sprintf('%s/uv_area',area_dir),"Area_define.mat","WriteMode","append"
 writelines(sprintf('%s/grid_area',area_dir),"Area_define.mat","WriteMode","append")
 
 %% run function
-tpxo_atlas2local_unix('tpxobin_file.mat','Area_define.mat',[-85 85],[0.001 360]);
+tpxo_atlas2local('tpxobin_file.mat','Area_define.mat',[-85 85],[0.001 360]);
 
 %% TMD
 cd ../

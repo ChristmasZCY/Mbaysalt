@@ -27,7 +27,7 @@ function loaddata(varargin)
     assignin("base", NAME.Ttimes, Ttimes);
 
     if DRAW.plot
-        c = Mgrid(GridStruct);
+        c = Mgrid(GridStruct,VarStruct);
         clf
         hold on
         c.draw.range
@@ -36,7 +36,7 @@ function loaddata(varargin)
         c.draw.coast('Resolution','c','Coordinate',Coordinate)
         % c.draw.image(VarStruct.uv_spd(:,1))
 
-    end
+     end
 
 end
 

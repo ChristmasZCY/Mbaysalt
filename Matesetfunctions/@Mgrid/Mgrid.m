@@ -7,9 +7,13 @@ classdef Mgrid
 
     methods
         
-        function obj = Mgrid(GridStruct)
+        function obj = Mgrid(GridStruct, Varsrtuct)
             obj.GridStruct = GridStruct;
-            obj.draw = Mdraw(GridStruct);
+            if ~exist("Varsrtuct", "var")
+                obj.draw = Mdraw(GridStruct);
+            else
+                obj.draw = Mdraw(GridStruct, Varsrtuct);
+            end
         end
 
         function outputArg = fun1(obj,varargin)

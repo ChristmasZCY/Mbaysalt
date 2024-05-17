@@ -93,3 +93,7 @@
 [submodule "Exfunctions/irfu-matlab"]
 	path = Exfunctions/irfu-matlab
 	url = https://github.com/irfu/irfu-matlab.git
+
+[submodule "Exfunctions/WW3-tools"]
+	path = Exfunctions/WW3-tools
+	url = https://github.com/NOAA-EMC/WW3-tools

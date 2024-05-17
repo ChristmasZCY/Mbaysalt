@@ -29,7 +29,7 @@ function [YN, Ofile] = readlink(file)
 
     file = convertStringsToChars(file);
 
-    if startsWith(file, './') || ~contains(file, '/')
+    if startsWith(file, './') || ~contains(file, filesep)
         file = fullfile(pwd, file);
     end
 
@@ -39,18 +39,31 @@ function [YN, Ofile] = readlink(file)
 
     switch computer('arch')
         case {'win32','win64'}
-            cmd = sprintf('powershell -Command "(Get-Item -Path %s).Target"', file);  %% TODO: test
+            % $lnkPath = "D:\Beihai(lonlat3).2dm.lnk"; $shell = New-Object -ComObject WScript.Shell; $shortcut = $shell.CreateShortcut($lnkPath); Write-Host "$($shortcut.TargetPath)"
+            cmd = sprintf("powershell -Command ""$lnkPath = '%s'; " + ...
+                          "$shell = New-Object -ComObject WScript.Shell; " + ...
+                          "$shortcut = $shell.CreateShortcut($lnkPath); " + ...
+                          "Write-Host $shortcut.TargetPath""", file);
+            if endsWith(file,".lnk")
+                YN = true;
+                [~, Ofile] = system(cmd);
+                Ofile = strip(Ofile);
+            else
+                YN = false;
+                Ofile = file;
+            end
         case {'glnxa64','maci64','maca64'}
             cmd = ['readlink -f ', file];
+            [~, Ofile] = system(cmd);
+            Ofile = strip(Ofile);
+            if ~strcmp(file, Ofile)
+                YN = true;
+            else
+                YN = false;
+            end
         otherwise
             error('platform error')
     end
-    [~, Ofile] = system(cmd);
-    Ofile = strip(Ofile);
-    if ~strcmp(file, Ofile)
-        YN = true;
-    else
-        YN = false;
-    end
+    return
 
 end

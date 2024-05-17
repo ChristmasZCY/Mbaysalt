@@ -42,13 +42,14 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
     ymd_dtm = datetime(yyyymmdd,"Format","yyyyMMdd");
     NcInfilename = [conf.NCprefix, domain.name, '.nc'];
     
-    if domain.name == 'd03'
+    switch domain.name
+    case 'd03'
         domain.region_name = 'scs';
         domain.resolution = '36';
-    elseif domain.name == 'd04'
+    case 'd04'
         domain.region_name = 'ecs';
         domain.resolution = '34';
-    else
+    otherwise
         error('Domain has not configured !!!')
     end
     osprint2('INFO',sprintf('domain: %s',domain.name))

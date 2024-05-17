@@ -1,6 +1,7 @@
 function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
     % makes multi-constituent outcut from single-constituent atlas files
-    % Lana Erofeeva, 2021
+    %
+    % Lana Erofeeva, 2020
     % Christmas, 2024
     %
     % USAGE: atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
@@ -51,10 +52,10 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
     if lon_lims(1)>lon_lims(2), tmp=lon_lims(1);lon_lims(1)=lon_lims(2);lon_lims(2)=tmp;end
     %
     p=path;
-    if isempty(findstr(p,'FUNCTIONS'))>0
+    if isempty(findstr(p,'FUNCTIONS'))>0,
         addpath('.\FUNCTIONS');
     end
-    if exist(atlas_modfile,'file')==0
+    if exist(atlas_modfile,'file')==0,
         fprintf('File %s does not exist\n',atlas_modfile);
         return
     else
@@ -62,7 +63,7 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
         hname=fgetl(fid);uname=fgetl(fid);grname=fgetl(fid);
         fclose(fid);
     end
-    if exist(out_modfile,'file')==0
+    if exist(out_modfile,'file')==0,
         fprintf('File %s does not exist\n',out_modfile);
         return
     else
@@ -84,9 +85,9 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
     th_lim1(1)=lat(jj(1))-1/60;th_lim1(2)=lat(jj(end))+1/60;
     if lon_lims(1)<0 & lon_lims(2)<0,lon_lims=lon_lims+360;end
     ph_lim1(2)=lon(ii(end))+1/60;
-    if lon_lims(1)>0
+    if lon_lims(1)>0,
         ph_lim1(1)=lon(ii(1))-1/60;
-    else % passing through 0
+    else, % passing through 0
         ii1=find(lon>lon_lims(1)+360);
         ii=[ii1,ii];
         ph_lim1(1)=lon(ii1(1))-1/60-360;
@@ -104,16 +105,22 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
         case {'win32','win64'}
             [st,hfiles]=system(['dir /b/s/w ' hname]);
         case {'glnxa64','maci64','maca64'}
-            [st,hfiles]=unix(['ls -1 ' hname]);
+            % [st,hfiles]=unix(['ls -1 ' hname]);
+            files = dir(hname);
+            files = arrayfun(@(x) fullfile(x.folder,x.name), files, 'UniformOutput', false);
+            hfiles = strjoin(files, '\n'); st = 1; clear files
         otherwise
             error('platform error')
     end
     if st<0 | isempty(hfiles)>0,fprintf('No h-atlas files found, check %s\n',atlas_modfile);return;end
     switch computer('arch')
         case {'win32','win64'}
-            [st,hfiles]=system(['dir /b/s/w ' hname]);
+            [st,ufiles]=system(['dir /b/s/w ' uname]);
         case {'glnxa64','maci64','maca64'}
-            [st,hfiles]=unix(['ls -1 ' hname]);
+            % [st,ufiles]=unix(['ls -1 ' uname]);
+            files = dir(uname);
+            files = arrayfun(@(x) fullfile(x.folder,x.name), files, 'UniformOutput', false);
+            ufiles = strjoin(files, '\n'); st = 1; clear files
         otherwise
             error('platform error')
     end
@@ -138,6 +145,7 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
             otherwise
                 error('platform error')
         end
+    
         c4=hname(ic:ic+2);c4=strrep(c4,'_','');
         while length(c4)<4,c4=[c4 ' '];end
         cid=[cid c4];
@@ -164,6 +172,7 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
             otherwise
                 error('platform error')
         end
+    
         c4=uname(ic:ic+2);c4=strrep(c4,'_','');
         while length(c4)<4,c4=[c4 ' '];end
         cid=[cid c4];
@@ -174,5 +183,5 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
     uv_out(uname_out,u,v,th_lim1,ph_lim1,cid);
     fprintf('done\n');
     return
-
 end
+

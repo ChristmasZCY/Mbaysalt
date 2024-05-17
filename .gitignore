@@ -42,6 +42,7 @@ Exfunctions/export_fig
 Exfunctions/plot_google_map
 Exfunctions/genpath2
 Exfunctions/irfu-matlab
+Exfunctions/WW3-tools
 
 Exfunctions/m_map
 Exfunctions/t_tide
@@ -55,6 +56,7 @@ Exfunctions/DHIMatlabToolbox
 
 Exfunctions/mexcdf-svn-r4054/
 Exfunctions/*.zip
+Exfunctions/guillaumemaze-source-archive.zip
 
 # Docs files #
 Docs/Communication.md
