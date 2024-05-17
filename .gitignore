@@ -59,6 +59,7 @@ Exfunctions/*.zip
 Exfunctions/guillaumemaze-source-archive.zip
 
 # Docs files #
+Docs/
 Docs/Communication.md
 Docs/pics
 
@@ -76,3 +77,4 @@ Htmls/*
 !**/.gitkeep
 **/*.m~
 **/*.asv
+
