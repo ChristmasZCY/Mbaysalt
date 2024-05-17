@@ -401,7 +401,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
                         pkg_url = pkg.URL;
                     end
                     
-                    sprintf('---------> Cloning %s toolbox into %s', field, pkg.PATH)
+                    fprintf('---------> Cloning %s toolbox into %s', field, pkg.PATH)
                     CLONES(1).(field) = git_clone(Git, pkg_url, pkg_path, pkg.DEPTH, pkg.BRANCH);
                     STATUS1.(field) = 1;
                 end
@@ -553,7 +553,7 @@ function CLONE = git_clone(Git, pkg_url, pkg_path, Depth, Branch)
         disp(txt)
         system(txt);
     case {'matlab'}
-        CLONE = gitclone(pkg_url, pkg_path, 'Depth', str2double(Depth));
+        CLONE = gitclone(pkg_url, pkg_path, 'Depth', Depth);
     end
 end
 
