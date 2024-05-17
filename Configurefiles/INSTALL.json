@@ -321,9 +321,13 @@
  "git": {
      "path": "/usr/bin/git",
      "mirror": "https://githubfast.com/",
+     "username": "None",
+     "password": "None",
      "method": "AUTO",
      "method_1": "MATLAB",
      "method_2": "CMD"},
+ "down":{
+     "thread": 4 },
  "improve": {
      "t_tide": true,
      "setup_nctoolbox_java": true,

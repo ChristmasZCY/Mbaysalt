@@ -365,7 +365,7 @@ function STATUS = install_irfu_matlab(Jstruct)
     return
 end
 
-function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
+function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
     % packages.gitclone --> START
     fields_gitclone = fieldnames(Jstruct.packages.gitclone)';
     Git = Jstruct.git;
@@ -401,8 +401,8 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
                         pkg_url = pkg.URL;
                     end
                     
-                    fprintf('---------> Cloning %s toolbox into %s', field, pkg.PATH)
-                    CLONES(1).(field) = git_clone(Git, pkg_url, pkg_path, pkg.DEPTH, pkg.BRANCH);
+                    fprintf('---------> Cloning %s toolbox into %s\n', field, pkg.PATH)
+                    CLONES(1).(field) = git_clone(Git, pkg_url, pkg_path, pkg);
                     STATUS1.(field) = 1;
                 end
                 clearvars txt field field_cell
@@ -443,8 +443,8 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
             pkg_localfile = fullfile(PATH.basepath, pkg.LOCALFILE);
             if ~(exist(pkg_localfile, 'file') == 2)  % No cache will download.
                 pkg_url = pkg.URL;
-                sprintf('---------> Downloading %s toolbox into %s', field, pkg.LOCALFILE)
-                download_urlfile(pkg_url,pkg_localfile)
+                fprintf('---------> Downloading %s toolbox into %s\n', field, pkg.LOCALFILE)
+                download_urlfile(pkg_url, pkg_localfile, Jstruct.down.thread)
             end
             if ~(exist(pkg_localfile, 'file') == 2)
                 error('%s is not downloaded, please download it manually!',pkg.LOCALFILE);
@@ -511,8 +511,13 @@ function TF = check_command(command)
     end
 end
 
-function download_urlfile(urlin, fileOut)
-    if check_command('wget')
+function download_urlfile(urlin, fileOut, thread)
+    if check_command('axel')
+        txt = ['axel -a -v -n ', num2str(thread) ,' ', urlin, ' -o ', fileOut];
+        % txt = ['axel -a -v -n 4 ', url, ' -o ', Edir, 't_tide_v1.5beta.zip'];
+        disp(txt);
+        system(txt);
+    elseif check_command('wget')
         txt = ['wget ', urlin, ' -O ', fileOut];
         % txt = ['wget ', url, ' -O ', Edir, 't_tide_v1.5beta.zip'];
         disp(txt);
@@ -540,16 +545,25 @@ function unzip_file(fileIn, dirOut)
     end
 end
 
-function CLONE = git_clone(Git, pkg_url, pkg_path, Depth, Branch)
+function CLONE = git_clone(Git, pkg_url, pkg_path, pkg)
     CLONE = '';
     method = Git.method;
+    username = Git.username;
+    password = Git.password;
+    Depth = pkg.DEPTH;
+    Branch = pkg.BRANCH;
     switch lower(method)
     case {'cmd'}
         if Depth == 0
-            txt = sprintf('git clone -b %s %s %s', Branch, pkg_url, pkg_path);
-        else
-            txt = sprintf('git clone -b %s --depth %d %s %s', Branch, Depth, pkg_url, pkg_path);
+            Depth = 99999999;
         end
+        if ~strcmp(username,'None') && ~strcmp(password,'None')
+            % https://blog.csdn.net/qq_45859054/article/details/108036754
+            username = replace(username,'@','%40');
+            password = replace(password,'@','%40');
+            pkg_url = replace(pkg_url,'://',sprintf('://%s:%s@',username,password));
+        end
+            txt = sprintf('git clone -b %s --depth %d %s %s', Branch, Depth, pkg_url, pkg_path);
         disp(txt)
         system(txt);
     case {'matlab'}
