@@ -553,7 +553,7 @@ function CLONE = git_clone(Git, pkg_url, pkg_path, Depth, Branch)
         disp(txt)
         system(txt);
     case {'matlab'}
-        CLONE = gitclone(pkg_url, pkg_path, 'Depth', only_new);
+        CLONE = gitclone(pkg_url, pkg_path, 'Depth', str2double(Depth));
     end
 end
 
