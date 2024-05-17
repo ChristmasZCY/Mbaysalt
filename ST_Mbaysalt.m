@@ -402,7 +402,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct,control)
                     end
                     
                     sprintf('---------> Cloning %s toolbox into %s', field, pkg.PATH)
-                    CLONES(1).(field) = git_clone(Git, pkg_url, pkg_path);
+                    CLONES(1).(field) = git_clone(Git, pkg_url, pkg_path, pkg.DEPTH, pkg.BRANCH);
                     STATUS1.(field) = 1;
                 end
                 clearvars txt field field_cell
@@ -540,16 +540,15 @@ function unzip_file(fileIn, dirOut)
     end
 end
 
-function CLONE = git_clone(Git, pkg_url, pkg_path)
+function CLONE = git_clone(Git, pkg_url, pkg_path, Depth, Branch)
     CLONE = '';
     method = Git.method;
-    Depth  = Git.DEPTH;
     switch lower(method)
     case {'cmd'}
         if Depth == 0
-            txt = sprintf('git clone %s %s', pkg_url, pkg_path);
+            txt = sprintf('git clone -b %s %s %s', Branch, pkg_url, pkg_path);
         else
-            txt = sprintf('git clone --depth %d %s %s', Depth, pkg_url, pkg_path);
+            txt = sprintf('git clone -b %s --depth %d %s %s', Branch, Depth, pkg_url, pkg_path);
         end
         disp(txt)
         system(txt);
