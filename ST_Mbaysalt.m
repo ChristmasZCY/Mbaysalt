@@ -232,9 +232,13 @@ function STATUS = supplement_matFVCOM(Jstruct)
                 if ~exist(file_out_bak,"file")  % backup
                     copyfile(file_out,file_out_bak);
                 end
-                copyfile(file_in,file_out);
-                STATUS_list(i) = 1;
-            end
+                if ~strcmp(fileread(file_in), fileread(file_out))
+                    copyfile(file_in,file_out);
+                    STATUS_list(i) = 1;
+                else
+                    STATUS_list(i) = 0;
+                end
+            end      
         end
     end
     STATUS = any(STATUS_list);
