@@ -43,6 +43,8 @@ Exfunctions/plot_google_map
 Exfunctions/genpath2
 Exfunctions/irfu-matlab
 Exfunctions/WW3-tools
+Exfunctions/funcsign
+Exfunctions/kml-toolbox
 
 Exfunctions/m_map
 Exfunctions/t_tide
