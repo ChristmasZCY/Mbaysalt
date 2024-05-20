@@ -127,8 +127,8 @@
             "PATH": "Exfunctions/WRF2FVCOM",
             "CHECK": ["wrf2fvcom.f90","file","2"]},
         "OceanData": {
-            "INSTALL": true,
-            "SETPATH": true,
+            "INSTALL": false,
+            "SETPATH": false,
             "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/ChristmasZCY/OceanData.git",
@@ -277,7 +277,23 @@
             "BRANCH": "develop",
             "URL": "https://github.com/NOAA-EMC/WW3-tools.git",
             "PATH": "Exfunctions/WW3-tools",
-            "CHECK": ["WW3_mesh_write.m","file","2"]}},
+            "CHECK": ["WW3_mesh_write.m","file","2"]},
+        "funcsign": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://gitee.com/iam002/funcsign.git",
+            "PATH": "Exfunctions/funcsign",
+            "CHECK": ["hs_signfunc.m","file","2"]},
+        "kml-toolbox": {
+            "INSTALL": false,
+            "SETPATH": false,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://github.com/theolivenbaum/kml-toolbox",
+            "PATH": "Exfunctions/kml-toolbox",
+            "CHECK": ["kml.m","file","2"]}},
     "modules": {
         "PATH": [
             "Prefunctions",
