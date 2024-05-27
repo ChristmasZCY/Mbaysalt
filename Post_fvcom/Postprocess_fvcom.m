@@ -11,24 +11,26 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       None
     % =================================================================================================================
     % Update:
-    %       2023-**-**:     Created, by Christmas;
-    %       2023-**-**:     Adjusted method of calculate to rectangule grid, by Christmas;
-    %       2023-**-**:     Added vertical mask, by Christmas;
-    %       2023-**-**:     Added out sgm level and std level, by Christmas;
-    %       2023-**-**:     Added switch of output each value, by Christmas;
-    %       2023-12-29:     Added average depth output, by Christmas;
-    %       2023-12-29:     Added output casfco2, by Christmas;
-    %       2024-01-03:     Fixed aligning of osprint2, by Christmas;
-    %       2024-01-03:     Added Avg_depth wrong warning, by Christmas;
-    %       2024-01-07:     Added nemuro output(chlo,no3,zp,pp,sand), by Christmas;
-    %       2024-01-25:     Added limit for ecological element(ph, no3, pco2, chlo, casfco2)
-    %       2024-04-01:     Fixed separate var to vertical mask, by Christmas;
-    %       2024-04-01:     Added two parameters at conf file, by Christmas;
-    %       2024-04-04:     Added ua va,    by Christmas;
-    %       2024-04-08:     Fixed 'struct()' to struct(''),    by Christmas;
-    %       2024-05-12:     Added check isempty(fncValue_nzt) in Siqi_interp,   by Christmas;
-    %       2024-05-12:     Fixed 'f_nc.x,f_nc.x' to 'f_nc.x,f_nc.y',   by Christmas;
-    %       2024-05-12:     Added disp info,   by Christmas;
+    %       2023-**-**:     Created,                                                            by Christmas;
+    %       2023-**-**:     Adjusted method of calculate to rectangule grid,                    by Christmas;
+    %       2023-**-**:     Added vertical mask,                                                by Christmas;
+    %       2023-**-**:     Added out sgm level and std level,                                  by Christmas;
+    %       2023-**-**:     Added switch of output each value,                                  by Christmas;
+    %       2023-12-29:     Added average depth output,                                         by Christmas;
+    %       2023-12-29:     Added output casfco2,                                               by Christmas;
+    %       2024-01-03:     Fixed aligning of osprint2,                                         by Christmas;
+    %       2024-01-03:     Added Avg_depth wrong warning,                                      by Christmas;
+    %       2024-01-07:     Added nemuro output(chlo,no3,zp,pp,sand),                           by Christmas;
+    %       2024-01-25:     Added limit for ecological element(ph, no3, pco2, chlo, casfco2),   by Christmas;
+    %       2024-04-01:     Fixed separate var to vertical mask,                                by Christmas;
+    %       2024-04-01:     Added two parameters at conf file,                                  by Christmas;
+    %       2024-04-04:     Added ua va,                                                        by Christmas;
+    %       2024-04-08:     Fixed 'struct()' to struct(''),                                     by Christmas;
+    %       2024-05-12:     Added check isempty(fncValue_nzt) in Siqi_interp,                   by Christmas;
+    %       2024-05-12:     Fixed 'f_nc.x,f_nc.x' to 'f_nc.x,f_nc.y',                           by Christmas;
+    %       2024-05-12:     Added disp info,                                                    by Christmas;
+    %       2024-05-21:     Changed read_switch to read_start,                                  by Christmas;
+    %       2024-05-21:     Added extrapolation for Siqi_interp and ESMF,                       by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20240401,1)
@@ -65,7 +67,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     lat_dst         = para_conf.Lat_destination;        % 模型的纬度范围  --> [20,30]
     Ecology_model   = para_conf.Ecology_model;          % 生态模型  --> '.ERSEM.' or '.NEMURO.'
     Text_len        = para_conf.Text_len;               % 打印字符的对齐长度
-    SWITCH          = read_switch(para_conf);           % 读取开关
+    SWITCH          = read_start(para_conf, 'Switch');  % 读取开关
 
     if ~SWITCH.out_std_level && ~SWITCH.out_sgm_level && ~SWITCH.out_avg_level && ~SWITCH.ua && ~SWITCH.va % 至少输出一种层
         error('At least one of the three output levels or ua or va must be selected')
@@ -347,7 +349,11 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 if SWITCH.make_weight
                     [Lat_m,Lon_m] = meshgrid(Lat,Lon);
                     tt2 = tic;
-                    Weight_2d = interp_2d_calc_weight('TRI',f_nc.x,f_nc.y,f_nc.nv,Lon_m,Lat_m);
+                    if SWITCH.extrap
+                        Weight_2d = interp_2d_calc_weight('TRI',f_nc.x,f_nc.y,f_nc.nv,Lon_m,Lat_m,'Extrap');
+                    else
+                        Weight_2d = interp_2d_calc_weight('TRI',f_nc.x,f_nc.y,f_nc.nv,Lon_m,Lat_m);
+                    end
                     makedirs(fileparts(file_weight)); rmfiles(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     osprint2('INFO', [pad('Calculate 2d weight costs ',Text_len,'right'),'--> ', num2str(toc(tt2)),' s'])
@@ -381,20 +387,26 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             case 'Siqi_ESMF'
                 file_weight = para_conf.WeightFile_Siqi_ESMF;
                 if SWITCH.make_weight
-                    exe = para_conf.ESMF_exe;
-                    % ESMFMAFILE = para_conf.ESMF_MAFILE;
+                    ESMF_conf = read_start(para_conf,'ESMF');
+                    ESMF_default = make_DEFAULT_struct('ESMF');
+                    ESMF = get_S1_key_from_S2_value(ESMF_default, ESMF_conf);
+                    clear ESMF_conf ESMF_default
+                    % ESMFMKFILE = ESMF.MKFILE;
                     GridFile_fvcom = para_conf.GridFile_fvcom;
                     GridFile_wrf = para_conf.GridFile_wrf;
-                    ESMF_NCweightfile = para_conf.ESMF_NCweightfile;
-                    ESMF_RegridMethod = para_conf.ESMF_RegridMethod;
                     [Lat_m,Lon_m] = meshgrid(Lat,Lon);  % 注意: Lat放在前面
                     tt3 = tic;
                     esmf_write_grid(GridFile_fvcom , 'FVCOM', f_nc.x,f_nc.y,f_nc.nv);
                     esmf_write_grid(GridFile_wrf,    'WRF',   Lon_m,Lat_m);
-                    esmf_regrid_weight(GridFile_fvcom, GridFile_wrf, ESMF_NCweightfile, ...
-                                        'exe', exe, 'Src_loc', 'corner', 'Method', ESMF_RegridMethod); % temperature corner
+                    if SWITCH.extrap && ~strcmp(ESMF.ExtrapMethod, 'none')
+                        esmf_regrid_weight(GridFile_fvcom, GridFile_wrf, ESMF.NCweightfile, ...
+                                        'exe', ESMF.exe, 'Src_loc', 'corner', 'Method', ESMF.RegridMethod,'Extrap',ESMF.ExtrapMethod); % temperature corner
+                    else
+                        esmf_regrid_weight(GridFile_fvcom, GridFile_wrf, ESMF.NCweightfile, ...
+                                            'exe', ESMF.exe, 'Src_loc', 'corner', 'Method', ESMF.RegridMethod); % temperature corner
+                    end
                     clear ans
-                    Weight_2d = esmf_read_weight(ESMF_NCweightfile);
+                    Weight_2d = esmf_read_weight(ESMF.NCweightfile);
                     makedirs(fileparts(file_weight)); rmfiles(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     clear Lon_m Lat_m
@@ -402,7 +414,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                 else
                     Weight_2d = load(file_weight).Weight_2d;
                 end
-                clear GridFile_fvcom GridFile_wrf ESMF_NCweightfile ESMFMAFILE ESMF_RegridMethod exe file_weight tt3
+                clear GridFile_fvcom GridFile_wrf file_weight tt3
 
                 for it = 1 : length(time)  % for it = 1: size(temp,3) % time
                     for iz = 1 : f_nc.kbm1  % for iz = 1 : size(temp,2) % depth
@@ -884,13 +896,27 @@ function var = flip2_to_recover(var, F)
 end
 
 function SWITCH = read_switch(structIn)
-    % 从structIn中读取以SWITCH_开头的变量，将变量写入到SWITCH结构体中
+    % 从structIn中读取以Switch_开头的变量，将变量写入到SWITCH结构体中
     % eg: 将structIn中的Switch_erosion写入到SWITCH.erosion中
+    warning('Abandon, please use ''read_switch(%s,''Switch'')'' instead.', inputname(1))
     SWITCH = struct('');
     key = fieldnames(structIn);
     for i = 1 : length(key)
         if ~isempty(regexp(key{i},'^Switch_','once'))
             SWITCH(1).(key{i}(8:end)) = structIn.(key{i});
+        end
+    end
+end
+
+function S2 = read_start(structIn, prefix)
+    % 从struct中读取以prefix_开头的变量，将变量写入到PATH结构体中
+    % eg: 将struct中的Git_path写入到Git.path中
+    S2 = struct('');
+    key = fieldnames(structIn);
+    pattern = sprintf('^%s_', prefix);  % ^Git_
+    for i = 1 : length(key)
+        if ~isempty(regexp(key{i},pattern,'once'))
+            S2(1).(key{i}(length(pattern):end)) = structIn.(key{i});
         end
     end
 end
@@ -995,3 +1021,34 @@ function matStr = warningText(Avg_depth)
     end
     matStr = [matStr, ']'];  % 关闭字符串
 end
+
+function S = make_DEFAULT_struct(field)
+    switch upper(field)
+    case 'ESMF'
+        S(1).exe = 'none';
+        S(1).NCweightfile  = 'none';
+        S(1).MKFILE        = 'none';
+        S(1).RegridMethod  = 'none';
+        S(1).ExtrapMethod  = 'none';
+    case ''
+    otherwise
+        error('%s is not definied!', field);
+    end
+
+end
+
+function S = get_S1_key_from_S2_value(S1, S2)
+    % S = get_S1_key_from_S2_value(ESMF_DEFAULT, ESMF_conf);
+    S = struct('');
+    fields = fieldnames(S1);
+    for i = 1 : length(fields)
+       field = fields{i};
+        if isfield(S2, field)
+            S(1).(field) = S2.(field);
+        else
+            S(1).(field) = S1.(field);
+        end
+    end
+
+end
+

@@ -26,6 +26,8 @@ function [preu,prev,preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, varargin)
     varargin = read_varargin2(varargin, {'Cdisp'});
     varargin = read_varargin(varargin,{'tidecon'},{'../tidecon-name-freq-12-atlas.mat'});
 
+    warning('Not recommended, replaced by ''preuvh2''!')
+
     [~,lat_num,lon_num] = size(ua);
     load(tidecon, 'FREQ', 'NAME')
 
