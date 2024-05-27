@@ -628,12 +628,12 @@ function fun = ABANDON()
     function S2 = read_start(structIn, prefix)
         % 从struct中读取以prefix_开头的变量，将变量写入到PATH结构体中
         % eg: 将struct中的Git_path写入到Git.path中
-        S2 = struct();
+        S2 = struct('');
         key = fieldnames(structIn);
         pattern = sprintf('^%s_', prefix);  % ^Git_
         for i = 1 : length(key)
             if ~isempty(regexp(key{i},pattern,'once'))
-                S2.(key{i}(length(pattern):end)) = structIn.(key{i});
+                S2(1).(key{i}(length(pattern):end)) = structIn.(key{i});
             end
         end
     end

@@ -105,10 +105,11 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
         case {'win32','win64'}
             [st,hfiles]=system(['dir /b/s/w ' hname]);
         case {'glnxa64','maci64','maca64'}
-            % [st,hfiles]=unix(['ls -1 ' hname]);
-            files = dir(hname);
-            files = arrayfun(@(x) fullfile(x.folder,x.name), files, 'UniformOutput', false);
-            hfiles = strjoin(files, '\n'); st = 1; clear files
+            [st,hfiles]=unix(['ls -1 ' hname]);
+            % files = dir(hname);
+            % files = arrayfun(@(x) fullfile(x.folder,x.name), files, 'UniformOutput', false);
+            % hfiles = strjoin(files, '\n'); st = 1; clear files
+            % hfiles = sprintf('%s\n',hfiles);
         otherwise
             error('platform error')
     end
@@ -117,10 +118,11 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
         case {'win32','win64'}
             [st,ufiles]=system(['dir /b/s/w ' uname]);
         case {'glnxa64','maci64','maca64'}
-            % [st,ufiles]=unix(['ls -1 ' uname]);
-            files = dir(uname);
-            files = arrayfun(@(x) fullfile(x.folder,x.name), files, 'UniformOutput', false);
-            ufiles = strjoin(files, '\n'); st = 1; clear files
+            [st,ufiles]=unix(['ls -1 ' uname]);
+            % files = dir(uname);
+            % files = arrayfun(@(x) fullfile(x.folder,x.name), files, 'UniformOutput', false);
+            % ufiles = strjoin(files, '\n'); st = 1; clear files
+            % ufiles = sprintf('%s\n',ufiles);
         otherwise
             error('platform error')
     end

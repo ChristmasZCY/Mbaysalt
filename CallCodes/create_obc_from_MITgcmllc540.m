@@ -167,6 +167,12 @@ function create_obc_from_MITgcmllc540(conf_file, yyyymmdd)
     T3_xytz = reshape(T3_nzt,[size(XC_dst), length(RC_dst), steps]);
     S3_xytz = reshape(S3_nzt,[size(XC_dst), length(RC_dst), steps]);
 
+    U3_xytz = cat(4,U3_xytz,U3_xytz(:,:,:,1));
+    V3_xytz = cat(4,V3_xytz,V3_xytz(:,:,:,1));
+    T3_xytz = cat(4,T3_xytz,T3_xytz(:,:,:,1));
+    S3_xytz = cat(4,S3_xytz,S3_xytz(:,:,:,1));
+
+
     U_obs = get_obc_from_region(U3_xytz);
     V_obs = get_obc_from_region(V3_xytz);
     T_obs = get_obc_from_region(T3_xytz);

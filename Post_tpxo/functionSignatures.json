@@ -1,32 +1,15 @@
 
 {
     "_schemaVersion": "1.0.0",
-    "get_tpxo_filepath":{
-        "inputs":[],
-        "outputs":[]},
-    "make_tide_from_tpxo":{
+    "preuvh2":{
         "inputs":[
-            {"name":"year", "kind":"required","type":["numeric"],"purpose":"Year to predict"},
-            {"name":"month", "kind":"required","type":["numeric"],"purpose":"Month to predict"},
-            {"name":"days", "kind":"positional","type":["numeric"],"purpose":"days after to predict(such as [0,1,10,20])"}],
-        "outputs":[]},
-    "make_tpxo_fixed_coordinate":{
-        "inputs":[],
-        "outputs":[]},
-    "preuvh":{
-        "inputs":[
-            {"name":"ua", "kind":"required","type":["numeric"],"purpose":"u amplitude"},
-            {"name":"up", "kind":"required","type":["numeric"],"purpose":"u phase"},
-            {"name":"va", "kind":"required","type":["numeric"],"purpose":"v amplitude"},
-            {"name":"vp", "kind":"required","type":["numeric"],"purpose":"v phase"},
-            {"name":"ha", "kind":"required","type":["numeric"],"purpose":"h amplitude"},
-            {"name":"hp", "kind":"required","type":["numeric"],"purpose":"h phase"},
+            {"name":"lon", "kind":"required","type":["numeric"],"purpose":"longitude"},
             {"name":"lat", "kind":"required","type":["numeric"],"purpose":"latitude"},
-            {"name":"time(datenum)", "kind":"required","type":["numeric"],"purpose":"time(datenum)"},
-            {"name":"tidecon", "kind":"namevalue","type":["file=*.mat"],"purpose":"tidecon file"},
-            {"name":"Cdisp", "kind":"flag","type":["char","choices={'Cdisp'}"],"purpose":"switch to disp info"}],
-        "outputs":[]},
-    "uvhap":{
-        "inputs":[],
-        "outputs":[]}
+            {"name":"dmt", "kind":"required","type":["datetime"],"purpose":"dmt-Range"},
+            {"name":"tideList", "kind":"required","type":["string"],"purpose":"tide list"},
+            {"name":"TPXO_fileDir", "kind":"required","type":["char"],"purpose":"tpxo bin file dir"},
+            {"name":"data_midDir", "kind":"required","type":["char"],"purpose":"Combined file dir"},
+            {"name":"INFO", "kind":"namevalue","type":["char","choices={'none','cprintf','osprint2','disp','fprintf','sprintf'}"] ,"purpose":"INFO"},
+            {"name":"Vname", "kind":"namevalue","type":["char","choices={'all','uv','h'}"],"purpose":"value to extract"}],
+        "outputs":[{"name":"TIDE","type":["struct"],"purpose":"tide struct"}]}
 }
