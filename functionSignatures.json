@@ -9,8 +9,9 @@
         "outputs":[]},
     "ST_Mbaysalt": {
         "inputs":[
-            {"name":"init", "kind":"flag","type":["choices={'init'}"],"purpose":"Initialization"},
-            {"name":"Parameter", "kind":"positional","type":["choices={'rm','noclone','add','cd'}"],"purpose":"Parameter"}],
+            {"name":"Parameter", "kind":"positional","type":["choices={'rm','noclone','add','cd'}"],"purpose":"Parameter"},
+            {"name":"JsonFile", "kind":"positional","type":["file=*.json"],"purpose":"JsonFile"},
+            {"name":"init", "kind":"flag","type":["choices={'init'}"],"purpose":"Initialization"}],
         "outputs":[]}
 }
 

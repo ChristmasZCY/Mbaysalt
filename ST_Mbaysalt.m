@@ -58,12 +58,18 @@ function ST_Mbaysalt(varargin)
         switch lower(varargin{i})
         case 'init'
             init = true;
+        otherwise 
+            if endsWith(varargin{i},'.json')
+                Jfile = varargin{i};
+            end
         end
     end
     clear i
     
     PATH.basepath = fileparts(mfilename("fullpath"));
-    Jfile = fullfile(PATH.basepath,'Configurefiles/INSTALL.json');
+    if ~exist("Jfile","var")
+        Jfile = fullfile(PATH.basepath,'Configurefiles/INSTALL.json');
+    end
     Jstruct = jsondecode(fileread(Jfile)); Jstruct.FILEPATH = Jfile;
     PATH.modules = fullfile(PATH.basepath,Jstruct.packages.modules.PATH); % modules
     PATH.builtin = fullfile(PATH.basepath,Jstruct.packages.builtin.PATH); % builtin
