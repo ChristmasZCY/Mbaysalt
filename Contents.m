@@ -293,6 +293,7 @@
 %   Post_Wenzhou.conf                           -  Example for Post_fvcom/Postprocess_fvcom
 %   stations.xml                                -  Example of xml file
 %   example.vtk                                 -  Example of vtk file
+%   INSTALL_custom.json                         -  Custom INSTALL.json
 %
 %
 %                             Matesetfunctions  -  Functions for Mateset

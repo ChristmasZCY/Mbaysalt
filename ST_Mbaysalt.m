@@ -3,11 +3,12 @@ function ST_Mbaysalt(varargin)
     % =================================================================================================================
     % Parameters:
     %       varargin: (optional) 
-    %           add:        add all path        || required: False|| type: Text      || format: 'add'
-    %           rm:         remove all path     || required: False|| type: Text      || format: 'rm'
-    %           cd:         cd here             || required: False|| type: Text      || format: 'cd'
-    %           noclone:    Not add new pkgs    || required: False|| type: flag      || format: 'noclone'
-    %           init:       Initialize          || required: False|| type: flag      || format: 'init'
+    %           add:        add all path        || required: False|| type: Text       || format: 'add'
+    %           rm:         remove all path     || required: False|| type: Text       || format: 'rm'
+    %           cd:         cd here             || required: False|| type: Text       || format: 'cd'
+    %           noclone:    Not add new pkgs    || required: False|| type: flag       || format: 'noclone'
+    %           init:       Initialize          || required: False|| type: flag       || format: 'init'
+    %           *.json:     INSTALL JsonFile    || required: False|| type: positional || format: './INSTALL.json'
     % =================================================================================================================
     % Returns:
     % =================================================================================================================
@@ -27,6 +28,7 @@ function ST_Mbaysalt(varargin)
     %       ST_Mbaysalt('cd')                  % Change current directory to the path of this function
     %       ST_Mbaysalt('init')                % Initialize
     %       ST_Mbaysalt('add','init')          % Initialize and add all path
+    %       ST_Mbaysalt('add','./INSTALL.json')          % Initialize and add all path
     % =================================================================================================================
     
     arguments(Input, Repeating)
@@ -68,7 +70,11 @@ function ST_Mbaysalt(varargin)
     
     PATH.basepath = fileparts(mfilename("fullpath"));
     if ~exist("Jfile","var")
-        Jfile = fullfile(PATH.basepath,'Configurefiles/INSTALL.json');
+        if exist('./INSTALL.json','file')
+            Jfile = './INSTALL.json';
+        else
+            Jfile = fullfile(PATH.basepath,'Configurefiles/INSTALL.json');
+        end
     end
     Jstruct = jsondecode(fileread(Jfile)); Jstruct.FILEPATH = Jfile;
     PATH.modules = fullfile(PATH.basepath,Jstruct.packages.modules.PATH); % modules

@@ -10,6 +10,7 @@
             {"name":"TPXO_fileDir", "kind":"required","type":["char"],"purpose":"tpxo bin file dir"},
             {"name":"data_midDir", "kind":"required","type":["char"],"purpose":"Combined file dir"},
             {"name":"INFO", "kind":"namevalue","type":["char","choices={'none','cprintf','osprint2','disp','fprintf','sprintf'}"] ,"purpose":"INFO"},
-            {"name":"Vname", "kind":"namevalue","type":["char","choices={'all','uv','h'}"],"purpose":"value to extract"}],
+            {"name":"Vname", "kind":"namevalue","type":["char","choices={'all','uv','h'}"],"purpose":"value to extract"},
+            {"name": "parallel", "kind":"namevalue","type":["int"],"purpose":"parallel pool"}],
         "outputs":[{"name":"TIDE","type":["struct"],"purpose":"tide struct"}]}
 }
