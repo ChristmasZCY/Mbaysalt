@@ -31,6 +31,8 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
 
     varargin = read_varargin(varargin,{'INFO'}, {'none'});
     varargin = read_varargin(varargin,{'Vname'}, {'all'});
+    varargin = read_varargin(varargin, {'parallel'},[]); %#ok<*NASGU>
+    INFO = INFO; %#ok<ASGSL,*NODEF> % beacause of parfor
     
     hug_filepath = fullfile(tempdir ,'hug_files.txt');
     tpxobin_filepath = fullfile(tempdir ,'tpxobin_file.txt');
@@ -84,6 +86,11 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     num = numel(lon);
     size_ll = size(lon);
 
+    if ~isempty(parallel)
+        pool = parpool(parallel);
+        assignin('base',"pool",pool);
+    end
+
     %% zeta 
     switch Vname
     case {'all','z'}
@@ -92,19 +99,36 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         [amp, pha, ~] = tmd_extract_HC(hug_filepath, lat(:), lon(:), 'z', Cid);
         amp = amp';
         pha = pha';
-        for i = 1 : num
-            if mod(i,100) == 0
-                txt = sprintf('Predicting tide elevation: %4.4d / % 4.4d', i, num);
-                switch INFO
-                case {'cprintf','osprint2'}
-                    osprint2("INFO", txt);
-                case {'disp','fprintf','sprintf'}
-                    fprintf('%s\n', txt);
+        if ~isempty(parallel)
+            parfor i = 1 : num
+                if mod(i,100) == 0
+                    txt = sprintf('Predicting tide elevation: %4.4d / %4.4d', i, num);
+                    switch INFO
+                    case {'cprintf','osprint2'}
+                        osprint2("INFO", txt);
+                    case {'disp','fprintf','sprintf'}
+                        fprintf('%s\n', txt);
+                    end
                 end
+        
+                tide_zeta_struct = create_tidestruc(tideList, amp(i,:), pha(i,:));
+                tide_zeta(i,:) = t_predic(datenum(dmt), tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0); %#ok<*DATNM>
             end
-    
-            tide_zeta_struct = create_tidestruc(tideList, amp(i,:), pha(i,:));
-            tide_zeta(i,:) = t_predic(datenum(dmt), tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0); %#ok<*DATNM>
+        else
+            for i = 1 : num
+                if mod(i,100) == 0
+                    txt = sprintf('Predicting tide elevation: %4.4d / %4.4d', i, num);
+                    switch INFO
+                    case {'cprintf','osprint2'}
+                        osprint2("INFO", txt);
+                    case {'disp','fprintf','sprintf'}
+                        fprintf('%s\n', txt);
+                    end
+                end
+        
+                tide_zeta_struct = create_tidestruc(tideList, amp(i,:), pha(i,:));
+                tide_zeta(i,:) = t_predic(datenum(dmt), tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0); %#ok<*DATNM>
+            end
         end
         tide_zeta = real(tide_zeta);
         clear amp pha i Cid tide_zeta_struct txt
@@ -119,26 +143,48 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         % Extract the tide vector components
         fmaj = zeros(num, length(tideList));fmin = zeros(num, length(tideList));
         pha  = zeros(num, length(tideList));finc = zeros(num, length(tideList));
-        for i = 1 : length(tideList)
-            [fmaj(:,i), fmin(:,i), pha(:,i), finc(:,i)] = tmd_ellipse(hug_filepath, lat(:),lon(:), tideList{i});
+        if ~isempty(parallel)
+            parfor i = 1 : length(tideList)
+                [fmaj(:,i), fmin(:,i), pha(:,i), finc(:,i)] = tmd_ellipse(hug_filepath, lat(:),lon(:), tideList{i});
+            end
+        else
+            for i = 1 : length(tideList)
+                [fmaj(:,i), fmin(:,i), pha(:,i), finc(:,i)] = tmd_ellipse(hug_filepath, lat(:),lon(:), tideList{i});
+            end
         end
         rmfiles(tpxobin_filepath)
         clear i tpxobin_filepath
         % Convert unit from cm/s to m/s
         fmaj = fmaj / 100;
         fmin = fmin / 100;
-        for i = 1 : num
-            if mod(i,100) == 0
-                txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
-                switch INFO
-                case {'cprintf','osprint2'}
-                    osprint2("INFO", txt);
-                case {'disp','fprintf','sprintf'}
-                    fprintf('%s\n', txt);
+        if ~isempty(parallel)
+            parfor i = 1 : num
+                if mod(i,100) == 0
+                    txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
+                    switch INFO
+                    case {'cprintf','osprint2'}
+                        osprint2("INFO", txt);
+                    case {'disp','fprintf','sprintf'}
+                        fprintf('%s\n', txt);
+                    end
                 end
+                tide_uv_struct = create_tidestruc(tideList, fmaj(i,:), fmin(i,:), finc(i,:), pha(i,:));
+                tide_uv(i, :) = t_predic(datenum(dmt), tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
             end
-            tide_uv_struct = create_tidestruc(tideList, fmaj(i,:), fmin(i,:), finc(i,:), pha(i,:));
-            tide_uv(i, :) = t_predic(datenum(dmt), tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
+        else
+            for i = 1 : num
+                if mod(i,100) == 0
+                    txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
+                    switch INFO
+                    case {'cprintf','osprint2'}
+                        osprint2("INFO", txt);
+                    case {'disp','fprintf','sprintf'}
+                        fprintf('%s\n', txt);
+                    end
+                end
+                tide_uv_struct = create_tidestruc(tideList, fmaj(i,:), fmin(i,:), finc(i,:), pha(i,:));
+                tide_uv(i, :) = t_predic(datenum(dmt), tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
+            end
         end
         tide_u = real(tide_uv);
         tide_v = imag(tide_uv);
