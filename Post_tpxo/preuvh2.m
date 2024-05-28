@@ -57,12 +57,16 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     writelines(gFile,tpxobin_filepath,'WriteMode','append');
     
     makedirs(data_midDir)
+    gFile_area = sprintf('%s/grid_area',data_midDir);
     writelines(sprintf('%s/h_area',data_midDir),hug_filepath,"WriteMode","overwrite")
     writelines(sprintf('%s/uv_area',data_midDir),hug_filepath,"WriteMode","append")
-    writelines(sprintf('%s/grid_area',data_midDir),hug_filepath,"WriteMode","append")
-    clear data_midDir
+    writelines(gFile_area,hug_filepath,"WriteMode","append")
     
-    ll_lims = grd_in(gFile);
+    if exist(gFile_area,"file") == 2
+        ll_lims = grd_in(gFile_area);
+    else
+        ll_lims = [-Inf; -Inf; Inf; Inf];
+    end
     box_old = [ll_lims(1) ll_lims(3);
            ll_lims(2) ll_lims(3);
            ll_lims(2) ll_lims(4);
@@ -79,8 +83,9 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         tpxo_atlas2local(tpxobin_filepath,hug_filepath,ylims,xlims);
     end
     clear xlims xdiff ylims ydiff ll_lims
-    clear uFile hFile gFile 
+    clear uFile hFile gFile  
     clear box_new box_old in on
+    clear data_midDir
 
     rmfiles(tpxobin_filepath);
     
