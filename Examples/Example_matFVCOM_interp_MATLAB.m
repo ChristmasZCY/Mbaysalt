@@ -91,7 +91,7 @@ f_2d_mesh(f);
 f_2d_boundary(f);
 f_2d_range(f);
 f_2d_image(f,temp(:,1));
-f_2d_contourf(f,temp(:,1));
+f_2d_contour(f,temp(:,1));
 f_2d_mask_boundary(f);
 colorbar
 

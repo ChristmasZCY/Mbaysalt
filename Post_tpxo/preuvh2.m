@@ -31,15 +31,20 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
 
     varargin = read_varargin(varargin,{'INFO'}, {'none'});
     varargin = read_varargin(varargin,{'Vname'}, {'all'});
-    varargin = read_varargin(varargin, {'parallel'},[]); %#ok<*NASGU>
+    varargin = read_varargin(varargin, {'Parallel'},{[]}); %#ok<*NASGU>
     INFO = INFO; %#ok<ASGSL,*NODEF> % beacause of parfor
     
     hug_filepath = fullfile(tempdir ,'hug_files.txt');
     tpxobin_filepath = fullfile(tempdir ,'tpxobin_file.txt');
 
-    xdiff = mean(diff(lon(:)));
+    if ~isscalar(lon)  % not noe
+        xdiff = mean(diff(lon(:)));
+        ydiff = mean(diff(lat(:)));
+    else
+        xdiff = 0.1;
+        ydiff = 0.1;
+    end
     xlims = [min(lon(:))-2*xdiff,max(lon(:))+2*xdiff];
-    ydiff = mean(diff(lat(:)));
     ylims = [min(lat(:))-2*ydiff,max(lat(:))+2*ydiff];
 
     uFile = fullfile(TPXO_fileDir,sprintf('h_{%s}_tpxo9_atlas_30_v5',strjoin(lower(tideList),',')));
@@ -86,8 +91,8 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     num = numel(lon);
     size_ll = size(lon);
 
-    if ~isempty(parallel)
-        pool = parpool(parallel);
+    if ~isempty(Parallel)
+        pool = parpool(Parallel);
         assignin('base',"pool",pool);
     end
 
@@ -99,7 +104,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         [amp, pha, ~] = tmd_extract_HC(hug_filepath, lat(:), lon(:), 'z', Cid);
         amp = amp';
         pha = pha';
-        if ~isempty(parallel)
+        if ~isempty(Parallel)
             parfor i = 1 : num
                 if mod(i,100) == 0
                     txt = sprintf('Predicting tide elevation: %4.4d / %4.4d', i, num);
@@ -143,7 +148,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         % Extract the tide vector components
         fmaj = zeros(num, length(tideList));fmin = zeros(num, length(tideList));
         pha  = zeros(num, length(tideList));finc = zeros(num, length(tideList));
-        if ~isempty(parallel)
+        if ~isempty(Parallel)
             parfor i = 1 : length(tideList)
                 [fmaj(:,i), fmin(:,i), pha(:,i), finc(:,i)] = tmd_ellipse(hug_filepath, lat(:),lon(:), tideList{i});
             end
@@ -157,7 +162,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         % Convert unit from cm/s to m/s
         fmaj = fmaj / 100;
         fmin = fmin / 100;
-        if ~isempty(parallel)
+        if ~isempty(Parallel)
             parfor i = 1 : num
                 if mod(i,100) == 0
                     txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
