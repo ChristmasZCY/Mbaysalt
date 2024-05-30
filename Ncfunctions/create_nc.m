@@ -9,11 +9,18 @@ function ncid = create_nc(fin, mode, varargin)
     %       ncid:            file id                 || required: True || type: integer || format: 1
     % =================================================================================================================
     % Update:
-    %       ****-**-**:     Created, by Christmas;
+    %       ****-**-**:     Created,                                                by Christmas;
+    %       2024-05-30:     Fixed input filename contains '~/', replace to HOME,    by Christmas;
     % =================================================================================================================
     % Example:
     %       ncid = create_nc('test.nc', 'NETCDF4')
     % =================================================================================================================
+
+
+    if startsWith(fin, '~/')
+        HOME = getHome();
+        fin = replace(fin, '~/', [HOME, filesep]);
+    end
     
     path = fileparts(fin);  % get the path of the file
     makedirs(path);       % create the path if it does not exist

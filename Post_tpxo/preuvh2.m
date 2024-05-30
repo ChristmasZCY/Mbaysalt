@@ -97,8 +97,11 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     size_ll = size(lon);
 
     if ~isempty(Parallel)
-        pool = parpool(Parallel);
-        assignin('base',"pool",pool);
+        p = gcp('nocreate');
+        if isempty(p)
+            pool = parpool(Parallel);
+            assignin('base',"pool",pool);
+        end
     end
 
     %% zeta 

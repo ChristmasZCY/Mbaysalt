@@ -6,9 +6,9 @@ function loaddata(varargin)
     NAME.Ttimes = 'T';
     DRAW.plot = false;
 
-    if ~strcmp(get(0,'DefaultTextFontName'),'Times new Roman')
-        initial();
-    end
+    % if ~strcmp(get(0,'DefaultTextFontName'),'Times new Roman')
+    %     initial();
+    % end
 
     if isempty(varargin)
         [filename,path] = uigetfile("*.nc",'Select netCDF file');

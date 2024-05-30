@@ -355,5 +355,15 @@
             {"name": "timeStep", "kind": "required", "type": ["char","strings"], "purpose": "time step"}],
         "outputs": [
             {"name": "timeRange", "type": ["datetime"], "purpose": "time range"},
-            {"name":  "Ttimes",  "type": ["Mdatetime"], "purpose": "time array"}]}
+            {"name":  "Ttimes",  "type": ["Mdatetime"], "purpose": "time array"}]},
+    "getHome": {
+        "inputs": [],
+        "outputs": [
+            {"name": "home", "type": ["folder"], "purpose": "home folder"}]},
+    "convert_avi2mp4": {
+        "inputs": [
+            {"name": "aviFile", "kind": "required", "type": ["file=*.avi"], "purpose": "avi file"},
+            {"name": "mp4File", "kind": "required", "type": ["char"], "purpose": "mp4 file"},
+            {"name": "FrameRate", "kind": "namevalue", "type": ["numeric"], "purpose": "frame rate"}],
+        "outputs": []}
 }

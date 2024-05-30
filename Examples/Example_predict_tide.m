@@ -6,8 +6,8 @@ lon = -179.9:.2:179.9;
 lat = -90:.2:90;
 Indir = '/home/ftp/windy/global/tpxo/5';
 fname = 'tideCurrentLevel_5.nc';
-time_start = datetime(2024, 05, 22, 0, 0, 0);
-time_end = datetime(2024, 06, 03, 0, 0, 0);
+time_start = datetime(2024, 05, 25, 0, 0, 0);
+time_end = datetime(2024, 08, 25, 0, 0, 0);
 
 [Lat,Lon] = meshgrid(lat,lon);
 
@@ -19,7 +19,7 @@ TPXO_filepath = '/storage/data/tpxo/TPXO9-atlas-v5/bin';
 data_tmpdir = './AreaBin';
 pause
 parpool("Processes",60);
-TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all');
+TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all','Parallel',60);
 F_equator = find(lat==0);
 % NaN in equator
 TIDE.u(:,F_equator,:) = mean([TIDE.u(:,F_equator-1,:),TIDE.u(:,F_equator+1,:)],2);
