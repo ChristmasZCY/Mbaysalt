@@ -73,6 +73,8 @@
 %   calc_waveSpeed.m                            -  Calculate wave speed and length
 %   lodadata.m                                  -  Load data from a file
 %   create_timeRange.m                          -  Create datetime type time-Range
+%   getHome.m                                   -  Get home path
+%   convert_avi2mp4.m                           -  Convert avi to mp4
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures

@@ -30,6 +30,10 @@ function [Lon,varargout] = ll_to_ll(lon,varargin)
         error('ll_to_ll:input','lon must be 0-360 or -180-180.');
     end
 
+    if ~ (all(diff(lon) > 0) || all(diff(lon) < 0))
+        error(' lon must be humdrum !!!')
+    end
+
     % check varargin
     if nargin > 2
         for i = 1:length(varargin)

@@ -19,6 +19,10 @@ function [Lon,varargout] = ll_to_ll_180(lon,varargin)
         lon = lon';
     end
 
+    if ~ (all(diff(lon) > 0) || all(diff(lon) < 0))
+        error(' lon must be humdrum !!!')
+    end
+
     lon(lon>180) = lon(lon>180)-360;
     F = find(lon<0,1,'first');
     Lon = cat(1,lon(F:end,:),lon(1:F-1,:));
