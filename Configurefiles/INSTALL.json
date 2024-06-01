@@ -333,6 +333,7 @@
             "Exfunctions/taylordiagram",
             "Exfunctions/guillaumemaze",
             "Exfunctions/perfectPolarPlot",
+            "Exfunctions/LIRSC",
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",

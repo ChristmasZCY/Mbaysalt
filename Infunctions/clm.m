@@ -3,19 +3,24 @@ function clm(varargin)
     % =================================================================================================================
     % Parameters:
     %       varargin: (input argument) 
-    %           'cmd' : 'clear', 'clc', 'close all' || required: False || type: text || example: 'clc'
+    %           'cmd' : 'clear', 'clc', 'close all', 'noclose' || required: False || type: text || example: 'clc'
     % =================================================================================================================
     % Returns:
     %       None
+    % =================================================================================================================
+    % Updates:
+    %       2023-**-**:     Created,            by Christmas;
+    %       2024-05-30:     Added 'noclose',    by Christmas;
     % =================================================================================================================
     % Example:
     %       clm()
     %       clm('clear')
     %       clm('clc')
+    %       clm('noclose')
     % =================================================================================================================
 
     arguments(Input,Repeating)
-        varargin {mustBeMember(varargin,{'clear','close all','clc'})}
+        varargin {mustBeMember(varargin,{'clear','close all','clc', 'noclose'})}
     end
 
     if nargin == 0
@@ -24,13 +29,17 @@ function clm(varargin)
         close all
     else
         str = varargin{1};
-        if strcmp(str, 'clear')
+        switch str
+        case 'clear'
             evalin('base', 'clear all');
-        elseif strcmp(str, 'clc')
+        case 'clc'
             clc
-        elseif strcmp(str, 'close all')
+        case 'close all'
             close all
-        else
+        case 'noclose'
+            evalin('base', 'clear');
+            clc
+        otherwise
             error('Error: Invalid input argument')
         end
     end

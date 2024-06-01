@@ -383,6 +383,7 @@
 %   taylordiagram               (optional)      -  taylordiagram                               ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/20559-taylor-diagram
 %   guillaumemaze               (optional)      -  guillaumemaze                               ||  http://code.google.com/p/guillaumemaze/
 %   perfectPolarPlot            (optional)      -  perfectPolarPlot                            ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/73967-perfect-polar-plots
+%   LIRSC                       (optional)      -  LIRSC                                       ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/71491-largest-inscribed-rectangle-square-or-circle
 %
 %                                         Extend Exfunctions
 %   matWRF                                      -  Extend matWRF toolbox
