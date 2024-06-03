@@ -8,6 +8,7 @@ f = f_load_grid(f2dm,'MaxLon',360);
 zeta = nr(fin,'zeta');
 u = nr(fin,'u');
 v = nr(fin,'v');
+
 %% f_2d
 g1 = f_2d_image(f,zeta(:,1));
 hold on
@@ -25,6 +26,10 @@ g7 = f_2d_contour(f,zeta(:,1),'Manual','NoLabel','Global');
 f_2d_vector_legend(f, 119.46, 34.73, 1, 0,'1 m/s',para)
 g9 = f_2d_vector2(f,u(:,1,1),v(:,1,1));
 % f_2d_vector3(f,u(:,1,1),v(:,1,1));
+
+%% f calculate
+S = calc_area(x(nv), y(nv), 'R', R, Geo);  % tri-area
+
 
 %% Global
 draw_global_ortho.m

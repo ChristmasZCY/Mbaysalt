@@ -20,10 +20,11 @@ function poly_coast = gshhs2(gshhsfile, varargin)
     % Reference:
     %       
     %       See also GSHHS
+    %       <a href="https://www.soest.hawaii.edu/wessel/gshhg/">GSHHG Web</a>
     % =================================================================================================================
 
     narginchk(1,3);
-    METHOD.read = 'fixed';  % fixed or 'direct'
+    METHOD.read = 'fixed';  % 'fixed' or 'direct'
 
     
     switch numel(varargin)
