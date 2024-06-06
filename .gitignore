@@ -45,6 +45,9 @@ Exfunctions/irfu-matlab
 Exfunctions/WW3-tools
 Exfunctions/funcsign
 Exfunctions/kml-toolbox
+Exfunctions/MATLAB-PLOT-CHEAT-SHEET
+Exfunctions/matlabPlotCheatsheet
+Exfunctions/visualization-cheat-sheet
 
 Exfunctions/m_map
 Exfunctions/t_tide
@@ -75,7 +78,7 @@ Htmls/*
 
 # Personal files #
 ######################
-.gitR
+.gitR.sh
 !**/.gitkeep
 **/*.m~
 **/*.asv

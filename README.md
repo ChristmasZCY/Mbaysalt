@@ -111,6 +111,9 @@
 - [guillaumemaze](http://code.google.com/p/guillaumemaze/)
 - [perfectPolarPlot](https://ww2.mathworks.cn/matlabcentral/fileexchange/73967-perfect-polar-plots)
 - [LIRSC](https://ww2.mathworks.cn/matlabcentral/fileexchange/71491-largest-inscribed-rectangle-square-or-circle)
+- [kriging](https://ww2.mathworks.cn/matlabcentral/fileexchange/29025-ordinary-kriging)
+- [variogramfit](https://ww2.mathworks.cn/matlabcentral/fileexchange/25948-variogramfit)
+- [IDW](https://ww2.mathworks.cn/matlabcentral/fileexchange/24477-inverse-distance-weight)
 
 </details>
 
