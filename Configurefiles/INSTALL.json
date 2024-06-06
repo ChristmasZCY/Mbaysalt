@@ -286,14 +286,38 @@
             "URL": "https://gitee.com/iam002/funcsign.git",
             "PATH": "Exfunctions/funcsign",
             "CHECK": ["hs_signfunc.m","file","2"]},
-        "kml-toolbox": {
+        "kml_toolbox": {
             "INSTALL": false,
             "SETPATH": false,
             "DEPTH": 0,
             "BRANCH": "master",
-            "URL": "https://github.com/theolivenbaum/kml-toolbox",
+            "URL": "https://github.com/theolivenbaum/kml-toolbox.git",
             "PATH": "Exfunctions/kml-toolbox",
-            "CHECK": ["kml.m","file","2"]}},
+            "CHECK": ["kml.m","file","2"]},
+        "MATLAB_PLOT_CHEAT_SHEET": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "main",
+            "URL": "https://github.com/slandarer/MATLAB-PLOT-CHEAT-SHEET.git",
+            "PATH": "Exfunctions/MATLAB-PLOT-CHEAT-SHEET",
+            "CHECK": ["MATLAB_cheat_sheet.m","file","2"]},
+        "matlabPlotCheatsheet": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://github.com/peijin94/matlabPlotCheatsheet.git",
+            "PATH": "Exfunctions/matlabPlotCheatsheet",
+            "CHECK": ["matlab_plot_cheatsheet.m","file","2"]},
+        "visualization_cheat_sheet": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "main",
+            "URL": "https://github.com/mathworks/visualization-cheat-sheet.git",
+            "PATH": "Exfunctions/visualization-cheat-sheet",
+            "CHECK": ["SECURITY.md","file","2"]}},
     "modules": {
         "PATH": [
             "Prefunctions",
@@ -334,6 +358,9 @@
             "Exfunctions/guillaumemaze",
             "Exfunctions/perfectPolarPlot",
             "Exfunctions/LIRSC",
+            "Exfunctions/kriging",
+            "Exfunctions/variogramfit",
+            "Exfunctions/IDW",
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",

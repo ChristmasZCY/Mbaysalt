@@ -132,6 +132,15 @@ switch class(varargin{1})
             fgrid.LAT = LAT;
             fgrid.ns = [ob; lb];
             siglay = nan;
+        elseif endsWith(varargin{1}, '.mesh')
+            [x, y, nv, h, bounds] = read_mike_mesh(varargin{1});
+            nv = nv(:,[1 3 2]);
+            LON = x;
+            LAT = y;
+            fgrid.LON = LON;
+            fgrid.LAT = LAT;
+            fgrid.ns = bounds';
+            siglay = nan;
         else
             error(['Unknown file format:' varargin{1}])
         end

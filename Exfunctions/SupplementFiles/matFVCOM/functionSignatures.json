@@ -14,12 +14,12 @@
             {"name":"fgrid", "type":["struct"], "purpose":"FVCOM grid"}]},
     "f_load_grid":{
         "inputs":[
-            {"name":"x", "kind":"required","type":["scalar"],"purpose":"X coordinate"},
-            {"name":"y", "kind":"required","type":["scalar"],"purpose":"Y coordinate"},
+            {"name":"x", "kind":"required","type":["numeric"],"purpose":"X coordinate"},
+            {"name":"y", "kind":"required","type":["numeric"],"purpose":"Y coordinate"},
             {"name":"nv", "kind":"required","type":["2d","ncols=3"],"purpose":"Triangular structure"},
-            {"name":"h", "kind":"positional","type":["scalar"],"purpose":"h"},
-            {"name":"siglay", "kind":"positional","type":["scalar"],"purpose":"siglay"},
-            {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
+            {"name":"h", "kind":"positional","type":["numeric"],"purpose":"h"},
+            {"name":"siglay", "kind":"positional","type":["numeric"],"purpose":"siglay"},
+            {"name":"Rotate","kind":"namevalue","type":["numeric"],"purpose":""},
             {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,,360}"],"purpose":""},
             {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo'}"],"purpose":"Coordinate of reading"},

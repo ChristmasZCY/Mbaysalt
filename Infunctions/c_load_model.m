@@ -188,6 +188,9 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         if all(isfield(VarStruct,{'tide_u', 'tide_v'}))
             [VarStruct.tide_uv_spd, VarStruct.tide_uv_dir] = calc_uv2sd(VarStruct.tide_u, VarStruct.tide_v, "current");
         end
+        if all(isfield(VarStruct,{'u_std', 'v_std'}))
+            [VarStruct.uv_std_spd, VarStruct.uv_std_dir] = calc_uv2sd(VarStruct.u_std, VarStruct.v_std, "current");
+        end
         if nc_var_exist(fin, 'time')
             time = ncdateread(fin, 'time');
             Ttimes = Mdatetime(time);

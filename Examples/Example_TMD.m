@@ -20,3 +20,8 @@ tpxo_atlas2local('tpxobin_file.mat','Area_define.mat',[-85 85],[0.001 360]);
 %% TMD
 cd ../
 TMD  % 选择 Area_define.mat
+
+
+%% to NETCDF
+
+% TPXO9_atlas_v5_to_NetCDF

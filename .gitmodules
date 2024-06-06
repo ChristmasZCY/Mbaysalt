@@ -106,3 +106,15 @@
 	path = Exfunctions/kml-toolbox
 	url = https://github.com/theolivenbaum/kml-toolbox
 
+[submodule "Exfunctions/MATLAB-PLOT-CHEAT-SHEET"]
+	path = Exfunctions/MATLAB-PLOT-CHEAT-SHEET
+	url = https://github.com/slandarer/MATLAB-PLOT-CHEAT-SHEET.git
+
+[submodule "Exfunctions/matlabPlotCheatsheet"]
+	path = Exfunctions/matlabPlotCheatsheet
+	url = https://github.com/peijin94/matlabPlotCheatsheet.git
+
+[submodule "Exfunctions/visualization-cheat-sheet"]
+	path = Exfunctions/visualization-cheat-sheet
+	url = https://github.com/mathworks/visualization-cheat-sheet.git
+

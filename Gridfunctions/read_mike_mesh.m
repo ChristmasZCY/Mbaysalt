@@ -35,17 +35,24 @@ function [x, y, nv, h, bounds, prj, tail, id] = read_mike_mesh(fin, varargin)
     end
     
     varargin = read_varargin2(varargin, {'INFO'});
-    varargin = read_varargin(varargin, {'method'}, {'rewind'});
 
     fid = fopen(fin);
 
-    % data = textscan(fid, '%s', 'Delimiter','\n');
+    data = textscan(fid, '%s', 'Delimiter','\n');
 
-    frewind(fid);
-    num_node = textscan(fid, '%d %s', 1, 'headerlines', 0);
-    length_node = num_node{1};
-    prj = num_node{2}{1};
-    clear num_node
+    C = strsplit(strip(data{1}{1}));
+    if isscalar(C)
+        frewind(fid);
+        num_node = textscan(fid, '%d %s', 1, 'headerlines', 0);
+        length_node = num_node{1};
+        prj = num_node{2}{1};
+        clear num_node
+    else
+        F = find(startsWith(C,'PROJCS'));
+        length_node = str2double(C{3});
+        prj = C(F:end);
+        prj = strjoin(prj, ' ');
+    end
 
     % Read the data to get the x, y, h, type
     frewind(fid);
