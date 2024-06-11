@@ -289,6 +289,7 @@
 %   Example_loaddata.m                          -  Example for loaddata
 %   Example_taylordiag.m                        -  Example for taylordiag
 %   Example_calculateV.m                        -  Example for calculate volume
+%   Example_kriging.m                           -  Example for kriging
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
@@ -338,7 +339,7 @@
 %   matWRF                      (optional)      -  WRF toolbox                                 ||  https://github.com/SiqiLiOcean/matWRF
 %   HYCOM2FVCOM                 (optional)      -  Run fvcom with HYCOM data                   ||  https://github.com/SiqiLiOcean/HYCOM2FVCOM
 %   WRF2FVCOM                   (optional)      -  Run fvcom with WRF data                     ||  https://github.com/SiqiLiOcean/WRF2FVCOM
-%   OceanData                   (optional)      -  Compare with famous ocean data              ||  https://github.com/ChristmasZCY/OceanData
+%   OceanData                   (optional)      -  Compare with famous ocean data              ||  https://github.com/SiqiLiOcean/OceanData
 %   FVCOM_NML                   (optional)      -  FVCOM NML                                   ||  https://github.com/SiqiLiOcean/FVCOM_NML
 %   nctoolbox                                   -  NCTOOLBOX                                   ||  https://github.com/nctoolbox/nctoolbox | http://nctoolbox.github.io/nctoolbox/
 %   CDT                                         -  Climate Data Toolbox                        ||  https://github.com/chadagreene/CDT
@@ -373,6 +374,7 @@
 %   WindRose                    (optional)      -  WindRose toolbox                            ||  https://dpereira.asempyme.com/windrose/
 %   mexcdf                      (optional)      -  mexcdf toolbox                              ||  https://mexcdf.sourceforge.net/index.php | https://sourceforge.net/p/mexcdf/svn/HEAD/tree/
 %   DHIMIKE                     (optional)      -  DHIMIKE toolbox                             ||  https://github.com/DHI/DHI-MATLAB-Toolbox/
+%   dace                        (optional)      -  dace toolbox                                ||  https://www.omicron.dk/dace.html
 %
 %   %% builtin
 %   cprintf                                     -  Color printf                                ||  https://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window
@@ -391,6 +393,7 @@
 %   kriging                     (optional)      -  kriging toolbox                             ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/29025-ordinary-kriging
 %   variogramfit                (optional)      -  variogramfit toolbox                        ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/25948-variogramfit
 %   IDW                         (optional)      -  Inverse Distance Weight toolbox             ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/24477-inverse-distance-weight
+%   KrigingToolbox              (optional)      -  KrigingToolbox                              ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/59960-krigingtoolbox
 %
 %                                         Extend Exfunctions
 %   matWRF                                      -  Extend matWRF toolbox
