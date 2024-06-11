@@ -67,7 +67,7 @@
 - [matWRF](https://github.com/SiqiLiOcean/matWRF)
 - [HYCOM2FVCOM](https://github.com/SiqiLiOcean/HYCOM2FVCOM)
 - [WRF2FVCOM](https://github.com/SiqiLiOcean/WRF2FVCOM)
-- [OceanData](https://github.com/ChristmasZCY/OceanData)
+- [OceanData](https://github.com/SiqiLiOcean/OceanData)
 - [FVCOM_NML](https://github.com/SiqiLiOcean/FVCOM_NML)
 - [nctoolbox](https://github.com/nctoolbox/nctoolbox)
 - [CDT](https://github.com/chadagreene/CDT)
@@ -114,6 +114,8 @@
 - [kriging](https://ww2.mathworks.cn/matlabcentral/fileexchange/29025-ordinary-kriging)
 - [variogramfit](https://ww2.mathworks.cn/matlabcentral/fileexchange/25948-variogramfit)
 - [IDW](https://ww2.mathworks.cn/matlabcentral/fileexchange/24477-inverse-distance-weight)
+- [dace](https://www.omicron.dk/dace.html)
+- [KrigingToolbox](https://ww2.mathworks.cn/matlabcentral/fileexchange/59960-krigingtoolbox)
 
 </details>
 

@@ -24,7 +24,7 @@
 
 [submodule "Exfunctions/OceanData"]
 	path = Exfunctions/OceanData
-	url = https://github.com/ChristmasZCY/OceanData.git
+	url = https://github.com/SiqiLiOcean/OceanData.git
 
 [submodule "Exfunctions/FVCOM_NML"]
 	path = Exfunctions/FVCOM_NML

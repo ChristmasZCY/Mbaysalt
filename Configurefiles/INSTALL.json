@@ -76,7 +76,17 @@
             "URL": "https://github.com/DHI/DHI-MATLAB-Toolbox/releases/download/v19.0.0/DHIMatlabToolbox-v19.0.0-20201217.zip",
             "LOCALFILE": "Exfunctions/DHIMatlabToolbox-v19.0.0-20201217.zip",
             "PATH": "Exfunctions/DHIMatlabToolbox",
-            "CHECK": ["read_dfs2.m","file","2"]}},
+            "CHECK": ["read_dfs2.m","file","2"]},
+        "dace": {
+            "INSTALL": true,
+            "SETPATH": true,
+            "VERSION": "2.5",
+            "URL": "https://www.omicron.dk/dace/dace.zip",
+            "LOCALFILE": "Exfunctions/dace.zip",
+            "PATH": "Exfunctions/dace",
+            "CHECK": ["dacefit.m","file","2"],
+            "INDEX": "https://www.omicron.dk/dace.html",
+            "MANUAL": "https://www.omicron.dk/dace/dace.pdf"}},
     "gitclone": {
         "matFigure": {
             "INSTALL": true,
@@ -128,10 +138,10 @@
             "CHECK": ["wrf2fvcom.f90","file","2"]},
         "OceanData": {
             "INSTALL": false,
-            "SETPATH": false,
+            "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "main",
-            "URL": "https://github.com/ChristmasZCY/OceanData.git",
+            "URL": "https://github.com/SiqiLiOcean/OceanData.git",
             "PATH": "Exfunctions/OceanData",
             "CHECK": ["UHSLC_info.m","file","2"]},
         "FVCOM_NML": {
@@ -361,6 +371,7 @@
             "Exfunctions/kriging",
             "Exfunctions/variogramfit",
             "Exfunctions/IDW",
+            "Exfunctions/KrigingToolbox",
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",

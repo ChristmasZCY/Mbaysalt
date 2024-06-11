@@ -466,11 +466,20 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                 error('%s is not downloaded, please download it manually!',pkg.LOCALFILE);
             else
                 switch field
-                    case {'m_map', 'mexcdf'}
-                    unzip_file(pkg_localfile, fileparts(pkg_localfile));  % Exfunctions/ 
+                    case {'m_map', 'mexcdf', 'dace'}
+                    STAUS_unzip = unzip_file(pkg_localfile, fileparts(pkg_localfile));  % Exfunctions/ 
                 case {'DHIMIKE', 't_tide', 'GSW', 'seawater', 'WindRose', 'gshhs', 'etopo1'}
-                    unzip_file(pkg_localfile, pkg_path);  % Exfunctions/t_tide
-                end     
+                    STAUS_unzip = unzip_file(pkg_localfile, pkg_path);  % Exfunctions/t_tide
+                otherwise
+                    error('packages %s : unzip is not defined !!!' )
+                end
+                if ~STAUS_unzip
+                    warning_state = warning("query").state;
+                    warning('on')
+                    warning(['%s downloaded failed, please download it manually!\n' ...
+                           'Then rerun %s !'], pkg.LOCALFILE, mfilename());
+                    warning(warning_state)
+                end
                 if isequal(field, 'mexcdf')
                     [pathstr, name] = fileparts(pkg_localfile);
                     branch_path = fullfile(pathstr,name);
@@ -549,14 +558,25 @@ function download_urlfile(urlin, fileOut, thread)
     end
 end
 
-function unzip_file(fileIn, dirOut)
+function STATUS = unzip_file(fileIn, dirOut)
+    STATUS = 0;
     if check_command('unzip')
         txt = ['unzip ', fileIn, ' -d ', dirOut];
         % txt = ['unzip ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip -d ', Edir, 'm_map/data/'];
         disp(txt);
-        system(txt);
+        [~, cmdout] = system(txt);
+        if ~contains(cmdout,'cannot find')
+            STATUS = 1;
+        end
     else
-        unzip(fileIn, dirOut);
+        try
+            unzip(fileIn, dirOut);
+            STATUS = 1;
+        catch ME1
+            if strcmp(ME1.identifier, 'MATLAB:io:archive:unzip:invalidZipFile')
+                STATUS = 0;
+            end
+        end
         % unzip([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], [Edir, 'm_map/data/']);
     end
 end
