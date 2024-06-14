@@ -1,0 +1,15 @@
+
+{
+    "_schemaVersion": "1.0.0",
+    "f_load_grid":{
+        "inputs":[
+            {"name":"Gridfile", "kind":"required","type":["file=*.nc,*.2dm,*.dat,*.msh,*.14,*.grd"],"purpose":"netCDF,grd,2dm,msh,.14"},
+            {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
+            {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
+            {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":"MaxLon"},
+            {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo','ww3'}"],"purpose":"Coordinate of reading"},
+            {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"},
+            {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"}],
+        "outputs":[
+            {"name":"fgrid", "type":["struct"], "purpose":"FVCOM grid"}]}
+}

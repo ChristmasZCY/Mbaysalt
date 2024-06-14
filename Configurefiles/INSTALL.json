@@ -372,6 +372,7 @@
             "Exfunctions/variogramfit",
             "Exfunctions/IDW",
             "Exfunctions/KrigingToolbox",
+            "Exfunctions/utm2deg",
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",
@@ -393,18 +394,24 @@
      "ann_wrapper": false,
      "DHIMIKE": false,
      "minmax": true,
-     "irfu_matlab": false},
+     "irfu_matlab": false,
+     "matFigure": true},
  "supplement": {
      "matFVCOM": {
          "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
          "PATH_OUT": "Exfunctions/matFVCOM",
-         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m"]}},
+         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m","obs_merge_location.m"]},
+     "matFigure": {
+            "PATH_IN": "Exfunctions/SupplementFiles/matFigure",
+            "PATH_OUT": "Exfunctions/matFigure",
+            "FILES": ["Contents.m","functionSignatures.json","cm/cmp_b2r.mat"]}},
  "@@comments":{
     "A": "2024-04-26:  Created, by Christmas;",
     "B": "2024-05-13:, Added improve:minmax, by Christmas;",
     "C": "2024-05-14:, Added gitclone:irfu_matlab, by Christmas;",
     "D": "2024-05-15:, Added supplement:matFVCOM:FILES:*, by Christmas;",
-    "E": "2024-05-16:  Added improve:m_etopo2, by Christmas;"}
+    "E": "2024-05-16:  Added improve:m_etopo2, by Christmas;",
+    "F": "2024-06-15:  Added improve:matFigure, by Christmas;"}
 }
 
 
