@@ -39,6 +39,7 @@ classdef Mdatetime
         units = 'seconds since 1970-01-01 00:00:00'
         units_datetime = datetime(1970,1,1,0,0,0);
         fmt = 'yyyy-MM-dd HH:mm:ss'
+        TimeZone = 'UTC'
     end
 
     properties (SetAccess=private)
@@ -50,6 +51,7 @@ classdef Mdatetime
             varargin = read_varargin(varargin,{'fmt'},{obj.fmt}); obj.fmt = fmt;
             varargin = read_varargin(varargin,{'units'},{obj.units}); obj.units = units;
             varargin = read_varargin(varargin,{'units_datetime'},{obj.units_datetime}); obj.units_datetime = units_datetime;
+            varargin = read_varargin(varargin,{'TimeZone'},{'UTC'}); obj.TimeZone = TimeZone;
             varargin = read_varargin2(varargin,{'Cdatenum'}); %#ok<NASGU>
 
             obj.time = [];
@@ -113,6 +115,13 @@ classdef Mdatetime
         function tf = isnat(obj)
             tf = isnat(obj.Times);
         end
+    end
+
+    methods
+        % function obj = Change_TimeZone(obj, value)
+        %     obj.TimeZone = value;
+        % 
+        % end
     end
 
     methods
@@ -196,7 +205,6 @@ classdef Mdatetime
             clear time_new
         end
 
-
         function obj = set.TIME(obj,value)
             %{
             % time                  X
@@ -275,6 +283,12 @@ classdef Mdatetime
                 gap = duration((obj.Times - obj.units_datetime),"Format","s");
                 obj.time = seconds(gap);
 
+            end
+        end
+
+        function obj = set.TimeZone(obj,value)
+            if ~ strcmp(obj.TimeZone, value)
+                obj.TimeZone = value;
             end
         end
 

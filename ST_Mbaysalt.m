@@ -19,6 +19,7 @@ function ST_Mbaysalt(varargin)
     %       2024-05-12:     Added improve:minmax, submodule gitclone:irfu_matlab,   by Christmas;
     %       2024-05-12:     Judged init first,                                      by Christmas;
     %       2024-05-16:     Added improve:m_etopo2,                                 by Christmas;
+    %       2024-06-15:     Added improve:matFigure,                                by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                        % Add all path
@@ -172,6 +173,9 @@ function STATUS = Fixed_functions(Jstruct)
     if Jstruct.improve.irfu_matlab
         STATUS_list = [STATUS_list,install_irfu_matlab(Jstruct)];
     end
+    if Jstruct.improve.matFigure
+        STATUS_list = [STATUS_list,supplement_matFigure(Jstruct)];
+    end
     STATUS = any(STATUS_list);
 end
 
@@ -236,8 +240,65 @@ function STATUS = supplement_matFVCOM(Jstruct)
         % file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
         % file_basename = Jstruct.supplement.matFVCOM.FILES{i};
         if ~exist(file_out,"file")
-            copyfile(file_in,file_out);
-            STATUS_list(i) = 1;
+            if strcmp(computer("arch"),"maca64") && strcmp(getHome(),'/Users/christmas')
+                % only for MacBook test
+                str = sprintf('ln -sf %s %s', file_in, file_out);
+                system(str,"-echo");
+            else
+                copyfile(file_in,file_out);
+                STATUS_list(i) = 1;
+            end
+
+        else
+            if ~readlink(file_out)
+                file_out_bak = strcat(file_out,'_bak');
+                if ~exist(file_out_bak,"file")  % backup
+                    copyfile(file_out,file_out_bak);
+                end
+                if ~strcmp(fileread(file_in), fileread(file_out))
+                    copyfile(file_in,file_out);
+                    STATUS_list(i) = 1;
+                else
+                    STATUS_list(i) = 0;
+                end
+            end      
+        end
+    end
+    STATUS = any(STATUS_list);
+
+    % T = validateFunctionSignaturesJSON(fullfile(path_matFVCOM,'functionSignatures.json'));
+    % if ~isempty(T)
+        % validateFunctionSignaturesJSON(fullfile(path_matFVCOM,'functionSignatures.json'));
+    % end
+end
+
+function STATUS = supplement_matFigure(Jstruct)
+    % 为matFigure添加Contents.m和functionSignatures.json
+    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.matFigure.PATH,'cm_disp.m');  % which('cm_disp.m');
+    if ~exist(m_filepath,"file")
+        STATUS = 0;
+        return  
+    end
+    basepath = fileparts(fileparts(Jstruct.FILEPATH));
+    path_in = fullfile(basepath,Jstruct.supplement.matFigure.PATH_IN);
+    path_out = fullfile(basepath,Jstruct.supplement.matFigure.PATH_OUT);
+    files_in = fullfile(path_in,string(Jstruct.supplement.matFigure.FILES));
+    files_out = fullfile(path_out,string(Jstruct.supplement.matFigure.FILES));
+    STATUS_list = zeros(length(files_in),1);
+    for i = 1 : length(files_in)
+        file_in = files_in(i);
+        file_out = files_out(i);
+        % file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
+        % file_basename = Jstruct.supplement.matFigure.FILES{i};
+        if ~exist(file_out,"file")
+            if strcmp(computer("arch"),"maca64") && strcmp(getHome(),'/Users/christmas')
+                % only for MacBook test
+                str = sprintf('ln -sf %s %s', file_in, file_out);
+                system(str,"-echo");
+            else
+                copyfile(file_in,file_out);
+                STATUS_list(i) = 1;
+            end
         else
             if ~readlink(file_out)
                 file_out_bak = strcat(file_out,'_bak');
