@@ -404,7 +404,7 @@
      "matFigure": {
             "PATH_IN": "Exfunctions/SupplementFiles/matFigure",
             "PATH_OUT": "Exfunctions/matFigure",
-            "FILES": ["Contents.m","functionSignatures.json","cm/cmp_b2r.mat"]}},
+            "FILES": ["Contents.m","functionSignatures.json","cm/cmp_b2r.mat","cm/nclColormap"]}},
  "@@comments":{
     "A": "2024-04-26:  Created, by Christmas;",
     "B": "2024-05-13:, Added improve:minmax, by Christmas;",
