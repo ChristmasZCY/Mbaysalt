@@ -471,7 +471,11 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
             continue
         end
         if pkg.SETPATH
-            addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+            if exist('genpath2','file') == 2 
+                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+            else
+                addpath(genpath(pkg_path))
+            end
         end
         if Git.TF && Git.CHECK
             if pkg.INSTALL
@@ -513,7 +517,11 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
             continue
         elseif isequal(control, 'noclone')
             if pkg.SETPATH
-                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+                if exist('genpath2','file') == 2 
+                    addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+                else
+                    addpath(genpath(pkg_path))
+                end
             end
             continue
         end
@@ -553,7 +561,11 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                 end
                 % delete(local_file);
                 if pkg.SETPATH
-                    addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+                    if exist('genpath2','file') == 2 
+                        addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+                    else
+                        addpath(genpath(pkg_path))
+                    end
                 end
             end
             STATUS1.(field) = 1;
