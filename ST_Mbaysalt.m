@@ -493,7 +493,11 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                 clearvars txt field field_cell
             end
             if pkg.SETPATH
-                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+                if exist('genpath2','file') == 2 
+                    addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+                else
+                    addpath(genpath(pkg_path))
+                end
             end  
         end
 
