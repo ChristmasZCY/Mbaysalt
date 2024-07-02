@@ -291,6 +291,7 @@
 %   Example_calculateV.m                        -  Example for calculate volume
 %   Example_kriging.m                           -  Example for kriging
 %   Example_draw_planet.m                       -  Example for draw planet
+%   Example_cdt.m                               -  Example for cdt
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
