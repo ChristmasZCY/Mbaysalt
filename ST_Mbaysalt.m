@@ -526,7 +526,11 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
             continue
         end
         if pkg.SETPATH
-            addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+            if exist('genpath2','file') == 2 
+                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+            else
+                addpath(genpath(pkg_path))
+            end
         end
         if ~(exist(pkg.CHECK{1},pkg.CHECK{2}) == str2double(pkg.CHECK{3})) && pkg.INSTALL && pkg.SETPATH  % 如果不同时判断pkg.SETPATH 当pkg.INSATLL && ~pkg.SETPATH 由于不在路径中检测不到会重复下载
             pkg_localfile = fullfile(PATH.basepath, pkg.LOCALFILE);
