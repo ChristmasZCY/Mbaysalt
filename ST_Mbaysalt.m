@@ -81,6 +81,7 @@ function ST_Mbaysalt(varargin)
     PATH.modules = fullfile(PATH.basepath,Jstruct.packages.modules.PATH); % modules
     PATH.builtin = fullfile(PATH.basepath,Jstruct.packages.builtin.PATH); % builtin
     
+    STATUS = 0;
     switch lower(cmd)
     case 'add'
         % addpath
@@ -88,6 +89,9 @@ function ST_Mbaysalt(varargin)
         addpath(strjoin(PATH.builtin, pathsep));
         Jstruct.git.TF = true;
         [~, ~] = install_pkgs(PATH, Jstruct, 'add');  % install_pkgs
+        if init
+            STATUS = Fixed_functions(Jstruct);
+        end
         Javaaddpath(Jstruct)
     case 'rm'
         % rmpath
@@ -101,23 +105,23 @@ function ST_Mbaysalt(varargin)
         addpath(strjoin(PATH.builtin, pathsep));
         Jstruct.git.TF = false;
         [~, ~] = install_pkgs(PATH, Jstruct, 'noclone');
+        if init
+            STATUS = Fixed_functions(Jstruct);
+        end
         Javaaddpath(Jstruct)
     otherwise
         error('parameter error');
     end
+
+    if STATUS
+        print_info()
+    end
     
     if init
-        STATUS = Fixed_functions(Jstruct);
         if ispref('Mbaysalt','PATH_toolbox')  % Fixed Mainpath 
             rmpref('Mbaysalt');
         end
         setpref('Mbaysalt','init','DONE')
-    else
-        STATUS = 0;
-    end
-
-    if STATUS
-        print_info()
     end
 
 end
