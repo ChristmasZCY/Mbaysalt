@@ -462,7 +462,11 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
             continue
         elseif isequal(control, 'noclone')
             if pkg.SETPATH
-                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+                if exist('genpath2','file') == 2 
+                    addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
+                else
+                    addpath(genpath(pkg_path))
+                end
             end
             continue
         end
