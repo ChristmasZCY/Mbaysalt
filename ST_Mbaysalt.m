@@ -199,6 +199,9 @@ function STATUS = fixed_t_tide(Jstruct)
     fileContent = fileread(m_filepath);  % 读取文件内容
     searchStr = "nameu = struct('name',nameu,'freq',fu,'tidecon',tidecon,'type',ltype);";  % 定义要查找的字符串
     replaceStr = "nameu = struct('name',nameu,'freq',fu,'tidecon',tidecon,'type',ltype,'ref',z0);";  % 定义替换后的字符串
+    if ~contains(fileContent, searchStr)  % 不需要替换
+        return
+    end
     newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
     fOWC(m_filepath, 'w', newContent);
     STATUS = 1;
@@ -218,6 +221,9 @@ function STATUS = fixed_setup_nctoolbox_java(Jstruct)
         copyfile(m_filepath,m_filecopy);
     end
     fileContent = fileread(m_filepath);  % 读取文件内容
+    if contains(fileContent, '% root.addAppender')
+        return
+    end
     pattern = '(?m)^(?<!%)(root\.addAppender\(org\.apache\.log4j\.ConsoleAppender\(org\.apache\.log4j\.PatternLayout\(''%d\{ISO8601\} \[\%t\] %-5p %c %x - %m%n''\)\)\);)';
     replacement = '% $1';
     newContent = regexprep(fileContent, pattern, replacement);
@@ -342,6 +348,9 @@ function STATUS = fixed_mexcdf(Jstruct)
     fileContent = fileread(m_filepath);  % 读取文件内容
     searchStr = "error(' ## Unrecognized Matlab version.')";  % 定义要查找的字符串
     replaceStr = "fcn = 'mexcdf53';";  % 定义替换后的字符串
+    if ~contains(fileContent, searchStr)  % 不需要替换
+        return
+    end
     newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
     fOWC(m_filepath, 'w', newContent);
     STATUS = 1;
@@ -484,7 +493,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
         if Git.TF && Git.CHECK
             if pkg.INSTALL
                 if ~(exist(pkg.CHECK{1},pkg.CHECK{2}) == str2double(pkg.CHECK{3})) && pkg.SETPATH  % 如果不同时判断pkg.SETPATH 当pkg.INSATLL && ~pkg.SETPATH 由于不在路径中检测不到会重复下载
-                    if isfield(Git,'mirror')
+                    if isfield(Git,'mirror') && ~isempty(Git.mirror)
                         pkg_url = replace(pkg.URL,'https://github.com',del_filesep(Git.mirror));  % mirror
                     else
                         pkg_url = pkg.URL;
