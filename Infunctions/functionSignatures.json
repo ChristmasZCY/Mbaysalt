@@ -365,5 +365,10 @@
             {"name": "aviFile", "kind": "required", "type": ["file=*.avi"], "purpose": "avi file"},
             {"name": "mp4File", "kind": "required", "type": ["char"], "purpose": "mp4 file"},
             {"name": "FrameRate", "kind": "namevalue", "type": ["numeric"], "purpose": "frame rate"}],
+        "outputs": []},
+    "ln": {
+        "inputs": [
+            {"name": "src", "kind": "required", "type": ["file","folder"], "purpose": "source file"},
+            {"name": "dst", "kind": "required", "type": ["char"], "purpose": "destination file"}],
         "outputs": []}
 }
