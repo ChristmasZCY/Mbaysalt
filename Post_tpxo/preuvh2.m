@@ -11,6 +11,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       varargin:   (options)                         || required: False|| as follow:
     %           INFO:       display process               || required: False|| type: namevalue || format: 'INFO','disp'
     %           Vname:      extract value name            || required: False|| type: namevalue || format: 'Vname','u'
+    %           Parallel:   Parallel switch               || required: False|| type: namevalue || format: 20
     % =================================================================================================================
     % Returns:
     %       TIDE:
@@ -27,6 +28,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin','Vname','all')
     %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin')
     %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin', 'INFO', 'disp')
+    %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','all', 'INFO', 'disp')
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'INFO'}, {'none'});
@@ -208,6 +210,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         TIDE.v = tide_v;
     end
     clear tide_zeta tide_u tide_v INFO tideList
+    rmfiles(hug_filepath);
 
 end
 

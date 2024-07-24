@@ -39,7 +39,7 @@ function jdata = json_load(file,varargin)
             jdata = loadjson(file);
     end
 
-    if ~isfield(jdata,'FILEPATH')
+    if ~isfield(jdata,'FILEPATH') && isscalar(jdata)
         jdata.FILEPATH = file;
     end
 

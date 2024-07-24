@@ -19,6 +19,7 @@ TPXO_filepath = '/storage/data/tpxo/TPXO9-atlas-v5/bin';
 data_tmpdir = './AreaBin';
 pause
 parpool("Processes",60);
+% TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all');
 TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all','Parallel',60);
 F_equator = find(lat==0);
 % NaN in equator
