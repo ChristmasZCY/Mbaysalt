@@ -19,7 +19,7 @@ function wrnc_ice(ncid,Lon,Lat,time,Aice,varargin)
     %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Aice,'conf',conf,'INFO','Text_len',45)
     % =================================================================================================================
 
-    varargin = read_varargin(varargin,{'conf'},{false});
+    varargin = read_varargin(varargin,{'conf'},{struct('')});
     varargin = read_varargin2(varargin,{'INFO'});
     varargin = read_varargin(varargin,{'Text_len'},{false});
     

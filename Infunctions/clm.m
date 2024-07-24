@@ -39,6 +39,7 @@ function clm(varargin)
         case 'noclose'
             evalin('base', 'clear');
             clc
+            clf
         otherwise
             error('Error: Invalid input argument')
         end

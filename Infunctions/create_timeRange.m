@@ -5,7 +5,7 @@ function [Times, Ttimes] = create_timeRange(dmt_start, dmt_end, str_interval)
     %       dmt_start:      time-Start          || required: True || type: datetime || example: datetime(2024, 05, 22, 0, 0, 0)
     %       dmt_end:        time-End            || required: True || type: datetime || example: datetime(2024, 06, 02, 0, 0, 0)
     %       str_interval:   time-Interval       || required: True || type: Text     || example: '1h'
-    %       varargin:   (options)                         || required: False|| as follow:
+    %       varargin:   (options)               || required: False|| as follow:
     % =================================================================================================================
     % Returns:
     %       Times:      time-Range      || type: datetime  || format: 1D
@@ -32,6 +32,8 @@ function [Times, Ttimes] = create_timeRange(dmt_start, dmt_end, str_interval)
             dmt_interval = days(number);
         case {'h','hours','hour'}
             dmt_interval = hours(number);
+        case {'m','mins','minute'}
+            dmt_interval = minutes(number);
         case {'s','seconds','second'}
             dmt_interval = seconds(number);
         otherwise
