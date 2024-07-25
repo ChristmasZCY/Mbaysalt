@@ -76,7 +76,17 @@
             "URL": "https://github.com/DHI/DHI-MATLAB-Toolbox/releases/download/v19.0.0/DHIMatlabToolbox-v19.0.0-20201217.zip",
             "LOCALFILE": "Exfunctions/DHIMatlabToolbox-v19.0.0-20201217.zip",
             "PATH": "Exfunctions/DHIMatlabToolbox",
-            "CHECK": ["read_dfs2.m","file","2"]}},
+            "CHECK": ["read_dfs2.m","file","2"]},
+        "dace": {
+            "INSTALL": false,
+            "SETPATH": false,
+            "VERSION": "2.5",
+            "URL": "https://www.omicron.dk/dace/dace.zip",
+            "LOCALFILE": "Exfunctions/dace.zip",
+            "PATH": "Exfunctions/dace",
+            "CHECK": ["dacefit.m","file","2"],
+            "INDEX": "https://www.omicron.dk/dace.html",
+            "MANUAL": "https://www.omicron.dk/dace/dace.pdf"}},
     "gitclone": {
         "matFigure": {
             "INSTALL": false,
@@ -131,7 +141,7 @@
             "SETPATH": false,
             "DEPTH": 0,
             "BRANCH": "main",
-            "URL": "https://github.com/ChristmasZCY/OceanData.git",
+            "URL": "https://github.com/SiqiLiOcean/OceanData.git",
             "PATH": "Exfunctions/OceanData",
             "CHECK": ["UHSLC_info.m","file","2"]},
         "FVCOM_NML": {
@@ -145,7 +155,7 @@
         "nctoolbox": {
             "INSTALL": false,
             "SETPATH": false,
-            "DEPTH": false,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/nctoolbox/nctoolbox.git",
             "PATH": "Exfunctions/nctoolbox",
@@ -210,7 +220,7 @@
             "INSTALL": false,
             "SETPATH": false,
             "DEPTH": 0,
-            "BRANCH": "master",
+            "BRANCH": "Projection",
             "URL": "https://github.com/CHLNDDEV/OceanMesh2D.git",
             "PATH": "Exfunctions/OceanMesh2D",
             "CHECK": ["setup_oceanmesh2d.m","file","2"]},
@@ -226,7 +236,7 @@
             "INSTALL": false,
             "SETPATH": false,
             "DEPTH": 0,
-            "BRANCH": "master",
+            "BRANCH": "main",
             "URL": "https://github.com/iqiukp/ZoomPlot-MATLAB",
             "PATH": "Exfunctions/ZoomPlot",
             "CHECK": ["BaseZoom.m","file","2"]},
@@ -286,14 +296,38 @@
             "URL": "https://gitee.com/iam002/funcsign.git",
             "PATH": "Exfunctions/funcsign",
             "CHECK": ["hs_signfunc.m","file","2"]},
-        "kml-toolbox": {
+        "kml_toolbox": {
             "INSTALL": false,
             "SETPATH": false,
             "DEPTH": 0,
             "BRANCH": "master",
-            "URL": "https://github.com/theolivenbaum/kml-toolbox",
+            "URL": "https://github.com/theolivenbaum/kml-toolbox.git",
             "PATH": "Exfunctions/kml-toolbox",
-            "CHECK": ["kml.m","file","2"]}},
+            "CHECK": ["kml.m","file","2"]},
+        "MATLAB_PLOT_CHEAT_SHEET": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "main",
+            "URL": "https://github.com/slandarer/MATLAB-PLOT-CHEAT-SHEET.git",
+            "PATH": "Exfunctions/MATLAB-PLOT-CHEAT-SHEET",
+            "CHECK": ["MATLAB_cheat_sheet.m","file","2"]},
+        "matlabPlotCheatsheet": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://github.com/peijin94/matlabPlotCheatsheet.git",
+            "PATH": "Exfunctions/matlabPlotCheatsheet",
+            "CHECK": ["matlab_plot_cheatsheet.m","file","2"]},
+        "visualization_cheat_sheet": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "main",
+            "URL": "https://github.com/mathworks/visualization-cheat-sheet.git",
+            "PATH": "Exfunctions/visualization-cheat-sheet",
+            "CHECK": ["SECURITY.md","file","2"]}},
     "modules": {
         "PATH": [
             "Prefunctions",
@@ -333,6 +367,12 @@
             "Exfunctions/taylordiagram",
             "Exfunctions/guillaumemaze",
             "Exfunctions/perfectPolarPlot",
+            "Exfunctions/LIRSC",
+            "Exfunctions/kriging",
+            "Exfunctions/variogramfit",
+            "Exfunctions/IDW",
+            "Exfunctions/KrigingToolbox",
+            "Exfunctions/utm2deg",
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",
@@ -354,18 +394,24 @@
      "ann_wrapper": false,
      "DHIMIKE": false,
      "minmax": true,
-     "irfu_matlab": false},
+     "irfu_matlab": false,
+     "matFigure": true},
  "supplement": {
      "matFVCOM": {
          "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
          "PATH_OUT": "Exfunctions/matFVCOM",
-         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m"]}},
+         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m","obs_merge_location.m"]},
+     "matFigure": {
+            "PATH_IN": "Exfunctions/SupplementFiles/matFigure",
+            "PATH_OUT": "Exfunctions/matFigure",
+            "FILES": ["Contents.m","functionSignatures.json","cm/cmp_b2r.mat","cm/nclColormap"]}},
  "@@comments":{
     "A": "2024-04-26:  Created, by Christmas;",
     "B": "2024-05-13:, Added improve:minmax, by Christmas;",
     "C": "2024-05-14:, Added gitclone:irfu_matlab, by Christmas;",
     "D": "2024-05-15:, Added supplement:matFVCOM:FILES:*, by Christmas;",
-    "E": "2024-05-16:  Added improve:m_etopo2, by Christmas;"}
+    "E": "2024-05-16:  Added improve:m_etopo2, by Christmas;",
+    "F": "2024-06-15:  Added improve:matFigure, by Christmas;"}
 }
 
 
