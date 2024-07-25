@@ -224,6 +224,8 @@
 %   +netcdf_wrf                                 -  Packages of functions for handling WRF netcdf file
 %      wrnc_t2m.m                               -  Write WRF t2m netcdf file
 %      wrnc_wind10m.m                           -  Write WRF wind10m netcdf file
+%   +netcdf_ww3                                 -  Packages of functions for handling WW3 netcdf file
+%      wrnc_wave.m                              -  Write wave netcdf file
 %
 %
 %                               Mimetifunctions -  Functions to mimic other languages commands
@@ -298,6 +300,7 @@
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_nemuro.conf                            -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_Wenzhou.conf                           -  Example for Post_fvcom/Postprocess_fvcom
+%   Post_ww3.conf                               -  Example for Post_ww3
 %   stations.xml                                -  Example of xml file
 %   example.vtk                                 -  Example of vtk file
 %   INSTALL_custom.json                         -  Custom INSTALL.json
