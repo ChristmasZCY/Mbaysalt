@@ -31,6 +31,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-05-12:     Added disp info,                                                    by Christmas;
     %       2024-05-21:     Changed read_switch to read_start,                                  by Christmas;
     %       2024-05-21:     Added extrapolation for Siqi_interp and ESMF,                       by Christmas;
+    %       2024-07-25:     Added postprocess tri-WW3,                                          by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20240401,1)
@@ -66,11 +67,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     lon_dst         = para_conf.Lon_destination;        % 模型的经度范围  --> [-180,180]
     lat_dst         = para_conf.Lat_destination;        % 模型的纬度范围  --> [20,30]
     Ecology_model   = para_conf.Ecology_model;          % 生态模型  --> '.ERSEM.' or '.NEMURO.'
+    Wave_model      = para_conf.Wave_model;             % 海浪模型  --> '.WW3.' or '.NONE.'
     Text_len        = para_conf.Text_len;               % 打印字符的对齐长度
     SWITCH          = read_start(para_conf, 'Switch');  % 读取开关
 
-    if ~SWITCH.out_std_level && ~SWITCH.out_sgm_level && ~SWITCH.out_avg_level && ~SWITCH.ua && ~SWITCH.va % 至少输出一种层
-        error('At least one of the three output levels or ua or va must be selected')
+    if ~SWITCH.out_std_level && ~SWITCH.out_sgm_level && ~SWITCH.out_avg_level && ~SWITCH.ua && ~SWITCH.va && ~SWITCH.wave % 至少输出一种层
+        error('At least one of the three output levels or ''ua'' or ''va'' or ''wave'' must be selected')
     end
 
     if SWITCH.warningtext;warning('on');else; warning('off');end  % 是否显示警告信息
@@ -109,7 +111,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         repmat(' ua',SWITCH.ua), repmat(' va',SWITCH.va), repmat(' aice',SWITCH.aice), ...
         repmat(' ph',SWITCH.ph), repmat(' no3',SWITCH.no3), repmat(' pco2',SWITCH.pco2), ...
         repmat(' chlo',SWITCH.chlo), repmat(' casfco2',SWITCH.casfco2), repmat(' zp',SWITCH.zp), ...
-        repmat(' pp',SWITCH.pp), repmat(' sand',SWITCH.sand)])  % 打印处理的变量
+        repmat(' pp',SWITCH.pp), repmat(' sand',SWITCH.sand), ...
+        repmat(' swh',SWITCH.swh), repmat(' mwd',SWITCH.mwd), repmat(' mwp',SWITCH.mwp)])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
@@ -119,7 +122,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if strcmp(interval,"daily")
             ncfile = fullfile(Inputpath,[char(getdate),filesep, ModelOUTD, filesep, file_Mcasename,'_avg_',num2str(dr,'%04d'),'.nc']); % 输入文件
         elseif strcmp(interval,"hourly")
-            ncfile = fullfile(Inputpath,[char(getdate),filesep, ModelOUTD, filesep, file_Mcasename,'_',num2str(dr,'%04d'),'.nc']); % 输入文件
+            switch Wave_model
+            case '.NONE.'
+                ncfile = fullfile(Inputpath,[char(getdate),filesep, ModelOUTD, filesep, file_Mcasename,'_',num2str(dr,'%04d'),'.nc']); % 输入文件
+            case '.WW3.'
+                ncfile = fullfile(Inputpath,[char(deal_date_dt),filesep, ModelOUTD, filesep, file_Mcasename,'.',char(deal_date_dt),'.nc']); % 输入文件
+            end
+            
         end
         osprint2('INFO', [pad('Reading from ', Text_len,'right'),'--> ', ncfile]);
         clear ModelOUTD
@@ -138,7 +147,11 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
             format_fmt = format;
             format('longG');
-            f_res = minmax(f_calc_resolution(f_nc,para_conf.Load_Coordinate));
+            if strcmp(para_conf.Load_Coordinate, 'ww3')
+                f_res = minmax(f_calc_resolution(f_nc, 'Geo'));
+            else
+                f_res = minmax(f_calc_resolution(f_nc,para_conf.Load_Coordinate));
+            end
             osprint2('INFO', [pad('Ori lon range ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(f_nc.x)))]);
             osprint2('INFO', [pad('Ori lat range ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(f_nc.y)))]);
             osprint2('INFO', [pad('Ori res range ', Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(f_res)))]);
@@ -269,6 +282,20 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             end
             OutputDir.sand = fullfile(Outputpath,'sand',interval,deal_date);  % sand输出路径
         end
+        if SWITCH.wave  % wave
+            if strcmpi(Wave_model, '.WW3.')
+                if SWITCH.swh
+                    fncValue_nt.swh = double(ncread(ncfile,'hs')); % swh
+                end
+                if SWITCH.mwd
+                    fncValue_nt.mwd = double(ncread(ncfile,'dir')); % mwd
+                end
+                if SWITCH.swh
+                    fncValue_nt.mwp = double(ncread(ncfile,'t02')); % mwp
+                end
+            end
+            OutputDir.wave = fullfile(Outputpath,'wave',interval,deal_date);  % wave输出路径
+        end
 
         if SWITCH.u || SWITCH.v || SWITCH.w || SWITCH.ua || SWITCH.va
             OutputDir.curr = fullfile(Outputpath,'current',interval,deal_date);  % current输出路径
@@ -284,13 +311,19 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         clear deal_date_dt deal_date % 日期处理中间变量
 
         %% time
-        % TIME = datetime(1858,11,17)+ hours(Itime*24 + Itime2/(3600*1000));
-        TIME = ncread(ncfile,'Times')';
-        if strcmp(interval,"daily")
-            Times = datetime(TIME,'Format','yyyy-MM-dd''T''HH:mm:ssSSSSSS') - double(SWITCH.daily_1hour);
-        elseif strcmp(interval,"hourly")
-            Times = datetime(TIME,'Format','yyyy-MM-dd''T''HH:mm:ssSSSSSS');
+        switch Wave_model
+        case '.NONE'
+            % TIME = datetime(1858,11,17)+ hours(Itime*24 + Itime2/(3600*1000));
+            TIME = ncread(ncfile, 'Times')';
+            if strcmp(interval,"daily")
+                Times = datetime(TIME,'Format','yyyy-MM-dd''T''HH:mm:ssSSSSSS') - double(SWITCH.daily_1hour);
+            elseif strcmp(interval,"hourly")
+                Times = datetime(TIME,'Format','yyyy-MM-dd''T''HH:mm:ssSSSSSS');
+            end
+        case '.WW3.'
+            Times = ncdateread(ncfile, 'time');
         end
+
         Ttimes = Mdatetime(Times);
         clear TIME Times
         time = Ttimes.time; % POSIX时间 1970 01 01 shell的date +%s
@@ -340,6 +373,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % fncValue_nt.ua         --> node*t
         % fncValue_nt.va         --> node*t
         % fncValue_nt.aice       --> node*t
+        % fncValue_nt.swh        --> node*t
+        % fncValue_nt.mwd        --> node*t
+        % fncValue_nt.mwp        --> node*t
 
 
         switch Method_interpn
@@ -524,6 +560,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.casfco2
             Store_xyt.Casfco2   = wncValue_xyt.casfco2;  % --> x*y*t
         end
+        if SWITCH.swh
+            Store_xyt.Swh       = wncValue_xyt.swh;      % --> x*y*t
+        end
+        if SWITCH.mwd
+            Store_xyt.Mwd       = wncValue_xyt.mwd;      % --> x*y*t
+        end
+        if SWITCH.mwp
+            Store_xyt.Mwp       = wncValue_xyt.mwp;      % --> x*y*t
+        end
         clear Depth_xy
         clear Siglay Deplev Deplay
         clear wncValue_xyt wncValue_xyzt
@@ -551,6 +596,15 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
         if SWITCH.casfco2
             OutValue_xyt.Casfco2 = Store_xyt.Casfco2;
+        end
+        if SWITCH.swh
+            OutValue_xyt.Swh = Store_xyt.Swh;
+        end
+        if SWITCH.mwd
+            OutValue_xyt.Mwd = Store_xyt.Mwd;
+        end
+        if SWITCH.mwp
+            OutValue_xyt.Mwp = Store_xyt.Mwp;
         end
         % <----- 2D
 
@@ -656,7 +710,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         clear ncfile
         % Store_coor --> Lon Lat Depth_xy Ttimes Depth_std Deplev Deplay  Siglay
         % OutValue_xyzt --> *_sgm *_std *_avg
-        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2
+        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp
 
         if ~exist("OutValue_xyt", "var")
             OutValue_xyt = struct('');
@@ -734,9 +788,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             end
             clear I_D_* file_erosion fields dimsMax im num_erosion ans
         end
-        % Store_coor --> Lon Lat Depth_xy Ttimes Depth_std Deplev Deplay  Siglay
+        % Store_coor --> Lon Lat Depth_xy Ttimes Depth_std Deplev Deplay Siglay
         % OutValue_xyzt --> *_sgm *_std *_avg
-        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2
+        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp
         OutValue = merge_struct(OutValue_xyt, OutValue_xyzt);
         clear Store_xyt Store_xyzt OutValue_xyt OutValue_xyzt
 
@@ -849,6 +903,13 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             ncid = create_nc(file, 'NETCDF4');
             [sand_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Sand_std','Sand_sgm','Sand_avg'});
             netcdf_fvcom.wrnc_sand_nemuro(ncid,Lon,Lat,Delement,time,sand_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear sand_Struct ncid file
+        end
+        if SWITCH.wave
+            file = fullfile(OutputDir.wave,['wave',OutputRes,'.nc']);
+            ncid = create_nc(file, 'NETCDF4');
+            [wave_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Swh','Mwd','Mwp'});
+            netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
             clear Velement_csand ncid file
         end
 

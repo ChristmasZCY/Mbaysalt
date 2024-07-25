@@ -155,7 +155,7 @@
         "nctoolbox": {
             "INSTALL": true,
             "SETPATH": true,
-            "DEPTH": true,
+            "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/nctoolbox/nctoolbox.git",
             "PATH": "Exfunctions/nctoolbox",

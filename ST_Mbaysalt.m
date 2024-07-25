@@ -186,8 +186,8 @@ end
 function STATUS = fixed_t_tide(Jstruct)
     % 为t_tide工具包的t_tide.m文件添加ref参数
     m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.download.t_tide.PATH,'t_tide.m');  % which('t_tide.m');
+    STATUS = 0;
     if ~exist(m_filepath,"file")
-        STATUS = 0;
         return
     end
     % 备份源文件
@@ -210,8 +210,8 @@ end
 function STATUS = fixed_setup_nctoolbox_java(Jstruct)
     % 修正nctoolbox工具包的setup_nctoolbox_java.m函数在高版本matlab中的报错
     m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.nctoolbox.PATH,'java/setup_nctoolbox_java.m');  % which('setup_nctoolbox_java.m');
+    STATUS = 0;
     if ~exist(m_filepath,"file")
-        STATUS = 0;
         return  
     end
     % 备份源文件
