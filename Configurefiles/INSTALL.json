@@ -373,6 +373,7 @@
             "Exfunctions/IDW",
             "Exfunctions/KrigingToolbox",
             "Exfunctions/utm2deg",
+            "Exfunctions/Spiral_diagram",
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",

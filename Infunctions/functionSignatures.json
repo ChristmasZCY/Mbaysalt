@@ -255,7 +255,7 @@
             {"name": "lat1", "kind": "required", "type": ["numeric"], "purpose": "latArray1"},
             {"name": "lon2", "kind": "required", "type": ["numeric"], "purpose": "lonArray2"},
             {"name": "lat2", "kind": "required", "type": ["numeric"], "purpose": "latArray2"},
-            {"name": "method", "kind": "namevalue", "type": ["char","choices={'common','MATLAB'}"], "purpose": "method"}],
+            {"name": "method", "kind": "namevalue", "type": ["char","choices={'common','MATLAB','Siqi'}"], "purpose": "method"}],
         "outputs": [
             {"name": "d", "type": ["scalar"], "purpose": "Distance"},
             {"name": "dx", "type": ["scalar"], "purpose": "dx"},

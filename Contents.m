@@ -335,6 +335,10 @@
 %   README_TMD.pdf                              -  TMD说明
 %   Communication_with_lsq.md                   -  Communication with lsq
 %   Holland_deduce.pdf                          -  Holland deduce PDF
+%   MATLAB气象海洋简单粗暴教程.pdf
+%   Matlab读取气象海洋数据教程.pdf
+%   MATLAB、ArcGIS、SPSS和Excel在地学中的实践应用（Version6.0）-2020-04-27.pdf
+%   M_map翻译和示例官方中文版.pdf
 %
 %
 %                                  Exfunctions  -  External functions for toolbox
@@ -402,6 +406,7 @@
 %   IDW                         (optional)      -  Inverse Distance Weight toolbox             ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/24477-inverse-distance-weight
 %   KrigingToolbox              (optional)      -  KrigingToolbox                              ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/59960-krigingtoolbox
 %   utm2deg                     (optional)      -  utm2deg                                     ||  https://www.mathworks.com/matlabcentral/fileexchange/10914-utm2deg
+%   Spiral diagram             （optional）      -  Spiral diagram                              ||  https://www.mathworks.com/matlabcentral/fileexchange/164966-spiral-diagram
 %
 %                                         Extend Exfunctions
 %   matWRF                                      -  Extend matWRF toolbox

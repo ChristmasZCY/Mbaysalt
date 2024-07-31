@@ -7,7 +7,7 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
     %       lonArray2:    longitude 1D array -2     || required: True || type: 1D        || example: [119,119]
     %       latArray2:    latitude  1D array -2     || required: True || type: 1D        || example: [32,32]
     %       varargin:   (optional)
-    %           method:   calculate method          || required: False|| type: namevalue || default: 'method','common'
+    %           method:   calculate method          || required: False|| type: namevalue || default: 'method','common','Siqi'
     % =================================================================================================================
     % Returns:
     %        d:    distance Space
@@ -17,12 +17,14 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
     % Updates:
     %       2024-05-10:     Created,                by Christmas;
     %       2024-05-14:     Added method 'MATLAB',  by Christmas;
+    %       2024-07-30:     Added method 'Siqi',    by Christmas;
     % =================================================================================================================
     % Examples:
     %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],[119,119,119],[32,32,32]);
     %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],119,32);
     %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],119,32,'method','common');
     %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],119,32,'method','MATLAB');
+    %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],119,32,'method','Siqi');
     % =================================================================================================================
     % References:
     %
@@ -65,6 +67,11 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
         wgs84 = wgs84Ellipsoid("m");
         d  = distance(latArray1, lonArray1, latArray2, lonArray2, wgs84);
         % d2 = distance(latArray1, lonArray1, latArray2, lonArray2)./180*pi*6370*1000;
+        dx = NaN;
+        dy = NaN;
+
+    case 'siqi'
+        d = calc_distance(latArray1, lonArray1, latArray2, lonArray2, 'Geo');
         dx = NaN;
         dy = NaN;
 
