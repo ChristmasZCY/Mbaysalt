@@ -394,7 +394,6 @@
      "m_etopo2": true,
      "ann_wrapper": false,
      "DHIMIKE": false,
-     "minmax": true,
      "irfu_matlab": false,
      "matFigure": true},
  "supplement": {
