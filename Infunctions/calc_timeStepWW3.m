@@ -157,6 +157,7 @@ function Tt = calc_timeStepWW3_tri(fmin, x, y, nv, h, ns, varargin)
     
     % 计算非边界边的长度（m）及中点水深
     dist_line = calc_geodistance(x(lines_ub(:,1)),y(lines_ub(:,1)),x(lines_ub(:,2)),y(lines_ub(:,2)),"method","MATLAB");
+    % dist_line = calc_distance(x(lines_ub(:,1)),y(lines_ub(:,1)),x(lines_ub(:,2)),y(lines_ub(:,2)));
     z_line = mean([z(lines_ub(:,1)),z(lines_ub(:,2))],2);
     
     % 计算各条边的群速及传播历时

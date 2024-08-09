@@ -91,7 +91,7 @@
             {"name":"lon", "kind":"required","type":["numeric"],"purpose":"longitude"},
             {"name":"lat", "kind":"required","type":["numeric"],"purpose":"latitude"},
             {"name":"time", "kind":"required","type":["numeric"],"purpose":"time"},
-            {"name":"Aice", "kind":"required","type":["numeric"],"purpose":"Aice"},
+            {"name":"Ice", "kind":"required","type":["struct"],"purpose":"Ice"},
             {"name":"conf", "kind":"namevalue","type":["struct"],"purpose":"Parameter configuration"},
             {"name":"INFO", "kind":"flag","type":["choices={'INFO'}", "char"],"purpose":"Whether to print information"},
             {"name":"Text_len", "kind":"namevalue","type":["numeric"],"purpose":"Text length"}],

@@ -339,7 +339,7 @@
         "inputs": [
             {"name": "f", "kind": "required", "type": ["numeric"], "purpose": "frequency"},
             {"name": "h", "kind": "required", "type": ["numeric"], "purpose": "depth"},
-            {"name": "method", "kind": "required", "type": ["char","choices={1,2,3}"], "purpose": "calculation method"}],
+            {"name": "method", "kind": "namevalue", "type": ["char","choices={1,2,3}"], "purpose": "calculation method"}],
         "outputs": [
             {"name": "C", "type": ["scalar"], "purpose": "wave phase speed"},
             {"name": "Cg", "type": ["scalar"], "purpose": "wave group speed"},

@@ -845,7 +845,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             file = fullfile(OutputDir.ice,['ice',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
             [aice_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Aice'});
-            netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,aice_Struct.Aice,'conf',para_conf,'INFO','Text_len',Text_len);
+            netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,aice_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
             clear aice_Struct ncid file
         end
 
