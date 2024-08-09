@@ -122,7 +122,8 @@
             {"name":"h","type":["patch"],"purpose":"Patch"}]},
     "f_2d_mask_boundary":{
         "inputs":[
-            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"}],
+            {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"},
+            {"name":"facecolor","kind":"namevalue","type":["numeric"],"purpose":"facecolor"}],
         "outputs":[
             {"name":"h","type":["polyshape"],"purpose":"Polygon"}]},
     "f_2d_mesh":{

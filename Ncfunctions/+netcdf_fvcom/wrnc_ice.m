@@ -1,4 +1,4 @@
-function wrnc_ice(ncid,Lon,Lat,time,Aice,varargin)
+function wrnc_ice(ncid,Lon,Lat,time,Ice,varargin)
     %       This function is used to write the ice data to the netcdf file
     % =================================================================================================================
     % parameter:
@@ -6,22 +6,37 @@ function wrnc_ice(ncid,Lon,Lat,time,Aice,varargin)
     %       Lon:             longitude               || required: True  || type: double    || format: [120.5, 121.5]
     %       Lat:             latitude                || required: True  || type: double    || format: [30.5, 31.5]
     %       time:            time                    || required: True  || type: double    || format: posixtime
-    %       Aice:            sea ice concentration   || required: True  || type: double    || format: matrix
+    %       Ice:             ice value struct        || required: True  || type: struct    || format: struct
+    %           .Aice:       sea ice concentration   || required: False || type: double    || format: matrix
+    %           .Tice:       sea ice thickness       || required: False || type: double    || format: matrix
     %       varargin:        optional parameters     
     %           conf:        configuration struct    || required: False || type: namevalue || format: struct
     %           INFO:        Whether print msg       || required: False || type: flag      || format: 'INFO' 
     %           Text_len:    Length of msg str       || required: False || type: namevalue || format: 'Text_len',45 
     % =================================================================================================================
     % Example:
-    %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Aice)
-    %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Aice,'conf',conf)
-    %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Aice,'conf',conf,'INFO')
-    %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Aice,'conf',conf,'INFO','Text_len',45)
+    %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Ice)
+    %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Ice,'conf',conf)
+    %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Ice,'conf',conf,'INFO')
+    %       netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,Ice,'conf',conf,'INFO','Text_len',45)
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'conf'},{struct('')});
     varargin = read_varargin2(varargin,{'INFO'});
     varargin = read_varargin(varargin,{'Text_len'},{false});
+
+    SWITCH.aice = false;
+    SWITCH.tice = false;
+
+    if isfield(Ice,'Aice')
+        SWITCH.aice = true;
+        Aice = Ice.Aice;
+    end
+
+    if isfield(Ice,'Tice')
+        SWITCH.tice = true;
+        Tice = Ice.Tice;
+    end
     
     % time && TIME
     [TIME,TIME_reference,TIME_start_date,TIME_end_date,time_filename] = time_to_TIME(time);
@@ -48,15 +63,23 @@ function wrnc_ice(ncid,Lon,Lat,time,Aice,varargin)
     lat_id  = netcdf.defVar(ncid, 'latitude',  'NC_FLOAT', latdimID);                    % 纬度
     time_id = netcdf.defVar(ncid, 'time',      'double',   timedimID);                   % 时间
     TIME_id = netcdf.defVar(ncid, 'TIME',      'NC_CHAR',  [TIMEdimID, timedimID]);      % 时间char
-    ice_id  = netcdf.defVar(ncid, 'ice',       'NC_FLOAT', [londimID, latdimID,timedimID]); % 海冰密集度
-
-    netcdf.defVarFill(ncid, ice_id, false, 9.9692100e+36); % 设置缺省值
 
     netcdf.defVarDeflate(ncid, lon_id,  true, true, 5)
     netcdf.defVarDeflate(ncid, lat_id,  true, true, 5)
     netcdf.defVarDeflate(ncid, time_id, true, true, 5)
     netcdf.defVarDeflate(ncid, TIME_id, true, true, 5)
-    netcdf.defVarDeflate(ncid, ice_id,  true, true, 5)
+
+    if SWITCH.aice
+        aice_id  = netcdf.defVar(ncid, 'aice', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 海冰密集度
+        netcdf.defVarFill(ncid, aice_id, false, 9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, aice_id, true, true, 5)
+    end
+
+    if SWITCH.tice
+        tice_id  = netcdf.defVar(ncid, 'tice', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 海冰厚度
+        netcdf.defVarFill(ncid, tice_id, false, 9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, tice_id, true, true, 5)
+    end
 
     % -----
     netcdf.endDef(ncid);    % 结束nc文件定义
@@ -65,7 +88,13 @@ function wrnc_ice(ncid,Lon,Lat,time,Aice,varargin)
     netcdf.putVar(ncid, lat_id,                                                        Lat);         % 纬度
     netcdf.putVar(ncid, time_id, 0,       length(time),                                time);        % 时间
     netcdf.putVar(ncid, TIME_id, [0,0],   [size(char(TIME),2),size(char(TIME),1)],     char(TIME)'); % 时间char
-    netcdf.putVar(ncid, ice_id,  [0,0,0], [size(Aice,1), size(Aice,2), size(Aice,3)],  Aice);        % ice
+
+    if SWITCH.aice
+        netcdf.putVar(ncid, aice_id,  [0,0,0], [size(Aice,1), size(Aice,2), size(Aice,3)],  Aice);        % aice
+    end
+    if SWITCH.tice
+        netcdf.putVar(ncid, tice_id,  [0,0,0], [size(Tice,1), size(Tice,2), size(Tice,3)],  Tice);        % tice
+    end
 
     % -----
     netcdf.reDef(ncid);    % 使打开的nc文件重新进入定义模式
@@ -89,8 +118,15 @@ function wrnc_ice(ncid,Lon,Lat,time,Aice,varargin)
     netcdf.putAtt(ncid, TIME_id, 'start_date', TIME_start_date); % 时间char
     netcdf.putAtt(ncid, TIME_id, 'end_date',   TIME_end_date);   % 时间char
 
-    netcdf.putAtt(ncid, ice_id, 'units',     '1');                     % 海冰密集度
-    netcdf.putAtt(ncid, ice_id, 'long_name', 'sea ice concentration'); % 海冰密集度
+    if SWITCH.aice
+        netcdf.putAtt(ncid, aice_id, 'units',     '1');                     % 海冰密集度
+        netcdf.putAtt(ncid, aice_id, 'long_name', 'sea ice concentration'); % 海冰密集度
+    end
+
+    if SWITCH.tice
+        netcdf.putAtt(ncid, tice_id, 'units',     'm');                 % 海冰厚度
+        netcdf.putAtt(ncid, tice_id, 'long_name', 'sea ice thickness'); % 海冰厚度
+    end
 
     % 写入global attribute
     varid_GA = netcdf.getConstant('NC_GLOBAL');
