@@ -34,8 +34,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-07-25:     Added postprocess tri-WW3,                                          by Christmas;
     % =================================================================================================================
     % Example:
-    %       Postprocess_fvcom('Post_fvcom.conf','hourly',20240401,1)
-    %       Postprocess_fvcom('Post_fvcom.conf','daily', 20240401,1)
+    %       Postprocess_fvcom('Post_fvcom.conf','hourly',20240801,1)
+    %       Postprocess_fvcom('Post_fvcom.conf','daily', 20240801,1)
     % =================================================================================================================
 
     arguments(Input)
@@ -312,7 +312,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
         %% time
         switch Wave_model
-        case '.NONE'
+        case '.NONE.'
             % TIME = datetime(1858,11,17)+ hours(Itime*24 + Itime2/(3600*1000));
             TIME = ncread(ncfile, 'Times')';
             if strcmp(interval,"daily")
