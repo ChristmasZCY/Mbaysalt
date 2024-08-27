@@ -400,7 +400,7 @@
      "matFVCOM": {
          "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
          "PATH_OUT": "Exfunctions/matFVCOM",
-         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m","obs_merge_location.m","f_2d_mask_boundary"]},
+         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m","obs_merge_location.m","f_2d_mask_boundary.m"]},
      "matFigure": {
             "PATH_IN": "Exfunctions/SupplementFiles/matFigure",
             "PATH_OUT": "Exfunctions/matFigure",
