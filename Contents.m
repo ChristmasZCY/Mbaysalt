@@ -301,7 +301,7 @@
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_nemuro.conf                            -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_Wenzhou.conf                           -  Example for Post_fvcom/Postprocess_fvcom
-%   Post_ww3.conf                               -  Example for Post_ww3
+%   Post_Wenzhou_ww3.conf                       -  Example for Post_ww3
 %   stations.xml                                -  Example of xml file
 %   example.vtk                                 -  Example of vtk file
 %   INSTALL_custom.json                         -  Custom INSTALL.json
@@ -324,6 +324,7 @@
 %   functionSignatures.json                     -  Function signatures for this folder
 %   WRFforcing2gcm.m                            -  Convert WRF forcing to gcm forcing
 %   create_obc_from_MITgcmllc540.m              -  Create open boundary conditions from MITgcmllc540
+%   Map2Gray.m                                  -  download maptiles and transform to graytiles
 %
 %
 %                                         Docs  -  Documents and Manuals for toolbox

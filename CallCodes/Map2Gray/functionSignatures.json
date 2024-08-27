@@ -1,0 +1,18 @@
+{
+    "_schemaVersion": "1.0.0",
+    "map2gray":
+    {
+        "inputs":
+        [
+            {"name":"pin", "kind":"required", "type":[["file=*.png"],["char"]], "purpose":"png input"},
+            {"name":"pout", "kind":"required", "type":[["file=*.png"],["char"]], "purpose":"png output"},
+            {"tuple":[
+                {"name":"oceanWebFile", "kind":"namevalue", "type":[["char"]], "purpose":"Ocean Webfile url"},
+                {"name":"oceanPngFile", "kind":"namevalue", "type":[["file=*.png"],["char"]], "purpose":"ocean local png file"},
+                {"name":"oceanMatFile", "kind":"namevalue", "type":[["file=*.mat"],["char"]], "purpose":"ocean local mat file"}
+            ], "repeating":false}
+
+        ],
+        "outputs":[]
+    }
+}
