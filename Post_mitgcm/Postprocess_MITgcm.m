@@ -14,7 +14,8 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-03-26:     Created,                                        by Christmas;
     %       2024-04-15:     Added AngleSN,AngleCS for u v,                  by Christmas;
     %       2024-04-15:     Changed SWITCH.u SWITCH.v to SWITCH.uv,         by Christmas;
-    %       2024-08-28:     Changed judge erosion condition to conf file,   by Christmas；
+    %       2024-08-28:     Changed judge erosion condition to conf file,   by Christmas;
+    %       2024-08-28:     Fixed erosion num don't work,   by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_MITgcm('Post_mitgcm.conf', 'hourly', 20240401, 1)
@@ -509,13 +510,23 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                 osprint2('INFO',[pad('Erosion coastline counts ',Text_len,'right'),'--> ', num2str(im+1)]);
                 if SWITCH.make_erosion
                     fields_Velement = fieldnames(Velement);
+                    icount = 1;  % 防止第一个zeta不被外扩
+                    while true
+                        icount_dims = ndims(Velement.(fields_Velement{icount}));
+                        if icount_dims > 2 
+                            break
+                        else
+                            icount = icount+1;
+                        end
+                    end
+                    
                     if im == 0
-                        I_D_1 = erosion_coast_cal_id(lon_dst, lat_dst, Velement.(fields_Velement{1}), Erosion_judge(1), Erosion_judge(2));
+                        I_D_1 = erosion_coast_cal_id(lon_dst, lat_dst, Velement.(fields_Velement{icount}), Erosion_judge(1), Erosion_judge(2));
                         rmfiles(file_erosion);
                         save(file_erosion, 'I_D_1', '-v7.3','-nocompression');
                     else
-                        % I_D_2 = erosion_coast_cal_id(lon_dst, lat_dst, Velement.(fields_Velement{1}), 16, 5);
-                        eval(['I_D_',num2str(im+1),' = erosion_coast_cal_id(lon_dst, lat_dst, Velement.',fields_Velement{1},', ', num2str(Erosion_judge(1)), ', ' ,num2str(Erosion_judge(2)), ');']);
+                        % I_D_2 = erosion_coast_cal_id(lon_dst, lat_dst, Velement.(fields_Velement{icount}), 16, 5);
+                        eval(['I_D_',num2str(im+1),' = erosion_coast_cal_id(lon_dst, lat_dst, Velement.',fields_Velement{icount},', ', num2str(Erosion_judge(1)), ', ' ,num2str(Erosion_judge(2)), ');']);
                         % save(file_erosion, 'I_D_2', '-append','-nocompression');
                         eval(['save(file_erosion, ''I_D_',num2str(im+1),''', ''-append'',''-nocompression'');']);
                     end
@@ -529,7 +540,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                 Velement = merge_struct(Velement,VAelement); clear VAelement
                 im = im+1;
             end
-            clear I_D_* file_erosion fields_Velement im Erosion_judge
+            clear I_D_* file_erosion fields_Velement im Erosion_judge icount icount_dims
 
         end
 
