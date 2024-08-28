@@ -48,7 +48,7 @@ function varOut = erosion_coast_via_id(I_D, varIn, varargin)
             for it = 1 : size(varIn, 4)
                 VAalue = varIn(:,:,:,it);
                 VAalue(id(:,1)) = mean(VAalue(id(:,2:end)),2,'omitnan');
-                varOut(:,:,:,it) = VAalue;
+                varOut(:,:,:,it) = VAalue; clear VAalue
             end
         end
 
