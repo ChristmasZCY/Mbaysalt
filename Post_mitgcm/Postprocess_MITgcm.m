@@ -558,7 +558,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             file = fullfile(OutputDir.curr,['current',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
             [Velement_current,Velement] = rmfields_key_from_struct(Velement,{'Temp_std','Salt_std','Zeta'});
-            netcdf_fvcom.wrnc_current(ncid,lon_dst,lat_dst,Delement,time,Velement_current,GA_start_date,'conf',para_conf);
+            netcdf_fvcom.wrnc_current(ncid,lon_dst,lat_dst,Delement,time,Velement_current,GA_start_date,'conf',para_conf,'INFO','Text_len',Text_len);
             clear Velement_current ncid file
         end
 
@@ -566,7 +566,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             file = fullfile(OutputDir.temp,['temperature',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
             [Velement_temperature,Velement] = rmfields_key_from_struct(Velement,{'Salt_std','Zeta'});
-            netcdf_fvcom.wrnc_temp(ncid,lon_dst,lat_dst,Delement,time,Velement_temperature,GA_start_date,'conf',para_conf)
+            netcdf_fvcom.wrnc_temp(ncid,lon_dst,lat_dst,Delement,time,Velement_temperature,GA_start_date,'conf',para_conf,'INFO','Text_len',Text_len);
             clear Velement_temperature ncid file
         end
 
@@ -574,7 +574,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             file = fullfile(OutputDir.salt,['salinity',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
             [Velement_salt,Velement] = rmfields_key_from_struct(Velement,{'Zeta'});
-            netcdf_fvcom.wrnc_salt(ncid,lon_dst,lat_dst,Delement,time,Velement_salt,GA_start_date,'conf',para_conf);
+            netcdf_fvcom.wrnc_salt(ncid,lon_dst,lat_dst,Delement,time,Velement_salt,GA_start_date,'conf',para_conf,'INFO','Text_len',Text_len);
             clear Velement_salt ncid file
         end
 
@@ -582,7 +582,7 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
             file = fullfile(OutputDir.adt,['adt',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
             [Velement_adt,Velement] = rmfields_key_from_struct(Velement,{''}); %#ok<ASGLU>
-            netcdf_fvcom.wrnc_adt(ncid,lon_dst,lat_dst,time,Velement_adt.Zeta,GA_start_date,'conf',para_conf);
+            netcdf_fvcom.wrnc_adt(ncid,lon_dst,lat_dst,time,Velement_adt.Zeta,GA_start_date,'conf',para_conf,'INFO','Text_len',Text_len);
             clear Velement_adt ncid file
         end
 
