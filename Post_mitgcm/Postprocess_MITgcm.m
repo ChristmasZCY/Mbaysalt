@@ -534,6 +534,8 @@ function Postprocess_MITgcm(conf_file, interval, yyyymmdd, day_length, varargin)
                     % I_D_1 = load(file_erosion).I_D_1;
                     eval(['I_D_',num2str(im+1),' = load(file_erosion).I_D_',num2str(im+1),';']);
                 end
+                Erosion_judge = eval(['I_D_',num2str(im+1),'.judgeNum']);  % 从文件中读取,防止更改判定值但没有打开制作的开关
+                osprint2('INFO',[pad('Erosion coastline judge ',Text_len,'right'),'--> ', num2str(Erosion_judge)]);
                 [VAelement,Velement, dimsMax] = separate_var_gt_nd(Velement);
                 % VAelement = structfun(@(x) erosion_coast_via_id(I_D_1, x,'cycle_dim',4), VAelement, 'UniformOutput', false);
                 eval(['VAelement = structfun(@(x) erosion_coast_via_id(I_D_',num2str(im+1),', x,''cycle_dim'',',num2str(dimsMax),'), VAelement, ''UniformOutput'', false);']);

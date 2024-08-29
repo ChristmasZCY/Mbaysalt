@@ -35,5 +35,6 @@ function I_D = erosion_coast_cal_id(lon, lat, value, K, judge_num)
     d(flag_0,:) = [];
     I_D.id = id;
     I_D.distance = d;
+    I_D.judgeNum = [K, judge_num];
 
 end
