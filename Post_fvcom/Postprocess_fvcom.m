@@ -749,8 +749,10 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.erosion
             file_erosion = para_conf.ErosionFile;
             num_erosion = para_conf.Erosion_num;
+            Erosion_judge = para_conf.Erosion_judge;
             osprint2('INFO',[pad('Erosion coastline ',Text_len,'right'),'--> ', logical_to_char(SWITCH.erosion)]);
             osprint2('INFO',[pad('Erosion coastline total frequency ',Text_len,'right'),'--> ', num2str(num_erosion)]);
+            
             im = 0;
             while im < num_erosion
                 if SWITCH.make_erosion
@@ -764,12 +766,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     osprint2('INFO',[pad('Erosion coastline counts ',Text_len,'right'),'--> ', num2str(im+1)]);
                     if im == 0
                         % I_D_1 = erosion_coast_cal_id(Lon, Lat, OutValue_xyzt.Temp_sgm, 16, 5);
-                        I_D_1 = erosion_coast_cal_id(lon_dst, lat_dst, OutValue_xyzt.(fields{1}), 16, 5);
+                        I_D_1 = erosion_coast_cal_id(lon_dst, lat_dst, OutValue_xyzt.(fields{1}), Erosion_judge(1), Erosion_judge(2));
                         rmfiles(file_erosion);
                         save(file_erosion, 'I_D_1', '-v7.3','-nocompression');
                     else
                         % I_D_2 = erosion_coast_cal_id(lon_dst, lat_dst, OutValue_xyzt.(fields{1}), 16, 5);
-                        evalc( ['I_D_',num2str(im+1),' = erosion_coast_cal_id(lon_dst, lat_dst, OutValue_xyzt.',fields{1},', 16, 5);']);
+                        evalc( ['I_D_',num2str(im+1),' = erosion_coast_cal_id(lon_dst, lat_dst, OutValue_xyzt.',fields{1},', ', num2str(Erosion_judge(1)), ', ' ,num2str(Erosion_judge(2)), ');']);
                         % save(file_erosion, 'I_D_2', '-append','-nocompression');
                         eval(['save(file_erosion, ''I_D_',num2str(im+1),''', ''-append'',''-nocompression'');']);
                     end
@@ -777,6 +779,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     % I_D_1 = load(file_erosion).I_D_1;
                     evalc(['I_D_',num2str(im+1),' = load(file_erosion).I_D_',num2str(im+1),';']);
                 end
+                Erosion_judge = eval(['I_D_',num2str(im+1),'.judgeNum']);  % 从文件中读取,防止更改判定值但没有打开制作的开关
+                osprint2('INFO',[pad('Erosion coastline judge ',Text_len,'right'),'--> ', num2str(Erosion_judge)]);
                 % [OutValue_more_dim,OutValue_less_dim,dimsMax] = separate_var_gt_nd(OutValue_xyzt); clear OutValue_xyzt
                 % OutValue = structfun(@(x) erosion_coast_via_id(I_D_1, x,'cycle_dim',dimsMax), OutValue_xyzt, 'UniformOutput', false);
                 dimsMax = max(cellfun(@ndims,struct2cell(OutValue_xyzt)));
