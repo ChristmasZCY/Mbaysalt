@@ -14,6 +14,7 @@ function Pic_draw_mwp(date, day_length, region, varargin)
     %       Pic_draw_mwp(20230305,1,'ecs','conf_file','Pic_draw.conf')
     %       Pic_draw_mwp(20230305,1,"scs_project")
     % =================================================================================================================
+
     warning('off');
     %% colorbar
     cc = make_colormap('2');

@@ -1,4 +1,4 @@
-function [u, v] = calc_adjust_winddir(lon_grid, lat_grid, lon_tyCenter, lat_tyCenter, spd, varargin)
+function [u, v] = calc_typhoon_adjust_winddir(lon_grid, lat_grid, lon_tyCenter, lat_tyCenter, spd, varargin)
     %       Adjust wind direction at typhoon  --> 计算U、V风速（考虑角度校正）
     % =================================================================================================================
     % Parameters:
@@ -18,11 +18,11 @@ function [u, v] = calc_adjust_winddir(lon_grid, lat_grid, lon_tyCenter, lat_tyCe
     %       2024-05-11:     Created, by Christmas;
     % =================================================================================================================
     % Examples:
-    %       [u,v] = calc_adjust_winddir(122, 23, 121, 24, 1);
+    %       [u,v] = calc_typhoon_adjust_winddir(122, 23, 121, 24, 1);
     % =================================================================================================================
     % References:
     %
-    %    <a href="matlab: matlab.desktop.editor.openAndGoToLine(which('calc_adjust_winddir_readme.mlx'), 2^31-1); ">see Picture</a>
+    %    <a href="matlab: matlab.desktop.editor.openAndGoToLine(which('calc_typhoon_adjust_winddir_readme.mlx'), 2^31-1); ">see Picture</a>
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'betaa'}, {20});  % beta:流入角，取为20

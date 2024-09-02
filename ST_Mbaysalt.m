@@ -424,8 +424,8 @@ end
 function STATUS = install_DHIMIKE(Jsruct) %#ok<INUSD>
     %  https://github.com/DHI/DHI-MATLAB-Toolbox
     STATUS = 0;
-    warning("INSTALL.conf:improve:%s do not take effect. \n" + ...
-            "%s will be installed by INSTALL.conf:gitclone:%s", 'DHIMIKE','DHIMIKE','DHIMIKE')
+    warning("INSTALL.json:improve:%s do not take effect. \n" + ...
+            "%s will be installed by INSTALL.json:gitclone:%s", 'DHIMIKE','DHIMIKE','DHIMIKE')
     if ispc
         %{
         1. wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe

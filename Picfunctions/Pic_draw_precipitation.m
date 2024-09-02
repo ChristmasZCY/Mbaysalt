@@ -14,6 +14,7 @@ function Pic_draw_precipitation(date, day_length, region, varargin)
     %       Pic_draw_precipitation(20230305,1,'ecs','conf_file','Pic_draw.conf')
     %       Pic_draw_precipitation(20230305,1,"scs_project")
     % =================================================================================================================
+
     warning('off');
     %% colorbar
     % cc = load('color_precipitation.mat').color;

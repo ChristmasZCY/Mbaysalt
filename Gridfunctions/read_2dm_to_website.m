@@ -18,11 +18,7 @@ function read_2dm_to_website(fin, fout, varargin)
 
     varargin = read_varargin2(varargin,{'Global'});
 
-    % fin = read_conf('Grid_functions.conf','f2dmfile');
     osprint2('INFO',fin);
-    % [~,name,~]=fileparts(fin);
-    % save_path = read_conf('Grid_functions.conf','save_path');
-    % save_path = del_filesep(save_path);
 
     f = f_load_grid(fin);
 

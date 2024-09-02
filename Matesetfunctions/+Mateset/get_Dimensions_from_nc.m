@@ -40,12 +40,11 @@ function [Dims,Dims_name,Dims_len] = get_Dimensions_from_nc(fin,varargin)
 end
 
 function Dims = sort_dims(dims)
-    para_conf = read_conf('+Mateset/Dimensions.conf');
-    lon_name = para_conf.Longitude_name;
-    lat_name = para_conf.Latitude_name;
-    depth_name = para_conf.Depth_name;
-    time_name = para_conf.Time_name;
-    other_name = para_conf.Other_name;
+    lon_name = ['longitude','long','lon','XLONG'];
+    lat_name = ['latitude', 'lati','lat','XLAT'];
+    depth_name = ['depth','dep','z','Z'];
+    time_name = ['time','Time','t','T'];
+    other_name = ['DateStr'];
     Dims = struct();
     for i = 1:length(dims) % 从 dims 中找到 lon 的维度信息
         if any(strcmp(dims(i).Name,lon_name))

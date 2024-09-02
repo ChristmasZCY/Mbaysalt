@@ -15,6 +15,7 @@ function Pic_draw_wind(date, day_length, region, varargin)
     %       Pic_draw_wind(20230305,1,"scs_project")
     %
     % =================================================================================================================
+
     warning('off');
     %% colorbar
     cc = make_colormap('2');
