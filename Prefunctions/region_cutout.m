@@ -12,8 +12,6 @@ function [lon,lat,varargout] = region_cutout(lon_range,lat_range,lon,lat,varargi
     %       [lon,lat,U10,V10] = region_cutout(lon_range,lat_range,lon,lat,U10,V10);
     % =================================================================================================================
 
-% REGION_CUTOUT  Cut out a region from a map
-
     size_lon = size(lon);
     size_lat = size(lat);
     if min(size_lon) ~= 1 || min(size_lat) ~= 1

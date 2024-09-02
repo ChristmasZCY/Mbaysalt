@@ -1,19 +1,19 @@
-function STATUS = isNetcdfFile(fin, varargin)
+function TF = isNetcdfFile(fin, varargin)
     %       Check if a file is a NetCDF file or not
     % =================================================================================================================
     % Parameter:
     %       fin:             file name               || required: True || type: Text || format: 'test.nc'
     %       attr_str:        attribute str           || required: True || type: Text || format: 'WAVEWATCH'
-    %       varargin:       optional parameters      
+    %       varargin:        optional parameters
     % =================================================================================================================
     % Returns:
-    %       STATUS:          1 if it is a NetCDF file, 0 otherwise
+    %       TF:              1 if it is a NetCDF file, 0 otherwise
     % =================================================================================================================
     % Update:
     %       2024-04-09:     Created, by Christmas;
     % =================================================================================================================
     % Example:
-    %       STATUS = isNetcdfFile('wrfout_d01_2023-09-08_00:00:00');
+    %       TF = isNetcdfFile('wrfout_d01_2023-09-08_00:00:00');
     % =================================================================================================================
     
     arguments(Input)
@@ -25,8 +25,8 @@ function STATUS = isNetcdfFile(fin, varargin)
 
     try
         ncinfo(fin);
-        STATUS = true;
+        TF = true;
     catch
-        STATUS = false;
+        TF = false;
     end
 end

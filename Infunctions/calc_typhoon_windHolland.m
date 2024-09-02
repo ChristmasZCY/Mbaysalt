@@ -1,4 +1,4 @@
-function [Uh, Vh, c] = calc_windHolland(Lon_grid, Lat_grid, Lon_tyCenter, Lat_tyCenter, UV_tyCenter, P0_tyCenter, uE, vN, varargin)
+function [Uh, Vh, c] = calc_typhoon_windHolland(Lon_grid, Lat_grid, Lon_tyCenter, Lat_tyCenter, UV_tyCenter, P0_tyCenter, uE, vN, varargin)
     %       Calculate Holland typhoon model wind
     % =================================================================================================================
     % Parameters:
@@ -28,11 +28,11 @@ function [Uh, Vh, c] = calc_windHolland(Lon_grid, Lat_grid, Lon_tyCenter, Lat_ty
     %       2024-05-11:     Created, by Christmas;
     % =================================================================================================================
     % Examples:
-    %       [Uh, Vh, c] = calc_windHolland(Lon_grid, Lat_grid, Lon_tyCenter, Lat_tyCenter, UV_tyCenter, P0_tyCenter, uE, vN);
+    %       [Uh, Vh, c] = calc_typhoon_windHolland(Lon_grid, Lat_grid, Lon_tyCenter, Lat_tyCenter, UV_tyCenter, P0_tyCenter, uE, vN);
     % =================================================================================================================
     % References:
     %    强台风作用下近岸海域波浪-风暴潮耦合数值模拟
-    %    <a href="matlab: matlab.desktop.editor.openAndGoToLine(which('calc_windHolland_readme.mlx'), 2^31-1); ">see Picture</a>
+    %    <a href="matlab: matlab.desktop.editor.openAndGoToLine(which('calc_typhoon_windHolland_readme.mlx'), 2^31-1); ">see Picture</a>
     %    <a href="matlab: open(which('Holland_deduce.pdf')) ">see PDF</a>
     % =================================================================================================================
 

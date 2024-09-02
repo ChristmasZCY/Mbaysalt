@@ -13,6 +13,7 @@ function Pic_draw_current(varargin)
     %       Pic_draw_current(str2double(char(datetime("now","Format","yyyyMMdd"))),7,"scs_project","daily",1)
     %       Pic_draw_current(20230305,1,"scs_project","daily",1)
     % =================================================================================================================
+
     %% colorbar
     % cc=load("/home/ocean/Oceanmax/Data/input/MarginalSea/SCS/RGB.mat").RGB.wh_bl_gr_ye_re;
     cc = make_colormap('2');

@@ -1,4 +1,4 @@
-function [Uc, Vc] = calc_overlayWind(Uh, Vh, Ug, Vg, c, varargin)
+function [Uc, Vc] = calc_typhoon_overlayWind(Uh, Vh, Ug, Vg, c, varargin)
     %       Overlay wind by Model windSpeed and Grid windSpeed (such as Holland and ERA5)
     % =================================================================================================================
     % Parameters:
@@ -18,13 +18,13 @@ function [Uc, Vc] = calc_overlayWind(Uh, Vh, Ug, Vg, c, varargin)
     %       2024-05-11:     Created, by Christmas;
     % =================================================================================================================
     % Examples:
-    %       [Uc, Vc] = calc_overlayWind(Uh, Vh, Ug, Vg, c);
-    %       [Uc, Vc] = calc_overlayWind(Uh, Vh, Ug, Vg, c, 'method', '0814');
+    %       [Uc, Vc] = calc_typhoon_overlayWind(Uh, Vh, Ug, Vg, c);
+    %       [Uc, Vc] = calc_typhoon_overlayWind(Uh, Vh, Ug, Vg, c, 'method', '0814');
     % =================================================================================================================
     % References:
     %    强台风作用下近岸海域波浪-风暴潮耦合数值模拟
     %    Surge model caused by 0814 Typhoon and mold wind field established
-    %    <a href="matlab: matlab.desktop.editor.openAndGoToLine(which('calc_overlayWind_readme.mlx'), 2^31-1); ">see Picture</a>
+    %    <a href="matlab: matlab.desktop.editor.openAndGoToLine(which('calc_typhoon_overlayWind_readme.mlx'), 2^31-1); ">see Picture</a>
     % =================================================================================================================
     
     varargin = read_varargin(varargin,{'method'}, {'0814'});
