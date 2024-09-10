@@ -4,7 +4,6 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     % Parameter:
     %       fnc: nc file name                               || required: True  || type: string || format: 'wave.nc'
     %       varargin:
-    %                conf: conf file                        || required: False || type: string || format: 'Read_file.conf'
     %                Lon_Name: lon name                     || required: False || type: string || format: 'lon'
     %                Lat_Name: lat name                     || required: False || type: string || format: 'lat'
     %                Depth_Name: depth name                 || required: False || type: string || format: 'depth'
@@ -19,7 +18,7 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     % Example:
     %       [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc);
     %       [lon,lat,depth,time,swh,mpts] = read_ncfile_lldtv(fnc, 'Var_Name',{{'swh'},{'mpts'}});
-    %       [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc,'conf','Read_file.conf','Lon_Name','lon', ...
+    %       [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc,'Lon_Name','lon', ...
     %                                                          'Lat_Name','lat','Depth_Name','depth', ...
     %                                                          'Time_Name','time','Time_type','datetime', ...
     %                                                          'Time_format','yyyy-MM-dd HH:mm:ss', ...
@@ -27,7 +26,6 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     %                                                          'Switch_log','Log_file','log.txt')
     % =================================================================================================================
 
-    varargin = read_varargin(varargin,{'conf'},{'Read_file.conf'});
     varargin = read_varargin(varargin,{'Lon_Name'},{false});
     varargin = read_varargin(varargin,{'Lat_Name'},{false});
     varargin = read_varargin(varargin,{'Depth_Name'},{false});
@@ -56,7 +54,14 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     end
     Var_Name = [Var_Name{:}];
 
-    para_conf = read_conf(conf);
+    para_conf.Lon_Name = 'longitude';
+    para_conf.Lat_Name = 'latitude';
+    para_conf.Time_Name = 'time';
+    para_conf.Time_type = 'datetime';
+    para_conf.Time_format = 'yyyy-MM-dd HH:mm:ss';
+    para_conf.Depth_Name = 'depth';
+    para_conf.Var_Name = ['swh','mpts','w'];
+    para_conf.Switch_log = false;
     name_cell = {Lon_Name, Lat_Name,Depth_Name,Time_Name,Time_type,Time_format,Var_Name,Switch_log};
     conf_cell = {para_conf.Lon_Name, para_conf.Lat_Name,para_conf.Depth_Name,para_conf.Time_Name, ...
                 para_conf.Time_type,para_conf.Time_format,para_conf.Var_Name,para_conf.Switch_log};

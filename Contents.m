@@ -356,6 +356,7 @@
 %   WRF2FVCOM                   (optional)      -  Run fvcom with WRF data                     ||  https://github.com/SiqiLiOcean/WRF2FVCOM
 %   OceanData                   (optional)      -  Compare with famous ocean data              ||  https://github.com/SiqiLiOcean/OceanData
 %   FVCOM_NML                   (optional)      -  FVCOM NML                                   ||  https://github.com/SiqiLiOcean/FVCOM_NML
+%   Course                      (optional)      -  Course                                      ||  https://github.com/SiqiLiOcean/Course
 %   nctoolbox                                   -  NCTOOLBOX                                   ||  https://github.com/nctoolbox/nctoolbox | http://nctoolbox.github.io/nctoolbox/
 %   CDT                                         -  Climate Data Toolbox                        ||  https://github.com/chadagreene/CDT
 %   vtkToolbox                  (optional)      -  VTK toolbox                                 ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/94993-vtktoolbox
