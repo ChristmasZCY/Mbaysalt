@@ -18,7 +18,7 @@
    If you intend to use it without pushing code then to simply download the code from the command line run
 
    ```shell
-   git clone https://github.com/ChristmasZCY/Mbaysalt.git
+   span
    ```
 
    If you want only the latest version and not the full repository run
@@ -39,10 +39,10 @@
    vim Mbaysalt/Configurefiles/INSTALL.json
    ```
 
-   - If you want to install submodule, change value of INSTALL in `INSTALL.json`  to `true` 
+   - If you want to install submodule, change value of INSTALL in `INSTALL.json`  to `true`
      Such as if you want to install submodule `matFigure`, you can change `packages:gitclone:matFigure:INSTALL` to `true`.
    - If git is not in your system path, you can set your git-path in `INSTALL.json` at `git:path`.
-   - If you want to clone at github mirror, you can set your mirror in `INSTALL.json` at `git:mirror`. 
+   - If you want to clone at github mirror, you can set your mirror in `INSTALL.json` at `git:mirror`.
      It will replace `https://www.github.com` in `INSTALL.json` at `packages:gitclone:*:URL` to your mirror.
 3. Matlab
 
@@ -51,10 +51,10 @@
    ST_Mbaysalt()
    ```
 
-   If you want to delete the path, you can run
+   Or if you want the basic module not all module, you can run
 
    ```matlab
-   ST_Mbaysalt('rm')
+   ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init'
    ```
 
    It will reserve basepath, and remove all other paths.
