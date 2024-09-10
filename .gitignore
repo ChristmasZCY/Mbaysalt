@@ -26,6 +26,7 @@ Exfunctions/HYCOM2FVCOM
 Exfunctions/WRF2FVCOM
 Exfunctions/OceanData
 Exfunctions/FVCOM_NML
+Exfunctions/Course
 Exfunctions/nctoolbox
 Exfunctions/cdt
 Exfunctions/vtkToolbox

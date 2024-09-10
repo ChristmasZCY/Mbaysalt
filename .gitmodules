@@ -118,3 +118,7 @@
 	path = Exfunctions/visualization-cheat-sheet
 	url = https://github.com/mathworks/visualization-cheat-sheet.git
 
+[submodule "Exfunctions/Course"]
+	path = Exfunctions/Course
+	url = https://github.com/SiqiLiOcean/Course.git
+

@@ -16,20 +16,22 @@
 1. Shell/Powershell/Command Prompt.
 
    If you intend to use it without pushing code then to simply download the code from the command line run
+
    ```shell
    git clone https://github.com/ChristmasZCY/Mbaysalt.git
    ```
-   
+
    If you want only the latest version and not the full repository run
+
    ```shell
     git clone --depth=1 https://github.com/ChristmasZCY/Mbaysalt.git
-   ```  
-   
-   Any time you want to update the code to the latest version, run from the command line
-    ```shell
-    git pull (--unshallow)
-    ```
+   ```
 
+   Any time you want to update the code to the latest version, run from the command line
+
+   ```shell
+   git pull (--unshallow)
+   ```
 2. Change Exfunctions install switch which you want to open.
 
    ```shell
@@ -37,12 +39,11 @@
    vim Mbaysalt/Configurefiles/INSTALL.json
    ```
 
-   -  If you want to install submodule, change value of INSTALL in `INSTALL.json`  to `true` \
-      Such as if you want to install submodule `matFigure`, you can change `packages:gitclone:matFigure:INSTALL` to `true`.
-   -  If git is not in your system path, you can set your git-path in `INSTALL.json` at `git:path`.
-   -  If you want to clone at github mirror, you can set your mirror in `INSTALL.json` at `git:mirror`. \
-      It will replace `https://www.github.com` in `INSTALL.json` at `packages:gitclone:*:URL` to your mirror.
-
+   - If you want to install submodule, change value of INSTALL in `INSTALL.json`  to `true` 
+     Such as if you want to install submodule `matFigure`, you can change `packages:gitclone:matFigure:INSTALL` to `true`.
+   - If git is not in your system path, you can set your git-path in `INSTALL.json` at `git:path`.
+   - If you want to clone at github mirror, you can set your mirror in `INSTALL.json` at `git:mirror`. 
+     It will replace `https://www.github.com` in `INSTALL.json` at `packages:gitclone:*:URL` to your mirror.
 3. Matlab
 
    ```matlab
@@ -50,14 +51,16 @@
    ST_Mbaysalt()
    ```
 
-   If you want to delete the path, you can run 
+   If you want to delete the path, you can run
 
    ```matlab
    ST_Mbaysalt('rm')
    ```
+
    It will reserve basepath, and remove all other paths.
 
-## Contains 
+## Contains
+
 <details> <summary> 点击展开查看更多</summary>
 
 - [Mbaysalt](https://github.com/ChristmasZCY/Mbaysalt)
@@ -69,6 +72,7 @@
 - [WRF2FVCOM](https://github.com/SiqiLiOcean/WRF2FVCOM)
 - [OceanData](https://github.com/SiqiLiOcean/OceanData)
 - [FVCOM_NML](https://github.com/SiqiLiOcean/FVCOM_NML)
+- [Course](https://github.com/SiqiLiOcean/Course)
 - [nctoolbox](https://github.com/nctoolbox/nctoolbox)
 - [CDT](https://github.com/chadagreene/CDT)
 - [vtkToolbox](https://ww2.mathworks.cn/matlabcentral/fileexchange/94993-vtktoolbox)
@@ -87,8 +91,6 @@
 - [WW3-tools](https://github.com/NOAA-EMC/WW3-tools)
 - [funcsign](https://gitee.com/iam002/funcsign)
 - [kml-toolbox](https://github.com/theolivenbaum/kml-toolbox)
-
-
 - [m_map](https://www.eoas.ubc.ca/~rich/map.html)
 - [t_tide](https://www.eoas.ubc.ca/~rich/#T_Tide)
 - [gshhs](https://www.ngdc.noaa.gov/mgg/shorelines/gshhs.html)
@@ -120,4 +122,3 @@
 - [Spiral diagram](https://www.mathworks.com/matlabcentral/fileexchange/164966-spiral-diagram)
 
 </details>
-
