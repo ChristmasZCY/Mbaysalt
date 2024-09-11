@@ -54,7 +54,12 @@
    Or if you want the basic module not all module, you can run
 
    ```matlab
-   ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init'
+   ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init')
+   ```
+   If you want to delete the path, you can run
+
+   ```matlab
+   ST_Mbaysalt('rm')
    ```
 
    It will reserve basepath, and remove all other paths.
