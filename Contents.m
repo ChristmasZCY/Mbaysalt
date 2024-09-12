@@ -292,6 +292,7 @@
 %   Example_draw_planet.m                       -  Example for draw planet
 %   Example_cdt.m                               -  Example for cdt
 %   Example_adjust_res.m                        -  Example for adjust lonlat-resolution
+%   Example_seawater.m                          -  Example for seawater toolbox
 %   Example_py.m                                -  Example for matlab-python code
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
