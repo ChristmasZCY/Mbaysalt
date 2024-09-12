@@ -13,39 +13,39 @@
 
    **[English](README.md)  |  [中文](README_zh.md)**
 
-## Installation
+## 安装
 
 1. Shell/Powershell/Command Prompt.
 
-   If you intend to use it without pushing code then to simply download the code from the command line run
+   如果您打算使用它而不推送代码，那么只需从命令行运行中下载代码
 
    ```shell
    git clone https://github.com/ChristmasZCY/Mbaysalt.git
    ```
 
-   If you want only the latest version and not the full repository run
+   如果您只想要最新版本而不是完整的存储库，请运行以下命令：
 
    ```shell
     git clone --depth=1 https://github.com/ChristmasZCY/Mbaysalt.git
    ```
 
-   Any time you want to update the code to the latest version, run from the command line
+   任何时候要将代码更新到最新版本，都可以从命令行运行以下命令：
 
    ```shell
    git pull (--unshallow)
    ```
-2. Change Exfunctions install switch which you want to open.
+2. 打开你想安装的额外模块的开关。
 
    ```shell
    cd /path/to/Mbaysalt
    vim Mbaysalt/Configurefiles/INSTALL.json
    ```
 
-   - If you want to install submodule, change value of `INSTALL` in `INSTALL.json`  to `true`
-     Such as if you want to install submodule `matFigure`, you can change `packages:gitclone:matFigure:INSTALL` to `true`.
-   - If `git` is not in your system path, you can set your git-path in `INSTALL.json` at `git:path`.
-   - If you want to clone at github mirror, you can set your mirror in `INSTALL.json` at `git:mirror`.
-     It will replace `https://www.github.com` in `INSTALL.json` at `packages:gitclone:*:URL` to your mirror.
+   - 如果你想安装子模块，将`INSTALL.json`中的`INSTALL`的值更改为`true`
+     例如，如果您想安装子模块`matFigure`，可以将`packages:gitclone:matFigure:INSTALL`更改为`true`。
+   - 如果`git`不在你的系统路径中，你可以在`INSTALL.json`中的`git:path`设置你的git-path。
+   - 如果你希望在github镜像上克隆，你可以在`INSTALL.json`中的`git:mirror`设置你的镜像。
+     它将替换`INSTALL.json`中的`packages:gitclone:*:URL`中的`https://www.github.com`为你的镜像。
 3. Matlab
 
    ```matlab
@@ -53,22 +53,22 @@
    ST_Mbaysalt()
    ```
 
-   Or if you want the basic module not all module, you can run
+   或者如果您想要基本模块而不是所有模块，您可以运行
 
    ```matlab
    ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init')
    ```
-   If you want to delete the path, you can run
+   如果需要删除路径，可以执行命令
 
    ```matlab
    ST_Mbaysalt('rm')
    ```
 
-   It will reserve basepath, and remove all other paths.
+   它将保留基本路径，并删除所有其他路径。
 
 ## Contains
 
-<details> <summary> Click to expand to see more</summary>
+<details> <summary> 点击展开查看更多</summary>
 
 - [Mbaysalt](https://github.com/ChristmasZCY/Mbaysalt)
 - [matFigure](https://github.com/SiqiLiOcean/matFigure)
