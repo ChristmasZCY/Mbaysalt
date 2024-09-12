@@ -13,7 +13,7 @@ function ln(fin, fout)
     % =================================================================================================================
     % Example:
     %       ln('/Users/christmas/Downloads/1.txt', '/Users/christmas/Downloads/2.txt')
-    %       ln('C:\Users\christmas\Downloads\1.txt', 'C:\Users\christmas\Downloads\2.txt')
+    %       ln('C:\Users\christmas\Downloads\1.txt', 'C:\Users\christmas\Downloads\2.txt.lnk')
     % =================================================================================================================
 
     fin = convertStringsToChars(fin);
@@ -35,7 +35,7 @@ function ln(fin, fout)
             '$shortcut = $shell.CreateShortcut(''%s''); ', ...
             '$shortcut.TargetPath = ''%s'';  ', ...
             '$shortcut.Save()"'],fout,fin);
-        echo(cmd);
+        disp(cmd);
         system(cmd);
 
     case {'glnxa64','maci64','maca64'}
