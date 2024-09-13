@@ -361,8 +361,6 @@
             "Data"]},
     "builtin": {
         "PATH": [
-            "Exfunctions/Extend/matFVCOM",
-            "Exfunctions/Extend/matWRF",
             "Exfunctions/cprintf",
             "Exfunctions/INI",
             "Exfunctions/struct2ini",
@@ -408,11 +406,15 @@
      "matFVCOM": {
          "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
          "PATH_OUT": "Exfunctions/matFVCOM",
-         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m","obs_merge_location.m","f_2d_mask_boundary.m","initial.m","set_path.m"]},
+         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m","obs_merge_location.m","f_2d_mask_boundary.m","initial.m","set_path.m","kml_w_mesh.m","esmf_write_structured_grid.m"]},
      "matFigure": {
             "PATH_IN": "Exfunctions/SupplementFiles/matFigure",
             "PATH_OUT": "Exfunctions/matFigure",
-            "FILES": ["Contents.m","functionSignatures.json","cm/cmp_b2r.mat","cm/nclColormap"]}},
+            "FILES": ["Contents.m","functionSignatures.json","cm/cmp_b2r.mat","cm/nclColormap"]},
+    "matWRF": {
+        "PATH_IN": "Exfunctions/SupplementFiles/matWRF",
+        "PATH_OUT": "Exfunctions/matWRF",
+        "FILES": ["calc_rh2.m","functionSignatures.json"]}},
  "@@comments":{
     "A": "2024-04-26:  Created, by Christmas;",
     "B": "2024-05-13:, Added improve:minmax, by Christmas;",
@@ -421,6 +423,3 @@
     "E": "2024-05-16:  Added improve:m_etopo2, by Christmas;",
     "F": "2024-06-15:  Added improve:matFigure, by Christmas;"}
 }
-
-
-
