@@ -72,10 +72,13 @@ Docs/pics
 
 # Data files #
 ######################
+Data
 Data/*
+References
 References/SiqiLi/*
 References/serofeev/*
 References/Vim键盘图.gif
+Htmls
 Htmls/*
 
 # Personal files #
