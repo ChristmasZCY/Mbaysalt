@@ -726,6 +726,11 @@
             {"name":"fout","kind":"required","type":["char"],"purpose":"cst.dat"},
             {"name":"cst_x","kind":"required","type":["numeric"],"purpose":"longitude or x"},
             {"name":"cst_y","kind":"required","type":["numeric"],"purpose":"latitude or y"}],
+        "outputs":[]},
+    "esmf_write_structured_grid":{
+        "inputs":[
+            {"name":"fout", "kind":"required","type":["char"],"purpose":"output NCfile name"},
+            {"name":"lon", "kind":"required","type":["scalar"],"purpose":"longitude(1D)"},
+            {"name":"lat", "kind":"required","type":["scalar"],"purpose":"latitude(1D)"}],
         "outputs":[]}
-
 }

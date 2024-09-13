@@ -120,5 +120,5 @@
 
 [submodule "Exfunctions/Course"]
 	path = Exfunctions/Course
-	url = https://github.com/SiqiLiOcean/Course.git
+	url = http://www.iocean.cn:12345/mirror/Course.git
 

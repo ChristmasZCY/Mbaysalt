@@ -414,19 +414,33 @@
 %   utm2deg                     (optional)      -  utm2deg                                     ||  https://www.mathworks.com/matlabcentral/fileexchange/10914-utm2deg
 %   Spiral diagram              (optional)      -  Spiral diagram                              ||  https://www.mathworks.com/matlabcentral/fileexchange/164966-spiral-diagram
 %
-%                                         Extend Exfunctions
+%                                     Supplement Files
+%   matFVCOM                                    -  Supplement files for matFVCOM toolbox
+%       Contents.m                              -  Contents for toolbox
+%       functionSignatures.json                 -  Function signatures for toolbox
+%       esmf_write_structured_grid.m            -  Write structured grid to ESMF format
+%       f_2d_coast.m                            -  Draw the FVCOM grid coastline
+%       f_2d_mask_boundary.m                    -  Mask the region out of the FVCOM grid boundary
+%       f_2d_mesh.m                             -  Draw 2d fvcom mesh
+%       f_load_grid.m                           -  Generate all the information of FVCOM grid
+%       initial.m
+%       kml_w_mesh.m                            -  Draw FVCOM mesh in KML
+%       minmax.m                                -  Find the minimum and maximum of the data
+%       obs_merge_location.m                    -  Merge the obs struct according to (lon,lat)
+%       set_path.m                              -  Set the path for the matFVCOM package
+%       w_2d_boundary.m                         -  Draw WRF mesh boundary
+%       w_load_grid.m                           -  Load the WRF grid from WRF output
+%
 %   matWRF                                      -  Extend matWRF toolbox
 %       functionSignatures.json                 -  Function signatures for toolbox
 %       calc_rh2.m                              -  Calculate relative humidity from temperature and dew point at 2m
-%       
-%   matFVCOM                                    -  Extend matFVCOM toolbox
-%       functionSignatures.json                 -  Function signatures for toolbox
-%       esmf_write_structured_grid.m            -  Write structured grid to ESMF format
 %
-%                                     Supplement Files
-%   matFVCOM                                    -  Supplement files for matFVCOM toolbox
-%       functionSignatures.json                 -  Function signatures for toolbox
+%   matFigure
 %       Contents.m                              -  Contents for toolbox
+%       functionSignatures.json                 -  Function signatures for toolbox
+%       cm_disp.m                               -  Display colormap
+%       cm/cmp_b2r.mat                          -  Colormap for b2r
+%       cm/nclColormap                          -  Colormap for ncl document
 %
 %                                           Otherpkgs
 %   Otherpkgs                                   -  Show other packages

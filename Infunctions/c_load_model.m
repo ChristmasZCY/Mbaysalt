@@ -63,17 +63,17 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
                 GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
             end
             GridStruct.ModelName = 'WW3'; GridStruct.grid = 'TRI';
+        elseif nc_attrName_exist(fin, 'product_name', 'method','START')
+            lon = ncread(fin, 'longitude');
+            lat = ncread(fin, 'latitude');
+            GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
+            GridStruct.ModelName = 'Standard'; GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin, 'FVCOM', 'method','START')
             GridStruct = f_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'FVCOM'; GridStruct.grid = 'TRI';
         elseif nc_attrValue_exist(fin, 'wrf2fvcom version', 'method','START')
             GridStruct = w_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'WRF2FVCOM'; GridStruct.grid = 'GRID';
-        elseif nc_attrName_exist(fin, 'product_name', 'method','START')
-            lon = ncread(fin, 'longitude');
-            lat = ncread(fin, 'latitude');
-            GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'Standard'; GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'WRF\s*(V\d+(\.\d+)?)?\s*MODEL')
             % 匹配{"WRF V4.4 MODEL", "WRF V4.1 MODEL", "WRF V1.2 MODEL", "WRF MODEL", "WRFMODEL"};
             % \s*：匹配零个或多个空白字符。
@@ -173,7 +173,8 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
             Ttimes = Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
         end
     case 'STANDARD'
-        varList = {'ua', 'va', ...
+        varList = {'wind_U10', 'wind_V10', ...
+                   'ua', 'va', ...
                    'salinity_std', 'salinity_sgm', 'salinity_avg', ...
                    'temperature_std', 'temperature_sgm', 'temperature_avg', ...
                    'u_std', 'u_sgm', 'u_avg', ...

@@ -25,6 +25,15 @@ function wgrid = w_load_grid(varargin)
 varargin = read_varargin(varargin, {'MaxLon'}, {360});
 varargin = read_varargin2(varargin, {'Global'});
 
+if isfield(varargin{1},'type')
+    type1 = varargin{1}.type;
+    if strcmp(type1, 'WRF') || strcmp(type1, 'Regional')  || strcmp(type1, 'Global')
+        wgrid = varargin{1};
+        return
+    end
+end
+
+
 wgrid.type = 'WRF';
 
 G = 9.81;

@@ -356,6 +356,14 @@
         "outputs": [
             {"name": "timeRange", "type": ["datetime"], "purpose": "time range"},
             {"name":  "Ttimes",  "type": ["Mdatetime"], "purpose": "time array"}]},
+    "create_timeRange": {
+        "inputs": [
+            {"name": "startTime", "kind": "required", "type": ["datetime"], "purpose": "start time"},
+            {"name": "lenTime", "kind": "required", "type": ["scalar"], "purpose": "len time"},
+            {"name": "timeStep", "kind": "required", "type": ["char","strings"], "purpose": "time step"}],
+        "outputs": [
+            {"name": "timeRange", "type": ["datetime"], "purpose": "time range"},
+            {"name":  "Ttimes",  "type": ["Mdatetime"], "purpose": "time array"}]},
     "getHome": {
         "inputs": [],
         "outputs": [
