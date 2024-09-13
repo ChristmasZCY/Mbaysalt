@@ -1,9 +1,9 @@
 % Mbaysalt Toolbox
 % Version 2.4 (R2024a) 2024-07-26
 % =================================================================================================================
-% Version 0.1  2023-03-01   R2023b  (Created by Christmas, Dovelet, Qidi Ma)
-% Version 1.0  2023-10-18   R2023b  (Fixed by Christmas)
-% Version 2.0  2023-11-22   R2023b  (Fixed by Christmas)  --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.0>
+% Version 0.1 (R2023b) 2023-03-01   (Created by Christmas, Dovelet, Qidi Ma)
+% Version 1.0 (R2023b) 2023-10-18   (Fixed by Christmas)
+% Version 2.0 (R2023b) 2023-11-22   (Fixed by Christmas)    --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.0>
 % Version 2.1 (R2023b) 2023-12-27   (Modified by Christmas)
 % Version 2.2 (R2023b) 2024-01-31   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.2>
 % Version 2.3 (R2024a) 2024-04-04   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.3>
@@ -22,6 +22,7 @@
 %   Mainpath.m                                  -  Set main path for toolbox (not recommend)
 %   ST_Mbaysalt.m                               -  Set toolbox path
 %   README.md                                   -  README file
+%   README_zh.md                                -  README file in Chinese
 %   functionSignatures.json                     -  Function signatures for toolbox
 %
 %
@@ -339,7 +340,7 @@
 %   M_map中文说明.pdf
 %   M_map翻译和示例官方中文版.pdf
 %   t_tide中文版说明.pdf
-%   t_tide软件包使用说明plus
+%   t_tide软件包使用说明plus.md
 %   Climate Data Toolbox中文说明.pdf
 %   OceanMesh2D__User_Guide_20200912.pdf
 %   MATLAB、ArcGIS、SPSS和Excel在地学中的实践应用（Version6.0）-2020-04-27.pdf

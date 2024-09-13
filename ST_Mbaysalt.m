@@ -475,20 +475,12 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
             continue
         elseif isequal(control, 'noclone')
             if pkg.SETPATH
-                if exist('genpath2','file') == 2 
-                    addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
-                else
-                    addpath(genpath(pkg_path))
-                end
+                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
             end
             continue
         end
         if pkg.SETPATH
-            if exist('genpath2','file') == 2 
-                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
-            else
-                addpath(genpath(pkg_path))
-            end
+            addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
         end
         if Git.TF && Git.CHECK
             if pkg.INSTALL
@@ -506,11 +498,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                 clearvars txt field field_cell
             end
             if pkg.SETPATH
-                if exist('genpath2','file') == 2 
-                    addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
-                else
-                    addpath(genpath(pkg_path))
-                end
+                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
             end  
         end
 
@@ -534,20 +522,12 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
             continue
         elseif isequal(control, 'noclone')
             if pkg.SETPATH
-                if exist('genpath2','file') == 2 
-                    addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
-                else
-                    addpath(genpath(pkg_path))
-                end
+                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
             end
             continue
         end
         if pkg.SETPATH
-            if exist('genpath2','file') == 2 
-                addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
-            else
-                addpath(genpath(pkg_path))
-            end
+            addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
         end
         if ~(exist(pkg.CHECK{1},pkg.CHECK{2}) == str2double(pkg.CHECK{3})) && pkg.INSTALL && pkg.SETPATH  % 如果不同时判断pkg.SETPATH 当pkg.INSATLL && ~pkg.SETPATH 由于不在路径中检测不到会重复下载
             pkg_localfile = fullfile(PATH.basepath, pkg.LOCALFILE);
@@ -582,11 +562,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                 end
                 % delete(local_file);
                 if pkg.SETPATH
-                    if exist('genpath2','file') == 2 
-                        addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
-                    else
-                        addpath(genpath(pkg_path))
-                    end
+                    addpath(genpath2(pkg_path,{'.git', '.svn', '.github'}))
                 end
             end
             STATUS1.(field) = 1;
@@ -751,6 +727,24 @@ function print_info()
     fprintf('=====================================================================\n')
     fprintf('\n')
 end
+
+function p = genpath2(d, pattern)
+
+    p = genpath(d);
+    % Return if missing or empty input argument
+    if nargin < 2 || isempty(pattern)
+        return
+    end
+    % Find folders that match the pattern
+    splitP = split(p, pathsep);
+    pattern = strcat(filesep, pattern);
+    hasPattern = contains(splitP, pattern);
+    % Index out folders with pattern
+    cleanP = splitP(~hasPattern);
+    % Return as list in genpath format
+    p = char(strjoin(cleanP, pathsep));
+end % function-genpath2
+
 
 function fun = ABANDON()
     fun.read_start = @read_start;
