@@ -325,7 +325,8 @@
 %   functionSignatures.json                     -  Function signatures for this folder
 %   WRFforcing2gcm.m                            -  Convert WRF forcing to gcm forcing
 %   create_obc_from_MITgcmllc540.m              -  Create open boundary conditions from MITgcmllc540
-%   Map2Gray.m                                  -  download maptiles and transform to graytiles
+%   Map2Gray/                                   -  download maptiles and transform to graytiles
+%   gzh2html/                                   -  Convert gongzhonghao to html
 %
 %
 %                                         Docs  -  Documents and Manuals for toolbox
