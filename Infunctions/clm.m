@@ -11,6 +11,7 @@ function clm(varargin)
     % Updates:
     %       2023-**-**:     Created,            by Christmas;
     %       2024-05-30:     Added 'noclose',    by Christmas;
+    %       2024-09-19:     Fixed 'noclose',    by Christmas;
     % =================================================================================================================
     % Example:
     %       clm()
@@ -39,7 +40,11 @@ function clm(varargin)
         case 'noclose'
             evalin('base', 'clear');
             clc
-            clf
+            figs = findobj('Type', 'figure');
+            if ~isempty(figs)
+                shg
+                clf
+            end
         otherwise
             error('Error: Invalid input argument')
         end

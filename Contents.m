@@ -78,6 +78,8 @@
 %   getHome.m                                   -  Get home path
 %   convert_avi2mp4.m                           -  Convert avi to mp4
 %   ln.m                                        -  Simulate the ln command in linux
+%   isaequal.m                                  -  Approximate equality A, B(not support NaN)
+%   figcopy.m                                   -  Copy the figure to the clipboard
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures

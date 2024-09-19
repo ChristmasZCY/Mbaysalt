@@ -13,6 +13,7 @@ function [YN, Ofile] = readlink(file)
     %       2024-04-16:     Added strip,                                    by Christmas;
     %       2024-04-16:     swap output order,                              by Christmas;
     %       2024-05-13:     Fixed opposite output, judge'file not found',   by Christmas;
+    %       2024-09-19:     Use isSymbolicLink(>=R2024b),                   by Christmas;
     % =================================================================================================================
     % Example:
     %       [YN, Ofile] = readlink('D:\data\mask.nc')
@@ -35,6 +36,11 @@ function [YN, Ofile] = readlink(file)
 
     if isempty(file) || (~exist(file,"file") && ~exist(file,"dir"))
         error('file not found')
+    end
+
+    if ~isMATLABReleaseOlderThan("R2024b")
+        [YN, Ofile] = isSymbolicLink(file);
+        return
     end
 
     switch computer('arch')
