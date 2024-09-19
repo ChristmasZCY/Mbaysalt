@@ -3,7 +3,7 @@ function figcopy(varargin)
     % =================================================================================================================
     % Parameters:
     %   varargin: (optional) 
-    %       fig:        figure handle       || required: positional || type: figure     || example: gcf
+    %       fig:        figure handle       || required: positional || type: figure || example: gcf
     % =================================================================================================================
     % Returns:
     %       None
@@ -15,7 +15,6 @@ function figcopy(varargin)
     %       figcopy;
     %       figcopy(gcf);
     % =================================================================================================================
-
 
     if len(varargin) >0 && isa(varargin{1},'matlab.ui.Figure')
         fig = varargin{1};

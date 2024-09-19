@@ -21,7 +21,8 @@ function S = calc_validation(model, observation, varargin)
     %           S.MRE:      Mean Relative Error     计算绝对误差与模拟值之比，反映模拟误差与模拟值占比
     % =================================================================================================================
     % Update:
-    %       2024-04-13:     Created, by Christmas;
+    %       2024-04-13:     Created,                        by Christmas;
+    %       2024-09-19:     Fixed corrcoef with 'complete', by Christmas;    
     % =================================================================================================================
     % Example:
     %       S = calc_validation(model, observation);
@@ -53,7 +54,7 @@ function S = calc_validation(model, observation, varargin)
     dif = model - observation;
 
     % R 相关系数
-    R = corrcoef(observation, model);
+    R = corrcoef(observation, model, 'Rows', 'complete');  % complete 忽略NaN
     S.R = R(1,2);
 
     % Bias  偏差
