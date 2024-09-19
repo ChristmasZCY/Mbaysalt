@@ -383,7 +383,7 @@
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",
-     "mirror": "https://githubfast.com/",
+     "mirror": "https://ghp.ci/https://github.com/",
      "username": "None",
      "password": "None",
      "method": "AUTO",

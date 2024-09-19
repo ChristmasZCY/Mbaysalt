@@ -270,7 +270,7 @@
             {"name": "UV_center", "type": ["scalar"], "purpose": "Center of UV"},
             {"name": "uE", "type": ["scalar"], "purpose": "u-east"},
             {"name": "vN", "type": ["scalar"], "purpose": "v-north"}]},
-    "calc_overlayWind": {
+    "calc_typhoon_overlayWind": {
         "inputs": [
             {"name": "Uh", "kind": "required", "type": ["numeric"], "purpose": "U_holland"},
             {"name": "Vh", "kind": "required", "type": ["numeric"], "purpose": "V_holland"},
@@ -281,7 +281,7 @@
         "outputs": [
             {"name": "u_dst", "type": ["scalar"], "purpose": "u_dst"},
             {"name": "v_dst", "type": ["scalar"], "purpose": "v_dst"}]},
-    "calc_windHolland": {
+    "calc_typhoon_windHolland": {
         "inputs": [
             {"name": "Lon_grid", "kind": "required", "type": ["numeric"], "purpose": "Lon_grid"},
             {"name": "Lat_grid", "kind": "required", "type": ["numeric"], "purpose": "Lat_grid"},
@@ -302,7 +302,7 @@
             {"name": "Uh", "type": ["scalar"], "purpose": "U_holland"},
             {"name": "Vh", "type": ["scalar"], "purpose": "V_holland"},
             {"name": "c", "type": ["scalar"], "purpose": "c"}]},
-    "calc_adjust_winddir": {
+    "calc_typhoon_adjust_winddir": {
         "inputs": [
             {"name": "lon_grid", "kind": "required", "type": ["numeric"], "purpose": "lon_grid"},
             {"name": "lat_grid", "kind": "required", "type": ["numeric"], "purpose": "lat_grid"},
@@ -376,7 +376,19 @@
         "outputs": []},
     "ln": {
         "inputs": [
-            {"name": "src", "kind": "required", "type": ["file","folder"], "purpose": "source file"},
-            {"name": "dst", "kind": "required", "type": ["char"], "purpose": "destination file"}],
-        "outputs": []}
+            {"name": "src", "kind": "required", "type": ["char","file","folder"], "purpose": "source file"},
+            {"name": "dst", "kind": "required", "type": ["char"], "purpose": "destination file"},
+            {"name": "mode","kind": "positional", "type": ["char","choices={'O','P'}"], "purpose": "ReplacementRule"}],
+        "outputs": []},
+    "isaequal":{
+        "inputs":[
+            {"name":"A",  "kind":"required", "type":["numeric"], "purpose":"Matrix A"},
+            {"name":"B",  "kind":"required", "type":["numeric"], "purpose":"Matrix B"},
+            {"name":"eps",  "kind":"positional", "type":["numeric"], "purpose":"Tolerance"}],
+        "outputs":[
+            {"name":"TF", "type":["logical","scalar"], "purpose":"Equal or not"}]},
+    "figcopy":{
+        "inputs":[
+            {"name":"fig",  "kind":"positional", "type":["handle"], "purpose":"Figure handle"}],
+        "outputs":[]}
 }
