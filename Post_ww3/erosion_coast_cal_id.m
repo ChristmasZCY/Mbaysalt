@@ -10,7 +10,7 @@ function I_D = erosion_coast_cal_id(lon, lat, value, K, judge_num)
     %       I_D: id and distance                    || required: True || type: double ||  format: struct
     % =================================================================================================================
     % Example:
-    %       I_D = erosion_coast_cal_id(lon, lat, value, 16, 5)
+    %       I_D = erosion_coast_cal_id(lon, lat, value, 16, 5);
     % =================================================================================================================
 
     if numel(lon) == length(lon)

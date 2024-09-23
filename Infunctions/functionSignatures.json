@@ -23,7 +23,7 @@
             {"name":"var", "type":["struct"], "purpose":"Variable Structure"}]},
     "clm":{
         "inputs":[
-            {"name":"cmd",  "kind":"ordered", "type":["char","choices={'clear','clc','close all','noclose'}"], "purpose":"Command of MATLAB"}]},
+            {"name":"cmd",  "kind":"ordered", "type":["char","choices={'clear','clc','close all','noclose','clf'}"], "purpose":"Command of MATLAB"}]},
     "del_quotation":{
         "inputs":[
             {"name":"Text",  "kind":"required", "type":["char","string"], "purpose":"Text with quotation"}],
