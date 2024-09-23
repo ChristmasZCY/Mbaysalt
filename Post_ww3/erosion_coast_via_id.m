@@ -16,7 +16,7 @@ function varOut = erosion_coast_via_id(I_D, varIn, varargin)
     %       2024-04-07:     Changed to one var, by Christmas;
     % =================================================================================================================
     % Example:
-    %       Swh = erosion_coast_via_id(I_D,swh)
+    %       Swh = erosion_coast_via_id(I_D,swh);
     % =================================================================================================================
 
     id = I_D.id;

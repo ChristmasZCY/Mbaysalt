@@ -1,4 +1,10 @@
 %% CDT
+%% time
+[dt, unit, refdate] = cftime(t(1),'seconds since 1970-01-01 00:00:00'); %#ok<*ASGLU>
+[dt, t, unit, refdate] = ncdateread(data,'time');
+tunit = ncreadatt(data,'time', 'units');tunit;
+
+%% draw
 borders('countries','color',rgb('dark gray'))  % 岸线
 cmocean thermal  % colorbar
 [latout,lonout,ustd,vstd] = recenter(G.y1D,G.x1D,V.u_std,V.v_std,'center',180) ;   % 更改中心经纬度

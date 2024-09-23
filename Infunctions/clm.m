@@ -3,7 +3,7 @@ function clm(varargin)
     % =================================================================================================================
     % Parameters:
     %       varargin: (input argument) 
-    %           'cmd' : 'clear', 'clc', 'close all', 'noclose' || required: False || type: text || example: 'clc'
+    %           'cmd' : 'clear', 'clc', 'close all', 'noclose', 'clf' || required: False || type: text || example: 'clc'
     % =================================================================================================================
     % Returns:
     %       None
@@ -21,7 +21,7 @@ function clm(varargin)
     % =================================================================================================================
 
     arguments(Input,Repeating)
-        varargin {mustBeMember(varargin,{'clear','close all','clc', 'noclose'})}
+        varargin {mustBeMember(varargin,{'clear','close all','clc', 'noclose', 'clf'})}
     end
 
     if nargin == 0
@@ -45,6 +45,12 @@ function clm(varargin)
                 shg
                 clf
             end
+        case 'clf'
+            clf
+            monitor_positions = get(0, 'MonitorPositions');
+            set(gcf, 'Units', 'pixels', ...
+    'Position', [monitor_positions(3,1), monitor_positions(3,2), monitor_positions(3,3), monitor_positions(3,4)]);
+
         otherwise
             error('Error: Invalid input argument')
         end
