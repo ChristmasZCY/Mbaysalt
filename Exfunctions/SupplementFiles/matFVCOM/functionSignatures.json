@@ -732,5 +732,9 @@
             {"name":"fout", "kind":"required","type":["char"],"purpose":"output NCfile name"},
             {"name":"lon", "kind":"required","type":["scalar"],"purpose":"longitude(1D)"},
             {"name":"lat", "kind":"required","type":["scalar"],"purpose":"latitude(1D)"}],
-        "outputs":[]}
+        "outputs":[]},
+    "initial": {
+        "inputs": [
+            {"name": "opt", "kind": "positional", "type": ["char", "choices={'set','recover'}"], "purpose": "opt"}],
+        "outputs": []}
 }
