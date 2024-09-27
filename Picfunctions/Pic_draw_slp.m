@@ -47,16 +47,16 @@ function Pic_draw_slp(date, day_length, region, varargin)
         makedirs(folder_name)
         ncfile = [InputDir, filesep, nd, '/slp_5.nc'];  % 暂时文件取名
     
-        [lon,lat,time,slp] = ncread_llt_v(ncfile,'longitude','latitude','time',[1 24],'slp'); %slp= sea level pressure
+        [lon,lat,time,Slp] = ncread_llt_v(ncfile,'longitude','latitude','time',[1 24],'slp'); %slp= sea level pressure
         osprint2('INFO', ['预测数据的时间 --> ',char(time(1))]);
     
-        [lon,lat,slp] = region_cutout(lon_select,lat_select,lon,lat,slp);
+        [lon,lat,Slp] = region_cutout(lon_select,lat_select,lon,lat,Slp);
     
         [Lon,Lat] = meshgrid(lon,lat);
     
         for hour = 1:length(time)
     
-            slp = slp(:,:,hour);
+            slp = Slp(:,:,hour);
     
             figure('visible','off');%不显示图片  测试时要打开！！！
             clf
@@ -96,7 +96,7 @@ function Pic_draw_slp(date, day_length, region, varargin)
             ax.TitleHorizontalAlignment = 'left';
     
             time_name = char(datetime(time(hour),'format','yyyy-MM-dd''T''HHmmss'));
-            txt = [folder_name, '/P_',Fname_section,'_slp@',time_name,'.png'];
+            txt = [folder_name, '/P_',Fname_section,'_slp_level_1@',time_name,'.png'];
             export_fig(txt,'-r300','-transparent'); %保存图片
         end
     end

@@ -109,7 +109,7 @@ function Pic_draw_wind_10m(date, day_length, region, varargin)
             % make_typhoon_warningline(24,48) % 画24 48小时台风警戒线
     
             time_name = char(datetime(time(hour),'format','yyyy-MM-dd''T''HHmmss'));
-            txt=[folder_name, '/P_',Fname_section,'_10m_wind@',time_name,'.png'];
+            txt=[folder_name, '/P_',Fname_section,'_wind_depth_10m@',time_name,'.png'];
             export_fig(txt,'-r300','-transparent'); %保存图片
         end
     end
