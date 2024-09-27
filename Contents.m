@@ -111,6 +111,8 @@
 %   Pic_draw_swh.m                              -  Draw significant wave height picture
 %   Pic_draw_mwp.m                              -  Draw mean wave period picture
 %   Pic_draw_current.m                          -  Draw current vector picture daily/hourly
+%   Pic_draw_wind_10m                           -  Draw wind velocity at 10m picture
+%   Pic_draw_slp.m                              -  Draw sea level pressure picture
 %
 %
 %                                   Post_fvcom  -  Functions for handling FVCOM triangle data
