@@ -82,8 +82,8 @@ function Pic_draw_swh(date, day_length, region, varargin)
             clim([0.05 3.15])
             h.FontSize = 6;
             set(get(h, 'Title'), 'string', '[m]');
-            h.Position(1) = 0.77;
-            h.Position(3)=0.03;
+%            h.Position(1) = 0.77;
+%            h.Position(3)=0.03;
             h.FontSize=6;
             set(h,'YTick',[0.1:0.5:3.1]);
             set(h,'YTickLabel',{'<0.1','0.5','1','1.5','2','2.5','>3'});
