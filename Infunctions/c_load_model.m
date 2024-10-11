@@ -91,13 +91,18 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'CMEMS'; GridStruct.grid = 'GRID';
-    elseif nc_attrValue_exist(fin,'CCMP','method','CONTAINS') && nc_attrValue_exist(fin,'RSS','method','CONTAINS')
+        elseif nc_attrValue_exist(fin,'CCMP','method','CONTAINS') && nc_attrValue_exist(fin,'RSS','method','CONTAINS')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'CCMP-RSS'; GridStruct.grid = 'GRID';
+        elseif  nc_attrValue_exist(fin,'COARDS','method','STRCMP') && nc_attrValue_exist(fin,'created by wgrib2','method','CONTAINS')
+            lon = ncread(fin, 'longitude');
+            lat = ncread(fin, 'latitude');
+            GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
+            GridStruct.ModelName = 'GFS-GRIB'; GridStruct.grid = 'GRID';
         else
-            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, CMEMS, CCMP-RSS or Standard now !!!')
+            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, CMEMS, CCMP-RSS, GFS-GRIB or Standard now !!!')
         end
         SWITCH.read_var = true;
     elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh') || endsWith(fin, '.14')
@@ -196,6 +201,9 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         if all(isfield(VarStruct,{'u_std', 'v_std'}))
             [VarStruct.uv_std_spd, VarStruct.uv_std_dir] = calc_uv2sd(VarStruct.u_std, VarStruct.v_std, "current");
         end
+        if all(isfield(VarStruct,{'wind_U10', 'wind_V10'}))
+            [VarStruct.UV10_spd, VarStruct.UV10_dir] = calc_uv2sd(VarStruct.wind_U10, VarStruct.wind_V10, "wind");
+        end
         if nc_var_exist(fin, 'time')
             time = ncdateread(fin, 'time');
             Ttimes = Mdatetime(time);
@@ -225,6 +233,15 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         VarStruct = read_var_list(fin, varList);
         if all(isfield(VarStruct,{'uwnd', 'vwnd'}))
             [VarStruct.uvwnd_spd, VarStruct.uvwnd_dir] = calc_uv2sd(VarStruct.uwnd, VarStruct.vwnd, "wind");
+        end
+        if nc_var_exist(fin, 'time')
+            Ttimes = Mdatetime(ncdateread(fin, 'time'));
+        end
+    case 'GFS-GRIB'
+        varList = {'UGRD_10maboveground', 'VGRD_10maboveground', '', '', '', '', '', '', '', '', ''};
+        VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'UGRD_10maboveground', 'VGRD_10maboveground'}))
+            [VarStruct.UVGRD_10maboveground_spd, VarStruct.UVGRD_10maboveground_dir] = calc_uv2sd(VarStruct.UGRD_10maboveground, VarStruct.VGRD_10maboveground, "wind");
         end
         if nc_var_exist(fin, 'time')
             Ttimes = Mdatetime(ncdateread(fin, 'time'));
