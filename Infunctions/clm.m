@@ -48,8 +48,14 @@ function clm(varargin)
         case 'clf'
             clf
             monitor_positions = get(0, 'MonitorPositions');
+            if nargin > 1
+                pos = varargin{2};
+            else
+                pos = size(monitor_positions,1);
+            end
+
             set(gcf, 'Units', 'pixels', ...
-    'Position', [monitor_positions(3,1), monitor_positions(3,2), monitor_positions(3,3), monitor_positions(3,4)]);
+    'Position', [monitor_positions(pos,1), monitor_positions(pos,2), monitor_positions(pos,3), monitor_positions(pos,4)]);
 
         otherwise
             error('Error: Invalid input argument')
