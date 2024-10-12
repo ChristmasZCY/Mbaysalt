@@ -20,7 +20,8 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %           .h:     tide seaLevel-h || type: double || format: 1D or 2D
     % =================================================================================================================
     % Updates:
-    %       2024-05-27:     Created, by Christmas;
+    %       2024-05-27:     Created,                by Christmas;
+    %       2024-10-11:     Check lon/lat range,    by Christmas;
     % =================================================================================================================
     % Examples:
     %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin','Vname','z')
@@ -38,6 +39,10 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     
     hug_filepath = fullfile(tempdir ,'hug_files.txt');
     tpxobin_filepath = fullfile(tempdir ,'tpxobin_file.txt');
+
+    if min(lat(:)) <-90 || max(lat(:)) > 90
+        error(sprintf('lat range not in [-90 90], but [%.2f ~ %.2f]',minmax(lat))) %#ok<SPERR>
+    end
 
     if ~isscalar(lon)  % not noe
         xdiff = mean(diff(lon(:)));

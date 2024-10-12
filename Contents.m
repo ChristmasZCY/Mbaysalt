@@ -287,6 +287,7 @@
 %   Example_filter.m                            -  Example for filter
 %   Example_smooth.m                            -  Example for smooth
 %   Example_nctoolbox.m                         -  Example for nctoolbox
+%   Example_export_fig.m                        -  Example for export_fig
 %   Example_ellipse.m                           -  Example for ellipse
 %   Example_inpolygons.m                        -  Example for inpolygons
 %   Example_calc_timeStep.m                     -  Example for calc_timeStep
