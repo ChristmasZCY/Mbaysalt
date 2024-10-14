@@ -420,6 +420,7 @@
 %   KrigingToolbox              (optional)      -  KrigingToolbox                              ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/59960-krigingtoolbox
 %   utm2deg                     (optional)      -  utm2deg                                     ||  https://www.mathworks.com/matlabcentral/fileexchange/10914-utm2deg
 %   Spiral diagram              (optional)      -  Spiral diagram                              ||  https://www.mathworks.com/matlabcentral/fileexchange/164966-spiral-diagram
+%   plotyyy                     (optional)      -  plotyyy                                     ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/1017-plotyyy
 %
 %                                     Supplement Files
 %   matFVCOM                                    -  Supplement files for matFVCOM toolbox
