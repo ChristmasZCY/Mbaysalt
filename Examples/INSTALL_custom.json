@@ -380,6 +380,7 @@
             "Exfunctions/KrigingToolbox",
             "Exfunctions/utm2deg",
             "Exfunctions/Spiral_diagram",
+            "Exfunctions/plotyyy",
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",

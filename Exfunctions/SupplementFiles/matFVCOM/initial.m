@@ -36,37 +36,69 @@ function initial(opt)
     filepath_save = fullfile(path, 'initial.mat');
     if ~isfile(filepath_save)
         DEFAULT = get_DEFAULT();
+        OS = computer;
         save(filepath_save, 'DEFAULT');
+        save(filepath_save, 'OS', '-append');
     else
         DEFAULT = load(filepath_save, 'DEFAULT');
+        try
+            OS = load(filepath_save, 'OS');
+        catch ME1
+            OS = '';
+        end
+        if strcmp(OS, computer)
+        else
+            rmfiles(filepath_save)
+            initial()
+        end
     end
     
     switch lower(opt)
     case 'recover'
         fileds_default = fieldnames(DEFAULT);
         for i = 1:length(fileds_default)
-            set(0, fileds_default{i}, DEFAULT.(fileds_default{i}));
+            try
+                set(0, fileds_default{i}, DEFAULT.(fileds_default{i}));
+            catch ME1
+                osprint2('ERROR', sprintf('''%s'' can''t set ''%s!''', fileds_default{i}, DEFAULT.(fileds_default{i})));
+            end
         end
     case 'set'
         SET = make_SET();
         fields_os = fieldnames(SET.OS);
         for i = 1:length(fields_os)
-            set(0, fields_os{i}, SET.OS.(fields_os{i}));
+            try
+                set(0, fields_os{i}, SET.OS.(fields_os{i}));
+            catch ME1
+                osprint2('ERROR', sprintf('''%s'' can''t set ''%s!''', fields_os{i}, DEFAULT.(fields_os{i})));
+            end
         end
         if contains(computer, 'MAC')
             fields_mac = fieldnames(SET.MAC);
             for i = 1:length(fields_mac)
-                set(0, fields_mac{i}, SET.MAC.(fields_mac{i}));
+                try
+                    set(0, fields_mac{i}, SET.MAC.(fields_mac{i}));
+                catch ME1
+                    osprint2('ERROR', sprintf('''%s'' can''t set ''%s!''', fields_mac{i}, DEFAULT.(fields_mac{i})));
+                end
             end
         elseif contains(computer, 'WIN')
             fields_win = fieldnames(SET.WIN);
             for i = 1:length(fields_win)
-                set(0, fields_win{i}, SET.WIN.(fields_win{i}));
+                try
+                    set(0, fields_win{i}, SET.WIN.(fields_win{i}));
+                catch ME1
+                    osprint2('ERROR', sprintf('''%s'' can''t set ''%s!''', fields_win{i}, DEFAULT.(fields_win{i})));
+                end
             end
         elseif contains(computer, 'LNX')
             fields_lnx = fieldnames(SET.LNX);
             for i = 1:length(fields_lnx)
-                set(0, fields_lnx{i}, SET.LNX.(fields_lnx{i}));
+                try
+                    set(0, fields_lnx{i}, SET.LNX.(fields_lnx{i}));
+                catch ME1
+                    osprint2('ERROR', sprintf('''%s'' can''t set ''%s!''', fields_lnx{i}, DEFAULT.(fields_lnx{i})));
+                end
             end
         else
             disp('Not recognized OS')
