@@ -382,11 +382,12 @@
 %   genpath2                                    -  genpath2 toolbox                            ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/72791-genpath2
 %   irfu-matlab                 (optional)      -  irfu-matlab toolbox                         ||  https://github.com/irfu/irfu-matlab
 %   WW3-tools                   (optional)      -  WW3-tools toolbox                           ||  https://github.com/NOAA-EMC/WW3-tools
-%   funcsignal                  (optional)      -  funcsignal toolbox                          ||  https://gitee.com/iam002/funcsign.git
+%   funcsign                    (optional)      -  funcsign toolbox                            ||  https://gitee.com/iam002/funcsign.git
 %   kml-toolbox                 (optional)      -  kml-toolbox toolbox                         ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/34694-kml-toolbox
 %   MATLAB-PLOT-CHEAT-SHEET     (optional)      -  MATLAB-PLOT-CHEAT-SHEET toolbox             ||  https://github.com/slandarer/MATLAB-PLOT-CHEAT-SHEET
 %   matlabPlotCheatsheet        (optional)      -  matlabPlotCheatsheet toolbox                ||  https://github.com/peijin94/matlabPlotCheatsheet
 %   visualization-cheat-sheet   (optional)      -  visualization-cheat-sheet toolbox           ||  https://github.com/mathworks/visualization-cheat-sheet
+%   googleearthtoolbox          (optional)      -  googleearthtoolbox toolbox                  ||  https://github.com/sverhoeven/googleearthtoolbox
 %
 %   %% Download
 %   m_map                                       -  m_map toolbox(v1.4o)                        ||  https://www.eoas.ubc.ca/~rich/map.html  &&  https://www.eoas.ubc.ca/~rich/mapug.html
