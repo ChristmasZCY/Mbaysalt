@@ -122,3 +122,7 @@
 	path = Exfunctions/Course
 	url = http://www.iocean.cn:12345/mirror/Course.git
 
+[submodule "Exfunctions/googleearthtoolbox"]
+	path = Exfunctions/googleearthtoolbox
+	url = https://github.com/sverhoeven/googleearthtoolbox.git
+
