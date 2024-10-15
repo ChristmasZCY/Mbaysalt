@@ -1,7 +1,7 @@
 {"packages": {
     "download": {
         "m_map": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "VERSION": "1.4",
             "URL": "https://www.eos.ubc.ca/%7Erich/m_map1.4.zip",
@@ -9,7 +9,7 @@
             "PATH": "Exfunctions/m_map",
             "CHECK": ["m_demo.m","file","2"]},
         "t_tide": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "VERSION": "v1.5beta",
             "URL": "https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip",
@@ -17,7 +17,7 @@
             "PATH": "Exfunctions/t_tide",
             "CHECK": ["t_demo.m","file","2"]},
         "gshhs": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "VERSION": "2.3.7",
             "URL": "https://www.ngdc.noaa.gov/mgg/shorelines/data/gshhs/latest/gshhg-bin-2.3.7.zip",
@@ -25,7 +25,7 @@
             "PATH": "Exfunctions/gshhs/",
             "CHECK": ["Exfunctions/gshhs/gshhs_c.b","file","2"]},
         "etopo1": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "VERSION": "1.0",
             "URL": "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/binary/etopo1_ice_g_i2.zip",
@@ -33,7 +33,7 @@
             "PATH": "Exfunctions/etopo1/",
             "CHECK": ["Exfunctions/etopo1/etopo1_ice_g_i2.bin","file","2"]},
         "seawater": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "VERSION": "ver3_3.1",
             "URL": "https://www.marine.csiro.au/datacentre/projects/seawater/seawater_ver3_3.1.zip",
@@ -42,7 +42,7 @@
             "CHECK": ["sw_info.m","file","2"],
             "INDEX": "https://www.cmar.csiro.au/datacentre/ext_docs/seawater.html"},
         "GSW": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "VERSION": "v3_06_16",
             "URL": "http://www.teos-10.org/software/gsw_matlab_v3_06_16.zip",
@@ -51,7 +51,7 @@
             "CHECK": ["gsw_check_functions.m","file","2"],
             "INDEX": "http://www.teos-10.org/software.htm"},
         "WindRose": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "VERSION": "230215",
             "URL": "https://dpereira.asempyme.com/windrose/files/windrose_230215.zip",
@@ -61,7 +61,7 @@
             "INDEX": "https://dpereira.asempyme.com/windrose/",
             "MATHWORKS": "https://ww2.mathworks.cn/matlabcentral/fileexchange/47248-wind-rose"},
         "mexcdf": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": false,
             "VERSION": "r4054",
             "URL": "https://sourceforge.net/code-snapshots/svn/m/me/mexcdf/svn/mexcdf-svn-r4054.zip",
@@ -70,7 +70,7 @@
             "CHECK": ["netcdf.m","file","2"],
             "SVN": "https://sourceforge.net/p/mexcdf/svn/HEAD/tree/"},
         "DHIMIKE": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": false,
             "VERSION": "v19.0.0-20201217",
             "URL": "https://github.com/DHI/DHI-MATLAB-Toolbox/releases/download/v19.0.0/DHIMatlabToolbox-v19.0.0-20201217.zip",
@@ -78,7 +78,7 @@
             "PATH": "Exfunctions/DHIMatlabToolbox",
             "CHECK": ["read_dfs2.m","file","2"]},
         "dace": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "VERSION": "2.5",
             "URL": "https://www.omicron.dk/dace/dace.zip",
@@ -113,7 +113,7 @@
             "PATH": "Exfunctions/matNC",
             "CHECK": ["nc_close.m","file","2"]},
         "matWRF": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "main",
@@ -121,7 +121,7 @@
             "PATH": "Exfunctions/matWRF",
             "CHECK": ["load_constants.m","file","2"]},
         "HYCOM2FVCOM": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "main",
@@ -129,7 +129,7 @@
             "PATH": "Exfunctions/HYCOM2FVCOM",
             "CHECK": ["hycom2fvcom_iniTS_create.m","file","2"]},
         "WRF2FVCOM": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "main",
@@ -145,7 +145,7 @@
             "PATH": "Exfunctions/OceanData",
             "CHECK": ["UHSLC_info.m","file","2"]},
         "FVCOM_NML": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "main",
@@ -177,7 +177,7 @@
             "PATH": "Exfunctions/cdt",
             "CHECK": ["ncdateread.m","file","2"]},
         "vtkToolbox": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": false,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -185,7 +185,7 @@
             "PATH": "Exfunctions/vtkToolbox",
             "CHECK": ["vtkRead.m","file","2"]},
         "TMDToolbox_v2_5": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -201,7 +201,7 @@
             "PATH": "Exfunctions/TMDToolbox_v3_0",
             "CHECK": ["TPXO9_atlas_v5_to_NetCDF.m","file","2"]},
         "kmz2struct": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -209,7 +209,7 @@
             "PATH": "Exfunctions/kmz2struct",
             "CHECK": ["kmz2struct.m","file","2"]},
         "inpolygons_pkg": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -217,7 +217,7 @@
             "PATH": "Exfunctions/inpolygons-pkg",
             "CHECK": ["inpolygons.m","file","2"]},
         "JSONLab": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -225,7 +225,7 @@
             "PATH": "Exfunctions/JSONLab",
             "CHECK": ["loadjson.m","file","2"]},
         "OceanMesh2D": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "Projection",
@@ -233,7 +233,7 @@
             "PATH": "Exfunctions/OceanMesh2D",
             "CHECK": ["setup_oceanmesh2d.m","file","2"]},
         "ann_wrapper": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -241,7 +241,7 @@
             "PATH": "Exfunctions/ann_wrapper",
             "CHECK": ["ann_class_compile.m","file","2"]},
         "ZoomPlot": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "main",
@@ -249,7 +249,7 @@
             "PATH": "Exfunctions/ZoomPlot",
             "CHECK": ["BaseZoom.m","file","2"]},
         "htool": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": false,
             "DEPTH": 0,
             "BRANCH": "main",
@@ -257,7 +257,7 @@
             "PATH": "Exfunctions/htool",
             "CHECK": ["hscan","file","2"]},
         "export_fig": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -265,7 +265,7 @@
             "PATH": "Exfunctions/export_fig",
             "CHECK": ["export_fig.m","file","2"]},
         "plot_google_map": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -281,7 +281,7 @@
             "PATH": "Exfunctions/genpath2",
             "CHECK": ["genpath2.m","file","2"]},
         "irfu_matlab": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": false,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -289,7 +289,7 @@
           "PATH": "Exfunctions/irfu-matlab",
           "CHECK": ["irf_cdf_read.m","file","2"]},
         "WW3_tools": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "develop",
@@ -337,7 +337,7 @@
             "PATH": "Exfunctions/visualization-cheat-sheet",
             "CHECK": ["SECURITY.md","file","2"]},
         "googleearthtoolbox": {
-            "INSTALL": false,
+            "INSTALL": true,
             "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "master",
@@ -401,12 +401,12 @@
  "down":{
      "thread": 4 },
  "improve": {
-     "t_tide": false,
+     "t_tide": true,
      "setup_nctoolbox_java": true,
      "matFVCOM": true,
      "mexcdf": false,
-     "m_gshhs": false,
-     "m_etopo2": false,
+     "m_gshhs": true,
+     "m_etopo2": true,
      "ann_wrapper": false,
      "DHIMIKE": false,
      "irfu_matlab": false,
