@@ -86,6 +86,11 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'ECMWF'; GridStruct.grid = 'GRID';
+        elseif nc_attrValue_exist(fin,'CF-1.7') && nc_attrValue_exist(fin,'European Centre for Medium-Range Weather Forecasts','method','CONTAINS')
+            lon = ncread(fin, 'longitude');
+            lat = ncread(fin, 'latitude');
+            GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
+            GridStruct.ModelName = 'ECMF'; GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'CMEMS','method','START') && nc_attrValue_exist(fin,'marine.copernicus.eu','method','CONTAINS')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
@@ -102,7 +107,7 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'GFS-GRIB'; GridStruct.grid = 'GRID';
         else
-            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, CMEMS, CCMP-RSS, GFS-GRIB or Standard now !!!')
+            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, ECMF, CMEMS, CCMP-RSS, GFS-GRIB or Standard now !!!')
         end
         SWITCH.read_var = true;
     elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh') || endsWith(fin, '.14')
@@ -218,6 +223,15 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         end
         if nc_var_exist(fin, 'time')
             Ttimes = Mdatetime(ncdateread(fin, 'time'));
+        end
+    case 'ECMF'
+        varList = {'u10', 'v10', '', '', '', '', '', '', '', '', ''};
+        VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'u10', 'v10'}))
+            [VarStruct.uv10_spd, VarStruct.uv10_dir] = calc_uv2sd(VarStruct.u10, VarStruct.v10, "wind");
+        end
+        if nc_var_exist(fin, 'valid_time')
+            Ttimes = Mdatetime(ncdateread(fin, 'valid_time'));
         end
     case 'CMEMS'
         varList = {'adt', 'ugos', 'vgos', '', '', '', '', '', '', '', ''};

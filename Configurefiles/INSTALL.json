@@ -91,7 +91,7 @@
         "matFigure": {
             "INSTALL": true,
             "SETPATH": true,
-            "DEPTH": 0,
+            "DEPTH": 1,
             "BRANCH": "main",
             "URL": "https://github.com/SiqiLiOcean/matFigure.git",
             "PATH": "Exfunctions/matFigure",
@@ -99,7 +99,7 @@
         "matFVCOM": {
             "INSTALL": true,
             "SETPATH": true,
-            "DEPTH": 0,
+            "DEPTH": 1,
             "BRANCH": "main",
             "URL": "https://github.com/SiqiLiOcean/matFVCOM.git",
             "PATH": "Exfunctions/matFVCOM",
@@ -107,7 +107,7 @@
         "matNC": {
             "INSTALL": true,
             "SETPATH": true,
-            "DEPTH": 0,
+            "DEPTH": 1,
             "BRANCH": "main",
             "URL": "https://github.com/SiqiLiOcean/matNC.git",
             "PATH": "Exfunctions/matNC",
@@ -163,7 +163,7 @@
         "nctoolbox": {
             "INSTALL": true,
             "SETPATH": true,
-            "DEPTH": 0,
+            "DEPTH": 1,
             "BRANCH": "master",
             "URL": "https://github.com/nctoolbox/nctoolbox.git",
             "PATH": "Exfunctions/nctoolbox",
@@ -171,7 +171,7 @@
         "cdt": {
             "INSTALL": true,
             "SETPATH": true,
-            "DEPTH": 0,
+            "DEPTH": 1,
             "BRANCH": "master",
             "URL": "https://github.com/chadagreene/CDT.git",
             "PATH": "Exfunctions/cdt",
@@ -343,7 +343,15 @@
             "BRANCH": "master",
             "URL": "https://github.com/sverhoeven/googleearthtoolbox.git",
             "PATH": "Exfunctions/googleearthtoolbox",
-            "CHECK": ["ge_point.m","file","2"]}},
+            "CHECK": ["ge_point.m","file","2"]},
+        "mitgcm_toolbox": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://github.com/seamanticscience/mitgcm_toolbox.git",
+            "PATH": "Exfunctions/mitgcm_toolbox",
+            "CHECK": ["calc_oxygen_sat.m","file","2"]}},
     "modules": {
         "PATH": [
             "Prefunctions",

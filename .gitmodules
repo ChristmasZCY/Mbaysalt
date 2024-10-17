@@ -126,3 +126,7 @@
 	path = Exfunctions/googleearthtoolbox
 	url = https://github.com/sverhoeven/googleearthtoolbox.git
 
+[submodule "Exfunctions/mitgcm_toolbox"]
+	path = Exfunctions/mitgcm_toolbox
+	url = https://github.com/seamanticscience/mitgcm_toolbox.git
+
