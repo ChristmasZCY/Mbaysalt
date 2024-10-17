@@ -343,7 +343,15 @@
             "BRANCH": "master",
             "URL": "https://github.com/sverhoeven/googleearthtoolbox.git",
             "PATH": "Exfunctions/googleearthtoolbox",
-            "CHECK": ["ge_point.m","file","2"]}},
+            "CHECK": ["ge_point.m","file","2"]},
+        "mitgcm_toolbox": {
+            "INSTALL": true,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://github.com/seamanticscience/mitgcm_toolbox.git",
+            "PATH": "Exfunctions/mitgcm_toolbox",
+            "CHECK": ["calc_oxygen_sat.m","file","2"]}},
     "modules": {
         "PATH": [
             "Prefunctions",
