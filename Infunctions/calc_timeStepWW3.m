@@ -113,7 +113,7 @@ function Tt = calc_timeStepWW3_tri(fmin, x, y, nv, h, ns, varargin)
     
     % --------- define settings --------- 
     method_bound = 'OU';  % 'OU' or 'ALL'
-    method_waveSpd = 1;   % 1 or 2 or 3
+    method_waveSpd = 2;   % 1 or 2 or 3
     % --------- define settings --------- 
     
     varargin = read_varargin2(varargin,{'figOn'});

@@ -106,8 +106,13 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'GFS-GRIB'; GridStruct.grid = 'GRID';
+        elseif  nc_attrValue_exist(fin,'NCAR','method','START') && nc_attrValue_exist(fin,'CF-1.5','method','STRCMP')
+            lon = ncread(fin, 'lon');
+            lat = ncread(fin, 'lat');
+            GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
+            GridStruct.ModelName = 'NCAR-FNL'; GridStruct.grid = 'GRID';
         else
-            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, ECMF, CMEMS, CCMP-RSS, GFS-GRIB or Standard now !!!')
+            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, ECMF, CMEMS, CCMP-RSS, GFS-GRIB, NCAR-FNL or Standard now !!!')
         end
         SWITCH.read_var = true;
     elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh') || endsWith(fin, '.14')
@@ -256,6 +261,15 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         VarStruct = read_var_list(fin, varList);
         if all(isfield(VarStruct,{'UGRD_10maboveground', 'VGRD_10maboveground'}))
             [VarStruct.UVGRD_10maboveground_spd, VarStruct.UVGRD_10maboveground_dir] = calc_uv2sd(VarStruct.UGRD_10maboveground, VarStruct.VGRD_10maboveground, "wind");
+        end
+        if nc_var_exist(fin, 'time')
+            Ttimes = Mdatetime(ncdateread(fin, 'time'));
+        end
+    case 'NCAR-FNL'
+        varList = {'U_GRD_L103', 'V_GRD_L103', '', '', '', '', '', '', '', '', ''};
+        VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'U_GRD_L103', 'V_GRD_L103'}))
+            [VarStruct.UV_GRD_L103_spd, VarStruct.UV_GRD_L103_dir] = calc_uv2sd(VarStruct.U_GRD_L103, VarStruct.V_GRD_L103, "wind");
         end
         if nc_var_exist(fin, 'time')
             Ttimes = Mdatetime(ncdateread(fin, 'time'));

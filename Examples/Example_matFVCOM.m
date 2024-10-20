@@ -101,3 +101,9 @@ for i = 1:length(f.bdy_x)
 end
 % plot(a,b)
 write_cst('/Users/christmas/Desktop/x.cst', a,b)
+
+%% 飓风路径的计算和数据下载 https://mp.weixin.qq.com/s/xlulz-Mm0ZvKaTpoWWw_lQ
+% slp = f(P, PB, T, QVAPOR, PH, PHB)
+% slp = calc_slp(T, QVAPOR, pres, gp);
+% pres = P + PB;
+% gp = PH + PHB;
