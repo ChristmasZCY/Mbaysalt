@@ -13,7 +13,8 @@ function [C, Cg, L] = calc_waveSpeed(f, h, varargin)
     %       L:  wave length              || type: double
     % =================================================================================================================
     % Updates:
-    %       2024-05-14:     Created, by Christmas;
+    %       2024-05-14:     Created,                by Christmas;
+    %       2024-10-20:     Fixed method=2(l2),     by Christmas;
     % =================================================================================================================
     % Examples:
     %       [C, Cg, L] = calc_waveSpeed(f, h);
@@ -73,7 +74,7 @@ function [C, Cg, L] = calc_waveSpeed(f, h, varargin)
         l2 = g*T^2/(2*pi); % 深水波
         L = nan(size(h));
         L(h./l1<=0.5) = l1(h./l1<=0.5);
-        L(h./l2>0.5)  = l2(h./l2>0.5);
+        L(h./l2>0.5)  = l2;  % <-- l2(h./l2>0.5); 2024-10-20: l2(dims=1*1)
     case 1
         L0 = (g*T^2)/(2*pi);
         L_g = L0;  % 以给定T和d下的深水波波长作为初始猜测值

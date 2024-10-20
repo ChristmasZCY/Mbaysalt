@@ -8,9 +8,9 @@ function initial(opt)
     % Returns:
     %       None
     % =================================================================================================================
-    % Updates:
-    %       ****-**-**:     Created,                                                by Siqi Li;
-    %       2024-09-25:     Added recover, set,                                     by Christmas;
+    % Updates:      
+    %       ****-**-**:     Created,                by Siqi Li;
+    %       2024-09-25:     Added recover, set,     by Christmas;
     % =================================================================================================================
     % Examples:
     %       initial();
@@ -33,7 +33,17 @@ function initial(opt)
     close(10)
 
     path = fileparts(mfilename("fullpath"));
-    filepath_save = fullfile(path, 'initial.mat');
+    switch computer('arch')
+    case 'win64'
+        filepath_save = fullfile(path, 'initial_win.mat');
+    case 'glnxa64'
+        filepath_save = fullfile(path, 'initial_lnx.mat');
+    case {'maci64', 'maca64'}
+        filepath_save = fullfile(path, 'initial_mac.mat');
+    otherwise
+        error('Unkonwn OS!')
+    end
+
     if ~isfile(filepath_save)
         DEFAULT = get_DEFAULT();
         OS = computer;
