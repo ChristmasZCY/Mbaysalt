@@ -50,9 +50,9 @@ function initial(opt)
         save(filepath_save, 'DEFAULT');
         save(filepath_save, 'OS', '-append');
     else
-        DEFAULT = load(filepath_save, 'DEFAULT');
+        DEFAULT = load(filepath_save, 'DEFAULT').DEFAULT;
         try
-            OS = load(filepath_save, 'OS');
+            OS = load(filepath_save, 'OS').OS;
         catch ME1
             OS = '';
         end
