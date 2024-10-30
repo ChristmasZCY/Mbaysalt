@@ -129,5 +129,10 @@
       {"name":"ylims", "kind":"required","type":["numeric"],"purpose":"y lims"},
       {"name":"xlims", "kind":"required","type":["numeric"],"purpose":"x lims"}],
     "outputs": [
-      {"name": "poly_coast", "type": ["polyshape"], "purpose": "polygons of coastline"}]}
+      {"name": "poly_coast", "type": ["polyshape"], "purpose": "polygons of coastline"}]},
+  "convert_shp2cst": {
+    "inputs": [
+      {"name":"shpfile", "kind":"required","type":["file=*.shp"],"purpose":"shape file to read"},
+      {"name":"cstfile", "kind":"required","type":["char"],"purpose":"cst file to write"}],
+    "outputs": []}
 }

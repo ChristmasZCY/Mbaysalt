@@ -11,7 +11,7 @@ function poly_coast = gshhs2(gshhsfile, varargin)
     %       poly_coast: polyshape of coast               || type: polyshape
     % =================================================================================================================
     % Updates:
-    %       2023-05-15:     Created, by Christmas;
+    %       2024-05-15:     Created, by Christmas;
     % =================================================================================================================
     % Examples:
     %       poly_coast = gshhs2('gshhs_c.b');
