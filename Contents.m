@@ -186,6 +186,7 @@
 %   write_sms_grd.m                             -  Write sms grd file
 %   write_vtk.m                                 -  Write vtk file
 %   gshhs2.m                                    -  Fixed gshhs only for [-180 195], gshhs2 for [-540 540]
+%   convert_shp2cst.m                           -  Convert shapefile to cst file, contains merging polygons
 %
 %
 %                                Readfunctions  -  Functions for reading data
