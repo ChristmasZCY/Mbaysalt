@@ -1,5 +1,5 @@
 function status = copernicusmarine(command, varargin)
-    %       Mainpath is a function to add all path of this package
+    %       Copernicus Marine Toolbox CLI(mimic of the command line interface)
     %       copernicusmarine subset --dataset-id  dataset-duacs-nrt-global-merged-allsat-phy-l4 -t 2024-03-04 -T 2024-03-04 --username sli12 --password 123qweASDF -f /home/ocean/ForecastSystem/FVCOM_Global_v2/Data/SSH/SSH_NRT_0p25_20240304.nc --force-download
     % =================================================================================================================
     % Parameters:
@@ -9,7 +9,8 @@ function status = copernicusmarine(command, varargin)
     %       None
     % =================================================================================================================
     % Updates:
-    %       2024-03-12:     Created, by Christmas;
+    %       2024-03-12:     Created,        by Christmas;
+    %       2024-11-05:     Added GLORYS,   by Christmas;
     % =================================================================================================================
     % Examples:
     %       copernicusmarine
@@ -23,11 +24,15 @@ function status = copernicusmarine(command, varargin)
     %        Info of product : copernicusmarine describe -c ${dataset-id} 
     %        Download        : copernicusmarine subset --dataset-id ${dataset-id} -t 2024-03-14 -T 2024-03-14 -f x.nc
     % =================================================================================================================
-    % In common use:                product_id                                          dataset-id                                                      DOI
-    %       SSH(OLD)        : SEALEVEL_GLO_PHY_L4_NRT_OBSERVATIONS_008_046      dataset-duacs-nrt-global-merged-allsat-phy-l4              https://doi.org/10.48670/moi-00149
-    %       SSH(equivalent) : SEALEVEL_GLO_PHY_L4_NRT_008_046                   cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D   https://doi.org/10.48670/moi-00149
-    %       ADT             : SEALEVEL_GLO_PHY_L4_MY_008_047                    cmems_obs-sl_glo_phy-ssh_my_allsat-l4-duacs-0.25deg_P1D    https://doi.org/10.48670/moi-00148
-    %       SST(FVCOM_SCS)  : SST_GLO_SST_L4_NRT_OBSERVATIONS_010_001           METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2                        https://doi.org/10.48670/moi-00165
+    % In common use:                        product_id                                          dataset-id                                                      DOI
+    %       SSH(OLD)                : SEALEVEL_GLO_PHY_L4_NRT_OBSERVATIONS_008_046      dataset-duacs-nrt-global-merged-allsat-phy-l4               https://doi.org/10.48670/moi-00149
+    %       SSH(equivalent)         : SEALEVEL_GLO_PHY_L4_NRT_008_046                   cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D    https://doi.org/10.48670/moi-00149
+    %       ADT                     : SEALEVEL_GLO_PHY_L4_MY_008_047                    cmems_obs-sl_glo_phy-ssh_my_allsat-l4-duacs-0.25deg_P1D     https://doi.org/10.48670/moi-00148
+    %       SST(FVCOM_SCS)          : SST_GLO_SST_L4_NRT_OBSERVATIONS_010_001           METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2                         https://doi.org/10.48670/moi-00165
+    %       GLORYS(nesting-curr)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m                   https://doi.org/10.48670/moi-00016
+    %       GLORYS(nesting-salt)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m                    https://doi.org/10.48670/moi-00016
+    %       GLORYS(nesting-temp)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m                https://doi.org/10.48670/moi-00016
+    %       GLORYS(nesting-zeta)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy_anfc_0.083deg_P1D-m                       https://doi.org/10.48670/moi-00016
     % =================================================================================================================
     
     arguments(Input)
@@ -95,4 +100,3 @@ function example()
     
     system(motu_line)
 end
-    
