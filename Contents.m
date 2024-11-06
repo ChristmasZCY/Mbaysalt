@@ -442,6 +442,7 @@
 %       set_path.m                              -  Set the path for the matFVCOM package
 %       w_2d_boundary.m                         -  Draw WRF mesh boundary
 %       w_load_grid.m                           -  Load the WRF grid from WRF output
+%       write_met_forcing_fvcom.m               -  Write meteorological forcing for FVCOM
 %
 %   matWRF                                      -  Extend matWRF toolbox
 %       functionSignatures.json                 -  Function signatures for toolbox
