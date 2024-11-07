@@ -219,6 +219,7 @@
 %      wrnc_sand_nemuro.m                       -  Write sand netcdf file from NEMURO
 %      wrnc_temp.m                              -  Write sea temperature netcdf file at standard level or sigma level
 %      wrnc_zp_nemuro.m                         -  Write zooplankton netcdf file from NEMURO
+%      writeNC_nesting_mexcef.m                 -  Write nesting netcdf file with mexcef
 %   +netcdf_nemuro                              -  Packages of functions for handling NEMURO netcdf file
 %      wrnc_chlorophyll.m                       -  Write numuro chlorophyll netcdf file
 %      wrnc_no3.m                               -  Write numuro NO3 netcdf file
@@ -238,7 +239,7 @@
 % -----------------------------------------------------------------------------------------------------------------
 %   functionSignatures.json                     -  Function signatures for this folder
 %   copernicusmarine.m                          -  Copernicus Marine data download(mimic copernicusmarine)
-%
+%   gitc.m                                      -  Git command(mimic git)
 %
 %                                   Inputfiles  -  Input files for toolbox
 % -----------------------------------------------------------------------------------------------------------------
