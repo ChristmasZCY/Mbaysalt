@@ -83,7 +83,7 @@ function [Uh, Vh, c] = calc_typhoon_windHolland(Lon_grid, Lat_grid, Lon_tyCenter
         f = 2 * omiga * sind(Lat_grid);  % 科氏力参数
         r = calc_geodistance(lon_center, lat_center, Lon_grid, Lat_grid);  % 点到台风中心的距离
         UVg = sqrt(((B/rou_a)*[(Rmax./r).^B]*(P-p0_cnter)*100).*[exp(-(Rmax./r).^B)]+(r.*f/2).^2)-(r.*f)/2;  % 梯度风速  核实这里P-P0的单位要转成pa
-        [Ug(:,:,it), Vg(:,:,it)] = calc_adjust_winddir(Lon_grid,Lat_grid,lon_center,lat_center,UVg,'betaa',betaa,'C2',C2);  % Adjusted gradient wind UV
+        [Ug(:,:,it), Vg(:,:,it)] = calc_typhoon_adjust_winddir(Lon_grid,Lat_grid,lon_center,lat_center,UVg,'betaa',betaa,'C2',C2);  % Adjusted gradient wind UV
 
         c(:,:,it)  = r/(10*Rmax);  % n为常数，一般为9或10
         Um(:,:,it) = exp(-pi.*r./50000)*uE(it);  % Move wind U

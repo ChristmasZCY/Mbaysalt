@@ -18,6 +18,7 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
     %       2024-05-10:     Created,                by Christmas;
     %       2024-05-14:     Added method 'MATLAB',  by Christmas;
     %       2024-07-30:     Added method 'Siqi',    by Christmas;
+    %       2024-11-10:     Fixed error:Siqi,       by Christmas;
     % =================================================================================================================
     % Examples:
     %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],[119,119,119],[32,32,32]);
@@ -71,7 +72,7 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
         dy = NaN;
 
     case 'siqi'
-        d = calc_distance(latArray1, lonArray1, latArray2, lonArray2, 'Geo');
+        d = calc_distance(lonArray1, latArray1, lonArray2, latArray2, 'Geo');
         dx = NaN;
         dy = NaN;
 
