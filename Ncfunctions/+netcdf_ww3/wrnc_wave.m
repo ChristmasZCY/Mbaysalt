@@ -13,10 +13,10 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
     %           Text_len:    Length of msg str       || required: False || type: namevalue || format: 'Text_len',45 
     % =================================================================================================================
     % Example:
-    %       netcdf_fvcom.wrnc_wave(ncid,Lon,Lat,time,wave_Struct)
-    %       netcdf_fvcom.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',conf)
-    %       netcdf_fvcom.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',conf,'INFO')
-    %       netcdf_fvcom.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',conf,'INFO','Text_len',45)
+    %       netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct)
+    %       netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',conf)
+    %       netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',conf,'INFO')
+    %       netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',conf,'INFO','Text_len',45)
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'conf'},{struct('')});

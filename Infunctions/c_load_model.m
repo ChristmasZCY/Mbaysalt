@@ -147,7 +147,7 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         end
         
     case 'FVCOM'
-        varList = {'u', 'v', 'ww', 'temp', 'salinity', 'zeta', 'ua', 'va', '', '', ''};
+        varList = {'u', 'v', 'ww', 'temp', 'salinity', 'zeta', 'ua', 'va', 'aice', 'vice', ''};
         VarStruct = read_var_list(fin, varList);
         if all(isfield(VarStruct,{'u', 'v'}))
             [VarStruct.uv_spd, VarStruct.uv_dir] = calc_uv2sd(VarStruct.u, VarStruct.v, "current");

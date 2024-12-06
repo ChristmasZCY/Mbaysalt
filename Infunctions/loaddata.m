@@ -5,6 +5,7 @@ function loaddata(varargin)
     NAME.VarStruct = 'V';
     NAME.Ttimes = 'T';
     DRAW.plot = false;
+    Global = 'NOGlobal';
 
     % if ~strcmp(get(0,'DefaultTextFontName'),'Times new Roman')
     %     initial();
@@ -20,7 +21,7 @@ function loaddata(varargin)
         fin = varargin{1};
     end
     
-    [GridStruct, VarStruct, Ttimes] = c_load_model(fin, 'Coordinate', Coordinate,'Global');
+    [GridStruct, VarStruct, Ttimes] = c_load_model(fin, 'Coordinate', Coordinate, Global);
 
     assignin("base", NAME.GridStruct, GridStruct);
     assignin("base", NAME.VarStruct, VarStruct);
