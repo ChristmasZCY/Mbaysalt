@@ -107,3 +107,17 @@ write_cst('/Users/christmas/Desktop/x.cst', a,b)
 % slp = calc_slp(T, QVAPOR, pres, gp);
 % pres = P + PB;
 % gp = PH + PHB;
+
+%% draw satellite
+fin = '/Users/christmas/Documents/Code/Project/Server_Program/ModelGrid/温州/2022-李思齐一期182/WenZhou_Dep1+.2dm';
+f = f_load_grid(fin);
+bm = basemap_read(minmax(f.x),minmax(f.y));
+hold on
+basemap_plot(bm)
+f_2d_mesh(f)
+
+%% change ncfile
+ftime = f_load_time(fin,"Times");
+[time, Itime, Itime2, Times] = convert_fvcom_time(ftime+366);
+ncwrite(fin,'time',time); ncwrite(fin,'Itime',Itime);
+ncwrite(fin,'Itime2',Itime2); ncwrite(fin,'Times',Times');
