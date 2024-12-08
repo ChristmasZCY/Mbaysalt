@@ -25,4 +25,8 @@ function figcopy(varargin)
 
     copygraphics(fig);
 
+    contents = clipboard('paste');
+    if len(contents) == 0
+        print(fig,'-clipboard','-dbitmap');
+    end
 end

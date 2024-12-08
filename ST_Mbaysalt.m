@@ -22,14 +22,14 @@ function ST_Mbaysalt(varargin)
     %       2024-06-15:     Added improve:matFigure,                                by Christmas;
     % =================================================================================================================
     % Examples:
-    %       ST_Mbaysalt                        % Add all path
-    %       ST_Mbaysalt('add')                 % Add all path
-    %       ST_Mbaysalt('rm')                  % Remove all path
-    %       ST_Mbaysalt('noclone')             % Add all path without clone git
-    %       ST_Mbaysalt('cd')                  % Change current directory to the path of this function
-    %       ST_Mbaysalt('init')                % Initialize
-    %       ST_Mbaysalt('add','init')          % Initialize and add all path
-    %       ST_Mbaysalt('add','./INSTALL.json')          % Initialize and add all path
+    %       ST_Mbaysalt                             % Add all path
+    %       ST_Mbaysalt('add')                      % Add all path
+    %       ST_Mbaysalt('rm')                       % Remove all path
+    %       ST_Mbaysalt('noclone')                  % Add all path without clone git
+    %       ST_Mbaysalt('cd')                       % Change current directory to the path of this function
+    %       ST_Mbaysalt('init')                     % Initialize
+    %       ST_Mbaysalt('add','init')               % Initialize and add all path
+    %       ST_Mbaysalt('add','./INSTALL.json')     % Initialize and add all path
     % =================================================================================================================
     
     arguments(Input, Repeating)

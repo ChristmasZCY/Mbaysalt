@@ -736,5 +736,15 @@
     "initial": {
         "inputs": [
             {"name": "opt", "kind": "positional", "type": ["char", "choices={'set','recover'}"], "purpose": "opt"}],
+        "outputs": []},
+    "add_restart_el_eqi": {
+        "inputs": [
+            {"name": "finput", "kind": "required", "type": ["file=*,nc"], "purpose": "input filename"},
+            {"name": "foutput", "kind": "required", "type": ["char"], "purpose": "output filename"}],
+        "outputs": []},
+    "add_restart_inundation_cells": {
+        "inputs": [
+            {"name": "finput", "kind": "required", "type": ["file=*,nc"], "purpose": "input filename"},
+            {"name": "foutput", "kind": "required", "type": ["char"], "purpose": "output filename"}],
         "outputs": []}
 }

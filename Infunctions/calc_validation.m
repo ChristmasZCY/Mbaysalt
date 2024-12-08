@@ -19,10 +19,12 @@ function S = calc_validation(model, observation, varargin)
     %           S.MAPE:     Mean absolute percentage error
     %           S.SI:       Scatter index
     %           S.MRE:      Mean Relative Error     计算绝对误差与模拟值之比，反映模拟误差与模拟值占比
+    %           S.DIFMM:    Min-max diff            差值的最大最小值
     % =================================================================================================================
     % Update:
     %       2024-04-13:     Created,                        by Christmas;
     %       2024-09-19:     Fixed corrcoef with 'complete', by Christmas;    
+    %       2024-12-08:     Added DIFMM,                    by Christmas;    
     % =================================================================================================================
     % Example:
     %       S = calc_validation(model, observation);
@@ -89,6 +91,8 @@ function S = calc_validation(model, observation, varargin)
     % MRE 平均相对误差   相对误差（相对误差是指误差相对于真实值的比例）绝对值的平均值 
     % MRE可以反映相对误差的大小，但是不能反映绝对误差的大小。
     S.MRE = sum(abs(dif)/observation)/len;
+
+    S.DIFMM = minmax(abs(dif));
 
     return
 end
