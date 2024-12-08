@@ -423,7 +423,7 @@
      "matFVCOM": {
          "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
          "PATH_OUT": "Exfunctions/matFVCOM",
-         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m","obs_merge_location.m","f_2d_mask_boundary.m","initial.m","set_path.m","kml_w_mesh.m","esmf_write_structured_grid.m","write_met_forcing_fvcom.m"]},
+         "FILES": ["Contents.m","functionSignatures.json","minmax.m","f_2d_coast.m","f_2d_mesh.m","f_load_grid.m","w_2d_boundary.m","w_load_grid.m","obs_merge_location.m","f_2d_mask_boundary.m","initial.m","set_path.m","kml_w_mesh.m","esmf_write_structured_grid.m","write_met_forcing_fvcom.m","add_restart_el_eqi.m","add_restart_inundation_cells.m","write_2dm.m"]},
      "matFigure": {
             "PATH_IN": "Exfunctions/SupplementFiles/matFigure",
             "PATH_OUT": "Exfunctions/matFigure",

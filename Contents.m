@@ -80,6 +80,7 @@
 %   ln.m                                        -  Simulate the ln command in linux
 %   isaequal.m                                  -  Approximate equality A, B(not support NaN)
 %   figcopy.m                                   -  Copy the figure to the clipboard
+%   convert_dat22dm.m                           -  Convert FVCOM dat to 2dm
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -446,6 +447,9 @@
 %       w_2d_boundary.m                         -  Draw WRF mesh boundary
 %       w_load_grid.m                           -  Load the WRF grid from WRF output
 %       write_met_forcing_fvcom.m               -  Write meteorological forcing for FVCOM
+%       add_restart_inundation_cells.m          -  Add restart inundation cells
+%       add_restart_el_eqi.m                    -  Add restart el_eqi
+%       write_2dm.m                             -  Write 2dm file
 %
 %   matWRF                                      -  Extend matWRF toolbox
 %       functionSignatures.json                 -  Function signatures for toolbox
