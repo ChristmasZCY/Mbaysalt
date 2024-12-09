@@ -109,6 +109,8 @@
 - [t_tide](https://www.eoas.ubc.ca/~rich/#T_Tide)
 - [gshhs](https://www.ngdc.noaa.gov/mgg/shorelines/gshhs.html)
 - [etopo1](https://www.ngdc.noaa.gov/mgg/global/global.html)
+- [ETOPO1_Bed_g_gmt4](https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/bedrock/grid_registered/netcdf/ETOPO1_Bed_g_gmt4.grd.gz)
+- [ETOPO1_Ice_g_gmt4](https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/netcdf/ETOPO1_Ice_g_gmt4.grd.gz)
 - [seawater](https://www.cmar.csiro.au/datacentre/ext_docs/seawater.html)
 - [GSW Oceanographic Toolbox](http://www.teos-10.org/software.htm)
 - [WindRose](https://dpereira.asempyme.com/windrose/)

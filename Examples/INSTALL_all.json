@@ -32,6 +32,22 @@
             "LOCALFILE": "Exfunctions/etopo1_ice_g_i2.zip",
             "PATH": "Exfunctions/etopo1/",
             "CHECK": ["Exfunctions/etopo1/etopo1_ice_g_i2.bin","file","2"]},
+        "ETOPO1_Bed_g_gmt4": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "VERSION": "1.0",
+            "URL": "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/bedrock/grid_registered/netcdf/ETOPO1_Bed_g_gmt4.grd.gz",
+            "LOCALFILE": "Exfunctions/ETOPO1_Bed_g_gmt4.grd.gz",
+            "PATH": "Exfunctions/etopo1/",
+            "CHECK": ["Exfunctions/etopo1/ETOPO1_Bed_g_gmt4.grd","file","2"]},
+        "ETOPO1_Ice_g_gmt4": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "VERSION": "1.0",
+            "URL": "https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/netcdf/ETOPO1_Ice_g_gmt4.grd.gz",
+            "LOCALFILE": "Exfunctions/ETOPO1_Ice_g_gmt4.grd.gz",
+            "PATH": "Exfunctions/etopo1/",
+            "CHECK": ["Exfunctions/etopo1/ETOPO1_Ice_g_gmt4.grd","file","2"]},
         "seawater": {
             "INSTALL": true,
             "SETPATH": true,
@@ -187,7 +203,7 @@
         "TMDToolbox_v2_5": {
             "INSTALL": true,
             "SETPATH": true,
-            "DEPTH": 0,
+            "DEPTH": 1,
             "BRANCH": "master",
             "URL": "https://github.com/EarthAndSpaceResearch/TMD_Matlab_Toolbox_v2.5.git",
             "PATH": "Exfunctions/TMDToolbox_v2_5",
@@ -433,10 +449,12 @@
         "PATH_OUT": "Exfunctions/matWRF",
         "FILES": ["calc_rh2.m","functionSignatures.json"]}},
  "@@comments":{
-    "A": "2024-04-26:  Created, by Christmas;",
-    "B": "2024-05-13:, Added improve:minmax, by Christmas;",
-    "C": "2024-05-14:, Added gitclone:irfu_matlab, by Christmas;",
-    "D": "2024-05-15:, Added supplement:matFVCOM:FILES:*, by Christmas;",
-    "E": "2024-05-16:  Added improve:m_etopo2, by Christmas;",
-    "F": "2024-06-15:  Added improve:matFigure, by Christmas;"}
+    "A": "2024-04-26:   Created, by Christmas;",
+    "B": "2024-05-13:   Added improve:minmax, by Christmas;",
+    "C": "2024-05-14:   Added gitclone:irfu_matlab, by Christmas;",
+    "D": "2024-05-15:   Added supplement:matFVCOM:FILES:*, by Christmas;",
+    "E": "2024-05-16:   Added improve:m_etopo2, by Christmas;",
+    "F": "2024-06-15:   Added improve:matFigure, by Christmas;",
+    "G": "2024-12-09:   Added ETOPO1_Bed_g_gmt4, by Christmas;",
+    "H": "2024-12-09:   Added ETOPO1_Ice_g_gmt4, by Christmas;"}
 }
