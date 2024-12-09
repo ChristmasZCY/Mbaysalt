@@ -20,6 +20,8 @@ function ST_Mbaysalt(varargin)
     %       2024-05-12:     Judged init first,                                      by Christmas;
     %       2024-05-16:     Added improve:m_etopo2,                                 by Christmas;
     %       2024-06-15:     Added improve:matFigure,                                by Christmas;
+    %       2024-12-09:     Added ETOPO1_Bed_g_gmt4, ETOPO1_Ice_g_gmt4,             by Christmas;
+    %       2024-12-09:     Added ungz_file, export Proxy from MATLAB to CMD,       by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -544,6 +546,8 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                     STAUS_unzip = unzip_file(pkg_localfile, fileparts(pkg_localfile));  % Exfunctions/ 
                 case {'DHIMIKE', 't_tide', 'GSW', 'seawater', 'WindRose', 'gshhs', 'etopo1'}
                     STAUS_unzip = unzip_file(pkg_localfile, pkg_path);  % Exfunctions/t_tide
+                case {'ETOPO1_Bed_g_gmt4', 'ETOPO1_Ice_g_gmt4'}
+                    STAUS_unzip = ungz_file(pkg_localfile, pkg_path);  %.gz
                 otherwise
                     error('packages %s : unzip is not defined !!!' )
                 end
@@ -551,7 +555,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                     warning_state = warning("query").state;
                     warning('on')
                     warning(['%s downloaded failed, please download it manually!\n' ...
-                           'Then rerun %s !'], pkg.LOCALFILE, mfilename());
+                           'Then return %s !'], pkg.LOCALFILE, mfilename());
                     warning(warning_state)
                 end
                 if isequal(field, 'mexcdf')
@@ -611,18 +615,41 @@ function TF = check_command(command)
 end
 
 function download_urlfile(urlin, fileOut, thread)
+    Proxy.TF = com.mathworks.mlwidgets.html.HTMLPrefs.getUseProxy;
+    if Proxy.TF
+        Proxy.Host = string(com.mathworks.mlwidgets.html.HTMLPrefs.getProxyHost);
+        Proxy.Port = string(com.mathworks.mlwidgets.html.HTMLPrefs.getProxyPort);
+        Proxy.LNXCMD = sprintf('export https_proxy=http://%s:%s http_proxy=http://%s:%s all_proxy=socks5://%s:%s && ', repmat([Proxy.Host, Proxy.Port],1,3));
+        Proxy.WINCMD = sprintf('$Env:http_proxy="http://%s:%s";$Env:https_proxy="http://%s:%s";', repmat([Proxy.Host, Proxy.Port],1,2));
+        Proxy.WINPWS = sprintf('set http_proxy=http://%s:%s & set https_proxy=http://%s:%s & ', repmat([Proxy.Host, Proxy.Port],1,2));
+    else
+        Proxy.Host = "";
+        Proxy.Port = "";
+        Proxy.LNXCMD = "";
+        Proxy.WINCMD = "";
+        Proxy.WINPWS = "";
+    end
+
+    if contains(computer, 'MAC')
+        Proxy.CMD = Proxy.LNXCMD;
+    elseif contains(computer, 'WIN')
+        Proxy.CMD = Proxy.WINPWS;
+    elseif contains(computer, 'LNX')
+        Proxy.CMD = Proxy.LNXCMD;
+    end
+
     if check_command('axel')
-        txt = ['axel -a -v -n ', num2str(thread) ,' ', urlin, ' -o ', fileOut];
+        txt = [Proxy.CMD, 'axel -a -v -n ', num2str(thread) ,' ', urlin, ' -o ', fileOut];
         % txt = ['axel -a -v -n 4 ', url, ' -o ', Edir, 't_tide_v1.5beta.zip'];
         disp(txt);
         system(txt);
     elseif check_command('wget')
-        txt = ['wget ', urlin, ' -O ', fileOut];
+        txt = [Proxy.CMD, 'wget ', urlin, ' -O ', fileOut];
         % txt = ['wget ', url, ' -O ', Edir, 't_tide_v1.5beta.zip'];
         disp(txt);
         system(txt);
     elseif check_command('curl')
-        txt = ['curl -L ', urlin, ' -o ', fileOut];
+        txt = [Proxy.CMD, 'curl -L ', urlin, ' -o ', fileOut];
         % txt = ['curl ', url, ' -o ', Edir, 't_tide_v1.5beta.zip'];
         disp(txt);
         system(txt);
@@ -652,6 +679,18 @@ function STATUS = unzip_file(fileIn, dirOut)
             end
         end
         % unzip([Edir, 'm_map/data/gshhg-bin-2.3.7.zip'], [Edir, 'm_map/data/']);
+    end
+end
+
+function STATUS = ungz_file(fileIn, dirOut)
+    STATUS = 0;
+    try
+        filenames = gunzip(fileIn, dirOut);
+        if ~isempty(filenames)
+            STATUS = 1;
+        end
+    catch ME1
+        disp(ME1)
     end
 end
 
@@ -723,7 +762,7 @@ end
 function print_info()
     fprintf('\n')
     fprintf('=====================================================================\n')
-    fprintf('As adding files, if it does not take efect, please restart MATLAB    \n')
+    fprintf('As adding files, if it does not take effect, please restart MATLAB   \n')
     fprintf('=====================================================================\n')
     fprintf('\n')
 end

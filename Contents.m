@@ -335,6 +335,8 @@
 %   gzh2html/                                   -  Convert gongzhonghao to html
 %   FVCOM_NSCS/                                 -  FVCOM NSCS toolbox
 %   FVCOM_Bohai/                                -  FVCOM Bohai toolbox
+%   FVCOM_WZinu3/                               -  FVCOM WZinu3 toolbox
+%   FVCOM_WZstorm3/                             -  FVCOM WZstorm3 toolbox
 %
 %
 %                                         Docs  -  Documents and Manuals for toolbox
@@ -400,6 +402,8 @@
 %   t_tide                                      -  T_Tide Harmonic Analysis Toolbox(v1.5beta)  ||  https://www.eoas.ubc.ca/~rich/#T_Tide
 %   gshhs                        (optional)     -  GSHHS                                       ||  https://www.ngdc.noaa.gov/mgg/shorelines/gshhs.html
 %   etopo1                       (optional)     -  ETOPO1                                      ||  https://www.ngdc.noaa.gov/mgg/global/global.html
+%   ETOPO1_Bed_g_gmt4            (optional)     -  ETOPO1_Bed_g_gmt4.grd                       ||  https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/bedrock/grid_registered/netcdf/ETOPO1_Bed_g_gmt4.grd.gz
+%   ETOPO1_Ice_g_gmt4            (optional)     -  ETOPO1_Ice_g_gmt4.grd                       ||  https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/netcdf/ETOPO1_Ice_g_gmt4.grd.gz
 %   seawater                     (optional)     -  seawater toolbox                            ||  https://www.cmar.csiro.au/datacentre/ext_docs/seawater.html
 %   GSW Oceanographic Toolbox    (optional)     -  GSW Oceanographic Toolbox                   ||  http://www.teos-10.org/software.htm
 %   WindRose                     (optional)     -  WindRose toolbox                            ||  https://dpereira.asempyme.com/windrose/
