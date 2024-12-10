@@ -1,16 +1,17 @@
 
 %% f_smooth
 clm
-f = f_load_grid('/Users/christmas/Desktop/项目/网格/北部湾/v4/bbw4_geo.2dm');
+f = f_load_grid('/Users/christmas/Documents/Code/Project/Server_Program/ModelGrid/北部湾/v4-2d/bbw4_geo.2dm');
 figure(1)
 f_2d_image(f,f.h);
 figure(2)
 f.h = f_smooth(f, f.h);
 f_2d_image(f,f.h);
 
+%% smoothdata 
 %% smooth 
 clm
-f = f_load_grid('/Users/christmas/Desktop/项目/网格/北部湾/v4/bbw4_geo.2dm');
+f = f_load_grid('/Users/christmas/Documents/Code/Project/Server_Program/ModelGrid/北部湾/v4-2d/bbw4_geo.2dm');
 figure(1)
 f_2d_image(f,f.h);
 figure(2)

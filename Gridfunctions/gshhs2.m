@@ -21,6 +21,7 @@ function poly_coast = gshhs2(gshhsfile, varargin)
     %       
     %       See also GSHHS
     %       <a href="https://www.soest.hawaii.edu/wessel/gshhg/">GSHHG Web</a>
+    %       <a href="https://mp.weixin.qq.com/s/SQ2qU_1ScvAzxiJNZJ9ktg">ETOPO地形高程数据绘图及gshhs精细岸线数据绘图</a>
     % =================================================================================================================
 
     narginchk(1,3);

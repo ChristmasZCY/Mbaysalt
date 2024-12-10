@@ -14,6 +14,13 @@ function varargout = read_conf(confin, varargin)
     %           varargout{2}: struct               || required: False|| type: struct          ||  format: struct(n*1) --> name value
     %           varargout{3}: struct               || required: False|| type: struct          ||  format: struct(1*1)
     % =================================================================================================================
+    % Returns:
+    %       
+    % =================================================================================================================
+    % Updates:
+    %       ****-**-**:     Created,            by Christmas;
+    %       2024-12-10:     Added key:FILEPATH, by Christmas;
+    % =================================================================================================================
     % Example:
     %       conf = read_conf(confin)
     %       [conf, kv] = read_conf(confin)
@@ -58,6 +65,10 @@ function varargout = read_conf(confin, varargin)
     %-str2sym: 将字符串转换为符号表达式
     %-str2mat: 将字符串转换为矩阵
     [key,value] = cellfun(@parse_line, kv_conf, 'UniformOutput', false);
+    if ~ismember('FILEPATH', key)
+        key = [key,{'FILEPATH'}];
+        value = [value, {confin}];
+    end
     [varargout{1}, varargout{2}] = KeyValue2Struct(key,value);
     varargout{1} = make_DEFAULT(varargout{1});
     if nargin > 1

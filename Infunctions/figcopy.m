@@ -9,7 +9,8 @@ function figcopy(varargin)
     %       None
     % =================================================================================================================
     % Updates:
-    %       2024-09-19:     Created,    by Christmas;
+    %       2024-09-19:     Created,            by Christmas;
+    %       2024-12-09:     Fixed with print,   by Christmas;
     % =================================================================================================================
     % Examples:
     %       figcopy;
@@ -27,6 +28,7 @@ function figcopy(varargin)
 
     contents = clipboard('paste');
     if len(contents) == 0
+        disp('Use print!')
         print(fig,'-clipboard','-dbitmap');
     end
 end

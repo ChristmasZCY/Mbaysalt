@@ -1,26 +1,27 @@
-function HOME = getHome()
-    %       Get home path 
+function OS = checkOS()
+    %       Check OS
     % =================================================================================================================
-    % Parameter:
-    %       
+    % Parameters:
+    %       None
     % =================================================================================================================
     % Returns:
-    %       HOME:   Home path                || type: char || format: '/Users/christmas'
+    %       OS: Computer system  || type: char || example: 'LNX' 'WIN' 'MAC'
     % =================================================================================================================
     % Update:
-    %       2024-05-30:     Created, by Christmas;
+    %       2024-12-10:     Created,    by Christmas;
     % =================================================================================================================
     % Example:
-    %       HOME = getHome();
+    %       OS = checkOS();
     % =================================================================================================================
 
-    switch checkOS
-    case {'WIN'}
-        HOME = getenv('UserProfile');
-    case {'MAC', 'LNX'}
-        HOME = getenv('HOME');
-    otherwise
-        error('Unidentification system !!!')
+    OS1 = computer;
+
+    if contains(OS1, 'MAC')
+        OS = 'MAC';
+    elseif contains(OS1, 'WIN')
+        OS = 'WIN';
+    elseif contains(OS1, 'LNX')
+        OS = 'LNX';
     end
 
 end

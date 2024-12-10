@@ -8,11 +8,11 @@
 % Version 2.2 (R2023b) 2024-01-31   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.2>
 % Version 2.3 (R2024a) 2024-04-04   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.3>
 % Version 2.4 (R2024a) 2024-07-26   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.4>
-% Version 2.5 (R2024b) 2024-12-09   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.5>
+% Version 2.5 (R2024b) 2024-12-09   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/v2.5>
 %
 % This toolbox is used to postpocess model data and draw pictures.
 % The model data is from FVCOM, NEMURO, ERSEM, WAVE WATCH III, WRF, MITgcm and so on.
-% Data annotation is written by Christmas Z. and Other baysalt members.
+% Data annotation is written by Christmas Z. and other baysalt members.
 %
 % =================================================================================================================
 %
@@ -81,7 +81,8 @@
 %   ln.m                                        -  Simulate the ln command in linux
 %   isaequal.m                                  -  Approximate equality A, B(not support NaN)
 %   figcopy.m                                   -  Copy the figure to the clipboard
-%   convert_dat22dm.m                           -  Convert FVCOM dat to 2dm
+%   checkOS.m                                   -  Check the system OS
+%   genNaNlegend.m                              -  Generate NaN legend
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -189,6 +190,7 @@
 %   write_vtk.m                                 -  Write vtk file
 %   gshhs2.m                                    -  Fixed gshhs only for [-180 195], gshhs2 for [-540 540]
 %   convert_shp2cst.m                           -  Convert shapefile to cst file, contains merging polygons
+%   convert_dat22dm.m                           -  Convert FVCOM dat to 2dm
 %
 %
 %                                Readfunctions  -  Functions for reading data
@@ -221,7 +223,7 @@
 %      wrnc_sand_nemuro.m                       -  Write sand netcdf file from NEMURO
 %      wrnc_temp.m                              -  Write sea temperature netcdf file at standard level or sigma level
 %      wrnc_zp_nemuro.m                         -  Write zooplankton netcdf file from NEMURO
-%      writeNC_nesting_mexcef.m                 -  Write nesting netcdf file with mexcef
+%      write_nesting_mexcef.m                   -  Write nesting netcdf file with mexcef
 %   +netcdf_nemuro                              -  Packages of functions for handling NEMURO netcdf file
 %      wrnc_chlorophyll.m                       -  Write numuro chlorophyll netcdf file
 %      wrnc_no3.m                               -  Write numuro NO3 netcdf file
@@ -455,6 +457,7 @@
 %       add_restart_inundation_cells.m          -  Add restart inundation cells
 %       add_restart_el_eqi.m                    -  Add restart el_eqi
 %       write_2dm.m                             -  Write 2dm file
+%       f_calc_resolution.m                     -  Calculate the resolution of the grid
 %
 %   matWRF                                      -  Extend matWRF toolbox
 %       functionSignatures.json                 -  Function signatures for toolbox
@@ -472,6 +475,7 @@
 %       Otherpkgs.m                             -  Show other packages
 %       scatplot.m                              -  Scatter plot with colorbar   ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/8577-scatplot
 %       tpxo_atlas2local.m      (fixed)         -  Convert TPXO9-atlas to local ||  https://www.tpxo.net/global/tpxo9-atlas
+%       scatterOOR.m                            -  Scatter out of range         ||  https://mp.weixin.qq.com/s/B9Yv8LCLpb1fOw9Wz1MmMA
 %
 %
 %                                           Py  -  Python scripts for toolbox
@@ -496,4 +500,6 @@
 % Email         :  273519355@qq.com
 % Website       :  https://www.iocean.cn  (visualization)
 %                  https://data.iocean.cn (database)
+%                  https://github.com/ChristmasZCY/Mbaysalt (github)
+%                  https://gitea.iocean.cn/Christmas/Mbaysalt (gitea)
 

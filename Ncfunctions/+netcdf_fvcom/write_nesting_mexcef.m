@@ -1,4 +1,4 @@
-function writeNC_nesting_mexcef(fout, fn, time, varargin)
+function write_nesting_mexcef(fout, fn, time, varargin)
     %       Write the nesting file for FVCOM, with mexcdf
     % =================================================================================================================
     % Parameter:
@@ -26,10 +26,10 @@ function writeNC_nesting_mexcef(fout, fn, time, varargin)
     %       2024-11-07:     Edited code from Yang Ding, by Christmas;
     % =================================================================================================================
     % Example:
-    %       netcdf_fvcom.writeNC_nesting_mexcef('nesting.nc', fn, time, ...
-    %                                           'Zeta', Zeta, 'Temperature', Temperature, ...
-    %                                           'Salinity', Salinity, 'U', U, 'V', V, 'Hyw', Hyw, ...
-    %                                           'weight_node', weight_node, 'weight_cell', weight_cell);
+    %       netcdf_fvcom.write_nesting_mexcef('nesting.nc', fn, time, ...
+    %                                         'Zeta', Zeta, 'Temperature', Temperature, ...
+    %                                         'Salinity', Salinity, 'U', U, 'V', V, 'Hyw', Hyw, ...
+    %                                         'weight_node', weight_node, 'weight_cell', weight_cell);
     % =================================================================================================================
 
     varargin = read_varargin2(varargin, {'Ideal'});
