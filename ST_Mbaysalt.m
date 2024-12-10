@@ -11,6 +11,7 @@ function ST_Mbaysalt(varargin)
     %           *.json:     INSTALL JsonFile    || required: False|| type: positional || format: './INSTALL.json'
     % =================================================================================================================
     % Returns:
+    %       None
     % =================================================================================================================
     % Updates:
     %       ****-**-**:     See Mainpath.m
@@ -598,10 +599,10 @@ function STATUS = move_mexcdf_branch(Afolder, Ufolder)
 end
 
 function TF = check_command(command)
-    switch computer('arch')
-        case {'win32','win64'}
+    switch checkOS()
+        case {'WIN'}
             command = ['where ' command];
-        case {'glnxa64','maci64','maca64'}
+        case {'MAC', 'LNX'}
             command = ['which ' command];
         otherwise
             error('platform error')
@@ -622,6 +623,9 @@ function download_urlfile(urlin, fileOut, thread)
         Proxy.LNXCMD = sprintf('export https_proxy=http://%s:%s http_proxy=http://%s:%s all_proxy=socks5://%s:%s && ', repmat([Proxy.Host, Proxy.Port],1,3));
         Proxy.WINCMD = sprintf('$Env:http_proxy="http://%s:%s";$Env:https_proxy="http://%s:%s";', repmat([Proxy.Host, Proxy.Port],1,2));
         Proxy.WINPWS = sprintf('set http_proxy=http://%s:%s & set https_proxy=http://%s:%s & ', repmat([Proxy.Host, Proxy.Port],1,2));
+        setenv('https_proxy', sprintf('http://%s:%s',Proxy.Host, Proxy.Port));
+        setenv('http_proxy',  sprintf('http://%s:%s',Proxy.Host, Proxy.Port));
+        setenv('all_proxy',   sprintf('socks5://%s:%s',Proxy.Host, Proxy.Port));
     else
         Proxy.Host = "";
         Proxy.Port = "";
@@ -630,12 +634,11 @@ function download_urlfile(urlin, fileOut, thread)
         Proxy.WINPWS = "";
     end
 
-    if contains(computer, 'MAC')
+    switch checkOS()
+    case {'MAC', 'LNX'}
         Proxy.CMD = Proxy.LNXCMD;
-    elseif contains(computer, 'WIN')
+    case 'WIN'
         Proxy.CMD = Proxy.WINPWS;
-    elseif contains(computer, 'LNX')
-        Proxy.CMD = Proxy.LNXCMD;
     end
 
     if check_command('axel')

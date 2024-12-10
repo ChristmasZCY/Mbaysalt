@@ -7,7 +7,7 @@
             {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":"MaxLon"},
-            {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo','ww3'}"],"purpose":"Coordinate of reading"},
+            {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo'}"],"purpose":"Coordinate of reading"},
             {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"},
             {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"}],
         "outputs":[
@@ -18,7 +18,7 @@
             {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":"MaxLon"},
-            {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo','ww3'}"],"purpose":"Coordinate of reading"},
+            {"name":"Coordinate","kind":"namevalue","type":["choices={'xy','geo'}"],"purpose":"Coordinate of reading"},
             {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"},
             {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"}],
         "outputs":[
@@ -481,7 +481,8 @@
         "inputs":[
             {"name":"fgrid","kind":"required","type":["struct"],"purpose":"FVCOM Grid"},
             {"name":"Geo","kind":"flag","type":["char","choices={'Geo'}"],"purpose":"Geo"},
-            {"name":"R","kind":"namevalue","type":["numeric"],"purpose":"R of the earth"}],
+            {"name":"R","kind":"namevalue","type":["numeric"],"purpose":"R of the earth"},
+            {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"}],
         "outputs":[
             {"name":"d_cell","type":["scalar"],"purpose":"mean resolution on cell center of the three edges"},
             {"name":"d","type":["scalar"],"purpose":"length of every line, in shape of (nele,3)"}]},
@@ -491,7 +492,8 @@
             {"name":"y","kind":"required","type":["numeric"],"purpose":"latitude or y"},
             {"name":"nv","kind":"required","type":["numeric"],"purpose":"nv"},
             {"name":"Geo","kind":"flag","type":["char","choices={'Geo'}"],"purpose":"Geo"},
-            {"name":"R","kind":"namevalue","type":["numeric"],"purpose":"R of the earth"}],
+            {"name":"R","kind":"namevalue","type":["numeric"],"purpose":"R of the earth"},
+            {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"}],
         "outputs":[
             {"name":"d_cell","type":["scalar"],"purpose":"mean resolution on cell center of the three edges"},
             {"name":"d","type":["scalar"],"purpose":"length of every line, in shape of (nele,3)"}]},

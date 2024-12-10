@@ -390,5 +390,9 @@
     "figcopy":{
         "inputs":[
             {"name":"fig",  "kind":"positional", "type":["handle"], "purpose":"Figure handle"}],
-        "outputs":[]}
+        "outputs":[]},
+    "checkOS":{
+        "inputs":[],
+        "outputs":[
+            {"name":"OS", "type":["char","choices={'MAC','WIN','LNX'}"], "purpose":"System OS"}]}
 }

@@ -36,8 +36,8 @@ function ln(fin, fout, varargin)
     fin = convertStringsToChars(fin);
     fout = convertStringsToChars(fout);
 
-    switch computer('arch')
-    case {'win32','win64'}
+    switch checkOS
+    case {'WIN'}
         % $shell = New-Object -ComObject WScript.Shell
         % $desktop = [System.Environment]::GetFolderPath('Desktop')
         % $shortcut = $shell.CreateShortcut("$desktop\clickme.lnk")
@@ -53,7 +53,7 @@ function ln(fin, fout, varargin)
             '$shortcut.TargetPath = ''%s'';  ', ...
             '$shortcut.Save()"'],fout,fin);
         disp(cmd);
-    case {'glnxa64','maci64','maca64'}
+    case {'MAC', 'LNX'}
         cmd = ['ln -s ', fin, ' ', fout];
     end
 

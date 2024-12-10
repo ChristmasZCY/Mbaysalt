@@ -63,23 +63,20 @@ switch class(varargin{1})
                 fgrid.LAT = LAT;
                 nv = ncread(fnc, 'nv');
             case 'geo'
-                x = double(ncread(fnc, 'lon'));
-                y = double(ncread(fnc, 'lat'));
-                LON = double(ncread(fnc, 'lon'));
-                LAT = double(ncread(fnc, 'lat'));
+                if nc_Var_exist(fnc, 'nv')
+                    x = double(ncread(fnc, 'lon'));
+                    y = double(ncread(fnc, 'lat'));
+                    nv = ncread(fnc, 'nv');
+                elseif nc_Var_exist(fnc, 'tri')
+                    x = double(ncread(fnc, 'longitude'));
+                    y = double(ncread(fnc, 'latitude'));
+                    nv = ncread(fnc, 'tri')';
+                end
 
+                LON = x;
+                LAT = y;
                 fgrid.LON = LON;
                 fgrid.LAT = LAT;
-                nv = ncread(fnc, 'nv');
-            case 'ww3'
-                x = double(ncread(fnc, 'longitude'));
-                y = double(ncread(fnc, 'latitude'));
-                LON = double(ncread(fnc, 'longitude'));
-                LAT = double(ncread(fnc, 'latitude'));
-                
-                fgrid.LON = LON;
-                fgrid.LAT = LAT;
-                nv = ncread(fnc, 'tri')';
             otherwise
                 error('Unknown coordinate. Choose: xy or geo or ww3')
         end
@@ -97,7 +94,7 @@ switch class(varargin{1})
         
 %         n = 2;
         elseif endsWith(varargin{1}, 'grd.dat')
-            varargin{1}
+            % varargin{1}
             [x, y, nv, h] = read_grd(varargin{1});
             nv = nv(:,[1 3 2]);
             LON = x;

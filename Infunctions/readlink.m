@@ -43,8 +43,8 @@ function [YN, Ofile] = readlink(file)
         return
     end
 
-    switch computer('arch')
-        case {'win32','win64'}
+    switch checkOS
+        case {'WIN'}
             % $lnkPath = "D:\Beihai(lonlat3).2dm.lnk"; $shell = New-Object -ComObject WScript.Shell; $shortcut = $shell.CreateShortcut($lnkPath); Write-Host "$($shortcut.TargetPath)"
             cmd = sprintf("powershell -Command ""$lnkPath = '%s'; " + ...
                           "$shell = New-Object -ComObject WScript.Shell; " + ...
@@ -58,7 +58,7 @@ function [YN, Ofile] = readlink(file)
                 YN = false;
                 Ofile = file;
             end
-        case {'glnxa64','maci64','maca64'}
+        case {'MAC', 'LNX'}
             cmd = ['readlink -f ', file];
             [~, Ofile] = system(cmd);
             Ofile = strip(Ofile);
