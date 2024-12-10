@@ -6,14 +6,15 @@
 url0='https://github.com/ChristmasZCY/Mbaysalt.git'
 branch0='master'
 
+# Skip git-lfs file
+export GIT_LFS_SKIP_SMUDGE=1
+
 opt=$1
 
 Usage() {
     echo "Usage: $0 [all|new]"
     exit 1
 }
-
-
 
 if [ "$1" == "all" ]; then
     echo "git clone all..."
@@ -24,7 +25,7 @@ elif [ "$1" == "new" ]; then
     # https://zhuanlan.zhihu.com/p/597688197
     # git pull --unshallow
 else
-    echo "invalid option"
+    echo "Invalid option"
     Usage
 fi
 

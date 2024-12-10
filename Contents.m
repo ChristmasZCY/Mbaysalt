@@ -221,7 +221,7 @@
 %      wrnc_sand_nemuro.m                       -  Write sand netcdf file from NEMURO
 %      wrnc_temp.m                              -  Write sea temperature netcdf file at standard level or sigma level
 %      wrnc_zp_nemuro.m                         -  Write zooplankton netcdf file from NEMURO
-%      writeNC_nesting_mexcef.m                 -  Write nesting netcdf file with mexcef
+%      write_nesting_mexcef.m                   -  Write nesting netcdf file with mexcef
 %   +netcdf_nemuro                              -  Packages of functions for handling NEMURO netcdf file
 %      wrnc_chlorophyll.m                       -  Write numuro chlorophyll netcdf file
 %      wrnc_no3.m                               -  Write numuro NO3 netcdf file
@@ -455,6 +455,7 @@
 %       add_restart_inundation_cells.m          -  Add restart inundation cells
 %       add_restart_el_eqi.m                    -  Add restart el_eqi
 %       write_2dm.m                             -  Write 2dm file
+%       f_calc_resolution.m                     -  Calculate the resolution of the grid
 %
 %   matWRF                                      -  Extend matWRF toolbox
 %       functionSignatures.json                 -  Function signatures for toolbox
