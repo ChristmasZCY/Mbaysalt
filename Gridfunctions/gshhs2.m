@@ -2,7 +2,7 @@ function poly_coast = gshhs2(gshhsfile, varargin)
     %       Fixed gshhs only for [-180 195], gshhs2 for [-540 540]
     % =================================================================================================================
     % Parameters:
-    %       gshhsfile:  gshhs filepath                   || required: True  || type: filename  || format: 'gshhs_c.b'
+    %       gshhsfile:  gshhs filepath                   || required: True  || type: filename || format: 'gshhs_c.b'
     %       varargin: (optional)
     %           ylims:  latitude range                   || required: False || type: double   || format: [min, max]
     %           xlims:  latitude range                   || required: False || type: double   || format: [min, max]    
@@ -19,7 +19,7 @@ function poly_coast = gshhs2(gshhsfile, varargin)
     % =================================================================================================================
     % Reference:
     %       
-    %       See also GSHHS
+    %       See also GSHHS READGEORASTER ETOPO
     %       <a href="https://www.soest.hawaii.edu/wessel/gshhg/">GSHHG Web</a>
     %       <a href="https://mp.weixin.qq.com/s/SQ2qU_1ScvAzxiJNZJ9ktg">ETOPO地形高程数据绘图及gshhs精细岸线数据绘图</a>
     % =================================================================================================================
