@@ -38,6 +38,36 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
     else
         SWITCH.mwp = false;
     end
+    if isfield(Velement, 'Shww')
+        SWITCH.shww = true;
+    else
+        SWITCH.shww = false;
+    end
+    if isfield(Velement, 'Mdww')
+        SWITCH.mdww = true;
+    else
+        SWITCH.mdww = false;
+    end
+    if isfield(Velement, 'Mpww')
+        SWITCH.mpww = true;
+    else
+        SWITCH.mpww = false;
+    end
+    if isfield(Velement, 'Shts')
+        SWITCH.shts = true;
+    else
+        SWITCH.shts = false;
+    end
+    if isfield(Velement, 'Mdts')
+        SWITCH.mdts = true;
+    else
+        SWITCH.mdts = false;
+    end
+    if isfield(Velement, 'Mpts')
+        SWITCH.mpts = true;
+    else
+        SWITCH.mpts = false;
+    end
 
     % time && TIME
     [TIME,TIME_reference,TIME_start_date,TIME_end_date,time_filename] = time_to_TIME(time);
@@ -84,6 +114,36 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
         netcdf.defVarFill(ncid, mwp_id, false, 9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, mwp_id, true, true, 5)
     end
+    if SWITCH.shww
+        shww_id = netcdf.defVar(ncid, 'shww', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 风浪波高
+        netcdf.defVarFill(ncid, shww_id, false, 9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, shww_id, true, true, 5)
+    end
+    if SWITCH.mdww
+        mdww_id = netcdf.defVar(ncid, 'mdww', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 风浪波向
+        netcdf.defVarFill(ncid, mdww_id, false, 9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, mdww_id, true, true, 5)
+    end
+    if SWITCH.mpww
+        mpww_id = netcdf.defVar(ncid, 'mpww', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 风浪周期
+        netcdf.defVarFill(ncid, mpww_id, false, 9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, mpww_id, true, true, 5)
+    end
+    if SWITCH.shts
+        shts_id = netcdf.defVar(ncid, 'shts', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 涌浪波高
+        netcdf.defVarFill(ncid, shts_id, false, 9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, shts_id, true, true, 5)
+    end
+    if SWITCH.mdts
+        mdts_id = netcdf.defVar(ncid, 'mdts', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 涌浪波向
+        netcdf.defVarFill(ncid, mdts_id, false, 9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, mdts_id, true, true, 5)
+    end
+    if SWITCH.mpts
+        mpts_id = netcdf.defVar(ncid, 'mpts', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 涌浪周期
+        netcdf.defVarFill(ncid, mpts_id, false, 9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, mpts_id, true, true, 5)
+    end
 
     % -----
     netcdf.endDef(ncid);    % 结束nc文件定义
@@ -100,6 +160,24 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
     end
     if SWITCH.mwp
         netcdf.putVar(ncid, mwp_id,  [0,0,0], [size(Velement.Mwp,1), size(Velement.Mwp,2), size(Velement.Mwp,3)],  Velement.Mwp); % 海浪周期
+    end
+    if SWITCH.shww
+        netcdf.putVar(ncid, shww_id,  [0,0,0], [size(Velement.Shww,1), size(Velement.Shww,2), size(Velement.Shww,3)],  Velement.Shww); % 风浪波高
+    end
+    if SWITCH.mdww
+        netcdf.putVar(ncid, mdww_id,  [0,0,0], [size(Velement.Mdww,1), size(Velement.Mdww,2), size(Velement.Mdww,3)],  Velement.Mdww); % 风浪波向
+    end
+    if SWITCH.mpww
+        netcdf.putVar(ncid, mpww_id,  [0,0,0], [size(Velement.Mpww,1), size(Velement.Mpww,2), size(Velement.Mpww,3)],  Velement.Mpww); % 风浪周期
+    end
+    if SWITCH.shts
+        netcdf.putVar(ncid, shts_id,  [0,0,0], [size(Velement.Shts,1), size(Velement.Shts,2), size(Velement.Shts,3)],  Velement.Shts); % 涌浪波高
+    end
+    if SWITCH.mdts
+        netcdf.putVar(ncid, mdts_id,  [0,0,0], [size(Velement.Mdts,1), size(Velement.Mdts,2), size(Velement.Mdts,3)],  Velement.Mdts); % 涌浪波向
+    end
+    if SWITCH.mpts
+        netcdf.putVar(ncid, mpts_id,  [0,0,0], [size(Velement.Mpts,1), size(Velement.Mpts,2), size(Velement.Mpts,3)],  Velement.Mpts); % 涌浪周期
     end
 
     % -----
@@ -135,8 +213,36 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
         netcdf.putAtt(ncid, mwd_id, 'direction_90', 'coming from the east');   % 海浪波向
     end
     if SWITCH.mwp
-        netcdf.putAtt(ncid, mwp_id, 'units',     's');                     % 海浪周期
+        netcdf.putAtt(ncid, mwp_id, 'units',     's');                % 海浪周期
         netcdf.putAtt(ncid, mwp_id, 'long_name', 'mean wave period'); % 海浪周期
+    end
+    if SWITCH.shww
+        netcdf.putAtt(ncid, shww_id, 'units',     'm');                                % 风浪波高
+        netcdf.putAtt(ncid, shww_id, 'long_name', 'significant height of wind waves'); % 风浪波高
+    end
+    if SWITCH.mdww
+        netcdf.putAtt(ncid, mdww_id, 'units',        'degree');                        % 风浪波向
+        netcdf.putAtt(ncid, mdww_id, 'long_name',    'mean direction of wind waves');  % 风浪波向
+        netcdf.putAtt(ncid, mdww_id, 'direction_0',  'coming from the north');         % 风浪波向
+        netcdf.putAtt(ncid, mdww_id, 'direction_90', 'coming from the east');          % 风浪波向
+    end
+    if SWITCH.mpww
+        netcdf.putAtt(ncid, mpww_id, 'units',     's');                          % 风浪周期
+        netcdf.putAtt(ncid, mpww_id, 'long_name', 'mean period of wind waves');  % 风浪周期
+    end
+    if SWITCH.shts
+        netcdf.putAtt(ncid, shts_id, 'units',     'm');                                  % 涌浪波高
+        netcdf.putAtt(ncid, shts_id, 'long_name', 'significant height of total swell');  % 涌浪波高
+    end
+    if SWITCH.mdts
+        netcdf.putAtt(ncid, mdts_id, 'units',        'degree');                         % 涌浪波向
+        netcdf.putAtt(ncid, mdts_id, 'long_name',    'mean direction of total swell');  % 涌浪波向
+        netcdf.putAtt(ncid, mdts_id, 'direction_0',  'coming from the north');          % 涌浪波向
+        netcdf.putAtt(ncid, mdts_id, 'direction_90', 'coming from the east');           % 涌浪波向
+    end
+    if SWITCH.mpts
+        netcdf.putAtt(ncid, mpts_id, 'units',     's');                           % 涌浪周期
+        netcdf.putAtt(ncid, mpts_id, 'long_name', 'mean period of total swell');  % 涌浪周期
     end
 
     % 写入global attribute
