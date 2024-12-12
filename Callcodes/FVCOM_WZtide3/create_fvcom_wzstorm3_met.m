@@ -1,10 +1,10 @@
-function create_fvcom_wzstorm3_met(f2dm, din_forcing, fout, ymd_start, ymd_end)
-    %       Create met forcing file for FVCOM_WZstorm3, data from WRF2FVCOM
+function create_fvcom_wztide3_met(f2dm, din_forcing, fout, ymd_start, ymd_end)
+    %       Create met forcing file for FVCOM_WZtide3, data from WRF2FVCOM
     % =================================================================================================================
     % Parameters:
-    %       f2dm: model 2dm grid file       || required: True || type: text    || example: 'wzstorm3.2dm'
+    %       f2dm: model 2dm grid file       || required: True || type: text    || example: 'wztide3.2dm'
     %       din_forcing: forcing dir        || required: True || type: text    || example: './forcing/global'
-    %       fout: file output               || required: True || type: text    || example: './fvcom_wzstorm3_met_forecast/fvcom_wzstorm3_met_20230722.nc'
+    %       fout: file output               || required: True || type: text    || example: './fvcom_wztide3_met_forecast/fvcom_wztide3_met_20230722.nc'
     %       ymd_start: date start           || required: True || type: double  || example: 20241105
     %       ymd_end: date start             || required: True || type: double  || example: 20241106
     % =================================================================================================================
@@ -15,7 +15,7 @@ function create_fvcom_wzstorm3_met(f2dm, din_forcing, fout, ymd_start, ymd_end)
     %       2024-12-08:     Created,    by Christmas;
     % =================================================================================================================
     % Example:
-    %       create_fvcom_wzstorm3_met('wzstorm3.2dm','./forcing/global','./fvcom_wzstorm3_met_forecast/fvcom_wzstorm3_met_20230722.nc',20241105,20241106)
+    %       create_fvcom_wztide3_met('wztide3.2dm','./forcing/global','./fvcom_wztide3_met_forecast/fvcom_wztide3_met_20230722.nc',20241105,20241106)
     % =================================================================================================================
     
     ymd_start = num2str(ymd_start, '%8d');

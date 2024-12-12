@@ -308,10 +308,12 @@
 %   Example_py.m                                -  Example for matlab-python code
 %   Post_fvcom_scs.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
-%   Post_gfvcom_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
+%   Post_gersem_v2.conf                         -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_nemuro.conf                            -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_Wenzhou.conf                           -  Example for Post_fvcom/Postprocess_fvcom
 %   Post_Wenzhou_ww3.conf                       -  Example for Post_ww3
+%   Post_WZtide3.conf                           -  Example for Post_fvcom/Postprocess_fvcom
+%   Post_bbw.conf                               -  Example for Post_fvcom/Postprocess_fvcom
 %   stations.xml                                -  Example of xml file
 %   example.vtk                                 -  Example of vtk file
 %   INSTALL_custom.json                         -  Custom INSTALL.json
@@ -339,7 +341,7 @@
 %   FVCOM_NSCS/                                 -  FVCOM NSCS toolbox
 %   FVCOM_Bohai/                                -  FVCOM Bohai toolbox
 %   FVCOM_WZinu3/                               -  FVCOM WZinu3 toolbox
-%   FVCOM_WZstorm3/                             -  FVCOM WZstorm3 toolbox
+%   FVCOM_WZtide3/                             -  FVCOM WZtide3 toolbox
 %
 %
 %                                         Docs  -  Documents and Manuals for toolbox

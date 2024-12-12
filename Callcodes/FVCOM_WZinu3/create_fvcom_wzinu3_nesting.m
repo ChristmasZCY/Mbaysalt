@@ -4,7 +4,7 @@ function create_fvcom_wzinu3_nesting(fnest_nc, din_glory, din_tide, fout, yyyymm
     % Parameters:
     %       fnest_nc: nesting example file      || required: True || type: text    || example: 'fnesting_wzinu3_grid_example.nc'
     %       din_glory: glory data dir           || required: True || type: text    || example: './Data/GLORYS'
-    %       din_tide: tide data dir             || required: True || type: text    || example: './NSCS_tide'
+    %       din_tide: tide data dir             || required: True || type: text    || example: './WZinu3_tide'
     %       fout: file output                   || required: True || type: text    || example: './fvcom_wzinu3_nesting_forecast/fvcom_wzinu3_nesting_20241101.nc'
     %       yyyymmdd: date                      || required: True || type: double  || example: 20241105
     %       day_len: days length                || required: False|| type: double  || example: 1
@@ -16,7 +16,7 @@ function create_fvcom_wzinu3_nesting(fnest_nc, din_glory, din_tide, fout, yyyymm
     %       2024-12-08:     Created,    by Christmas;
     % =================================================================================================================
     % Example:
-    %       create_fvcom_wzinu3_nesting('./data/fnesting_wzinu3_grid_example.nc', '../Data/GLORYS', './data/NSCS_tide', './fvcom_wzinu3_nesting_forecast/fvcom_wzinu3_nesting_20241101.nc', 20241105, 1)
+    %       create_fvcom_wzinu3_nesting('./data/fnesting_wzinu3_grid_example.nc', '../Data/GLORYS', './data/WZinu3_tide', './fvcom_wzinu3_nesting_forecast/fvcom_wzinu3_nesting_20241101.nc', 20241105, 1)
     % =================================================================================================================
     
     yyyymmdd = num2str(yyyymmdd, '%8d');
