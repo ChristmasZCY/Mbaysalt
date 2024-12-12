@@ -1,11 +1,11 @@
-function create_fvcom_wzstorm3_nesting(fnest_nc, din_glory, din_tide, fout, yyyymmdd, day_len)
-    %       Create nesting file for FVCOM_WZstorm3, data from glory and tpxo
+function create_fvcom_wztide3_nesting(fnest_nc, din_glory, din_tide, fout, yyyymmdd, day_len)
+    %       Create nesting file for FVCOM_WZtide3, data from glory and tpxo
     % =================================================================================================================
     % Parameters:
-    %       fnest_nc: nesting example file      || required: True || type: text    || example: 'fnesting_wzstorm3_grid_example.nc'
+    %       fnest_nc: nesting example file      || required: True || type: text    || example: 'fnesting_wztide3_grid_example.nc'
     %       din_glory: glory data dir           || required: True || type: text    || example: './Data/GLORYS'
     %       din_tide: tide data dir             || required: True || type: text    || example: './NSCS_tide'
-    %       fout: file output                   || required: True || type: text    || example: './fvcom_wzstorm3_nesting_forecast/fvcom_wzstorm3_nesting_20241101.nc'
+    %       fout: file output                   || required: True || type: text    || example: './fvcom_wztide3_nesting_forecast/fvcom_wztide3_nesting_20241101.nc'
     %       yyyymmdd: date                      || required: True || type: double  || example: 20241105
     %       day_len: days length                || required: False|| type: double  || example: 1
     % =================================================================================================================
@@ -16,7 +16,7 @@ function create_fvcom_wzstorm3_nesting(fnest_nc, din_glory, din_tide, fout, yyyy
     %       2024-12-08:     Created,    by Christmas;
     % =================================================================================================================
     % Example:
-    %       create_fvcom_wzstorm3_nesting('./data/fnesting_wzstorm3_grid_example.nc', '../Data/GLORYS', './data/NSCS_tide', './fvcom_wzstorm3_nesting_forecast/fvcom_wzstorm3_nesting_20241101.nc', 20241105, 1)
+    %       create_fvcom_wztide3_nesting('./data/fnesting_wztide3_grid_example.nc', '../Data/GLORYS', './data/NSCS_tide', './fvcom_wztide3_nesting_forecast/fvcom_wztide3_nesting_20241101.nc', 20241105, 1)
     % =================================================================================================================
     
     yyyymmdd = num2str(yyyymmdd, '%8d');

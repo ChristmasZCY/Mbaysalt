@@ -1,7 +1,7 @@
 clm;
 
-friver_nc = '/Users/christmas/Downloads/dingyang/FVCOM_WZstorm3/Control/data/River_data_wzstorm3_2023_2024.nc';
-fout = '/Users/christmas/Downloads/dingyang/FVCOM_WZstorm3/Control/data/River_data_wzstorm3_2025_2026.nc';
+friver_nc = '/Users/christmas/Downloads/dingyang/FVCOM_WZtide3/Control/data/River_data_wztide3_2023_2024.nc';
+fout = '/Users/christmas/Downloads/dingyang/FVCOM_WZtide3/Control/data/River_data_wztide3_2025_2026.nc';
 ftime = f_load_time(friver_nc,"Times")+365+366;
 Ttimes = Mdatetime(ftime,'Cdatenum');
 time = Ttimes.datenumC(1):1:Ttimes.datenumC(end);
