@@ -61,24 +61,16 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             error("interval must be 'daily' or 'hourly'")
     end
 
-    para_conf       = read_conf(conf_file);             % 读取配置文件
-    check_conf(para_conf, gen_conf_DAFAULT());          % 检查conf是否缺少参数
-
-    if double(para_conf.VERSION_conf) < 3               % VERSION_conf 版本必须 >= 3
-        [list_content, line_id] = grep(conf_file, 'VERSION_conf');
-        error(['VERSION_conf must >= 3. !\n ' ...
-               'But you set %s in ''%s'' line %d !'], string(list_content), conf_file, line_id)
-    end
-
-    Inputpath       = para_conf.ModelOutputDir;         % 输入路径  --> '/home/ocean/ForecastSystem/FVCOM_Global/Run/'
-    Outputpath      = para_conf.StandardDir;            % 输出路径  --> '/home/ocean/ForecastSystem/Output/Standard/'
+    para_conf       = check_conf(conf_file);            % 读取配置文件, 检查conf是否缺少参数
+    Inputpath       = para_conf.ModelOutputDir;         % 输入路径          --> '/home/ocean/ForecastSystem/FVCOM_Global/Run/'
+    Outputpath      = para_conf.StandardDir;            % 输出路径          --> '/home/ocean/ForecastSystem/Output/Standard/'
     file_Mcasename  = para_conf.ModelCasename;          % fvcom的casename  --> 'forecast'
-    OutputRes       = para_conf.OutputRes;              % 生成文件的后缀  --> _global_5
-    Method_interpn  = para_conf.Method_interpn;         % 插值方法  --> 'Siqi_interp'
-    lon_dst         = para_conf.Lon_destination;        % 模型的经度范围  --> [-180,180]
-    lat_dst         = para_conf.Lat_destination;        % 模型的纬度范围  --> [20,30]
-    Ecology_model   = para_conf.Ecology_model;          % 生态模型  --> '.ERSEM.' or '.NEMURO.'
-    Model_name      = para_conf.Model_name;             % 模型名称  --> '.FVCOM.' or '.WW3.' or '.NONE.'
+    OutputRes       = para_conf.OutputRes;              % 生成文件的后缀     --> _global_5
+    Method_interpn  = para_conf.Method_interpn;         % 插值方法          --> 'Siqi_interp'
+    lon_dst         = para_conf.Lon_destination;        % 模型的经度范围     --> [-180,180]
+    lat_dst         = para_conf.Lat_destination;        % 模型的纬度范围     --> [20,30]
+    Ecology_model   = para_conf.Ecology_model;          % 生态模型          --> '.ERSEM.' or '.NEMURO.' or '.NONE.'
+    Model_name      = para_conf.Model_name;             % 模型名称          --> '.FVCOM.' or  '.WW3.'   or '.NONE.'
     Text_len        = para_conf.Text_len;               % 打印字符的对齐长度
     SWITCH          = read_start(para_conf, 'Switch');  % 读取开关
 
@@ -107,17 +99,17 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     end
 
     getdate = datetime(num2str(yyyymmdd),"format","yyyyMMdd"); clear yyyymmdd
-    Length = day_length;clear day_length;% 当天开始向后处理的天数
+    Length = day_length;clear day_length;  % 当天开始向后处理的天数
 
-    osprint2('INFO', [pad('Inputpath ',Text_len,'right'),'--> ', Inputpath]) 
-    osprint2('INFO', [pad('Output standard depth ', Text_len,'right'),'--> ', logical_to_char(SWITCH.out_std_level)])  % 输出是否输出标准层
-    osprint2('INFO', [pad('Output sigma levels ',   Text_len,'right'),'--> ', logical_to_char(SWITCH.out_sgm_level)])  % 输出是否输出sigma层
-    osprint2('INFO', [pad('Output average depth ',  Text_len,'right'),'--> ', logical_to_char(SWITCH.out_avg_level)])  % 输出是否输出垂向平均层
+    osprint2('INFO', [pad('Inputpath ',             Text_len,'right'),'--> ', Inputpath]);
+    osprint2('INFO', [pad('Output standard depth ', Text_len,'right'),'--> ', logical_to_char(SWITCH.out_std_level)]);     % 输出是否输出标准层
+    osprint2('INFO', [pad('Output sigma levels ',   Text_len,'right'),'--> ', logical_to_char(SWITCH.out_sgm_level)]);     % 输出是否输出sigma层
+    osprint2('INFO', [pad('Output average depth ',  Text_len,'right'),'--> ', logical_to_char(SWITCH.out_avg_level)]);     % 输出是否输出垂向平均层
 
-    osprint2('INFO', [pad('Date parameter ',Text_len,'right'),'--> ', char(getdate)])                           % 输出处理的日期信息
-    osprint2('INFO', [pad('Total transfor ',Text_len,'right'),'--> ', num2str(Length),' days'])                 % 输出处理的日期信息
-    osprint2('INFO', [pad('Interp Method ', Text_len,'right'),'--> ', Method_interpn])                          % 输出插值方法
-    osprint2('INFO', [pad('Switch Extrap ',         Text_len,'right'),'--> ', logical_to_char(SWITCH.extrap)])  % 输出是否外插
+    osprint2('INFO', [pad('Date parameter ',Text_len,'right'),'--> ', sprintf('%s + %s days',char(getdate), num2str(2))]); % 输出处理的日期信息
+    osprint2('INFO', [pad('Interp Method ', Text_len,'right'),'--> ', Method_interpn]);                                    % 输出插值方法
+    osprint2('INFO', [pad('Switch Extrap ', Text_len,'right'),'--> ', logical_to_char(SWITCH.extrap)]);                    % 输出是否外插
+
     osprint2('INFO', [pad(['Transfor ',interval,' variable '],Text_len,'right'), '-->', ...
         repmat(' temp',SWITCH.temp), repmat(' salt',SWITCH.salt), repmat(' zeta',SWITCH.zeta), ...
         repmat(' u v',SWITCH.vel_all), repmat(' w',SWITCH.vel_vertical), ...
@@ -125,7 +117,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         repmat(' ph',SWITCH.ph), repmat(' no3',SWITCH.no3), repmat(' pco2',SWITCH.pco2), ...
         repmat(' chlo',SWITCH.chlo), repmat(' casfco2',SWITCH.casfco2), repmat(' zp',SWITCH.zp), ...
         repmat(' pp',SWITCH.pp), repmat(' sand',SWITCH.sand), ...
-        repmat(' swh',SWITCH.swh), repmat(' mwd',SWITCH.mwd), repmat(' mwp',SWITCH.mwp)])  % 打印处理的变量
+        repmat(' swh',SWITCH.swh),   repmat(' mwd',SWITCH.mwd),   repmat(' mwp',SWITCH.mwp), ...
+        repmat(' shww',SWITCH.shww), repmat(' mdww',SWITCH.mdww), repmat(' mpww',SWITCH.mpww), ...
+        repmat(' shts',SWITCH.shts), repmat(' mdts',SWITCH.mdts), repmat(' mpts',SWITCH.mpts)])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
@@ -136,16 +130,10 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             ncfile = fullfile(Inputpath,[char(getdate),filesep, ModelOUTD, filesep, file_Mcasename,'_avg_',num2str(dr,'%04d'),'.nc']); % 输入文件
         elseif strcmp(interval,"hourly")
             switch Model_name
-            case '.FVCOM.'
-                ncfile = fullfile(Inputpath,[char(getdate),filesep, ModelOUTD, filesep, file_Mcasename,'_',num2str(dr,'%04d'),'.nc']); % 输入文件
+            case {'.FVCOM.', '.ERSEM.', '.NEMURO.'}
+                ncfile = fullfile(Inputpath,[char(getdate),     filesep, ModelOUTD, filesep, file_Mcasename,'_',num2str(dr,'%04d'),'.nc']); % 输入文件
             case '.WW3.'
                 ncfile = fullfile(Inputpath,[char(deal_date_dt),filesep, ModelOUTD, filesep, file_Mcasename,'.',char(deal_date_dt),'.nc']); % 输入文件
-            case '.NONE.'
-                error('NOT SET YET !!!')
-            otherwise
-            [list_content, line_id] = grep(conf_file, 'Model_name');
-            error(['Model_name must be one of ''.FVCOM.'' or ''.WW3.'' or ''.NONE.'' !\n ' ...
-                   'But you set %s in ''%s'' line %d !'], string(list_content), conf_file, line_id)
             end
             
         end
@@ -165,11 +153,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
             format_fmt = format;
             format('longG');
-            if strcmp(para_conf.Load_Coordinate, 'ww3')
-                f_res = minmax(f_calc_resolution(f_nc, 'Geo', 'Nodisp'));
-            else
-                f_res = minmax(f_calc_resolution(f_nc,para_conf.Load_Coordinate,'Nodisp'));
-            end
+            f_res = minmax(f_calc_resolution(f_nc,para_conf.Load_Coordinate,'Nodisp'));
+
             osprint2('INFO', [pad('Model name ',               Text_len,'right'),'--> ', sprintf('%s',     Model_name)]);
             osprint2('INFO', [pad('Ecology model ',            Text_len,'right'),'--> ', sprintf('%s',     Ecology_model)]);
             osprint2('INFO', [pad('Ori lon range ',            Text_len,'right'),'--> ', sprintf('[%f %f]',(minmax(f_nc.x)))]);
@@ -202,9 +187,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             u = double(ncread(ncfile, 'u'));
             v = double(ncread(ncfile, 'v'));
         end
-        if SWITCH.vel_vertical 
-            w = double(ncread(ncfile, 'ww'));
-        end
+        if SWITCH.vel_vertical; w = double(ncread(ncfile, 'ww')); end
         if SWITCH.zeta
             fncValue_nt.zeta = double(ncread(ncfile,'zeta'));
             OutputDir.zeta = fullfile(Outputpath,'adt',interval,deal_date);  % adt输出路径
@@ -303,15 +286,18 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
         if SWITCH.wave  % wave
             if strcmpi(Model_name, '.WW3.')
-                if SWITCH.swh
-                    fncValue_nt.swh = double(ncread(ncfile,'hs')); % swh
-                end
-                if SWITCH.mwd
-                    fncValue_nt.mwd = double(ncread(ncfile,'dir')); % mwd
-                end
-                if SWITCH.swh
-                    fncValue_nt.mwp = double(ncread(ncfile,'t02')); % mwp
-                end
+                % all
+                if SWITCH.swh; fncValue_nt.swh = double(ncread(ncfile,'hs'));  end % swh
+                if SWITCH.mwd; fncValue_nt.mwd = double(ncread(ncfile,'dir')); end % mwd
+                if SWITCH.mwp; fncValue_nt.mwp = double(ncread(ncfile,'t02')); end % mwp
+                % wind wave
+                if SWITCH.shww; fncValue_nt.shww = double(ncread(ncfile,'phs0'));  end % shww
+                if SWITCH.mdww; fncValue_nt.mdww = double(ncread(ncfile,'pdir0')); end % mdww 
+                if SWITCH.mpww; fncValue_nt.mpww = double(ncread(ncfile,'ptp0'));  end % mpww 
+                % swell wave
+                if SWITCH.shts; fncValue_nt.shts = double(ncread(ncfile,'phs1'));  end % shts
+                if SWITCH.mdts; fncValue_nt.mdts = double(ncread(ncfile,'pdir1')); end % mdts
+                if SWITCH.mpts; fncValue_nt.mpts = double(ncread(ncfile,'ptp1'));  end % mpts
             end
             OutputDir.wave = fullfile(Outputpath,'wave',interval,deal_date);  % wave输出路径
         end
@@ -331,7 +317,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
         %% time
         switch Model_name
-        case '.FVCOM.'
+        case {'.FVCOM.', '.ERSEM.', '.NEMURO.'}
             % TIME = datetime(1858,11,17)+ hours(Itime*24 + Itime2/(3600*1000));
             TIME = ncread(ncfile, 'Times')';
             if strcmp(interval,"daily")
@@ -361,12 +347,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
         clear u v w ua va
 
-        if ~exist("fncValue_nt", "var")
-            fncValue_nt = struct('');
-        end
-        if ~exist("fncValue_nzt", "var")
-            fncValue_nzt = struct('');
-        end
+        if ~exist("fncValue_nt", "var") ; fncValue_nt = struct('');  end
+        if ~exist("fncValue_nzt", "var"); fncValue_nzt = struct(''); end
 
         % Lon                    --> x*1
         % Lat                    --> y*1
@@ -391,6 +373,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % fncValue_nt.swh        --> node*t
         % fncValue_nt.mwd        --> node*t
         % fncValue_nt.mwp        --> node*t
+        % fncValue_nt.shww       --> node*t
+        % fncValue_nt.mdww       --> node*t
+        % fncValue_nt.mpww       --> node*t
+        % fncValue_nt.shts       --> node*t
+        % fncValue_nt.mdts       --> node*t
+        % fncValue_nt.mpts       --> node*t
 
         switch Method_interpn
             case 'Siqi_interp'
@@ -580,6 +568,24 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.mwp
             Store_xyt.Mwp       = wncValue_xyt.mwp;      % --> x*y*t
         end
+        if SWITCH.shww
+            Store_xyt.Shww      = wncValue_xyt.shww;     % --> x*y*t
+        end
+        if SWITCH.mdww
+            Store_xyt.Mdww      = wncValue_xyt.mdww;     % --> x*y*t
+        end
+        if SWITCH.mpww
+            Store_xyt.Mpww      = wncValue_xyt.mpww;     % --> x*y*t
+        end
+        if SWITCH.shts
+            Store_xyt.Shts      = wncValue_xyt.shts;     % --> x*y*t
+        end
+        if SWITCH.mdts
+            Store_xyt.Mdts      = wncValue_xyt.mdts;     % --> x*y*t
+        end
+        if SWITCH.mpts
+            Store_xyt.Mpts      = wncValue_xyt.mpts;     % --> x*y*t
+        end
         clear Depth_xy
         clear Siglay Deplev Deplay
         clear wncValue_xyt wncValue_xyzt
@@ -593,9 +599,6 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % <----- Store
 
         % -----> 2D
-        if SWITCH.zeta
-            OutValue_xyt.Zeta = Store_xyt.Zeta;
-        end
         if SWITCH.vel_average
             OutValue_xyt.Ua = Store_xyt.Ua;
             OutValue_xyt.Va = Store_xyt.Va;
@@ -604,18 +607,17 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             OutValue_xyt.Aice = Store_xyt.Aice;
             OutValue_xyt.Tice = Store_xyt.Tice;
         end
-        if SWITCH.casfco2
-            OutValue_xyt.Casfco2 = Store_xyt.Casfco2;
-        end
-        if SWITCH.swh
-            OutValue_xyt.Swh = Store_xyt.Swh;
-        end
-        if SWITCH.mwd
-            OutValue_xyt.Mwd = Store_xyt.Mwd;
-        end
-        if SWITCH.mwp
-            OutValue_xyt.Mwp = Store_xyt.Mwp;
-        end
+        if SWITCH.zeta;    OutValue_xyt.Zeta    = Store_xyt.Zeta;    end
+        if SWITCH.casfco2; OutValue_xyt.Casfco2 = Store_xyt.Casfco2; end
+        if SWITCH.swh;     OutValue_xyt.Swh     = Store_xyt.Swh;     end
+        if SWITCH.mwd;     OutValue_xyt.Mwd     = Store_xyt.Mwd;     end
+        if SWITCH.mwp;     OutValue_xyt.Mwp     = Store_xyt.Mwp;     end
+        if SWITCH.shww;    OutValue_xyt.Shww    = Store_xyt.Shww;    end
+        if SWITCH.mdww;    OutValue_xyt.Mdww    = Store_xyt.Mdww;    end
+        if SWITCH.mpww;    OutValue_xyt.Mpww    = Store_xyt.Mpww;    end
+        if SWITCH.shts;    OutValue_xyt.Shts    = Store_xyt.Shts;    end
+        if SWITCH.mdts;    OutValue_xyt.Mdts    = Store_xyt.Mdts;    end
+        if SWITCH.mpts;    OutValue_xyt.Mpts    = Store_xyt.Mpts;    end
         % <----- 2D
 
         % -----> sgm_level
@@ -720,14 +722,10 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         clear ncfile
         % Store_coor --> Lon Lat Depth_xy Ttimes Depth_std Deplev Deplay  Siglay
         % OutValue_xyzt --> *_sgm *_std *_avg
-        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp
+        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp Shww Mdww Mpww Shts Mdts Mpts
 
-        if ~exist("OutValue_xyt", "var")
-            OutValue_xyt = struct('');
-        end
-        if ~exist("OutValue_xyzt", "var")
-            OutValue_xyzt = struct('');
-        end
+        if ~exist("OutValue_xyt", "var");  OutValue_xyt = struct('');  end
+        if ~exist("OutValue_xyzt", "var"); OutValue_xyzt = struct(''); end
 
 
         %% mask vertical data
@@ -760,7 +758,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             file_erosion = para_conf.ErosionFile;
             num_erosion = para_conf.Erosion_num;
             Erosion_judge = para_conf.Erosion_judge;
-            osprint2('INFO',[pad('Erosion coastline ',Text_len,'right'),'--> ', logical_to_char(SWITCH.erosion)]);
+            osprint2('INFO',[pad('Erosion coastline ',                Text_len,'right'),'--> ', logical_to_char(SWITCH.erosion)]);
             osprint2('INFO',[pad('Erosion coastline total frequency ',Text_len,'right'),'--> ', num2str(num_erosion)]);
             
             im = 0;
@@ -804,7 +802,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
         % Store_coor --> Lon Lat Depth_xy Ttimes Depth_std Deplev Deplay Siglay
         % OutValue_xyzt --> *_sgm *_std *_avg
-        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp
+        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp Shww Mdww Mpww Shts Mdts Mpts
         OutValue = merge_struct(OutValue_xyt, OutValue_xyzt);
         clear Store_xyt Store_xyzt OutValue_xyt OutValue_xyzt
 
@@ -818,9 +816,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             keyboard
         end
 
-        if ~exist('Delement','var')  % 当至输出ua va
-            Delement = struct('');
-        end
+        if ~exist('Delement','var'); Delement = struct(''); end  % 当至输出ua va
 
         %% 写入
         if SWITCH.vel_all || SWITCH.vel_vertical || SWITCH.vel_average
@@ -922,7 +918,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.wave
             file = fullfile(OutputDir.wave,['wave',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [wave_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Swh','Mwd','Mwp'});
+            [wave_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Swh','Mwd','Mwp','Swh','Mwd','Mwp','Shww','Mdww','Mpww','Shts','Mdts','Mpts'});
             netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
             clear Velement_csand ncid file
         end
@@ -973,7 +969,7 @@ end
 function SWITCH = read_switch(structIn)
     % 从structIn中读取以Switch_开头的变量，将变量写入到SWITCH结构体中
     % eg: 将structIn中的Switch_erosion写入到SWITCH.erosion中
-    warning('Abandon, please use ''read_switch(%s,''Switch'')'' instead.', inputname(1))
+    warning('Abandon, please use ''read_start(%s,''Switch'')'' instead.', inputname(1))
     SWITCH = struct('');
     key = fieldnames(structIn);
     for i = 1 : length(key)
@@ -988,7 +984,7 @@ function S2 = read_start(structIn, prefix)
     % eg: 将struct中的Git_path写入到Git.path中
     S2 = struct('');
     key = fieldnames(structIn);
-    pattern = sprintf('^%s_', prefix);  % ^Git_
+    pattern = sprintf('^%s_', prefix);  % ^Git_ | ^Switch_
     for i = 1 : length(key)
         if ~isempty(regexp(key{i},pattern,'once'))
             S2(1).(key{i}(length(pattern):end)) = structIn.(key{i});
@@ -1133,7 +1129,9 @@ function CONF = gen_conf_DAFAULT()
     CONF = read_conf(Cfile);
 end
 
-function conf_OUTPUT = check_conf(conf_DEFAULT, conf_INPUT)
+function conf_OUTPUT = check_conf(conf_file)
+    conf_INPUT     = read_conf(conf_file);  % 读取配置文件
+    conf_DEFAULT   = gen_conf_DAFAULT();    % 读取默认配置文件
     fields_default = fieldnames(conf_DEFAULT);
     if ~isfield(conf_INPUT,'Method_interpn')
         error('''%s'' is not definied at ''%s'' !', 'Method_interpn', conf_INPUT.FILEPATH);
@@ -1163,5 +1161,20 @@ function conf_OUTPUT = check_conf(conf_DEFAULT, conf_INPUT)
     end
     if ~isempty(LACK_args)
         error('''%s'' is not definied at ''%s'' !', strjoin(LACK_args,' & '), conf_INPUT.FILEPATH);
+    end
+    if double(conf_INPUT.VERSION_conf) < 3               % VERSION_conf 版本必须 >= 3
+        [list_content, line_id] = grep(conf_file, 'VERSION_conf');
+        error(['VERSION_conf must >= 3. !\n ' ...
+               'But you set %s in ''%s'' line %d !'], string(list_content), conf_file, line_id)
+    end
+    if isfield(conf_INPUT, 'Ecology_model') && ~ismember(conf_INPUT.Ecology_model, {'.NEMURO.', '.ERSEM.', '.NONE.'})
+        [list_content, line_id] = grep(conf_file, 'Ecology_model');
+        error(['Ecology_model must be one of ''.NEMURO.'' or ''.ERSEM.'' or ''.NONE.'' !\n ' ...
+               'But you set %s in ''%s'' line %d !'], string(list_content), conf_file, line_id)
+    end
+    if isfield(conf_INPUT, 'Model_name') && ~ismember(conf_INPUT.Model_name, {'.FVCOM.', '.ERSEM.', '.NEMURO.', '.WW3.', '.NONE.'})
+        [list_content, line_id] = grep(conf_file, 'Model_name');
+        error(['Model_name must be one of ''.FVCOM.'' or ''.ERSEM.'' or ''.NEMURO.'' or ''.WW3.'' or ''.NONE.'' !\n ' ...
+               'But you set %s in ''%s'' line %d !'], string(list_content), conf_file, line_id)
     end
 end

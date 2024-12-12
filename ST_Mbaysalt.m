@@ -636,9 +636,9 @@ function download_urlfile(urlin, fileOut, thread)
 
     switch checkOS()
     case {'MAC', 'LNX'}
-        Proxy.CMD = Proxy.LNXCMD;
+        Proxy.CMD = convertStringsToChars(Proxy.LNXCMD);
     case 'WIN'
-        Proxy.CMD = Proxy.WINPWS;
+        Proxy.CMD = convertStringsToChars(Proxy.WINPWS);
     end
 
     if check_command('axel')
