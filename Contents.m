@@ -83,6 +83,7 @@
 %   figcopy.m                                   -  Copy the figure to the clipboard
 %   checkOS.m                                   -  Check the system OS
 %   genNaNlegend.m                              -  Generate NaN legend
+%   makedepends.m                               -  Make depends for a function
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
