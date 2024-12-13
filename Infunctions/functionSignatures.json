@@ -394,5 +394,12 @@
     "checkOS":{
         "inputs":[],
         "outputs":[
-            {"name":"OS", "type":["char","choices={'MAC','WIN','LNX'}"], "purpose":"System OS"}]}
+            {"name":"OS", "type":["char","choices={'MAC','WIN','LNX'}"], "purpose":"System OS"}]},
+    "makedepends":{
+        "inputs":[
+            {"name":"funName", "kind":"required", "type":["file=*.m"], "purpose":"function Name"},
+            {"name":"depDir",  "kind":"namevalue", "type":["char"], "purpose":"depends output dir"}],
+        "outputs":[
+            {"name":"fList", "type":["cell"], "purpose":"file list"},
+            {"name":"pList", "type":["cell"], "purpose":"product list"}]}
 }
