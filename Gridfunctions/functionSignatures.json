@@ -120,17 +120,22 @@
           {"name":"id","type":["scalar"],"purpose":"node id"}]},
   "gshhs2": {
     "inputs": [
-      {"name":"gshhsfile", "kind":"required","type":["file=*.b"],"purpose":"GSHHS b file to read"}],
-    "outputs": [
-      {"name": "poly_coast", "type": ["polyshape"], "purpose": "polygons of coastline"}]},
-  "gshhs2": {
-    "inputs": [
       {"name":"gshhsfile", "kind":"required","type":["file=*.b"],"purpose":"GSHHS b file to read"},
-      {"name":"ylims", "kind":"required","type":["numeric"],"purpose":"y lims"},
-      {"name":"xlims", "kind":"required","type":["numeric"],"purpose":"x lims"}],
+      {"name":"ylims", "kind":"positional","type":["numeric"],"purpose":"y lims"},
+      {"name":"xlims", "kind":"positional","type":["numeric"],"purpose":"x lims"}],
     "outputs": [
       {"name": "poly_coast", "type": ["polyshape"], "purpose": "polygons of coastline"}]},
   "convert_shp2cst": {
+    "inputs": [
+      {"name":"shpfile", "kind":"required","type":["file=*.shp"],"purpose":"shape file to read"},
+      {"name":"cstfile", "kind":"required","type":["char"],"purpose":"cst file to write"}],
+    "outputs": []},
+  "merge_cst": {
+    "inputs": [
+      {"name":"shpfile", "kind":"required","type":["file=*.shp"],"purpose":"shape file to read"},
+      {"name":"cstfile", "kind":"required","type":["char"],"purpose":"cst file to write"}],
+    "outputs": []},
+  "merge_polygon": {
     "inputs": [
       {"name":"shpfile", "kind":"required","type":["file=*.shp"],"purpose":"shape file to read"},
       {"name":"cstfile", "kind":"required","type":["char"],"purpose":"cst file to write"}],

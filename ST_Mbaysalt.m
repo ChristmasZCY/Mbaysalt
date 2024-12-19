@@ -23,6 +23,7 @@ function ST_Mbaysalt(varargin)
     %       2024-06-15:     Added improve:matFigure,                                by Christmas;
     %       2024-12-09:     Added ETOPO1_Bed_g_gmt4, ETOPO1_Ice_g_gmt4,             by Christmas;
     %       2024-12-09:     Added ungz_file, export Proxy from MATLAB to CMD,       by Christmas;
+    %       2024-12-19:     Fixed 'setup_nctoolbox_java' automatically if not init, by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -43,7 +44,7 @@ function ST_Mbaysalt(varargin)
     for i = 1: length(varargin)
         switch lower(varargin{i})
         case {'add','rm','noclone'} 
-            cmd = convertStringsToChars(varargin{i});
+            cmd = lower(convertStringsToChars(varargin{i}));
             varargin(i) = [];
             break
         case {'cd'}  % cd to the path of this function
@@ -85,17 +86,12 @@ function ST_Mbaysalt(varargin)
     PATH.builtin = fullfile(PATH.basepath,Jstruct.packages.builtin.PATH); % builtin
     
     STATUS = 0;
-    switch lower(cmd)
+    switch cmd
     case 'add'
         % addpath
         addpath(strjoin(PATH.modules, pathsep)); % cellfun(@addpath, PATH.module); 慢
         addpath(strjoin(PATH.builtin, pathsep));
         Jstruct.git.TF = true;
-        [~, ~] = install_pkgs(PATH, Jstruct, 'add');  % install_pkgs
-        if init
-            STATUS = Fixed_functions(Jstruct);
-        end
-        Javaaddpath(Jstruct)
     case 'rm'
         % rmpath
         [~, PATH] = install_pkgs(PATH, Jstruct, 'rm');
@@ -104,16 +100,25 @@ function ST_Mbaysalt(varargin)
         Crmpath(PATH.exfunctions.download)
         Crmpath(PATH.exfunctions.gitclone)
     case 'noclone'
+        % noclone
         addpath(strjoin(PATH.modules, pathsep));
         addpath(strjoin(PATH.builtin, pathsep));
         Jstruct.git.TF = false;
-        [~, ~] = install_pkgs(PATH, Jstruct, 'noclone');
-        if init
-            STATUS = Fixed_functions(Jstruct);
-        end
-        Javaaddpath(Jstruct)
     otherwise
         error('parameter error');
+    end
+
+    switch cmd
+    case {'add', 'noclone'}
+        [~, ~] = install_pkgs(PATH, Jstruct, cmd);  % install_pkgs
+        if init
+            STATUS1 = Fixed_functions(Jstruct);
+        else
+            STATUS1 = 0;
+        end
+        STATUS2 = Javaaddpath(Jstruct);
+        STATUS = any([STATUS1,STATUS2]);
+        clear STATUS1 STATUS2
     end
 
     if STATUS
@@ -144,9 +149,16 @@ function Crmpath(Path)
     warning('on',identifier);
 end
 
-function Javaaddpath(Jstruct)
+function STATUS = Javaaddpath(Jstruct)
     if exist('setup_nctoolbox_java','file') == 2 && Jstruct.packages.gitclone.nctoolbox.SETPATH
-        setup_nctoolbox_java()
+        try
+            setup_nctoolbox_java()
+            STATUS = 0;
+        catch ME1
+            if strcmp(ME1.identifier, 'MATLAB:dispatcher:noMatchingConstructor')
+                STATUS = fixed_setup_nctoolbox_java(Jstruct);
+            end
+        end
     end
 end
 

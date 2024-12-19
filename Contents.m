@@ -192,6 +192,8 @@
 %   gshhs2.m                                    -  Fixed gshhs only for [-180 195], gshhs2 for [-540 540]
 %   convert_shp2cst.m                           -  Convert shapefile to cst file, contains merging polygons
 %   convert_dat22dm.m                           -  Convert FVCOM dat to 2dm
+%   merge_cst.m                                 -  Merge cst files  --> convert_shp2cst.m
+%   merge_polygon.m                             -  Merge polygons   --> convert_shp2cst.m
 %
 %
 %                                Readfunctions  -  Functions for reading data
@@ -342,7 +344,8 @@
 %   FVCOM_NSCS/                                 -  FVCOM NSCS toolbox
 %   FVCOM_Bohai/                                -  FVCOM Bohai toolbox
 %   FVCOM_WZinu3/                               -  FVCOM WZinu3 toolbox
-%   FVCOM_WZtide3/                             -  FVCOM WZtide3 toolbox
+%   FVCOM_WZtide3/                              -  FVCOM WZtide3 toolbox
+%   FVCOM_WZAJinu/                              -  FVCOM WZAJinu toolbox
 %
 %
 %                                         Docs  -  Documents and Manuals for toolbox
