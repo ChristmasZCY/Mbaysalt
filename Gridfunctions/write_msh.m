@@ -13,8 +13,9 @@ function write_msh(fout, x, y, nv, h, ns, varargin)
     %       None
     % =================================================================================================================
     % Update:
-    %       2023-**-**:     Created, by Christmas;
+    %       2023-**-**:     Created,                        by Christmas;
     %       2024-04-03:     Added whether write obc txt,    by Christmas;
+    %       2024-12-14:     Added transpose ns,             by Christmas;
     % =================================================================================================================
     % Example:
     %       write_msh('test.msh', x, y, nv, h, ns);
@@ -41,6 +42,10 @@ function write_msh(fout, x, y, nv, h, ns, varargin)
     
     if ~exist('ns', 'var')
         ns = [];
+    end
+
+    if size(ns,1) == 1 && size(ns,2) ~=1
+        ns = ns';
     end
     
     lon = x;
