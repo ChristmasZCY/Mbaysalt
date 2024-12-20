@@ -130,3 +130,7 @@
 	path = Exfunctions/mitgcm_toolbox
 	url = https://github.com/seamanticscience/mitgcm_toolbox.git
 
+[submodule "Exfunctions/ParforProgMon"]
+	path = Exfunctions/ParforProgMon
+	url = https://github.com/fsaxen/ParforProgMon.git
+

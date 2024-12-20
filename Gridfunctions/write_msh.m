@@ -16,6 +16,8 @@ function write_msh(fout, x, y, nv, h, ns, varargin)
     %       2023-**-**:     Created,                        by Christmas;
     %       2024-04-03:     Added whether write obc txt,    by Christmas;
     %       2024-12-14:     Added transpose ns,             by Christmas;
+    %       2024-12-20:     Added check h,                  by Christmas;
+    %       2024-12-20:     Added get ns{1} automatically,  by Christmas;
     % =================================================================================================================
     % Example:
     %       write_msh('test.msh', x, y, nv, h, ns);
@@ -39,9 +41,17 @@ function write_msh(fout, x, y, nv, h, ns, varargin)
     else
         h = zeros(node,1);
     end
+
+    if sum(h<0)/len(h) > 0.5
+        warning(['Under sea point depth must > %d !\n' ...
+                 'You need to check your ''h'' !'], 0);
+    end
     
     if ~exist('ns', 'var')
         ns = [];
+    elseif isa(ns,"cell")
+        warning('Will us ns{1} only !')
+        ns = ns{1};
     end
 
     if size(ns,1) == 1 && size(ns,2) ~=1
