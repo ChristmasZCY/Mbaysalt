@@ -367,7 +367,15 @@
             "BRANCH": "master",
             "URL": "https://github.com/seamanticscience/mitgcm_toolbox.git",
             "PATH": "Exfunctions/mitgcm_toolbox",
-            "CHECK": ["calc_oxygen_sat.m","file","2"]}},
+            "CHECK": ["calc_oxygen_sat.m","file","2"]},
+        "ParforProgMon": {
+            "INSTALL": true,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://github.com/fsaxen/ParforProgMon.git",
+            "PATH": "Exfunctions/ParforProgMon",
+            "CHECK": ["ParforProgressbar.m","file","2"]}},
     "modules": {
         "PATH": [
             "Prefunctions",
@@ -413,6 +421,8 @@
             "Exfunctions/utm2deg",
             "Exfunctions/Spiral_diagram",
             "Exfunctions/plotyyy",
+            "Exfunctions/parfor_progress",
+            "Exfunctions/parfor_progressbar",
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",
@@ -462,5 +472,6 @@
     "E": "2024-05-16:   Added improve:m_etopo2, by Christmas;",
     "F": "2024-06-15:   Added improve:matFigure, by Christmas;",
     "G": "2024-12-09:   Added ETOPO1_Bed_g_gmt4, by Christmas;",
-    "H": "2024-12-09:   Added ETOPO1_Ice_g_gmt4, by Christmas;"}
+    "H": "2024-12-09:   Added ETOPO1_Ice_g_gmt4, by Christmas;",
+    "I": "2024-12-20:   Added ParforProgMon, by Christmas;"}
 }

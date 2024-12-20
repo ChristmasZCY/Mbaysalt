@@ -104,6 +104,7 @@
 - [visualization-cheat-sheet](https://github.com/mathworks/visualization-cheat-sheet)
 - [googleearthtoolbox](https://github.com/sverhoeven/googleearthtoolbox)
 - [mitgcm_toolbox](https://github.com/seamanticscience/mitgcm_toolbox)
+- [ParforProgMon](https://github.com/fsaxen/ParforProgMon)
 
 - [m_map](https://www.eoas.ubc.ca/~rich/map.html)
 - [t_tide](https://www.eoas.ubc.ca/~rich/#T_Tide)
@@ -140,5 +141,7 @@
 - [Spiral diagram](https://www.mathworks.com/matlabcentral/fileexchange/164966-spiral-diagram)
 - [plotyyy](https://ww2.mathworks.cn/matlabcentral/fileexchange/1017-plotyyy)
 - [New Desktop for MATLAB (Beta)](https://www.mathworks.com/matlabcentral/fileexchange/119593-new-desktop-for-matlab-beta)
+- [parfor_progress](https://ww2.mathworks.cn/matlabcentral/fileexchange/32101-progress-monitor-progress-bar-that-works-with-parfor?s_tid=srchtitle)
+- [parfor_progressbar](https://ww2.mathworks.cn/matlabcentral/fileexchange/53773-parfor_progressbar)
 
 </details>

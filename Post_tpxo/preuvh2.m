@@ -2,16 +2,17 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       Predict the tidal current velocity or elevation at a given time
     % =================================================================================================================
     % Parameters:
-    %       lon:            longitude                     || required: True || type: double    || format: matrix
-    %       lat:            latitude                      || required: True || type: double    || format: matrix
-    %       dmt:            datetime 1D-array             || required: True || type: datetime  || format: 1D-array
-    %       tideList:       tide list                     || required: True || type: string    || example: ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"]
-    %       TPXO_fileDir:   tpxo bin file dir             || required: True || type: char      || example: './TPXO9-atlas-v5/bin'
-    %       data_midDir:    Combined file dir             || required: True || type: char      || example: './AreaBin'         
-    %       varargin:   (options)                         || required: False|| as follow:
-    %           INFO:       display process               || required: False|| type: namevalue || format: 'INFO','disp'
-    %           Vname:      extract value name            || required: False|| type: namevalue || format: 'Vname','u'
-    %           Parallel:   Parallel switch               || required: False|| type: namevalue || format: 20
+    %       lon:            longitude                   || required: True || type: double    || format: matrix
+    %       lat:            latitude                    || required: True || type: double    || format: matrix
+    %       dmt:            datetime 1D-array           || required: True || type: datetime  || format: 1D-array
+    %       tideList:       tide list                   || required: True || type: string    || example: ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"]
+    %       TPXO_fileDir:   tpxo bin file dir           || required: True || type: char      || example: './TPXO9-atlas-v5/bin'
+    %       data_midDir:    Combined file dir           || required: True || type: char      || example: './AreaBin'         
+    %       varargin:   (options)                       || required: False|| as follow:
+    %           INFO:       display process             || required: False|| type: namevalue || example: 'INFO','disp'
+    %           Vname:      extract value name          || required: False|| type: namevalue || example: 'Vname','u'
+    %           Parallel:   Parallel switch             || required: False|| type: namevalue || example: 'Parallel', 20
+    %           createOnly: create combined file only   || required: False|| type: flag      || example: 'createOnly'
     % =================================================================================================================
     % Returns:
     %       TIDE:
@@ -22,6 +23,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     % Updates:
     %       2024-05-27:     Created,                by Christmas;
     %       2024-10-11:     Check lon/lat range,    by Christmas;
+    %       2024-12-20:     Fixed parfor INFO,      by Christmas;
     % =================================================================================================================
     % Examples:
     %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin','Vname','z')
@@ -35,6 +37,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     varargin = read_varargin(varargin,{'INFO'}, {'none'});
     varargin = read_varargin(varargin,{'Vname'}, {'all'});
     varargin = read_varargin(varargin, {'Parallel'},{[]}); %#ok<*NASGU>
+    varargin = read_varargin2(varargin, {'createOnly'});
     INFO = INFO; %#ok<ASGSL,*NODEF> % beacause of parfor
     
     hug_filepath = fullfile(tempdir ,'hug_files.txt');
@@ -95,6 +98,12 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     clear data_midDir
 
     rmfiles(tpxobin_filepath);
+
+    if ~isempty(createOnly)
+        rmfiles(hug_filepath);
+        TIDE.u = NaN; TIDE.v = NaN; TIDE.h = NaN;
+        return
+    end
     
     if numel(lon) ~= numel(lat)
         error('lon,lat must be scatter or meshgrid!')
@@ -120,19 +129,21 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         amp = amp';
         pha = pha';
         if ~isempty(Parallel)
+            if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+                hbar = parfor_pgb(num);
+            end
             parfor i = 1 : num
                 if mod(i,100) == 0
-                    txt = sprintf('Predicting tide elevation: %4.4d / %4.4d', i, num);
-                    switch INFO
-                    case {'cprintf','osprint2'}
-                        osprint2("INFO", txt);
-                    case {'disp','fprintf','sprintf'}
-                        fprintf('%s\n', txt);
+                    if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+                        hbar.iterate(100);
                     end
                 end
         
                 tide_zeta_struct = create_tidestruc(tideList, amp(i,:), pha(i,:));
                 tide_zeta(i,:) = t_predic(datenum(dmt), tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0); %#ok<*DATNM>
+            end
+            if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+                hbar.close;
             end
         else
             for i = 1 : num
@@ -178,18 +189,21 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         fmaj = fmaj / 100;
         fmin = fmin / 100;
         if ~isempty(Parallel)
+            if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+                hbar = parfor_pgb(num);
+            end
             parfor i = 1 : num
                 if mod(i,100) == 0
                     txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
-                    switch INFO
-                    case {'cprintf','osprint2'}
-                        osprint2("INFO", txt);
-                    case {'disp','fprintf','sprintf'}
-                        fprintf('%s\n', txt);
+                    if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+                        hbar.iterate(100);
                     end
                 end
                 tide_uv_struct = create_tidestruc(tideList, fmaj(i,:), fmin(i,:), finc(i,:), pha(i,:));
                 tide_uv(i, :) = t_predic(datenum(dmt), tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
+            end
+            if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+                hbar.close;
             end
         else
             for i = 1 : num
