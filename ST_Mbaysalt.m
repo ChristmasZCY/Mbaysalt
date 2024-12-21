@@ -24,6 +24,7 @@ function ST_Mbaysalt(varargin)
     %       2024-12-09:     Added ETOPO1_Bed_g_gmt4, ETOPO1_Ice_g_gmt4,             by Christmas;
     %       2024-12-09:     Added ungz_file, export Proxy from MATLAB to CMD,       by Christmas;
     %       2024-12-19:     Fixed 'setup_nctoolbox_java' automatically if not init, by Christmas;
+    %       2024-12-21:     Added improve:tmd_ellipse_v2_5, for parpool('T'),       by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -78,7 +79,7 @@ function ST_Mbaysalt(varargin)
         if exist('./INSTALL.json','file')
             Jfile = './INSTALL.json';
         else
-            Jfile = fullfile(PATH.basepath,'Configurefiles/INSTALL.json');
+            Jfile = fullfile(PATH.basepath,'Configurefiles','INSTALL.json');
         end
     end
     Jstruct = jsondecode(fileread(Jfile)); Jstruct.FILEPATH = Jfile;
@@ -87,25 +88,25 @@ function ST_Mbaysalt(varargin)
     
     STATUS = 0;
     switch cmd
-    case 'add'
-        % addpath
+    case 'add'  % addpath
         addpath(strjoin(PATH.modules, pathsep)); % cellfun(@addpath, PATH.module); 慢
         addpath(strjoin(PATH.builtin, pathsep));
         Jstruct.git.TF = true;
-    case 'rm'
-        % rmpath
+    case 'rm'  % rmpath
         [~, PATH] = install_pkgs(PATH, Jstruct, 'rm');
         Crmpath(PATH.modules)  % rmpath(strjoin(PATH.modules, pathsep))
         Crmpath(PATH.builtin)  % rmpath(strjoin(PATH.builtin, pathsep))
         Crmpath(PATH.exfunctions.download)
         Crmpath(PATH.exfunctions.gitclone)
-    case 'noclone'
-        % noclone
+        if ispref('Mbaysalt','init')
+            rmpref('Mbaysalt');
+        end
+        case 'noclone'   % noclone
         addpath(strjoin(PATH.modules, pathsep));
         addpath(strjoin(PATH.builtin, pathsep));
         Jstruct.git.TF = false;
     otherwise
-        error('parameter error');
+        error('Parameter error !!!');
     end
 
     switch cmd
@@ -129,7 +130,13 @@ function ST_Mbaysalt(varargin)
         if ispref('Mbaysalt','PATH_toolbox')  % Fixed Mainpath 
             rmpref('Mbaysalt');
         end
-        setpref('Mbaysalt','init','DONE')
+        if ~strcmp(checkOS, 'LNX')  % 非LNX才会设置，因为LNX上不同需要，一个包可能在多个位置出现
+            setpref('Mbaysalt','init','DONE')
+        else
+            if ispref('Mbaysalt','init')
+                rmpref('Mbaysalt');  % 之前设置的去掉
+            end
+        end
     end
 
 end
@@ -150,13 +157,18 @@ function Crmpath(Path)
 end
 
 function STATUS = Javaaddpath(Jstruct)
+    STATUS = 0;
     if exist('setup_nctoolbox_java','file') == 2 && Jstruct.packages.gitclone.nctoolbox.SETPATH
+        javadir = fileparts(which('setup_nctoolbox_java.m'));
+        if ismember(javadir,javaclasspath)
+            return
+        end
         try
             setup_nctoolbox_java()
-            STATUS = 0;
         catch ME1
             if strcmp(ME1.identifier, 'MATLAB:dispatcher:noMatchingConstructor')
                 STATUS = fixed_setup_nctoolbox_java(Jstruct);
+                setup_nctoolbox_java()
             end
         end
     end
@@ -195,6 +207,9 @@ function STATUS = Fixed_functions(Jstruct)
     if Jstruct.improve.matFigure
         STATUS_list = [STATUS_list,supplement_matFigure(Jstruct)];
     end
+    if Jstruct.improve.tmd_ellipse_v2_5
+        STATUS_list = [STATUS_list,fixed_tmd_ellipse_v2_5(Jstruct)];
+    end
     STATUS = any(STATUS_list);
 end
 
@@ -224,7 +239,7 @@ end
 
 function STATUS = fixed_setup_nctoolbox_java(Jstruct)
     % 修正nctoolbox工具包的setup_nctoolbox_java.m函数在高版本matlab中的报错
-    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.nctoolbox.PATH,'java/setup_nctoolbox_java.m');  % which('setup_nctoolbox_java.m');
+    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.nctoolbox.PATH,'java','setup_nctoolbox_java.m');  % which('setup_nctoolbox_java.m');
     STATUS = 0;
     if ~exist(m_filepath,"file")
         return  
@@ -240,6 +255,30 @@ function STATUS = fixed_setup_nctoolbox_java(Jstruct)
         return
     end
     pattern = '(?m)^(?<!%)(root\.addAppender\(org\.apache\.log4j\.ConsoleAppender\(org\.apache\.log4j\.PatternLayout\(''%d\{ISO8601\} \[\%t\] %-5p %c %x - %m%n''\)\)\);)';
+    replacement = '% $1';
+    newContent = regexprep(fileContent, pattern, replacement);
+    fOWC(m_filepath, 'w', newContent);
+    STATUS = 1;
+end
+
+function STATUS = fixed_tmd_ellipse_v2_5(Jstruct)
+    % 修正TMDToolbox_v2_5工具包的tmd_ellipse.m函数,由于'path'函数无法在'parpool("Threads")'中使用
+    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.TMDToolbox_v2_5.PATH,'TMD','tmd_ellipse.m');  % which('setup_nctoolbox_java.m');
+    STATUS = 0;
+    if ~exist(m_filepath,"file")
+        return  
+    end
+    % 备份源文件
+    path_DIR = fileparts(m_filepath);
+    m_filecopy = fullfile(path_DIR,'tmd_ellipse_origin.m');
+    if ~exist(m_filecopy,'file')
+        copyfile(m_filepath,m_filecopy);
+    end
+    fileContent = fileread(m_filepath);  % 读取文件内容
+    if contains(fileContent, '% path(path,funcdir);')
+        return
+    end
+    pattern = '(?m)^(?<!%)(path\(path,funcdir\);)';
     replacement = '% $1';
     newContent = regexprep(fileContent, pattern, replacement);
     fOWC(m_filepath, 'w', newContent);
@@ -349,7 +388,7 @@ end
 
 function STATUS = fixed_mexcdf(Jstruct)
     % 修复mexcdf工具包的ncmex.m在MATLAB高版本的报错
-    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.download.mexcdf.PATH,'netcdf_toolbox/netcdf/ncutility/ncmex.m');  % which('ncmex.m');
+    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.download.mexcdf.PATH,'netcdf_toolbox','netcdf','ncutility','ncmex.m');  % which('ncmex.m');
     if ~exist(m_filepath,"file")
         STATUS = 0;
         return  
@@ -603,7 +642,7 @@ function STATUS = move_mexcdf_branch(Afolder, Ufolder)
     Dir1 = {'mexnc', 'netcdf_toolbox', 'snctools'};
     makedirs(Ufolder)  % [Edir, 'mexcdf']
     for d = Dir1
-        copyfile(fullfile(Afolder, d{1}, '/trunk/*'), fullfile(Ufolder, d{1}))  % Afolder --> [Edir, 'mexcdf-svn-r4054']
+        copyfile(fullfile(Afolder, d{1}, 'trunk','*'), fullfile(Ufolder, d{1}))  % Afolder --> [Edir, 'mexcdf-svn-r4054']
     end
     rmfiles(Afolder)
     clear d
@@ -774,13 +813,43 @@ function fOWC(filename, mode, content)
     fclose(fid);
 end
 
-function print_info()
+function print_info1()
     fprintf('\n')
-    fprintf('=====================================================================\n')
-    fprintf('As adding files, if it does not take effect, please restart MATLAB   \n')
-    fprintf('=====================================================================\n')
+    fprintf('==========================================================================\n')
+    fprintf('                                                                          \n')
+    fprintf('               ██╗ ██████╗  ██████╗███████╗ █████╗ ███╗   ██╗             \n')
+    fprintf('               ██║██╔═══██╗██╔════╝██╔════╝██╔══██╗████╗  ██║             \n')
+    fprintf('               ██║██║   ██║██║     █████╗  ███████║██╔██╗ ██║             \n')
+    fprintf('               ██║██║   ██║██║     ██╔══╝  ██╔══██║██║╚██╗██║             \n')
+    fprintf('               ██║╚██████╔╝╚██████╗███████╗██║  ██║██║ ╚████║             \n')
+    fprintf('               ╚═╝ ╚═════╝  ╚═════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝             \n')
+    fprintf('                                                                          \n')
+    fprintf('                                            --- Powered by Christmas.     \n')
+    fprintf('                                                                          \n')
+    fprintf('   As adding files, if it does not take effect, please restart MATLAB !!  \n')
+    fprintf('==========================================================================\n')
     fprintf('\n')
 end
+
+
+function print_info()
+    fprintf('\n')
+    fprintf('==========================================================================\n')
+    fprintf('                                                                          \n')
+    fprintf('    ███╗   ███╗██████╗  █████╗ ██╗   ██╗███████╗ █████╗ ██╗  ████████╗    \n')
+    fprintf('    ████╗ ████║██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗██║  ╚══██╔══╝    \n')
+    fprintf('    ██╔████╔██║██████╔╝███████║ ╚████╔╝ ███████╗███████║██║     ██║       \n')
+    fprintf('    ██║╚██╔╝██║██╔══██╗██╔══██║  ╚██╔╝  ╚════██║██╔══██║██║     ██║       \n')
+    fprintf('    ██║ ╚═╝ ██║██████╔╝██║  ██║   ██║   ███████║██║  ██║███████╗██║       \n')
+    fprintf('                                                                          \n')
+    fprintf('                                            --- Powered by Christmas.     \n')
+    fprintf('                                                                          \n')
+    fprintf('   As adding files, if it does not take effect, please restart MATLAB !!  \n')
+    fprintf('==========================================================================\n')
+    fprintf('\n')
+    % https://patorjk.com/software/taag/#p=display&h=2&v=1&f=ANSI%20Shadow&t=Mbaysalt
+end
+
 
 function p = genpath2(d, pattern)
 

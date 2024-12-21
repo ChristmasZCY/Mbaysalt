@@ -444,7 +444,8 @@
      "ann_wrapper": false,
      "DHIMIKE": false,
      "irfu_matlab": false,
-     "matFigure": true},
+     "matFigure": true,
+     "tmd_ellipse_v2_5": true},
  "supplement": {
      "matFVCOM": {
          "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
@@ -473,5 +474,6 @@
     "F": "2024-06-15:   Added improve:matFigure, by Christmas;",
     "G": "2024-12-09:   Added ETOPO1_Bed_g_gmt4, by Christmas;",
     "H": "2024-12-09:   Added ETOPO1_Ice_g_gmt4, by Christmas;",
-    "I": "2024-12-20:   Added ParforProgMon, by Christmas;"}
+    "I": "2024-12-20:   Added ParforProgMon, by Christmas;",
+    "J": "2024-12-20:   Added improve:tmd_ellipse_v2_5, by Christmas;"}
 }
