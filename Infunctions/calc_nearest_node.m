@@ -4,7 +4,7 @@ function [node, mdst] = calc_nearest_node(fgrid, lon_dst, lat_dst)
     % Parameters:
     %       fgrid:          FVCOM grid                          || required: True  || type: struct  || example: fgrid
     %       lon_dst:        Longitude of destination            || required: True  || type: double  || example: 120.5
-    %       lat_dst:        Latitude of destination             || required: True  || type: double  || example: 30.5
+    %       lat_dst:        Latitude  of destination            || required: True  || type: double  || example: 30.5
     %       varargin:       optional parameters
     % =================================================================================================================
     % Returns:
@@ -16,12 +16,15 @@ function [node, mdst] = calc_nearest_node(fgrid, lon_dst, lat_dst)
     % =================================================================================================================
     % Examples:
     %       [node, mdts] = calc_nearest_node(fgrid, 120.5, 30.5);
+    %       <==>
+    %       d = calc_geodistance(f.x,f.y,120.5, 30.5);
+    %       [node, mdst] = min(d);
     % =================================================================================================================
     % Reference:
     %       https://www.bilibili.com/read/cv4527582/
     % =================================================================================================================
     
-    R = 6378137;%earth radius
+    R = 6378137;  % earth radius
 
     if(lon_dst<0)
         lon_dst = lon_dst+360;
@@ -34,7 +37,7 @@ function [node, mdst] = calc_nearest_node(fgrid, lon_dst, lat_dst)
     dty = (lat_dst-lat_src)./180.*pi.*R;
     dst = sqrt(dtx.^2+(dty.^2));
 
-    [mdst,node] = min(dst); % mdst is minium distant of node(m), node is indice
+    [mdst,node] = min(dst);  % mdst is minium distant of node(m), node is indice
 
     return
 end

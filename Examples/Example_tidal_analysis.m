@@ -31,5 +31,5 @@ mod3 = pl66tn(mod2, 1, 33);
 
 %% Method 2
 [NAME,FREQ,TIDECON,XOUT]=t_tide(1:10,'start time',[2016,1,1,0,0,0],'latitude',22,'rayleigh',['M2']);
-zhenfu=TIDECON(:,1);
-chijiao=TIDECON(:,3);
+zhenfu = TIDECON(:,1);  % amp
+chijiao = TIDECON(:,3);  % pha

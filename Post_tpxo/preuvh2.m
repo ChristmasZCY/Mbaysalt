@@ -16,35 +16,51 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     % =================================================================================================================
     % Returns:
     %       TIDE:
-    %           .u:     tide current-u  || type: double || format: 1D or 2D
-    %           .v:     tide current-v  || type: double || format: 1D or 2D
-    %           .h:     tide seaLevel-h || type: double || format: 1D or 2D
+    %           .u:     tide current-u   || type: double || format: 1D or 2D or 3D
+    %           .v:     tide current-v   || type: double || format: 1D or 2D or 3D
+    %           .h:     tide tideLevel-h || type: double || format: 1D or 2D or 3D
     % =================================================================================================================
     % Updates:
-    %       2024-05-27:     Created,                by Christmas;
-    %       2024-10-11:     Check lon/lat range,    by Christmas;
-    %       2024-12-20:     Fixed parfor INFO,      by Christmas;
+    %       2024-05-27:     Created,                        by Christmas;
+    %       2024-10-11:     Check lon/lat range,            by Christmas;
+    %       2024-12-20:     Fixed parfor INFO and parpool,  by Christmas;
+    %       2024-12-20:     Perfected get Cid,              by Christmas;
     % =================================================================================================================
     % Examples:
-    %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin','Vname','z')
-    %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin','Vname','uv')
-    %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin','Vname','all')
-    %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin')
-    %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin', 'INFO', 'disp')
-    %       TIDE = preuvh2(lon, lat, dmt, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','all', 'INFO', 'disp')
+    %       [Lat,Lon] = meshgrid(lat,lon);
+    %       dmt = Ttimes.Times;
+    %       tideList = ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"];
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin','createOnly');  % create file only
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin');
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, [], './AreaBin');  % if ‘AreaBin’ is OK!
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','z');
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','uv');
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','all');
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin', 'INFO', 'disp');
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','all', 'INFO', 'disp');
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','all', 'INFO', 'disp','Parallel',20);
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'INFO'}, {'none'});
     varargin = read_varargin(varargin,{'Vname'}, {'all'});
     varargin = read_varargin(varargin, {'Parallel'},{[]}); %#ok<*NASGU>
     varargin = read_varargin2(varargin, {'createOnly'});
-    INFO = INFO; %#ok<ASGSL,*NODEF> % beacause of parfor
+    INFO = lower(INFO);  %#ok<*NODEF> % beacause of parfor
+    Vname = lower(Vname);
+    switch INFO
+    case {'cprintf','osprint2'}
+        INFO = 'osprint2';
+    case {'disp','fprintf','sprintf'}
+        INFO = 'disp';
+    otherwise
+        INFO = 'none';
+    end
     
     hug_filepath = fullfile(tempdir ,'hug_files.txt');
     tpxobin_filepath = fullfile(tempdir ,'tpxobin_file.txt');
 
     if min(lat(:)) <-90 || max(lat(:)) > 90
-        error(sprintf('lat range not in [-90 90], but [%.2f ~ %.2f]',minmax(lat))) %#ok<SPERR>
+        error('lat range not in [-90 90], but [%.2f ~ %.2f]',minmax(lat))
     end
 
     if ~isscalar(lon)  % not noe
@@ -72,11 +88,12 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     writelines(sprintf('%s/uv_area',data_midDir),hug_filepath,"WriteMode","append")
     writelines(gFile_area,hug_filepath,"WriteMode","append")
     
-    if exist(gFile_area,"file") == 2
+    if exist(gFile_area, "file") == 2
         ll_lims = grd_in(gFile_area);
     else
         ll_lims = [-Inf; -Inf; Inf; Inf];
     end
+
     box_old = [ll_lims(1) ll_lims(3);
            ll_lims(2) ll_lims(3);
            ll_lims(2) ll_lims(4);
@@ -104,6 +121,29 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         TIDE.u = NaN; TIDE.v = NaN; TIDE.h = NaN;
         return
     end
+
+    [~, ~, ~, conList] = tmd_extract_HC(hug_filepath, lon(1), lat(1), 'z', []);
+    %{ 
+    tideList      = ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"];
+    conList       = ["M2" "N2" "S2" "K2" "K1" "O1" "Q1","Ma"];
+    assemble      = ["M2" "N2" "S2" "K2" "K1" "O1" "Q1"];
+    assemble_lack = ["Ma"];
+    % ==================
+    for j = 1 : length(tideList)
+        k = find(ismember(upper(conList), tideList{j}, 'rows'));
+        if isempty(k)
+            error(['Tide ' tideList{j} ' is not included.'])
+        else
+            Cid(j) = k;
+        end
+    end
+    % ==================
+    %}
+    [assemble,I_conList,I_tideList] = intersect(strip(upper(string(conList)')),tideList); %#ok<ASGLU>
+    if ~all(ismember(tideList,assemble))
+        assemble_lack = setdiff(tideList,assemble);  % 取差集
+        error('Tide %s is not included !',strjoin(assemble_lack))
+    end
     
     if numel(lon) ~= numel(lat)
         error('lon,lat must be scatter or meshgrid!')
@@ -115,26 +155,26 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     if ~isempty(Parallel)
         p = gcp('nocreate');
         if isempty(p)
-            pool = parpool(Parallel);
-            assignin('base',"pool",pool);
+            p = parpool("Threads", Parallel);
+            assignin('base',"pool",p);
         end
     end
 
     %% zeta 
     switch Vname
     case {'all','z'}
-        Cid = 1 : length(tideList);
+        Cid = I_conList;
         tide_zeta = nan(num, length(dmt));
         [amp, pha, ~] = tmd_extract_HC(hug_filepath, lat(:), lon(:), 'z', Cid);
         amp = amp';
         pha = pha';
         if ~isempty(Parallel)
-            if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+            if ~strcmp(INFO, 'none')
                 hbar = parfor_pgb(num);
             end
             parfor i = 1 : num
                 if mod(i,100) == 0
-                    if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+                    if ~strcmp(INFO, 'none')
                         hbar.iterate(100);
                     end
                 end
@@ -142,7 +182,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
                 tide_zeta_struct = create_tidestruc(tideList, amp(i,:), pha(i,:));
                 tide_zeta(i,:) = t_predic(datenum(dmt), tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0); %#ok<*DATNM>
             end
-            if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+            if ~strcmp(INFO, 'none')
                 hbar.close;
             end
         else
@@ -150,9 +190,9 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
                 if mod(i,100) == 0
                     txt = sprintf('Predicting tide elevation: %4.4d / %4.4d', i, num);
                     switch INFO
-                    case {'cprintf','osprint2'}
+                    case 'osprint2'
                         osprint2("INFO", txt);
-                    case {'disp','fprintf','sprintf'}
+                    case 'disp'
                         fprintf('%s\n', txt);
                     end
                 end
@@ -174,10 +214,13 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         % Extract the tide vector components
         fmaj = zeros(num, length(tideList));fmin = zeros(num, length(tideList));
         pha  = zeros(num, length(tideList));finc = zeros(num, length(tideList));
+        % 函数或变量 'ic1' 无法识别。--> 分潮在data_midDir中不存在
         if ~isempty(Parallel)
+            lat1 = lat(:); lon1 = lon(:);
             parfor i = 1 : length(tideList)
-                [fmaj(:,i), fmin(:,i), pha(:,i), finc(:,i)] = tmd_ellipse(hug_filepath, lat(:),lon(:), tideList{i});
+                [fmaj(:,i), fmin(:,i), pha(:,i), finc(:,i)] = tmd_ellipse(hug_filepath, lat1, lon1, tideList{i});
             end
+            clear lat1 lon1
         else
             for i = 1 : length(tideList)
                 [fmaj(:,i), fmin(:,i), pha(:,i), finc(:,i)] = tmd_ellipse(hug_filepath, lat(:),lon(:), tideList{i});
@@ -189,20 +232,20 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         fmaj = fmaj / 100;
         fmin = fmin / 100;
         if ~isempty(Parallel)
-            if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+            if ~strcmp(INFO, 'none')
                 hbar = parfor_pgb(num);
             end
             parfor i = 1 : num
                 if mod(i,100) == 0
                     txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
-                    if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+                    if ~strcmp(INFO, 'none')
                         hbar.iterate(100);
                     end
                 end
                 tide_uv_struct = create_tidestruc(tideList, fmaj(i,:), fmin(i,:), finc(i,:), pha(i,:));
                 tide_uv(i, :) = t_predic(datenum(dmt), tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
             end
-            if ismember(INFO,{'cprintf','osprint2','disp','fprintf','sprintf'})
+            if ~strcmp(INFO, 'none')
                 hbar.close;
             end
         else
@@ -210,9 +253,9 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
                 if mod(i,100) == 0
                     txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
                     switch INFO
-                    case {'cprintf','osprint2'}
+                    case 'osprint2'
                         osprint2("INFO", txt);
-                    case {'disp','fprintf','sprintf'}
+                    case 'disp'
                         fprintf('%s\n', txt);
                     end
                 end

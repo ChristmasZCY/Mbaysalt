@@ -348,6 +348,7 @@
 %   FVCOM_WZinu3/                               -  FVCOM WZinu3 toolbox
 %   FVCOM_WZtide3/                              -  FVCOM WZtide3 toolbox
 %   FVCOM_WZAJinu/                              -  FVCOM WZAJinu toolbox
+%   FVCOM_ECS_2d_v2/                            -  FVCOM ECS 2d v2 toolbox
 %
 %
 %                                         Docs  -  Documents and Manuals for toolbox

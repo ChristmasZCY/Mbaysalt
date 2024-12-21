@@ -22,6 +22,9 @@ function [Xdst, Ydst, bdy] = zoom_ploygon(Xsrc, Ysrc, varargin)
     %       [Xdst, Ydst, bdy] = zoom_ploygon(Xsrc, Ysrc, 0.1);
     %       [Xdst, Ydst, bdy] = zoom_ploygon(Xsrc, Ysrc, 0.1, 'figOn');
     % =================================================================================================================
+    % References:
+    %       https://blog.csdn.net/island_chenyanyu/article/details/124620255
+    % =================================================================================================================
 
     varargin = read_varargin2(varargin, {'figOn'});
     
