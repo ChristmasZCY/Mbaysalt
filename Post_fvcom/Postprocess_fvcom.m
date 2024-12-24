@@ -35,6 +35,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-12-10:     Changed Switch name,                                                by Christmas;
     %       2024-12-10:     Added Tice,                                                         by Christmas;
     %       2024-12-10:     Added check_conf,                                                   by Christmas;
+    %       2024-12-24:     Added output zeta with depth,                                       by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20241210,1)
@@ -847,7 +848,11 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             file = fullfile(OutputDir.zeta,['adt',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
             [zeta_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Zeta'});
-            netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len);
+            if SWITCH.zeta_with_depth
+                netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len,'Bathy',Store_coor.Depth_xy);  % Store_coor.Depth_xy <==> Delement.Bathy
+            else
+                netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len);
+            end
             clear zeta_Struct ncid file
         end
 
