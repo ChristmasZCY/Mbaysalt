@@ -6,8 +6,10 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,varargin)
     %       Lon:             longitude               || required: True  || type: double    || format: [120.5, 121.5]
     %       Lat:             latitude                || required: True  || type: double    || format: [30.5, 31.5]
     %       time:            time                    || required: True  || type: double    || format: posixtime
-    %       Zeta:            adt                     || required: True. || type: double    || format: matrix
-    %       varargin:        optional parameters     
+    %       Zeta:            adt                     || required: True  || type: double    || format: matrix
+    %       varargin:        optional parameters    
+    %           Wet_nodes:   wet point               || required: False || type: namevalue || format: matrix
+    %           Bathy:       water depth             || required: False || type: namevalue || format: matrix
     %           conf:        configuration struct    || required: False || type: namevalue || format: struct
     %           INFO:        Whether print msg       || required: False || type: flag      || format: 'INFO' 
     %           Text_len:    Length of msg str       || required: False || type: namevalue || format: 'Text_len',45 
@@ -16,19 +18,35 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,varargin)
     %       None
     % =================================================================================================================
     % Update:
-    %       2023-**-**:     Created, by Christmas;
-    %       2023-12-29:     Fixed comments, by Christmas;
+    %       2023-**-**:     Created,                            by Christmas;
+    %       2023-12-29:     Fixed comments,                     by Christmas;
+    %       2024-12-27;     Added Bathy, Wet_nodes for wet_dry, by Christmas;
     % =================================================================================================================
     % Example:
-    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta)
-    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,'conf',conf)
-    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,'conf',conf,'INFO')
-    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,'conf',conf,'INFO','Text_len',45 )
+    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta);
+    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,'Bathy',Bathy,'Wet_nodes',Wet_nodes);
+    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,'conf',conf);
+    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,'conf',conf,'INFO');
+    %       netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,Zeta,'conf',conf,'INFO','Text_len',45);
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'conf'},{struct('')});
     varargin = read_varargin2(varargin,{'INFO'});
     varargin = read_varargin(varargin,{'Text_len'},{false});
+    varargin = read_varargin(varargin,{'Wet_nodes'},{[]});
+    varargin = read_varargin(varargin,{'Bathy'},{[]});
+
+    if isempty(Wet_nodes)
+        SWITCH.Wet_nodes = false;
+    else
+        SWITCH.Wet_nodes = true;
+    end
+
+    if isempty(Bathy)
+        SWITCH.Bathy = false;
+    else
+        SWITCH.Bathy = true;
+    end
 
     % time && TIME
     [TIME,TIME_reference,TIME_start_date,TIME_end_date,time_filename] = time_to_TIME(time);
@@ -56,6 +74,14 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,varargin)
     time_id =  netcdf.defVar(ncid, 'time',      'double',   timedimID);                      % 时间
     TIME_id =  netcdf.defVar(ncid, 'TIME',      'NC_CHAR',  [TIMEdimID,timedimID]);          % 时间char
     adt_id  =  netcdf.defVar(ncid, 'adt',       'NC_FLOAT', [londimID, latdimID,timedimID]); % 海平面高度
+    if SWITCH.Wet_nodes
+        wet_nodes_id  = netcdf.defVar(ncid, 'wet_nodes', 'NC_INT', [londimID, latdimID, timedimID]);    % 湿点
+        netcdf.defVarFill(ncid, wet_nodes_id,  false, -1);  % 设置缺省值
+    end
+    if SWITCH.Bathy
+        bathy_id  = netcdf.defVar(ncid, 'bathy', 'NC_FLOAT', [londimID, latdimID]);          % 深度
+        netcdf.defVarFill(ncid, bathy_id,  false, 9.9692100e+36);  % 设置缺省值
+    end
 
     netcdf.defVarFill(ncid, adt_id, false, 9.9692100e+36); % 设置缺省值
 
@@ -64,6 +90,13 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,varargin)
     netcdf.defVarDeflate(ncid, time_id, true, true, 5)
     netcdf.defVarDeflate(ncid, TIME_id, true, true, 5)
     netcdf.defVarDeflate(ncid, adt_id,  true, true, 5)
+    if SWITCH.Wet_nodes
+        netcdf.defVarDeflate(ncid, wet_nodes_id, true, true, 5)
+    end
+    if SWITCH.Bathy
+        netcdf.defVarDeflate(ncid, bathy_id, true, true, 5)
+    end
+
 
     % -----
     netcdf.endDef(ncid);    % 结束nc文件定义
@@ -73,6 +106,13 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,varargin)
     netcdf.putVar(ncid, time_id, 0,      length(time),                               time);        % 时间
     netcdf.putVar(ncid, TIME_id, [0,0],  [size(char(TIME),2),size(char(TIME),1)],    char(TIME)'); % 时间char
     netcdf.putVar(ncid, adt_id,  [0,0,0],[size(Zeta,1), size(Zeta,2), size(Zeta,3)], Zeta);        % 海平面高度
+
+    if SWITCH.Wet_nodes
+        netcdf.putVar(ncid, wet_nodes_id,  [0,0,0],[size(Wet_nodes,1), size(Wet_nodes,2), size(Wet_nodes,3)], Wet_nodes);    % wet_nodes
+    end
+    if SWITCH.Bathy
+        netcdf.putVar(ncid, bathy_id, Bathy); % bathy
+    end
 
     % -----
     netcdf.reDef(ncid);    % 使打开的nc文件重新进入定义模式
@@ -98,6 +138,17 @@ function wrnc_adt(ncid,Lon,Lat,time,Zeta,varargin)
 
     netcdf.putAtt(ncid, adt_id, 'units',     'm');                              % 海平面高度
     netcdf.putAtt(ncid, adt_id, 'long_name', 'absolute dynamic topography');    % 海平面高度
+
+    if SWITCH.Wet_nodes
+        netcdf.putAtt(ncid, wet_nodes_id, 'units',     '1');                      % wet nodes
+        netcdf.putAtt(ncid, wet_nodes_id, 'long_name',  'wet nodes');             % wet nodes
+        netcdf.putAtt(ncid, wet_nodes_id, 'references', '1 for wet, 0 for dry');  % wet nodes
+    end
+
+    if SWITCH.Bathy
+        netcdf.putAtt(ncid, bathy_id, 'units',     'm');               % bathy
+        netcdf.putAtt(ncid, bathy_id, 'long_name', 'bathy of ocean');  % bathy
+    end
 
     % 写入global attribute
     varid_GA = netcdf.getConstant('NC_GLOBAL');
