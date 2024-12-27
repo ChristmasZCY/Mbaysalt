@@ -9,7 +9,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       TPXO_fileDir:   tpxo bin file dir           || required: True || type: char      || example: './TPXO9-atlas-v5/bin'
     %       data_midDir:    Combined file dir           || required: True || type: char      || example: './AreaBin'         
     %       varargin:   (options)                       || required: False|| as follow:
-    %           INFO:       display process             || required: False|| type: namevalue || example: 'INFO','disp'
+    %           INFO:       display mode                || required: False|| type: namevalue || example: 'INFO','disp'
     %           Vname:      extract value name          || required: False|| type: namevalue || example: 'Vname','u'
     %           Parallel:   Parallel switch             || required: False|| type: namevalue || example: 'Parallel', 20
     %           createOnly: create combined file only   || required: False|| type: flag      || example: 'createOnly'
@@ -25,14 +25,20 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       2024-10-11:     Check lon/lat range,            by Christmas;
     %       2024-12-20:     Fixed parfor INFO and parpool,  by Christmas;
     %       2024-12-20:     Perfected get Cid,              by Christmas;
+    %       2024-12-27:     Added for more data,            by Christmas;
+    % =================================================================================================================
+    % Reerences:
+    %       tpxo7.2只有9个分潮。是从所有潮总分离出来9个，其他的都掺杂在这9个里面
+    %       tpxo10有25个，等同于tpxo7.2的9个
     % =================================================================================================================
     % Examples:
     %       [Lat,Lon] = meshgrid(lat,lon);
     %       dmt = Ttimes.Times;
     %       tideList = ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"];
+    %       tideList = [];
     %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin','createOnly');  % create file only
     %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin');
-    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, [], './AreaBin');  % if ‘AreaBin’ is OK!
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, [], './AreaBin');  % if 'AreaBin' is OK!
     %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','z');
     %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','uv');
     %       TIDE = preuvh2(Lon, Lat, dmt, tideList, './TPXO9-atlas-v5/bin', './AreaBin', 'Vname','all');
@@ -63,7 +69,16 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         error('lat range not in [-90 90], but [%.2f ~ %.2f]',minmax(lat))
     end
 
-    if ~isscalar(lon)  % not noe
+    % ./AreaBin/
+    makedirs(data_midDir)
+    hFile_area = sprintf('%s/h_area',   data_midDir);
+    uFile_area = sprintf('%s/uv_area',  data_midDir);
+    gFile_area = sprintf('%s/grid_area',data_midDir);
+    writelines(hFile_area, hug_filepath,"WriteMode","overwrite");
+    writelines(uFile_area, hug_filepath,"WriteMode","append");
+    writelines(gFile_area, hug_filepath,"WriteMode","append");
+
+    if ~isscalar(lon)  % not one
         xdiff = mean(diff(lon(:)));
         ydiff = mean(diff(lat(:)));
     else
@@ -73,44 +88,101 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     xlims = [min(lon(:))-2*xdiff,max(lon(:))+2*xdiff];
     ylims = [min(lat(:))-2*ydiff,max(lat(:))+2*ydiff];
 
-    uFile = fullfile(TPXO_fileDir,sprintf('h_{%s}_tpxo9_atlas_30_v5',strjoin(lower(tideList),',')));
-    hFile = fullfile(TPXO_fileDir,sprintf('u_{%s}_tpxo9_atlas_30_v5',strjoin(lower(tideList),',')));
-    gFile = fullfile(TPXO_fileDir,'grid_tpxo9_atlas_30_v5');
-    clear TPXO_fileDir
+    if exist(TPXO_fileDir,"dir")
+        SWITCH.create = true;
+    else
+        SWITCH.create = false;
+    end
+
+    % check version
+    if SWITCH.create
+        [~, name, ext] = fileparts(strip(ls(fullfile(TPXO_fileDir,"grid*"))));
+        filenameCheck = [name,ext]; clear name ext
     
-    writelines(uFile,tpxobin_filepath,'WriteMode','overwrite');
-    writelines(hFile,tpxobin_filepath,'WriteMode','append');
-    writelines(gFile,tpxobin_filepath,'WriteMode','append');
+        if contains(filenameCheck,'atlas')
+            SWITCH.atlas = true;
+        else
+            SWITCH.atlas = false;
+        end
+
+        if isempty(tideList)
+            osprint2('INFO','Use all tpxo file !!!')
+        end
+
     
-    makedirs(data_midDir)
-    gFile_area = sprintf('%s/grid_area',data_midDir);
-    writelines(sprintf('%s/h_area',data_midDir),hug_filepath,"WriteMode","overwrite")
-    writelines(sprintf('%s/uv_area',data_midDir),hug_filepath,"WriteMode","append")
-    writelines(gFile_area,hug_filepath,"WriteMode","append")
-    
+        switch SWITCH.atlas
+        case true
+        
+            % hFile = fullfile(TPXO_fileDir,sprintf('h_{%s}_tpxo10_atlas_30_v2',strjoin(lower(tideList),',')));
+            % uFile = fullfile(TPXO_fileDir,sprintf('u_{%s}_tpxo10_atlas_30_v2',strjoin(lower(tideList),',')));
+            % gFile = fullfile(TPXO_fileDir,'grid_tpxo10_atlas_30_v2');
+            if ~isempty(tideList)
+                hFile = fullfile(TPXO_fileDir,sprintf('h_{%s}_%s',strjoin(lower(tideList),','),replace(filenameCheck,'grid_','')));
+                uFile = fullfile(TPXO_fileDir,sprintf('u_{%s}_%s',strjoin(lower(tideList),','),replace(filenameCheck,'grid_','')));
+            else
+                hFile = fullfile(TPXO_fileDir,sprintf('h_*_%s',replace(filenameCheck,'grid_','')));
+                uFile = fullfile(TPXO_fileDir,sprintf('u_*_%s',replace(filenameCheck,'grid_','')));
+            end
+            gFile = fullfile(TPXO_fileDir,filenameCheck);
+            
+            writelines(hFile,tpxobin_filepath,'WriteMode','overwrite');
+            writelines(uFile,tpxobin_filepath,'WriteMode','append');
+            writelines(gFile,tpxobin_filepath,'WriteMode','append');
+        case false
+            if contains(filenameCheck,'YS')
+                hFile = strip(ls(fullfile(TPXO_fileDir,'hf*')));
+                uFile = strip(ls(fullfile(TPXO_fileDir,'uv*')));
+                gFile = strip(ls(fullfile(TPXO_fileDir,'grid*')));
+            else
+                hFile = strip(ls(fullfile(TPXO_fileDir,'h_tpxo*')));
+                uFile = strip(ls(fullfile(TPXO_fileDir,'u_tpxo*')));
+                gFile = strip(ls(fullfile(TPXO_fileDir,'grid_tpxo*')));
+            end
+        end
+    end
+        
     if exist(gFile_area, "file") == 2
         ll_lims = grd_in(gFile_area);
     else
         ll_lims = [-Inf; -Inf; Inf; Inf];
+        if ~exist(TPXO_fileDir,"dir")
+            error('''%s'' and ''%s'' are not exist !!!',TPXO_fileDir,gFile_area);
+        end
     end
+    clear TPXO_fileDir
 
     box_old = [ll_lims(1) ll_lims(3);
-           ll_lims(2) ll_lims(3);
-           ll_lims(2) ll_lims(4);
-           ll_lims(1) ll_lims(4);
-           ll_lims(1) ll_lims(3)];
+        ll_lims(2) ll_lims(3);
+        ll_lims(2) ll_lims(4);
+        ll_lims(1) ll_lims(4);
+        ll_lims(1) ll_lims(3)];
     box_new = [xlims(1) ylims(1);
-           xlims(2) ylims(1);
-           xlims(2) ylims(2);
-           xlims(1) ylims(2);
-           xlims(1) ylims(1)];
+        xlims(2) ylims(1);
+        xlims(2) ylims(2);
+        xlims(1) ylims(2);
+        xlims(1) ylims(1)];
     [in, on] = inpolygon(box_new(:,1), box_new(:,2), box_old(:,1), box_old(:,2));  % box_new in box_old
     if all(in | on)
+        if isempty(tideList)
+            warning(['Please check \n' ...
+                     '%s \n' ...
+                     '%s \n' ...
+                     'whether contains all tide or not !!!'], hFile_area, uFile_area)
+        end
     else
-        tpxo_atlas2local(tpxobin_filepath,hug_filepath,ylims,xlims);
+        switch SWITCH.atlas
+        case true
+            tpxo_atlas2local(tpxobin_filepath,hug_filepath,ylims,xlims);
+            % tpxo_atlas2local_unix(tpxobin_filepath,hug_filepath,ylims,xlims);
+        case false
+            copyfile(hFile, hFile_area, "f");
+            copyfile(uFile, uFile_area, "f");
+            copyfile(gFile, gFile_area, "f");
+        end
     end
     clear xlims xdiff ylims ydiff ll_lims
-    clear uFile hFile gFile  
+    clear uFile hFile gFile
+    clear uFile_area hFile_area gFile_area
     clear box_new box_old in on
     clear data_midDir
 
@@ -139,10 +211,16 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     end
     % ==================
     %}
-    [assemble,I_conList,I_tideList] = intersect(strip(upper(string(conList)')),tideList); %#ok<ASGLU>
-    if ~all(ismember(tideList,assemble))
-        assemble_lack = setdiff(tideList,assemble);  % 取差集
-        error('Tide %s is not included !',strjoin(assemble_lack))
+    if isempty(tideList)
+        tideList = strip(upper(string(conList)'));
+        I_conList = 1:len(tideList);
+    else
+        [assemble,I_conList,I_tideList] = intersect(strip(upper(string(conList)')),tideList); %#ok<ASGLU>
+        if ~all(ismember(tideList,assemble))
+            assemble_lack = setdiff(tideList,assemble);  % 取差集
+            error('Tide %s is not included !',strjoin(assemble_lack))
+        end
+        clear I_tideList I_tideList I_tideList
     end
     
     if numel(lon) ~= numel(lat)

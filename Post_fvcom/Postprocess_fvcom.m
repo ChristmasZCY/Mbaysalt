@@ -35,10 +35,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-12-10:     Changed Switch name,                                                by Christmas;
     %       2024-12-10:     Added Tice,                                                         by Christmas;
     %       2024-12-10:     Added check_conf,                                                   by Christmas;
+    %       2024-12-24:     Added output zeta with depth,                                       by Christmas;
+    %       2024-12-24:     Changed 'Switch_zeta_with_depth' to Switch_zeta_wet_dry,            by Christmas;
     % =================================================================================================================
     % Example:
-    %       Postprocess_fvcom('Post_fvcom.conf','hourly',20241210,1)
-    %       Postprocess_fvcom('Post_fvcom.conf','daily', 20241210,1)
+    %       Postprocess_fvcom('Post_fvcom.conf','hourly',20241227,1)
+    %       Postprocess_fvcom('Post_fvcom.conf','daily', 20241227,1)
     % =================================================================================================================
 
     arguments(Input)
@@ -112,6 +114,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
 
     osprint2('INFO', [pad(['Transfor ',interval,' variable '],Text_len,'right'), '-->', ...
         repmat(' temp',SWITCH.temp), repmat(' salt',SWITCH.salt), repmat(' zeta',SWITCH.zeta), ...
+        repmat(' wet_dry',SWITCH.zeta_wet_dry), ...
         repmat(' u v',SWITCH.vel_all), repmat(' w',SWITCH.vel_vertical), ...
         repmat(' ua va',SWITCH.vel_average), repmat(' ice',SWITCH.ice), ...
         repmat(' ph',SWITCH.ph), repmat(' no3',SWITCH.no3), repmat(' pco2',SWITCH.pco2), ...
@@ -190,6 +193,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.vel_vertical; w = double(ncread(ncfile, 'ww')); end
         if SWITCH.zeta
             fncValue_nt.zeta = double(ncread(ncfile,'zeta'));
+            if SWITCH.zeta_wet_dry
+                fncValue_nt.wet_nodes = double(ncread(ncfile,'wet_nodes'));
+            end
             OutputDir.zeta = fullfile(Outputpath,'adt',interval,deal_date);  % adt输出路径
         end
         if SWITCH.vel_average
@@ -379,6 +385,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % fncValue_nt.shts       --> node*t
         % fncValue_nt.mdts       --> node*t
         % fncValue_nt.mpts       --> node*t
+        % fncValue_nt.wet_nodes  --> node*t
 
         switch Method_interpn
             case 'Siqi_interp'
@@ -436,15 +443,16 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
                     tt3 = tic;
                     esmf_write_grid(GridFile_fvcom , 'FVCOM', f_nc.x,f_nc.y,f_nc.nv);
                     esmf_write_grid(GridFile_wrf,    'WRF',   Lon_m,Lat_m);
-                    if SWITCH.extrap && ~strcmp(ESMF.ExtrapMethod, 'none')
+                    if SWITCH.extrap
                         esmf_regrid_weight(GridFile_fvcom, GridFile_wrf, ESMF.NCweightfile, ...
-                                        'exe', ESMF.exe, 'Src_loc', 'corner', 'Method', ESMF.RegridMethod,'Extrap',ESMF.ExtrapMethod); % temperature corner
+                            'exe', ESMF.exe, 'Src_loc', 'corner', 'Method', ESMF.RegridMethod,'Extrap',ESMF.ExtrapMethod); % temperature corner
                     else
                         esmf_regrid_weight(GridFile_fvcom, GridFile_wrf, ESMF.NCweightfile, ...
-                                            'exe', ESMF.exe, 'Src_loc', 'corner', 'Method', ESMF.RegridMethod); % temperature corner
+                            'exe', ESMF.exe, 'Src_loc', 'corner', 'Method', ESMF.RegridMethod); % temperature corner
                     end
-                    clear ans
                     Weight_2d = esmf_read_weight(ESMF.NCweightfile);
+
+                    clear ans
                     makedirs(fileparts(file_weight)); rmfiles(file_weight)
                     save(file_weight,'Weight_2d','-v7.3','-nocompression');
                     clear Lon_m Lat_m
@@ -495,96 +503,99 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
 
         % -----> Store
-        Store_coor.Lon           = Lon;                  % --> x*1
-        Store_coor.Lat           = Lat;                  % --> y*1
-        Store_coor.Depth_xy      = Depth_xy;             % --> x*y             Depth Grid(Bathy)
-        Store_coor.Ttimes        = Ttimes;               % --> t*1
+        Store_coor.Lon           = Lon;                   % --> x*1
+        Store_coor.Lat           = Lat;                   % --> y*1
+        Store_coor.Depth_xy      = Depth_xy;              % --> x*y             Depth Grid(Bathy)
+        Store_coor.Ttimes        = Ttimes;                % --> t*1
         if SWITCH.out_std_level
-            Store_coor.Depth_std = Depth_std;            % --> 1*level         (standard depth)
+            Store_coor.Depth_std = Depth_std;             % --> 1*level         (standard depth)
         end
         if SWITCH.out_avg_level
-            Store_coor.Deplev    = Deplev;               % --> x*y*sgv         each sigma level depth(31) node
+            Store_coor.Deplev    = Deplev;                % --> x*y*sgv         each sigma level depth(31) node
         end
         if SWITCH.out_std_level
-            Store_coor.Deplay    = Deplay;               % --> x*y*sgm         each sigma layer depth(30) node
+            Store_coor.Deplay    = Deplay;                % --> x*y*sgm         each sigma layer depth(30) node
         end
         if SWITCH.out_sgm_level
-            Store_coor.Siglay    = Siglay;               % --> x*y*sgm         each sigma layer   %  (30) node
+            Store_coor.Siglay    = Siglay;                % --> x*y*sgm         each sigma layer   %  (30) node
         end
         if SWITCH.temp 
-            Store_xyzt.Temp_sgm  = wncValue_xyzt.temp;   % --> x*y*sgm*t
+            Store_xyzt.Temp_sgm  = wncValue_xyzt.temp;    % --> x*y*sgm*t
         end
         if SWITCH.salt
-            Store_xyzt.Salt_sgm  = wncValue_xyzt.salt;   % --> x*y*sgm*t
+            Store_xyzt.Salt_sgm  = wncValue_xyzt.salt;    % --> x*y*sgm*t
         end
         if SWITCH.vel_all
-            Store_xyzt.U_sgm     = wncValue_xyzt.u_int;  % --> x*y*sgm*t
-            Store_xyzt.V_sgm     = wncValue_xyzt.v_int;  % --> x*y*sgm*t
+            Store_xyzt.U_sgm     = wncValue_xyzt.u_int;   % --> x*y*sgm*t
+            Store_xyzt.V_sgm     = wncValue_xyzt.v_int;   % --> x*y*sgm*t
         end
         if SWITCH.vel_vertical
-            Store_xyzt.W_sgm     = wncValue_xyzt.w_int;  % --> x*y*sgm*t
+            Store_xyzt.W_sgm     = wncValue_xyzt.w_int;   % --> x*y*sgm*t
         end
         if SWITCH.ph
-            Store_xyzt.Ph_sgm    = wncValue_xyzt.ph;     % --> x*y*sgm*t
+            Store_xyzt.Ph_sgm    = wncValue_xyzt.ph;      % --> x*y*sgm*t
         end
         if SWITCH.no3
-            Store_xyzt.No3_sgm   = wncValue_xyzt.no3;    % --> x*y*sgm*t
+            Store_xyzt.No3_sgm   = wncValue_xyzt.no3;     % --> x*y*sgm*t
         end
         if SWITCH.pco2
-            Store_xyzt.Pco2_sgm  = wncValue_xyzt.pco2;   % --> x*y*sgm*t
+            Store_xyzt.Pco2_sgm  = wncValue_xyzt.pco2;    % --> x*y*sgm*t
         end
         if SWITCH.chlo
-            Store_xyzt.Chlo_sgm  = wncValue_xyzt.chlo;   % --> x*y*sgm*t
+            Store_xyzt.Chlo_sgm  = wncValue_xyzt.chlo;    % --> x*y*sgm*t
         end
         if SWITCH.zp
-            Store_xyzt.Zp_sgm   = wncValue_xyzt.zp;      % --> x*y*sgm*t
+            Store_xyzt.Zp_sgm   = wncValue_xyzt.zp;       % --> x*y*sgm*t
         end
         if SWITCH.pp
-            Store_xyzt.Pp_sgm   = wncValue_xyzt.pp;      % --> x*y*sgm*t
+            Store_xyzt.Pp_sgm   = wncValue_xyzt.pp;       % --> x*y*sgm*t
         end
         if SWITCH.sand
-            Store_xyzt.Sand_sgm = wncValue_xyzt.sand;    % --> x*y*sgm*t
+            Store_xyzt.Sand_sgm = wncValue_xyzt.sand;     % --> x*y*sgm*t
         end
         if SWITCH.zeta
-            Store_xyt.Zeta      = wncValue_xyt.zeta;     % --> x*y*t
+            Store_xyt.Zeta      = wncValue_xyt.zeta;      % --> x*y*t
+        end
+        if SWITCH.zeta_wet_dry
+            Store_xyt.Wet_nodes = wncValue_xyt.wet_nodes; % --> x*y*t
         end
         if SWITCH.vel_average
-            Store_xyt.Ua        = wncValue_xyt.ua_int;   % --> x*y*t
-            Store_xyt.Va        = wncValue_xyt.va_int;   % --> x*y*t
+            Store_xyt.Ua        = wncValue_xyt.ua_int;    % --> x*y*t
+            Store_xyt.Va        = wncValue_xyt.va_int;    % --> x*y*t
         end
         if SWITCH.ice
-            Store_xyt.Aice      = wncValue_xyt.aice;     % --> x*y*t
-            Store_xyt.Tice      = wncValue_xyt.tice;     % --> x*y*t
+            Store_xyt.Aice      = wncValue_xyt.aice;      % --> x*y*t
+            Store_xyt.Tice      = wncValue_xyt.tice;      % --> x*y*t
         end
         if SWITCH.casfco2
-            Store_xyt.Casfco2   = wncValue_xyt.casfco2;  % --> x*y*t
+            Store_xyt.Casfco2   = wncValue_xyt.casfco2;   % --> x*y*t
         end
         if SWITCH.swh
-            Store_xyt.Swh       = wncValue_xyt.swh;      % --> x*y*t
+            Store_xyt.Swh       = wncValue_xyt.swh;       % --> x*y*t
         end
         if SWITCH.mwd
-            Store_xyt.Mwd       = wncValue_xyt.mwd;      % --> x*y*t
+            Store_xyt.Mwd       = wncValue_xyt.mwd;       % --> x*y*t
         end
         if SWITCH.mwp
-            Store_xyt.Mwp       = wncValue_xyt.mwp;      % --> x*y*t
+            Store_xyt.Mwp       = wncValue_xyt.mwp;       % --> x*y*t
         end
         if SWITCH.shww
-            Store_xyt.Shww      = wncValue_xyt.shww;     % --> x*y*t
+            Store_xyt.Shww      = wncValue_xyt.shww;      % --> x*y*t
         end
         if SWITCH.mdww
-            Store_xyt.Mdww      = wncValue_xyt.mdww;     % --> x*y*t
+            Store_xyt.Mdww      = wncValue_xyt.mdww;      % --> x*y*t
         end
         if SWITCH.mpww
-            Store_xyt.Mpww      = wncValue_xyt.mpww;     % --> x*y*t
+            Store_xyt.Mpww      = wncValue_xyt.mpww;      % --> x*y*t
         end
         if SWITCH.shts
-            Store_xyt.Shts      = wncValue_xyt.shts;     % --> x*y*t
+            Store_xyt.Shts      = wncValue_xyt.shts;      % --> x*y*t
         end
         if SWITCH.mdts
-            Store_xyt.Mdts      = wncValue_xyt.mdts;     % --> x*y*t
+            Store_xyt.Mdts      = wncValue_xyt.mdts;      % --> x*y*t
         end
         if SWITCH.mpts
-            Store_xyt.Mpts      = wncValue_xyt.mpts;     % --> x*y*t
+            Store_xyt.Mpts      = wncValue_xyt.mpts;      % --> x*y*t
         end
         clear Depth_xy
         clear Siglay Deplev Deplay
@@ -607,17 +618,18 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
             OutValue_xyt.Aice = Store_xyt.Aice;
             OutValue_xyt.Tice = Store_xyt.Tice;
         end
-        if SWITCH.zeta;    OutValue_xyt.Zeta    = Store_xyt.Zeta;    end
-        if SWITCH.casfco2; OutValue_xyt.Casfco2 = Store_xyt.Casfco2; end
-        if SWITCH.swh;     OutValue_xyt.Swh     = Store_xyt.Swh;     end
-        if SWITCH.mwd;     OutValue_xyt.Mwd     = Store_xyt.Mwd;     end
-        if SWITCH.mwp;     OutValue_xyt.Mwp     = Store_xyt.Mwp;     end
-        if SWITCH.shww;    OutValue_xyt.Shww    = Store_xyt.Shww;    end
-        if SWITCH.mdww;    OutValue_xyt.Mdww    = Store_xyt.Mdww;    end
-        if SWITCH.mpww;    OutValue_xyt.Mpww    = Store_xyt.Mpww;    end
-        if SWITCH.shts;    OutValue_xyt.Shts    = Store_xyt.Shts;    end
-        if SWITCH.mdts;    OutValue_xyt.Mdts    = Store_xyt.Mdts;    end
-        if SWITCH.mpts;    OutValue_xyt.Mpts    = Store_xyt.Mpts;    end
+        if SWITCH.zeta;         OutValue_xyt.Zeta       = Store_xyt.Zeta;       end
+        if SWITCH.zeta_wet_dry; OutValue_xyt.Wet_nodes  = Store_xyt.Wet_nodes;  end
+        if SWITCH.casfco2;      OutValue_xyt.Casfco2    = Store_xyt.Casfco2;    end
+        if SWITCH.swh;          OutValue_xyt.Swh        = Store_xyt.Swh;        end
+        if SWITCH.mwd;          OutValue_xyt.Mwd        = Store_xyt.Mwd;        end
+        if SWITCH.mwp;          OutValue_xyt.Mwp        = Store_xyt.Mwp;        end
+        if SWITCH.shww;         OutValue_xyt.Shww       = Store_xyt.Shww;       end
+        if SWITCH.mdww;         OutValue_xyt.Mdww       = Store_xyt.Mdww;       end
+        if SWITCH.mpww;         OutValue_xyt.Mpww       = Store_xyt.Mpww;       end
+        if SWITCH.shts;         OutValue_xyt.Shts       = Store_xyt.Shts;       end
+        if SWITCH.mdts;         OutValue_xyt.Mdts       = Store_xyt.Mdts;       end
+        if SWITCH.mpts;         OutValue_xyt.Mpts       = Store_xyt.Mpts;       end
         % <----- 2D
 
         % -----> sgm_level
@@ -846,8 +858,12 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.zeta
             file = fullfile(OutputDir.zeta,['adt',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [zeta_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Zeta'});
-            netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len);
+            [zeta_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Zeta','Wet_nodes'});
+            if SWITCH.zeta_wet_dry
+                netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len,'Wet_nodes',int32(zeta_Struct.Wet_nodes),'Bathy',Store_coor.Depth_xy);  % Store_coor.Depth_xy <==> Delement.Bathy
+            else
+                netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len);
+            end
             clear zeta_Struct ncid file
         end
 

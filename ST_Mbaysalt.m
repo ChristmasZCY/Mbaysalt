@@ -25,6 +25,7 @@ function ST_Mbaysalt(varargin)
     %       2024-12-09:     Added ungz_file, export Proxy from MATLAB to CMD,       by Christmas;
     %       2024-12-19:     Fixed 'setup_nctoolbox_java' automatically if not init, by Christmas;
     %       2024-12-21:     Added improve:tmd_ellipse_v2_5, for parpool('T'),       by Christmas;
+    %       2024-12-26:     Added improve:cdt,                                      by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -210,6 +211,9 @@ function STATUS = Fixed_functions(Jstruct)
     if Jstruct.improve.tmd_ellipse_v2_5
         STATUS_list = [STATUS_list,fixed_tmd_ellipse_v2_5(Jstruct)];
     end
+    if Jstruct.improve.cdt
+        STATUS_list = [STATUS_list,supplement_cdt(Jstruct)];
+    end
     STATUS = any(STATUS_list);
 end
 
@@ -310,9 +314,8 @@ function STATUS = supplement_matFVCOM(Jstruct)
                 system(str,"-echo");
             else
                 copyfile(file_in,file_out);
-                STATUS_list(i) = 1;
             end
-
+            STATUS_list(i) = 1;
         else
             if ~readlink(file_out)
                 file_out_bak = strcat(file_out,'_bak');
@@ -383,6 +386,56 @@ function STATUS = supplement_matFigure(Jstruct)
     % T = validateFunctionSignaturesJSON(fullfile(path_matFVCOM,'functionSignatures.json'));
     % if ~isempty(T)
         % validateFunctionSignaturesJSON(fullfile(path_matFVCOM,'functionSignatures.json'));
+    % end
+end
+
+function STATUS = supplement_cdt(Jstruct)
+    % 为cdt添加functionSignatures.json
+    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.cdt.PATH,'CDT_reduced.jpg');  % which('CDT_reduced.jpg');
+    if ~exist(m_filepath,"file")
+        STATUS = 0;
+        return  
+    end
+    basepath = fileparts(fileparts(Jstruct.FILEPATH));
+    path_in = fullfile(basepath,Jstruct.supplement.cdt.PATH_IN);
+    path_out = fullfile(basepath,Jstruct.supplement.cdt.PATH_OUT);
+    files_in = fullfile(path_in,string(Jstruct.supplement.cdt.FILES));
+    files_out = fullfile(path_out,string(Jstruct.supplement.cdt.FILES));
+    STATUS_list = zeros(length(files_in),1);
+    for i = 1 : length(files_in)
+        file_in = files_in(i);
+        file_out = files_out(i);
+        % file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
+        % file_basename = Jstruct.supplement.cdt.FILES{i};
+        if ~exist(file_out,"file")
+            if strcmp(computer("arch"),"maca64") && strcmp(getHome(),'/Users/christmas')
+                % only for MacBook test
+                str = sprintf('ln -sf %s %s', file_in, file_out);
+                system(str,"-echo");
+            else
+                copyfile(file_in,file_out);
+                STATUS_list(i) = 1;
+            end
+        else
+            if ~readlink(file_out)
+                file_out_bak = strcat(file_out,'_bak');
+                if ~exist(file_out_bak,"file")  % backup
+                    copyfile(file_out,file_out_bak);
+                end
+                if ~strcmp(fileread(file_in), fileread(file_out))
+                    copyfile(file_in,file_out);
+                    STATUS_list(i) = 1;
+                else
+                    STATUS_list(i) = 0;
+                end
+            end      
+        end
+    end
+    STATUS = any(STATUS_list);
+
+    % T = validateFunctionSignaturesJSON(fullfile(path_cdt,'functionSignatures.json'));
+    % if ~isempty(T)
+        % validateFunctionSignaturesJSON(fullfile(path_cdt,'functionSignatures.json'));
     % end
 end
 

@@ -29,7 +29,7 @@
             {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Times(all)"}]},
     "Mdatetime":{
         "inputs":[
-            {"name":"datenum",  "kind":"required", "type":["datetime"], "purpose":"ttime(datenum)"},
+            {"name":"datenum",  "kind":"required", "type":["numeric"], "purpose":"ttime(datenum)"},
             {"name":"fmt",  "kind":"namevalue", "type":["char"], "purpose":"Format"},
             {"name":"units_datetime",  "kind":"namevalue", "type":["datetime"], "purpose":"units(datetime)"},
             {"name":"units",  "kind":"namevalue", "type":["char"], "purpose":"units(char)"},
@@ -37,16 +37,16 @@
         ],
         "outputs":[
             {"name":"Ttimes", "type":["Mdatetime"], "purpose":"Times(all)"}]},
-    "CHGrid":{
+    "MGrid":{
         "inputs":[
             {"name":"GridStruct",  "kind":"required", "type":["struct"], "purpose":"GridStruct"}],
         "outputs":[
-            {"name":"grid", "type":["CHGrid"], "purpose":"CHGrid"}]},
-    "gridDraw":{
+            {"name":"grid", "type":["MGrid"], "purpose":"CHGrid"}]},
+    "Mdraw":{
         "inputs":[
             {"name":"GridStruct",  "kind":"required", "type":["struct"], "purpose":"GridStruct"}],
         "outputs":[
-            {"name":"draw", "type":["gridDraw"], "purpose":"GridStruct"}]},
+            {"name":"draw", "type":["Mdraw"], "purpose":"GridStruct"}]},
     "erosion_coast_cal_id":{
         "inputs":[],
         "outputs":[]}

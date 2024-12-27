@@ -83,7 +83,8 @@
             {"name":"Zeta", "kind":"required","type":["numeric"],"purpose":"Zeta"},
             {"name":"conf", "kind":"namevalue","type":["struct"],"purpose":"Parameter configuration"},
             {"name":"INFO", "kind":"flag","type":["choices={'INFO'}", "char"],"purpose":"Whether to print information"},
-            {"name":"Text_len", "kind":"namevalue","type":["numeric"],"purpose":"Text length"}],
+            {"name":"Text_len", "kind":"namevalue","type":["numeric"],"purpose":"Text length"},
+            {"name":"Bathy", "kind":"namevalue","type":["numeric"],"purpose":"water depth"}],
         "outputs":[]},
     "netcdf_fvcom.wrnc_ice":{
         "inputs":[
@@ -204,7 +205,7 @@
             {"name":"exist", "type":["logical"], "purpose":"attribute exist"}]},
     "nc_attrValue_exist":{
         "inputs":[
-            {"name":"fin", "kind":"required","type":["char","file=*.nc,*00"],"purpose":"netCDF filename"},
+            {"name":"fin", "kind":"required","type":["char","file=*.nc"],"purpose":"netCDF filename"},
             {"name":"attr_str", "kind":"required","type":["char"],"purpose":"attribute string"},
             {"name":"variable", "kind":"positional","type":["char"],"purpose":"variable name"},
             {"name":"method", "kind":"namevalue","type":["char","choices={'AUTO','START','END','STRCMP','CONTAINS'}"],"purpose":"method to search attribute"}],

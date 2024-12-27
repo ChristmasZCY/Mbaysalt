@@ -445,7 +445,8 @@
      "DHIMIKE": false,
      "irfu_matlab": false,
      "matFigure": true,
-     "tmd_ellipse_v2_5": true},
+     "tmd_ellipse_v2_5": true,
+     "cdt": true},
  "supplement": {
      "matFVCOM": {
          "PATH_IN": "Exfunctions/SupplementFiles/matFVCOM",
@@ -456,7 +457,8 @@
              "set_path.m","kml_w_mesh.m","esmf_write_structured_grid.m",
              "write_met_forcing_fvcom.m","f_calc_resolution.m",
              "add_restart_el_eqi.m","add_restart_inundation_cells.m",
-             "write_2dm.m"]},
+             "write_2dm.m","write_brf_dy.m","convert_fig2avi.m",
+             "create_tidestruc.m"]},
      "matFigure": {
             "PATH_IN": "Exfunctions/SupplementFiles/matFigure",
             "PATH_OUT": "Exfunctions/matFigure",
@@ -464,7 +466,11 @@
     "matWRF": {
         "PATH_IN": "Exfunctions/SupplementFiles/matWRF",
         "PATH_OUT": "Exfunctions/matWRF",
-        "FILES": ["calc_rh2.m","functionSignatures.json"]}},
+        "FILES": ["calc_rh2.m","functionSignatures.json"]},
+    "cdt": {
+        "PATH_IN": "Exfunctions/SupplementFiles/cdt",
+        "PATH_OUT": "Exfunctions/cdt",
+        "FILES": ["cdt/functionSignatures.json"]}},
  "@@comments":{
     "A": "2024-04-26:   Created, by Christmas;",
     "B": "2024-05-13:   Added improve:minmax, by Christmas;",
@@ -475,5 +481,6 @@
     "G": "2024-12-09:   Added ETOPO1_Bed_g_gmt4, by Christmas;",
     "H": "2024-12-09:   Added ETOPO1_Ice_g_gmt4, by Christmas;",
     "I": "2024-12-20:   Added ParforProgMon, by Christmas;",
-    "J": "2024-12-20:   Added improve:tmd_ellipse_v2_5, by Christmas;"}
+    "J": "2024-12-20:   Added improve:tmd_ellipse_v2_5, by Christmas;",
+    "K": "2024-12-26:   Added improve:cdt,  by Christmas;"}
 }

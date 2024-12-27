@@ -1,0 +1,10 @@
+
+{
+  "_schemaVersion": "1.0.0",
+  "ncstruct":{
+    "inputs":[
+      {"name":"fin", "kind":"required","type":["file=*.nc"],"purpose":"netCDFfile input"},
+      {"name":"var","kind":"positional","type":["char"],"purpose":"var","repeating": true}],
+    "outputs":[
+      {"name":"NCdata", "type":["struct"], "purpose":"NC struct data"}]}
+}
