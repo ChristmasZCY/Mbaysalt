@@ -375,7 +375,31 @@
             "BRANCH": "master",
             "URL": "https://github.com/fsaxen/ParforProgMon.git",
             "PATH": "Exfunctions/ParforProgMon",
-            "CHECK": ["ParforProgressbar.m","file","2"]}},
+            "CHECK": ["ParforProgressbar.m","file","2"]},
+        "ocean_data_tools": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://github.com/lnferris/ocean_data_tools.git",
+            "PATH": "Exfunctions/ocean_data_tools",
+            "CHECK": ["argo_build.m","file","2"]},
+        "gcmfaces": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://github.com/MITgcm/gcmfaces.git",
+            "PATH": "Exfunctions/gcmfaces",
+            "CHECK": ["gcmfaces_global.m","file","2"]},
+        "RPSstuff": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "DEPTH": 0,
+            "BRANCH": "master",
+            "URL": "https://github.com/rsignell-usgs/RPSstuff.git",
+            "PATH": "Exfunctions/RPSstuff",
+            "CHECK": ["tri_pcolor..m","file","2"]}},
     "modules": {
         "PATH": [
             "Prefunctions",

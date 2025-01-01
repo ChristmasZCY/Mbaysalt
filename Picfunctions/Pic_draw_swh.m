@@ -85,7 +85,7 @@ function Pic_draw_swh(date, day_length, region, varargin)
 %            h.Position(1) = 0.77;
 %            h.Position(3)=0.03;
             h.FontSize=6;
-            set(h,'YTick',[0.1:0.5:3.1]);
+            set(h,'YTick',[0.1,0.5:0.5:2.5,3.0]);
             set(h,'YTickLabel',{'<0.1','0.5','1','1.5','2','2.5','>3'});
 
             % 标题部分

@@ -134,3 +134,15 @@
 	path = Exfunctions/ParforProgMon
 	url = https://github.com/fsaxen/ParforProgMon.git
 
+[submodule "Exfunctions/ocean_data_tools"]
+	path = Exfunctions/ocean_data_tools
+	url = https://github.com/lnferris/ocean_data_tools.git
+
+[submodule "Exfunctions/gcmfaces"]
+	path = Exfunctions/gcmfaces
+	url = https://github.com/MITgcm/gcmfaces.git
+
+[submodule "Exfunctions/RPSstuff"]
+	path = Exfunctions/RPSstuff
+	url = https://github.com/rsignell-usgs/RPSstuff.git
+

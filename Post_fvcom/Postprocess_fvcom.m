@@ -108,9 +108,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     osprint2('INFO', [pad('Output sigma levels ',   Text_len,'right'),'--> ', logical_to_char(SWITCH.out_sgm_level)]);     % 输出是否输出sigma层
     osprint2('INFO', [pad('Output average depth ',  Text_len,'right'),'--> ', logical_to_char(SWITCH.out_avg_level)]);     % 输出是否输出垂向平均层
 
-    osprint2('INFO', [pad('Date parameter ',Text_len,'right'),'--> ', sprintf('%s + %s days',char(getdate), num2str(2))]); % 输出处理的日期信息
-    osprint2('INFO', [pad('Interp Method ', Text_len,'right'),'--> ', Method_interpn]);                                    % 输出插值方法
-    osprint2('INFO', [pad('Switch Extrap ', Text_len,'right'),'--> ', logical_to_char(SWITCH.extrap)]);                    % 输出是否外插
+    osprint2('INFO', [pad('Date parameter ',Text_len,'right'),'--> ', sprintf('%s + %s days',char(getdate), num2str(Length))]); % 输出处理的日期信息
+    osprint2('INFO', [pad('Interp Method ', Text_len,'right'),'--> ', Method_interpn]);                                         % 输出插值方法
+    osprint2('INFO', [pad('Switch Extrap ', Text_len,'right'),'--> ', logical_to_char(SWITCH.extrap)]);                         % 输出是否外插
 
     osprint2('INFO', [pad(['Transfor ',interval,' variable '],Text_len,'right'), '-->', ...
         repmat(' temp',SWITCH.temp), repmat(' salt',SWITCH.salt), repmat(' zeta',SWITCH.zeta), ...

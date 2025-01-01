@@ -3,9 +3,6 @@
     "make_mask_depth_data":{
         "inputs":[],
         "outputs":[]},
-    "make_maskmat":{
-        "inputs":[],
-        "outputs":[]},
     "mask_depth_data":{
         "inputs":[],
         "outputs":[]},
@@ -26,9 +23,6 @@
         "inputs":[],
         "outputs":[]},
     "read_conf_fvcom":{
-        "inputs":[],
-        "outputs":[]},
-    "siglay_to_3d":{
         "inputs":[],
         "outputs":[]},
     "standard_filename":{

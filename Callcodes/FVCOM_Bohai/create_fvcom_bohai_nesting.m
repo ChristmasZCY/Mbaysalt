@@ -22,8 +22,7 @@ function create_fvcom_bohai_nesting(fnest_mat, din_glory, din_tide, fout, yyyymm
     yyyymmdd = num2str(yyyymmdd, '%8d');
     day_len = num2str(day_len, '%3d');
     %% settings
-    % tide_name = ["M2" "N2" "S2" "M4" "K1" "O1" "MS4" "Q1"];
-    tide_name = ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"];
+    tide_name = [];
     TPXO_filepath = [];
 
     %% fgrid nesting
@@ -158,10 +157,10 @@ function generate_nesting_mat()
     lon = [119:1/30:128];
     lat = [33:1/30:37];
     [Times, Ttimes] = create_timeRange(datetime(2024,12,04,00,00,00),49,'1h');
-    TIDE = preuvh2(fn.xc, fn.yc, Times, ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"], ...
-        '/Users/christmas/Documents/Code/MATLAB/数据/TPXO9-atlas-v5/bin', ...
-        './AreaBin', ...
+    TIDE = preuvh2(fn.xc, fn.yc, Times, [], ...
+        '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/TPXO10/TPXO10_atlas_v2_bin', ...
+        './Bohai_tide', ...
         'Vname','all', ...
-        'INFO', 'disp');
+        'INFO', 'disp', 'createOnly');
 
 end

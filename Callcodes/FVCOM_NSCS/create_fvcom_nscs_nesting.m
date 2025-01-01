@@ -22,8 +22,7 @@ function create_fvcom_nscs_nesting(fnest_nc, din_glory, din_tide, fout, yyyymmdd
     yyyymmdd = num2str(yyyymmdd, '%8d');
     day_len = num2str(day_len, '%3d');
     %% settings
-    tide_name = ["M2" "N2" "S2" "M4" "K1" "O1" "MS4" "Q1"];
-    % tide_name = ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"];
+    tide_name = [];
     TPXO_filepath = [];
 
     %% fgrid nesting
@@ -132,5 +131,19 @@ function create_fvcom_nscs_nesting(fnest_nc, din_glory, din_tide, fout, yyyymmdd
         'Ua', ua, ...
         'Va', va, ...
         'Hyw', hyw)
+
+end
+
+
+function generate_nesting_mat()
+
+   lon = [105:1/30:122];
+   lat = [10:1/30:25];
+   [Times, Ttimes] = create_timeRange(datetime(2024,12,04,00,00,00),49,'1h');
+   TIDE = preuvh2(lon, lat, Times, [], ...
+       '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/TPXO10/TPXO10_atlas_v2_bin', ...
+       './NSCS_tide', ...
+       'Vname','all', ...
+       'INFO', 'disp','createOnly');
 
 end
