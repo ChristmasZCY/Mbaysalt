@@ -22,9 +22,7 @@ function create_fvcom_ecs2dv2_nesting(fnest_nc, din_glory, din_tide, fout, yyyym
     yyyymmdd = num2str(yyyymmdd, '%8d');
     day_len = num2str(day_len, '%3d');
     %% settings
-    % tide_name = ["M2" "N2" "S2" "M4" "K1" "O1" "MS4" "Q1"];
-    % tide_name = ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"];
-    tide_name = ["M2" "S2" "N2" "K2" "K1" "O1" "P1" "Q1" "M4"];
+    tide_name = [];
 
     TPXO_filepath = [];
 
@@ -143,10 +141,10 @@ function generate_nesting_mat()
     lon = [113:1/30:152];
     lat = [5:1/30:42];
     [Times, Ttimes] = create_timeRange(datetime(2024,12,04,00,00,00),49,'1h');
-    TIDE = preuvh2(lon, lat, Times, ["M2" "S2" "N2" "K2" "K1" "O1" "P1" "Q1" "M4"], ...
-        '/Users/christmas/Documents/Code/MATLAB/数据/TPXO9-atlas-v5/bin', ...
+    TIDE = preuvh2(lon, lat, Times, [], ...
+        '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/TPXO10/TPXO10_atlas_v2_bin', ...
         './ECS_2d_v2_tide', ...
         'Vname','all', ...
-        'INFO', 'disp');
+        'INFO', 'disp','createOnly');
 
 end

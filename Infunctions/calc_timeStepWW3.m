@@ -23,9 +23,13 @@ function Tt = calc_timeStepWW3(fmin, lon, lat, varargin)
     %       2024-05-14:     Added for tri-mesh,     by Christmas;
     % =================================================================================================================
     % Examples:
-    %       Tt = calc_timeStepWW3(0.0418, -180:.2:180, -85:.2:60);  % Structured
-    %       Tt = calc_timeStepWW3(0.0418, x, y, nv, h, ns);  % Unstructured
-    %       Tt = calc_timeStepWW3(0.0418, x, y, nv, h, ns, 'figOn');  % Unstructured
+    %       Tt = calc_timeStepWW3(0.0418, -180:.2:180, -85:.2:60);      % Structured
+    %       Tt = calc_timeStepWW3(0.0418, x, y, nv, h, ns);             % Unstructured
+    %       Tt = calc_timeStepWW3(0.0418, x, y, nv, h, ns, 'figOn');    % Unstructured
+    %       msh='/Users/christmas/Documents/Code/Project/Server_Program/区域海浪/ww3_djk/qd_rz.msh'; % 要读取的ww3格式的三角文件名
+    %
+    %       f = c_load_model(msh, 'Coordinate', 'geo');
+    %       Tt = calc_timeStepWW3(0.0418, f.x, f.y, f.nv, f.h, f.ns, 'figOn');
     % =================================================================================================================
     % References:
     %   

@@ -105,6 +105,9 @@
 - [googleearthtoolbox](https://github.com/sverhoeven/googleearthtoolbox)
 - [mitgcm_toolbox](https://github.com/seamanticscience/mitgcm_toolbox)
 - [ParforProgMon](https://github.com/fsaxen/ParforProgMon)
+- [ocean_data_tools](https://github.com/lnferris/ocean_data_tools)
+- [gcmfaces](https://github.com/MITgcm/gcmfaces)
+- [RPSstuff](https://github.com/rsignell-usgs/RPSstuff)
 
 - [m_map](https://www.eoas.ubc.ca/~rich/map.html)
 - [t_tide](https://www.eoas.ubc.ca/~rich/#T_Tide)
