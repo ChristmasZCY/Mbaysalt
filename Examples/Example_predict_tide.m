@@ -17,12 +17,12 @@ TPXO_filepath = '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/YS_2010/DATA
 % TPXO_filepath = '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/TPXO9/TPXO9_atlas_v5_bin';
 % TPXO_filepath = '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/TPXO10/TPXO10v2_bin/DATA';
 % TPXO_filepath = '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/TPXO10/TPXO10_atlas_v2_bin';
-% TPXO_filepath = '/storage/data/tpxo/TPXO9-atlas-v5/bin';
+% TPXO_filepath = '/storage/data/TPXO/TPXO9/TPXO9_atlas_v5_bin';
 data_tmpdir = './AreaBin';
-pause
-parpool("Processes",60);
-% TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all');
-TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all','Parallel',60);
+% pause
+% parpool("Thread",60);
+% TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all','Parallel',60);
+TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all');
 F_equator = find(lat==0);
 % NaN in equator
 TIDE.u(:,F_equator,:) = mean([TIDE.u(:,F_equator-1,:),TIDE.u(:,F_equator+1,:)],2);

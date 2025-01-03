@@ -395,11 +395,23 @@
         "inputs":[],
         "outputs":[
             {"name":"OS", "type":["char","choices={'MAC','WIN','LNX'}"], "purpose":"System OS"}]},
+    "checkOS":{
+        "inputs":[
+            {"name":"str",  "kind":"required", "type":["char","choices={'MAC','WIN','LNX'}"], "purpose":"OS"}],
+        "outputs":[
+            {"name":"TF", "type":["logical"], "purpose":"true or false"}]},
     "makedepends":{
         "inputs":[
             {"name":"funName", "kind":"required", "type":["file=*.m"], "purpose":"function Name"},
             {"name":"depDir",  "kind":"namevalue", "type":["char"], "purpose":"depends output dir"}],
         "outputs":[
             {"name":"fList", "type":["cell"], "purpose":"file list"},
-            {"name":"pList", "type":["cell"], "purpose":"product list"}]}
+            {"name":"pList", "type":["cell"], "purpose":"product list"}]},
+    "m_mesh.m": {
+        "inputs": [
+            {"name": "Grid", "kind": "required", "type": ["struct"], "purpose": "Grid struct"},
+            {"name": "Color", "kind": "namevalue", "type": ["char","choices={'k','r','b','y','g'}"],  "purpose": "line color"},
+            {"name": "Global", "kind": "flag", "type": ["choices={'Global'}", "logical"], "purpose": "Global switch"}],
+        "outputs": [
+            {"name": "h", "type": ["handle"], "purpose": "handle"}]}
 }
