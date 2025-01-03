@@ -35,14 +35,19 @@ function ST_Mbaysalt(varargin)
     %       ST_Mbaysalt('cd')                       % Change current directory to the path of this function
     %       ST_Mbaysalt('init')                     % Initialize
     %       ST_Mbaysalt('add','init')               % Initialize and add all path
-    %       ST_Mbaysalt('add','./INSTALL.json')     % Initialize and add all path
+    %       ST_Mbaysalt('add','./INSTALL.json')     % Add all path
     % =================================================================================================================
     
     arguments(Input, Repeating)
         varargin
     end
 
-    cmd = 'add'; % 默认是 add
+    % --> DEFAULT
+    PATH.basepath = fileparts(mfilename("fullpath"));
+    cmd = 'add';  % 默认是 add
+    init = true;  % 默认是初始化
+    Jfile = fullfile(PATH.basepath,'Configurefiles','INSTALL.json');  % ./**/Mbaysalt/Configurefiles/INSTALL.json
+    % <-- DEFAULT
     for i = 1: length(varargin)
         switch lower(varargin{i})
         case {'add','rm','noclone'} 
@@ -55,13 +60,8 @@ function ST_Mbaysalt(varargin)
         end
     end
 
-    if ispref('Mbaysalt','init')
-        init = getpref('Mbaysalt','init');
-        if strcmp(init,'DONE')
-            init = false;
-        end
-    else
-        init = true;
+    if ispref('Mbaysalt','init') && strcmp(getpref('Mbaysalt','init'), 'DONE')
+        init = false;
     end
     for i = 1 : length(varargin)
         switch lower(varargin{i})
@@ -75,37 +75,31 @@ function ST_Mbaysalt(varargin)
     end
     clear i
     
-    PATH.basepath = fileparts(mfilename("fullpath"));
-    if ~exist("Jfile","var")
-        if exist('./INSTALL.json','file')
-            Jfile = './INSTALL.json';
-        else
-            Jfile = fullfile(PATH.basepath,'Configurefiles','INSTALL.json');
-        end
+    if ~exist("Jfile","var") && exist('./INSTALL.json','file')
+        Jfile = './INSTALL.json';
     end
     Jstruct = jsondecode(fileread(Jfile)); Jstruct.FILEPATH = Jfile;
-    PATH.modules = fullfile(PATH.basepath,Jstruct.packages.modules.PATH); % modules
-    PATH.builtin = fullfile(PATH.basepath,Jstruct.packages.builtin.PATH); % builtin
+    PATH.modules = fullfile(PATH.basepath, Jstruct.packages.modules.PATH); % modules
+    PATH.builtin = fullfile(PATH.basepath, Jstruct.packages.builtin.PATH); % builtin
     
     STATUS = 0;
-    switch cmd
-    case 'add'  % addpath
+    if strcmp(cmd,'add') | strcmp(cmd,'noclone')
         addpath(strjoin(PATH.modules, pathsep)); % cellfun(@addpath, PATH.module); 慢
         addpath(strjoin(PATH.builtin, pathsep));
+    end
+
+    switch cmd
+    case 'add'  % addpath
         Jstruct.git.TF = true;
+    case 'noclone'   % noclone
+        Jstruct.git.TF = false;
     case 'rm'  % rmpath
         [~, PATH] = install_pkgs(PATH, Jstruct, 'rm');
         Crmpath(PATH.modules)  % rmpath(strjoin(PATH.modules, pathsep))
         Crmpath(PATH.builtin)  % rmpath(strjoin(PATH.builtin, pathsep))
         Crmpath(PATH.exfunctions.download)
         Crmpath(PATH.exfunctions.gitclone)
-        if ispref('Mbaysalt','init')
-            rmpref('Mbaysalt');
-        end
-        case 'noclone'   % noclone
-        addpath(strjoin(PATH.modules, pathsep));
-        addpath(strjoin(PATH.builtin, pathsep));
-        Jstruct.git.TF = false;
+        if ispref('Mbaysalt','init'); rmpref('Mbaysalt'); end
     otherwise
         error('Parameter error !!!');
     end
@@ -128,15 +122,11 @@ function ST_Mbaysalt(varargin)
     end
     
     if init
-        if ispref('Mbaysalt','PATH_toolbox')  % Fixed Mainpath 
-            rmpref('Mbaysalt');
-        end
-        if ~strcmp(checkOS, 'LNX')  % 非LNX才会设置，因为LNX上不同需要，一个包可能在多个位置出现
+        if ispref('Mbaysalt','PATH_toolbox'); rmpref('Mbaysalt'); end  % Fixed Mainpath 
+        if ~checkOS('LNX')  % 非LNX才会设置，因为LNX上不同需要，一个包可能在多个位置出现
             setpref('Mbaysalt','init','DONE')
         else
-            if ispref('Mbaysalt','init')
-                rmpref('Mbaysalt');  % 之前设置的去掉
-            end
+            if ispref('Mbaysalt','init'); rmpref('Mbaysalt'); end% 之前设置的去掉
         end
     end
 
@@ -176,7 +166,7 @@ function STATUS = Javaaddpath(Jstruct)
 end
 
 function STATUS = Fixed_functions(Jstruct)
-    % 修正一些函数在高版本matlab中的报错
+    % 修正一些函数
     STATUS_list = [];
     if Jstruct.improve.t_tide
         STATUS_list = [STATUS_list,fixed_t_tide(Jstruct)]; % 添加输出ref基准面的信息
@@ -185,34 +175,34 @@ function STATUS = Fixed_functions(Jstruct)
         STATUS_list = [STATUS_list,fixed_setup_nctoolbox_java(Jstruct)]; % 关闭setup_nctoolbox_java的一行，MATLAB高版本会报错
     end
     if Jstruct.improve.matFVCOM
-        STATUS_list = [STATUS_list,supplement_matFVCOM(Jstruct)];
+        STATUS_list = [STATUS_list,supplement_matFVCOM(Jstruct)];  % 完善包函数
     end
     if Jstruct.improve.mexcdf
-        STATUS_list = [STATUS_list,fixed_mexcdf(Jstruct)];
+        STATUS_list = [STATUS_list,fixed_mexcdf(Jstruct)];  % 修正一些函数在高版本matlab中的报错
     end
     if Jstruct.improve.m_gshhs
-        STATUS_list = [STATUS_list,fixed_m_gshhs(Jstruct)];
+        STATUS_list = [STATUS_list,fixed_m_gshhs(Jstruct)];  % 修正文件路径
     end
     if Jstruct.improve.m_etopo2
-        STATUS_list = [STATUS_list,fixed_m_etopo2(Jstruct)];
+        STATUS_list = [STATUS_list,fixed_m_etopo2(Jstruct)];  % 修正文件路径
     end
     if Jstruct.improve.ann_wrapper
-        STATUS_list = [STATUS_list,install_ann_wrapper(Jstruct)];
+        STATUS_list = [STATUS_list,install_ann_wrapper(Jstruct)];  % 编译安装
     end
     if Jstruct.improve.DHIMIKE
-        STATUS_list = [STATUS_list,install_DHIMIKE(Jstruct)];
+        STATUS_list = [STATUS_list,install_DHIMIKE(Jstruct)];  % 安装
     end
     if Jstruct.improve.irfu_matlab
-        STATUS_list = [STATUS_list,install_irfu_matlab(Jstruct)];
+        STATUS_list = [STATUS_list,install_irfu_matlab(Jstruct)];  % 安装
     end
     if Jstruct.improve.matFigure
-        STATUS_list = [STATUS_list,supplement_matFigure(Jstruct)];
+        STATUS_list = [STATUS_list,supplement_matFigure(Jstruct)];  % 完善包函数
     end
     if Jstruct.improve.tmd_ellipse_v2_5
-        STATUS_list = [STATUS_list,fixed_tmd_ellipse_v2_5(Jstruct)];
+        STATUS_list = [STATUS_list,fixed_tmd_ellipse_v2_5(Jstruct)];  % 修复parpool遇到问题
     end
     if Jstruct.improve.cdt
-        STATUS_list = [STATUS_list,supplement_cdt(Jstruct)];
+        STATUS_list = [STATUS_list,supplement_cdt(Jstruct)];  % 完善包函数
     end
     STATUS = any(STATUS_list);
 end
@@ -290,7 +280,7 @@ function STATUS = fixed_tmd_ellipse_v2_5(Jstruct)
 end
 
 function STATUS = supplement_matFVCOM(Jstruct)
-    % 为matFVCOM添加Contents.m和functionSignatures.json
+    % 为matFVCOM添加Contents.m和functionSignatures.json和...
     m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.matFVCOM.PATH,'f_load_grid.m');  % which('f_load_grid.m');
     if ~exist(m_filepath,"file")
         STATUS = 0;
@@ -308,7 +298,7 @@ function STATUS = supplement_matFVCOM(Jstruct)
         % file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
         % file_basename = Jstruct.supplement.matFVCOM.FILES{i};
         if ~exist(file_out,"file")
-            if strcmp(computer("arch"),"maca64") && strcmp(getHome(),'/Users/christmas')
+            if checkOS("MAC") & strcmp(getHome(),'/Users/christmas')
                 % only for MacBook test
                 str = sprintf('ln -sf %s %s', file_in, file_out);
                 system(str,"-echo");
@@ -340,7 +330,7 @@ function STATUS = supplement_matFVCOM(Jstruct)
 end
 
 function STATUS = supplement_matFigure(Jstruct)
-    % 为matFigure添加Contents.m和functionSignatures.json
+    % 为matFigure添加Contents.m和functionSignatures.json和...
     m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.matFigure.PATH,'cm_disp.m');  % which('cm_disp.m');
     if ~exist(m_filepath,"file")
         STATUS = 0;
@@ -358,7 +348,7 @@ function STATUS = supplement_matFigure(Jstruct)
         % file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
         % file_basename = Jstruct.supplement.matFigure.FILES{i};
         if ~exist(file_out,"file")
-            if strcmp(computer("arch"),"maca64") && strcmp(getHome(),'/Users/christmas')
+            if checkOS("MAC") & strcmp(getHome(),'/Users/christmas')
                 % only for MacBook test
                 str = sprintf('ln -sf %s %s', file_in, file_out);
                 system(str,"-echo");
@@ -408,7 +398,7 @@ function STATUS = supplement_cdt(Jstruct)
         % file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
         % file_basename = Jstruct.supplement.cdt.FILES{i};
         if ~exist(file_out,"file")
-            if strcmp(computer("arch"),"maca64") && strcmp(getHome(),'/Users/christmas')
+            if checkOS("MAC") & strcmp(getHome(),'/Users/christmas')
                 % only for MacBook test
                 str = sprintf('ln -sf %s %s', file_in, file_out);
                 system(str,"-echo");
@@ -548,7 +538,7 @@ function STATUS = install_DHIMIKE(Jsruct) %#ok<INUSD>
 end
 
 function STATUS = install_irfu_matlab(Jstruct)
-    % 安装 ann_wrapper
+    % 安装 irfu_matlab
     m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.irfu_matlab.PATH,'irf.m');  % which('irf.m');
     if ~exist(m_filepath,"file")
         STATUS = 0;
@@ -703,13 +693,10 @@ function STATUS = move_mexcdf_branch(Afolder, Ufolder)
 end
 
 function TF = check_command(command)
-    switch checkOS()
-        case {'WIN'}
-            command = ['where ' command];
-        case {'MAC', 'LNX'}
-            command = ['which ' command];
-        otherwise
-            error('platform error')
+    if checkOS("WIN")
+        command = ['where ' command];
+    else  % LNX MAC
+        command = ['which ' command];
     end
     [status,~] = system(command);
     if status == 0
@@ -738,11 +725,10 @@ function download_urlfile(urlin, fileOut, thread)
         Proxy.WINPWS = "";
     end
 
-    switch checkOS()
-    case {'MAC', 'LNX'}
-        Proxy.CMD = convertStringsToChars(Proxy.LNXCMD);
-    case 'WIN'
+    if checkOS("WIN")
         Proxy.CMD = convertStringsToChars(Proxy.WINPWS);
+    else  % MAC LNX
+        Proxy.CMD = convertStringsToChars(Proxy.LNXCMD);
     end
 
     if check_command('axel')
@@ -810,7 +796,7 @@ function CLONE = git_clone(Git, pkg_url, pkg_path, pkg)
     Branch = pkg.BRANCH;
     switch lower(method)
     case {'cmd'}
-        if Depth == 0
+        if Depth == 0 ||  Depth == -1
             Depth = 99999999;
         end
         if ~strcmp(username,'None') && ~strcmp(password,'None')
@@ -845,9 +831,11 @@ function Git = get_git_method(Git)
             else
                 [list_content,line_id] = grep(Jstruct.FILEPATH, '"method"');
                 error([' MATLAB version less than R2023b! \n ' ...
-                    'Please set "method" at line %d, in "INSTALL.json" to "AUTO" or "CMD"! \n ' ...
-                    'You set --> %s'],line_id(1),char(list_content))
+                       'Please set "method" at line %d, in "INSTALL.json" to "AUTO" or "CMD"! \n ' ...
+                       'You set --> %s'],line_id(1),char(list_content))
             end
+        otherwise
+            warning('Wrong git.method at %s !!!', Jstruct.FILEPATH);
         end
     end
 
@@ -884,7 +872,6 @@ function print_info1()
     fprintf('\n')
 end
 
-
 function print_info()
     fprintf('\n')
     fprintf('==========================================================================\n')
@@ -902,7 +889,6 @@ function print_info()
     fprintf('\n')
     % https://patorjk.com/software/taag/#p=display&h=2&v=1&f=ANSI%20Shadow&t=Mbaysalt
 end
-
 
 function p = genpath2(d, pattern)
 

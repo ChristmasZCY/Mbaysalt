@@ -139,5 +139,11 @@
     "inputs": [
       {"name":"shpfile", "kind":"required","type":["file=*.shp"],"purpose":"shape file to read"},
       {"name":"cstfile", "kind":"required","type":["char"],"purpose":"cst file to write"}],
+    "outputs": []},
+  "convert_dat22dm": {
+    "inputs": [
+      {"name":"modelName", "kind":"required","type":["char"],"purpose":"Model casename"},
+      {"name":"din", "kind":"required","type":["folder"],"purpose":"folder to read dat files"},
+      {"name":"f2dm", "kind":"required","type":["char"],"purpose":"2dm file to write"}],
     "outputs": []}
 }

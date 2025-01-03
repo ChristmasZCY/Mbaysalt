@@ -146,3 +146,15 @@
 	path = Exfunctions/RPSstuff
 	url = https://github.com/rsignell-usgs/RPSstuff.git
 
+[submodule "Exfunctions/kriging"]
+	path = Exfunctions/kriging
+	url = https://github.com/wschwanghart/kriging.git
+
+[submodule "Exfunctions/variogramfit"]
+	path = Exfunctions/variogramfit
+	url = https://github.com/wschwanghart/variogramfit.git
+
+[submodule "Exfunctions/topotoolbox"]
+	path = Exfunctions/topotoolbox
+	url = https://github.com/wschwanghart/topotoolbox.git
+

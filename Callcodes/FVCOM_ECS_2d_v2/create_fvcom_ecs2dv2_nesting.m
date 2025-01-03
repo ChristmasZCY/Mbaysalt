@@ -13,7 +13,8 @@ function create_fvcom_ecs2dv2_nesting(fnest_nc, din_glory, din_tide, fout, yyyym
     %       None
     % =================================================================================================================
     % Update:
-    %       2024-12-08:     Created,    by Christmas;
+    %       2024-12-08:     Created,            by Christmas;
+    %       2025-01-03      Changed tidecon,    by Christmas, Huaming Yu.;
     % =================================================================================================================
     % Example:
     %       create_fvcom_ecs2dv2_nesting('./data/fnesting_ecs2dv2_grid_example.nc', '../Data/GLORYS', './data/ECS_2d_v2_tide', './fvcom_ecs2dv2_nesting_forecast/fvcom_ecs2dv2_nesting_20241101.nc', 20241105, 1)
@@ -93,9 +94,28 @@ function create_fvcom_ecs2dv2_nesting(fnest_nc, din_glory, din_tide, fout, yyyym
     clear glorys
     
     %% generate tide
-    
     TIDE = preuvh2(fn.xc, fn.yc, Ttimes.Times, tide_name, TPXO_filepath, din_tide, 'INFO','none','Vname','uv');
-    TIDE.h = preuvh2(fn.x, fn.y, Ttimes.Times, tide_name, TPXO_filepath, din_tide, 'INFO','none','Vname','z').h;
+    hcon = preuvh2(fn.x, fn.y, Ttimes.Times, tide_name, TPXO_filepath, din_tide, 'INFO','none','Vname','z','tideconS').hcon;
+    for i = 1:len(hcon.tideList)
+        switch hcon.tideList(i)
+        case 'M2'
+            hcon.amp(:,:,i) = hcon.amp(:,:,i) * 0.96;
+        case 'S2'
+            hcon.amp(:,:,i) = hcon.amp(:,:,i) * 0.96;
+        case 'K1'
+            hcon.amp(:,:,i) = hcon.amp(:,:,i) * 0.91;
+        case 'O1'
+            hcon.amp(:,:,i) = hcon.amp(:,:,i) * 0.84;
+        case 'N2'
+            hcon.amp(:,:,i) = hcon.amp(:,:,i) * 1.00;
+        end
+    end
+    tide_zeta = nan(fn.node, len(Ttimes));
+    for i = 1:fn.node
+        tide_zeta_struct = create_tidestruc(hcon.tideList, squeeze(hcon.amp(i,:,:)), squeeze(hcon.pha(i,:,:)));
+        tide_zeta(i,:) = t_predic(Ttimes.datenumC, tide_zeta_struct, 'latitude', fn.y(i), 'synthesis', 0); %#ok<*DATNM>
+    end
+    TIDE.h = tide_zeta;
     clearvars TPXO_filepath tide_name
     
     TIDE.h = f_fill_missing(fn,TIDE.h);

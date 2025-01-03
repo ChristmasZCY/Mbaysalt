@@ -12,7 +12,8 @@
             {"name":"INFO", "kind":"namevalue","type":["char","choices={'none','cprintf','osprint2','disp','fprintf','sprintf'}"] ,"purpose":"INFO"},
             {"name":"Vname", "kind":"namevalue","type":["char","choices={'all','uv','h'}"],"purpose":"value to extract"},
             {"name":"Parallel", "kind":"namevalue","type":["int"],"purpose":"parallel pool"},
-            {"name":"createOnly", "kind":"flag","type":["char","choices={'createOnly'}"],"purpose":"create file only"}],
+            {"name":"createOnly", "kind":"flag","type":["char","choices={'createOnly'}"],"purpose":"create file only"},
+            {"name":"tideconS", "kind":"flag","type":["char","choices={'tideconS'}"],"purpose":"Output tidecon switch"}],
         "outputs":[{"name":"TIDE","type":["struct"],"purpose":"tide struct"}]},
     "preuvh2":{
         "inputs":[
@@ -25,6 +26,7 @@
             {"name":"INFO", "kind":"namevalue","type":["char","choices={'none','cprintf','osprint2','disp','fprintf','sprintf'}"] ,"purpose":"INFO"},
             {"name":"Vname", "kind":"namevalue","type":["char","choices={'all','uv','h'}"],"purpose":"value to extract"},
             {"name":"Parallel", "kind":"namevalue","type":["int"],"purpose":"parallel pool"},
-            {"name":"createOnly", "kind":"flag","type":["char","choices={'createOnly'}"],"purpose":"create file only"}],
+            {"name":"createOnly", "kind":"flag","type":["char","choices={'createOnly'}"],"purpose":"create file only"},
+            {"name":"tideconS", "kind":"flag","type":["char","choices={'tideconS'}"],"purpose":"Output tidecon switch"}],
         "outputs":[{"name":"TIDE","type":["struct"],"purpose":"tide struct"}]}
 }

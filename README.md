@@ -108,6 +108,9 @@
 - [ocean_data_tools](https://github.com/lnferris/ocean_data_tools)
 - [gcmfaces](https://github.com/MITgcm/gcmfaces)
 - [RPSstuff](https://github.com/rsignell-usgs/RPSstuff)
+- [kriging](https://github.com/wschwanghart/kriging)
+- [variogramfit](https://github.com/wschwanghart/variogramfit)
+- [TopoToolbox](https://github.com/wschwanghart/topotoolbox)
 
 - [m_map](https://www.eoas.ubc.ca/~rich/map.html)
 - [t_tide](https://www.eoas.ubc.ca/~rich/#T_Tide)
@@ -135,8 +138,6 @@
 - [guillaumemaze](http://code.google.com/p/guillaumemaze/)
 - [perfectPolarPlot](https://ww2.mathworks.cn/matlabcentral/fileexchange/73967-perfect-polar-plots)
 - [LIRSC](https://ww2.mathworks.cn/matlabcentral/fileexchange/71491-largest-inscribed-rectangle-square-or-circle)
-- [kriging](https://ww2.mathworks.cn/matlabcentral/fileexchange/29025-ordinary-kriging)
-- [variogramfit](https://ww2.mathworks.cn/matlabcentral/fileexchange/25948-variogramfit)
 - [IDW](https://ww2.mathworks.cn/matlabcentral/fileexchange/24477-inverse-distance-weight)
 - [dace](https://www.omicron.dk/dace.html)
 - [KrigingToolbox](https://ww2.mathworks.cn/matlabcentral/fileexchange/59960-krigingtoolbox)
