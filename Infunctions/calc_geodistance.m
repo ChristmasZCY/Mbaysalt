@@ -15,13 +15,14 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
     %        dy:   distance north
     % =================================================================================================================
     % Updates:
-    %       2024-05-10:     Created,                by Christmas;
-    %       2024-05-14:     Added method 'MATLAB',  by Christmas;
-    %       2024-07-30:     Added method 'Siqi',    by Christmas;
-    %       2024-11-10:     Fixed error:Siqi,       by Christmas;
+    %       2024-05-10:     Created,                    by Christmas;
+    %       2024-05-14:     Added method 'MATLAB',      by Christmas;
+    %       2024-07-30:     Added method 'Siqi',        by Christmas;
+    %       2024-11-10:     Fixed error:Siqi,           by Christmas;
+    %       2025-01-09:     Added method 'spherical',   by Christmas;
     % =================================================================================================================
     % Examples:
-    %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],[119,119,119],[32,32,32]);
+    %       d = calc_geodistance([120,121,122],[33,34,33],[119,119,119],[32,32,32]);
     %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],119,32);
     %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],119,32,'method','common');
     %       [d,d_east,d_north]= calc_geodistance([120,121,122],[33,34,33],119,32,'method','MATLAB');
@@ -53,6 +54,12 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
         x = deg2rad(lonArray1) - deg2rad(lonArray2);  % lon1*pi/180 - lon2*pi/180;
         y = deg2rad(latArray1) - deg2rad(latArray2);  % lat1*pi/180 - lat2*pi/180;
         d = R*2*asin(sqrt(sin(y/2).^2 + cos(latArray1*pi/180).*cos(latArray2*pi/180).*sin(x/2).^2));
+
+        if nargout <= 1
+            dy = R * (-y);
+            dx = R * cos((deg2rad(latArray1) + deg2rad(latArray2)) / 2) .* (-x);
+        end
+        %{
         dx = lonArray2 - lonArray1;
         dy = latArray2 - latArray1;
         if dy >= 0
@@ -63,22 +70,58 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
     
         dx = d.*cos(theta);
         dy = d.*sin(theta);
+        %}
 
     case 'matlab'
         wgs84 = wgs84Ellipsoid("m");
         d  = distance(latArray1, lonArray1, latArray2, lonArray2, wgs84);
         % d2 = distance(latArray1, lonArray1, latArray2, lonArray2)./180*pi*6370*1000;
-        dx = NaN;
-        dy = NaN;
 
     case 'siqi'
         d = calc_distance(lonArray1, latArray1, lonArray2, latArray2, 'Geo');
-        dx = NaN;
-        dy = NaN;
+
+    case 'spherical'
+        d = fvcom_spherical_arc(lonArray1, latArray1, lonArray2, latArray2);
 
     otherwise
         error('Method must be one of ''common'', ''MATLAB''');
     end
 
+    if nargout > 1 && ~exist("dx","var") && ~exist("dy","var")
+        dx = NaN;
+        dy = NaN;
+    end
 
 end
+
+
+function arcl = fvcom_spherical_arc(xx1,yy1,xx2,yy2)
+    %calculate the arc lenth for given two point on the spherical plane
+    %input:
+    %xx1,yy1,xx2,yy2 :are longitude and latitude of two points
+    %output:
+    %arcl :  arc lenth of two points in spherical plane
+    
+    Rearth = 6371.0e3;
+    
+    x1 = deg2rad(xx1);
+    y1 = deg2rad(yy1);
+    
+    x2 = deg2rad(xx2);
+    y2 = deg2rad(yy2);
+    
+    xa = cos(y1).*cos(x1);
+    ya = cos(y1).*sin(x1);
+    za = sin(y1);
+    
+    xb = cos(y2).*cos(x2);
+    yb = cos(y2).*sin(x2);
+    zb = sin(y2);
+    
+    ab = sqrt((xb-xa).^2+(yb-ya).^2+(zb-za).^2);
+    aob = (2.-ab.*ab)/2.;
+    aob = acos(aob);
+    arcl = Rearth*aob;
+
+end
+

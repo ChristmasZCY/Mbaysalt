@@ -61,6 +61,7 @@
 %   cutout_xy.m                                 -  Cutout small region from a large region
 %   zoom_ploygon.m                              -  Zoom the polygon
 %   calc_timeStepWW3.m                          -  Calculate WW3 time step
+%   calc_timeStepFVCOM.m                        -  Calculate FVCOM time step
 %   calc_typhoonMove.m                          -  Calculate the typhoon move
 %   calc_geodistance.m                          -  Calculate the geodistance between arrays of lon/lat
 %   calc_geodistance_readme.mlx                 -  README for Calculate the geodistance between arrays of lon/lat
@@ -87,6 +88,8 @@
 %   makedepends.m                               -  Make depends for a function
 %   parfor_pgb.m                                -  parfor progress bar
 %   m_mesh.m                                    -  Draw mesh at m_map
+%   plot_markerTY.m                             -  Plot marker for typhoon
+%   calc_tri_area.m                             -  Calculate triangle area by length of side
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -314,6 +317,7 @@
 %   stations.xml                                -  Example of xml file
 %   example.vtk                                 -  Example of vtk file
 %   INSTALL_custom.json                         -  Custom INSTALL.json
+%   Example_draw_global.m                       -  Example for draw global
 %
 %
 %                             Matesetfunctions  -  Functions for Mateset

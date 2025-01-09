@@ -255,7 +255,7 @@
             {"name": "lat1", "kind": "required", "type": ["numeric"], "purpose": "latArray1"},
             {"name": "lon2", "kind": "required", "type": ["numeric"], "purpose": "lonArray2"},
             {"name": "lat2", "kind": "required", "type": ["numeric"], "purpose": "latArray2"},
-            {"name": "method", "kind": "namevalue", "type": ["char","choices={'common','MATLAB','Siqi'}"], "purpose": "method"}],
+            {"name": "method", "kind": "namevalue", "type": ["char","choices={'common','MATLAB','Siqi','spherical'}"], "purpose": "method"}],
         "outputs": [
             {"name": "d", "type": ["scalar"], "purpose": "Distance"},
             {"name": "dx", "type": ["scalar"], "purpose": "dx"},
@@ -413,5 +413,22 @@
             {"name": "Color", "kind": "namevalue", "type": ["char","choices={'k','r','b','y','g'}"],  "purpose": "line color"},
             {"name": "Global", "kind": "flag", "type": ["choices={'Global'}", "logical"], "purpose": "Global switch"}],
         "outputs": [
-            {"name": "h", "type": ["handle"], "purpose": "handle"}]}
+            {"name": "h", "type": ["handle"], "purpose": "handle"}]},
+    "calc_timeStepFVCOM":{
+        "inputs":[
+            {"name":"fgrid",  "kind":"required", "type":["struct"], "purpose":"FVCOM grid"},
+            {"name":"Coordinate",  "kind":"namevalue", "type":["char","choices={'geo','xy'}"], "purpose":"Coordinate"},
+            {"name":"uMax","kind":"namevalue","type":["scalar"],"purpose":"anticipated maximum current speed"},
+            {"name":"hMax","kind":"namevalue","type":["scalar"],"purpose":"anticipated maximum surface elevation"},
+            {"name":"g","kind":"namevalue","type":["scalar"],"purpose":"gravitational acceleration"},
+            {"name":"Global","kind":"flag","type":["logical"],"purpose":"Global or not"}],
+        "outputs":[
+            {"name":"Time step", "type":["struct"], "purpose":"Time step"}]},
+    "calc_tri_area": {
+        "inputs": [
+            {"name": "side1", "kind": "required", "type": ["numeric"], "purpose": "side1"},
+            {"name": "side2", "kind": "required", "type": ["numeric"], "purpose": "side2"},
+            {"name": "side3", "kind": "required", "type": ["numeric"], "purpose": "side3"}],
+        "outputs": [
+            {"name": "S", "type": ["scalar"], "purpose": "Area of triangle"}]}
 }
