@@ -26,6 +26,7 @@ function ST_Mbaysalt(varargin)
     %       2024-12-19:     Fixed 'setup_nctoolbox_java' automatically if not init, by Christmas;
     %       2024-12-21:     Added improve:tmd_ellipse_v2_5, for parpool('T'),       by Christmas;
     %       2024-12-26:     Added improve:cdt,                                      by Christmas;
+    %       2025-01-05:     Changed to improve:tmd_v2_5_parpool for more,           by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -198,8 +199,10 @@ function STATUS = Fixed_functions(Jstruct)
     if Jstruct.improve.matFigure
         STATUS_list = [STATUS_list,supplement_matFigure(Jstruct)];  % 完善包函数
     end
-    if Jstruct.improve.tmd_ellipse_v2_5
-        STATUS_list = [STATUS_list,fixed_tmd_ellipse_v2_5(Jstruct)];  % 修复parpool遇到问题
+    if Jstruct.improve.tmd_v2_5_parpool
+        STATUS_list = [STATUS_list,fixed_tmd_v2_5_parpool(Jstruct,'tmd_ellipse')];    % 修复parpool遇到问题
+        STATUS_list = [STATUS_list,fixed_tmd_v2_5_parpool(Jstruct,'tide_pred_v2_5')]; % 修复parpool遇到问题
+        STATUS_list = [STATUS_list,fixed_tmd_v2_5_parpool(Jstruct,'extract_HC')];     % 修复parpool遇到问题
     end
     if Jstruct.improve.cdt
         STATUS_list = [STATUS_list,supplement_cdt(Jstruct)];  % 完善包函数
@@ -255,16 +258,16 @@ function STATUS = fixed_setup_nctoolbox_java(Jstruct)
     STATUS = 1;
 end
 
-function STATUS = fixed_tmd_ellipse_v2_5(Jstruct)
-    % 修正TMDToolbox_v2_5工具包的tmd_ellipse.m函数,由于'path'函数无法在'parpool("Threads")'中使用
-    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.TMDToolbox_v2_5.PATH,'TMD','tmd_ellipse.m');  % which('setup_nctoolbox_java.m');
+function STATUS = fixed_tmd_v2_5_parpool(Jstruct, functionName)
+    % 修正TMDToolbox_v2_5工具包的${functionName}.m(tmd_ellipse.m)函数,由于'path'函数无法在'parpool("Threads")'中使用
+    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.TMDToolbox_v2_5.PATH,'TMD',sprintf('%s.m',functionName));  % which('tmd_ellipse.m');
     STATUS = 0;
     if ~exist(m_filepath,"file")
         return  
     end
     % 备份源文件
     path_DIR = fileparts(m_filepath);
-    m_filecopy = fullfile(path_DIR,'tmd_ellipse_origin.m');
+    m_filecopy = fullfile(path_DIR,sprintf('%s_origin.m',functionName));
     if ~exist(m_filecopy,'file')
         copyfile(m_filepath,m_filecopy);
     end

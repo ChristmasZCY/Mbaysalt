@@ -26,9 +26,11 @@ function status = copernicusmarine(command, varargin)
     % =================================================================================================================
     % In common use:                        product_id                                          dataset-id                                                      DOI
     %       SSH(OLD)                : SEALEVEL_GLO_PHY_L4_NRT_OBSERVATIONS_008_046      dataset-duacs-nrt-global-merged-allsat-phy-l4               https://doi.org/10.48670/moi-00149
-    %       SSH(equivalent)         : SEALEVEL_GLO_PHY_L4_NRT_008_046                   cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D    https://doi.org/10.48670/moi-00149
+    %       SSH(equivalent-0.25)    : SEALEVEL_GLO_PHY_L4_NRT_008_046                   cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.25deg_P1D    https://doi.org/10.48670/moi-00149
+    %       SSH(new-0.125)          : SEALEVEL_GLO_PHY_L4_NRT_008_046                   cmems_obs-sl_glo_phy-ssh_nrt_allsat-l4-duacs-0.125deg_P1D   https://doi.org/10.48670/moi-00149
     %       ADT                     : SEALEVEL_GLO_PHY_L4_MY_008_047                    cmems_obs-sl_glo_phy-ssh_my_allsat-l4-duacs-0.25deg_P1D     https://doi.org/10.48670/moi-00148
     %       SST(FVCOM_SCS)          : SST_GLO_SST_L4_NRT_OBSERVATIONS_010_001           METOFFICE-GLO-SST-L4-NRT-OBS-SST-V2                         https://doi.org/10.48670/moi-00165
+    %       SST(0.1)                : SST_GLO_PHY_L4_NRT_010_043                        cmems_obs-sst_glo_phy_nrt_l4_P1D-m                          https://doi.org/10.48670/mds-00321
     %       GLORYS(nesting-curr)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m                   https://doi.org/10.48670/moi-00016
     %       GLORYS(nesting-salt)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m                    https://doi.org/10.48670/moi-00016
     %       GLORYS(nesting-temp)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m                https://doi.org/10.48670/moi-00016

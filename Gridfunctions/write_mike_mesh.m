@@ -55,6 +55,9 @@ function write_mike_mesh(fout, x, y, nv, h, bounds, options)
 
     % Calculate bounds
     % bounds可能是{},也可能是{{},{}}
+    if isa(bounds,'cell') && len(bounds) == 0
+        bounds = cell(1);
+    end
     if isa(bounds{1},'cell')  % {{},{}}
         for i = 1: length(bounds)
             bounds{i} = cell2mat(bounds{i})';

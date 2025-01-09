@@ -119,5 +119,13 @@ f_2d_mesh(f)
 %% change ncfile
 ftime = f_load_time(fin,"Times");
 [time, Itime, Itime2, Times] = convert_fvcom_time(ftime+366);
-ncwrite(fin,'time',time); ncwrite(fin,'Itime',Itime);
-ncwrite(fin,'Itime2',Itime2); ncwrite(fin,'Times',Times');
+ncwrite(fin,'time',time); 
+ncwrite(fin,'Itime',Itime);
+ncwrite(fin,'Itime2',Itime2); 
+ncwrite(fin,'Times',Times');
+
+%% wite station
+clm
+fin = '/Users/christmas/Documents/Code/Project/Server_Program/CalculateModel/FVCOM_WZtide3/Control/data/wztide3.2dm';
+f = f_load_grid(fin);
+write_station('sta.txt', 'sta2.txt', f, [121.145,121.1033333],[27.85833333,28.18], 'Name',["DONGTOU" "SHAGANGTOU"],'Depth',[0 0])

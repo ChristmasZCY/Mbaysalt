@@ -491,7 +491,7 @@
      "DHIMIKE": false,
      "irfu_matlab": false,
      "matFigure": true,
-     "tmd_ellipse_v2_5": true,
+     "tmd_v2_5_parpool": true,
      "cdt": true},
  "supplement": {
      "matFVCOM": {
@@ -528,5 +528,6 @@
     "H": "2024-12-09:   Added ETOPO1_Ice_g_gmt4, by Christmas;",
     "I": "2024-12-20:   Added ParforProgMon, by Christmas;",
     "J": "2024-12-20:   Added improve:tmd_ellipse_v2_5, by Christmas;",
-    "K": "2024-12-26:   Added improve:cdt,  by Christmas;"}
+    "K": "2024-12-26:   Added improve:cdt,  by Christmas;",
+    "L": "2025-01-05:   Changed to improve:tmd_v2_5_parpool for more, by Christmas;"}
 }
