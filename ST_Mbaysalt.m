@@ -27,6 +27,7 @@ function ST_Mbaysalt(varargin)
     %       2024-12-21:     Added improve:tmd_ellipse_v2_5, for parpool('T'),       by Christmas;
     %       2024-12-26:     Added improve:cdt,                                      by Christmas;
     %       2025-01-05:     Changed to improve:tmd_v2_5_parpool for more,           by Christmas;
+    %       2025-01-05:     Added test instead of 'INSTALL_all.json',               by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -51,7 +52,7 @@ function ST_Mbaysalt(varargin)
     % <-- DEFAULT
     for i = 1: length(varargin)
         switch lower(varargin{i})
-        case {'add','rm','noclone'} 
+        case {'add','rm','noclone','test'} 
             cmd = lower(convertStringsToChars(varargin{i}));
             varargin(i) = [];
             break
@@ -87,6 +88,11 @@ function ST_Mbaysalt(varargin)
     if strcmp(cmd,'add') | strcmp(cmd,'noclone')
         addpath(strjoin(PATH.modules, pathsep)); % cellfun(@addpath, PATH.module); 慢
         addpath(strjoin(PATH.builtin, pathsep));
+    end
+
+    if strcmp(cmd,'test')
+        Jstruct = reset_Jstruct(Jstruct, 'test');
+        cmd = 'add';
     end
 
     switch cmd
@@ -642,7 +648,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                 switch field
                     case {'m_map', 'mexcdf', 'dace'}
                     STAUS_unzip = unzip_file(pkg_localfile, fileparts(pkg_localfile));  % Exfunctions/ 
-                case {'DHIMIKE', 't_tide', 'GSW', 'seawater', 'WindRose', 'gshhs', 'etopo1'}
+                case {'DHIMIKE', 't_tide', 'GSW', 'seawater', 'WindRose', 'gshhs', 'etopo1', 'Mesh2d'}
                     STAUS_unzip = unzip_file(pkg_localfile, pkg_path);  % Exfunctions/t_tide
                 case {'ETOPO1_Bed_g_gmt4', 'ETOPO1_Ice_g_gmt4'}
                     STAUS_unzip = ungz_file(pkg_localfile, pkg_path);  %.gz
@@ -661,6 +667,11 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                     branch_path = fullfile(pathstr,name);
                     move_mexcdf_branch(branch_path, pkg_path);
                     % rmfiles(branch_path)
+                elseif isequal(field, 'Mesh2d')
+                    fin = fullfile(pkg_path, sprintf('Mesh2d %s', pkg.VERSION));
+                    fout = pkg_path;
+                    movefile(sprintf('%s/*',fin), fout)
+                    rmdir(fin); clear fin fout
                 end
                 % delete(local_file);
                 if pkg.SETPATH
@@ -910,6 +921,24 @@ function p = genpath2(d, pattern)
     p = char(strjoin(cleanP, pathsep));
 end % function-genpath2
 
+function Jstruct = reset_Jstruct(Jstruct,opt)
+    switch lower(opt)
+    case 'test'
+        fields = fieldnames(Jstruct.packages.download);
+        for field = fields'
+            Jstruct.packages.download.(field{1}).INSTALL = true;
+            Jstruct.packages.download.(field{1}).SETPATH = false;
+        end
+        fields = fieldnames(Jstruct.packages.gitclone);
+        for field = fields'
+            Jstruct.packages.gitclone.(field{1}).INSTALL = true;
+            Jstruct.packages.gitclone.(field{1}).SETPATH = false;
+        end
+        clear fields
+    otherwise
+        error('Parameter error !!!');
+    end
+end
 
 function fun = ABANDON()
     fun.read_start = @read_start;

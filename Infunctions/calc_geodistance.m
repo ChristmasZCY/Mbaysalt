@@ -55,7 +55,7 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
         y = deg2rad(latArray1) - deg2rad(latArray2);  % lat1*pi/180 - lat2*pi/180;
         d = R*2*asin(sqrt(sin(y/2).^2 + cos(latArray1*pi/180).*cos(latArray2*pi/180).*sin(x/2).^2));
 
-        if nargout <= 1
+        if nargout >= 1
             dy = R * (-y);
             dx = R * cos((deg2rad(latArray1) + deg2rad(latArray2)) / 2) .* (-x);
         end
