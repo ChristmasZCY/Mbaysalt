@@ -158,3 +158,31 @@
 	path = Exfunctions/topotoolbox
 	url = https://github.com/wschwanghart/topotoolbox.git
 
+[submodule "Exfunctions/MESH2D"]
+	path = Exfunctions/MESH2D
+	url = https://github.com/dengwirda/mesh2d.git
+
+[submodule "Exfunctions/ipi4d"]
+	path = Exfunctions/ipi4d
+	url = https://github.com/mariosgeo/ipi4d.git
+
+[submodule "Exfunctions/inpoly"]
+	path = Exfunctions/inpoly
+	url = https://github.com/dengwirda/inpoly.git
+
+[submodule "Exfunctions/FVCOMToolbox_v2"]
+	path = Exfunctions/FVCOMToolbox_v2
+	url = https://gitea.iocean.cn/Christmas/FVCOMToolbox_v2.git
+
+[submodule "Exfunctions/matlab-schemer"]
+	path = Exfunctions/matlab-schemer
+	url = https://github.com/scottclowe/matlab-schemer.git
+
+[submodule "Exfunctions/freezeColors"]
+	path = Exfunctions/freezeColors
+	url = https://github.com/jiversen/freezeColors.git
+
+[submodule "Exfunctions/yaml"]
+	path = Exfunctions/yaml
+	url = https://github.com/MartinKoch123/yaml.git
+

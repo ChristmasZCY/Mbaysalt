@@ -247,7 +247,7 @@
         "inputs":[
             {"name":"xx", "kind":"required","type":["numeric"],"purpose":"xx"},
             {"name":"yy", "kind":"required","type":["numeric"],"purpose":"yy"},
-            {"name":"zz", "kind":"required","type":["numeric"],"purpose":"zz"},
+            {"name":"var", "kind":"required","type":["numeric"],"purpose":"var"},
             {"name":"kmzfile", "kind":"required","type":["char"],"purpose":"kmzfile"},
             {"name":"zlims", "kind":"namevalue","type":["numeric"],"purpose":"zlims"},
             {"name":"cm", "kind":"namevalue","type":["numeric"],"purpose":"cm"},
