@@ -59,13 +59,13 @@ Exfunctions/kriging
 Exfunctions/variogramfit
 Exfunctions/topotoolbox
 Exfunctions/Mesh2d
-#Exfunctions/MESH2D
-#Exfunctions/ipi4d
-#Exfunctions/inpoly
-#Exfunctions/FVCOMToolbox_v2
-#Exfunctions/matlab-schemer
-#Exfunctions/freezeColors
-#Exfunctions/yaml
+Exfunctions/MESH2D
+Exfunctions/ipi4d
+Exfunctions/inpoly
+Exfunctions/FVCOMToolbox_v2
+Exfunctions/matlab-schemer
+Exfunctions/freezeColors
+Exfunctions/yaml
 
 
 Exfunctions/m_map

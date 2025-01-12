@@ -46,8 +46,8 @@ function ST_Mbaysalt(varargin)
 
     % --> DEFAULT
     PATH.basepath = fileparts(mfilename("fullpath"));
-    cmd = 'add';  % 默认是 add
-    init = true;  % 默认是初始化
+    cmd = 'add';   % 默认是 add
+    init = false;  % 默认是不初始化
     Jfile = fullfile(PATH.basepath,'Configurefiles','INSTALL.json');  % ./**/Mbaysalt/Configurefiles/INSTALL.json
     % <-- DEFAULT
     for i = 1: length(varargin)
@@ -64,6 +64,8 @@ function ST_Mbaysalt(varargin)
 
     if ispref('Mbaysalt','init') && strcmp(getpref('Mbaysalt','init'), 'DONE')
         init = false;
+    else
+        init = true;
     end
     for i = 1 : length(varargin)
         switch lower(varargin{i})
@@ -124,7 +126,7 @@ function ST_Mbaysalt(varargin)
         clear STATUS1 STATUS2
     end
 
-    if STATUS
+    if STATUS || init
         print_info()
     end
     
@@ -590,7 +592,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
         end
         if Git.TF && Git.CHECK
             if pkg.INSTALL
-                if ~(exist(pkg.CHECK{1},pkg.CHECK{2}) == str2double(pkg.CHECK{3})) && pkg.SETPATH  % 如果不同时判断pkg.SETPATH 当pkg.INSATLL && ~pkg.SETPATH 由于不在路径中检测不到会重复下载
+                if ~(exist(pkg.CHECK{1},pkg.CHECK{2}) == str2double(pkg.CHECK{3})) && pkg.SETPATH  % 如果不同时判断pkg.SETPATH, 当pkg.INSATLL && ~pkg.SETPATH 由于不在路径中检测不到会重复下载
                     if isfield(Git,'mirror') && ~isempty(Git.mirror)
                         pkg_url = replace(pkg.URL,'https://github.com',del_filesep(Git.mirror));  % mirror
                     else
@@ -642,11 +644,14 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                 fprintf('---------> Downloading %s toolbox into %s\n', field, pkg.LOCALFILE)
                 download_urlfile(pkg_url, pkg_localfile, Jstruct.down.thread)
             end
-            if ~(exist(pkg_localfile, 'file') == 2)
-                error('%s is not downloaded, please download it manually!',pkg.LOCALFILE);
+            if ~(exist(pkg_localfile, 'file') == 2) || java.io.File(pkg_localfile).length() == 0  % 如果下载为空则删除空白文件
+                rmfiles(pkg_localfile);
+                error(['%s downloaded failed, please download it manually! \n' ...
+                       'URL is %s \n', ...
+                       'Then return %s !'], pkg.LOCALFILE, pkg.URL, mfilename());
             else
                 switch field
-                    case {'m_map', 'mexcdf', 'dace'}
+                case {'m_map', 'mexcdf', 'dace'}
                     STAUS_unzip = unzip_file(pkg_localfile, fileparts(pkg_localfile));  % Exfunctions/ 
                 case {'DHIMIKE', 't_tide', 'GSW', 'seawater', 'WindRose', 'gshhs', 'etopo1', 'Mesh2d'}
                     STAUS_unzip = unzip_file(pkg_localfile, pkg_path);  % Exfunctions/t_tide
@@ -658,8 +663,9 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                 if ~STAUS_unzip
                     warning_state = warning("query").state;
                     warning('on')
-                    warning(['%s downloaded failed, please download it manually!\n' ...
-                           'Then return %s !'], pkg.LOCALFILE, mfilename());
+                    warning(['%s downloaded failed, please download it manually! \n' ...
+                             'URL is %s', ...
+                             'Then return %s !'], pkg.LOCALFILE, pkg_url, mfilename());
                     warning(warning_state)
                 end
                 if isequal(field, 'mexcdf')
@@ -753,6 +759,7 @@ function download_urlfile(urlin, fileOut, thread)
     elseif check_command('wget')
         txt = [Proxy.CMD, 'wget ', urlin, ' -O ', fileOut];
         % txt = ['wget ', url, ' -O ', Edir, 't_tide_v1.5beta.zip'];
+        % wget --max-redirect=20 --wait=5 -O mexcdf.r4053.zip https://sourceforge.net/projects/mexcdf/files/mexcdf/mexcdf.r4053.zip/download
         disp(txt);
         system(txt);
     elseif check_command('curl')
@@ -926,8 +933,10 @@ function Jstruct = reset_Jstruct(Jstruct,opt)
     case 'test'
         fields = fieldnames(Jstruct.packages.download);
         for field = fields'
-            Jstruct.packages.download.(field{1}).INSTALL = true;
-            Jstruct.packages.download.(field{1}).SETPATH = false;
+            if ~strcmp(field, 'mexcdf')
+                Jstruct.packages.download.(field{1}).INSTALL = true;
+                Jstruct.packages.download.(field{1}).SETPATH = true;
+            end
         end
         fields = fieldnames(Jstruct.packages.gitclone);
         for field = fields'

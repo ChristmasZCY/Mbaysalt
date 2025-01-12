@@ -104,7 +104,7 @@
             "INDEX": "https://www.omicron.dk/dace.html",
             "MANUAL": "https://www.omicron.dk/dace/dace.pdf"},
         "Mesh2d": {
-            "INSTALL": true,
+            "INSTALL": false,
             "SETPATH": true,
             "VERSION": "v24",
             "URL": "https://ww2.mathworks.cn/matlabcentral/mlc-downloads/downloads/submissions/25555/versions/1/download/zip",
@@ -408,7 +408,7 @@
             "BRANCH": "master",
             "URL": "https://github.com/rsignell-usgs/RPSstuff.git",
             "PATH": "Exfunctions/RPSstuff",
-            "CHECK": ["tri_pcolor..m","file","2"]},
+            "CHECK": ["tri_pcolor.m","file","2"]},
         "kriging": {
             "INSTALL": false,
             "SETPATH": true,
