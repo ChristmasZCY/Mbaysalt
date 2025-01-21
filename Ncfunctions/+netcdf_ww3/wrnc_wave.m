@@ -12,6 +12,10 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
     %           INFO:        Whether print msg       || required: False || type: flag      || format: 'INFO' 
     %           Text_len:    Length of msg str       || required: False || type: namevalue || format: 'Text_len',45 
     % =================================================================================================================
+    % Update:
+    %       ****-**-**:     Created,    by Christmas;
+    %       2025-01-21:     Added hmax, by Christmas;
+    % =================================================================================================================
     % Example:
     %       netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct)
     %       netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',conf)
@@ -37,6 +41,11 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
         SWITCH.mwp = true;
     else
         SWITCH.mwp = false;
+    end
+    if isfield(Velement, 'Hmax')
+        SWITCH.hmax = true;
+    else
+        SWITCH.hmax = false;
     end
     if isfield(Velement, 'Shww')
         SWITCH.shww = true;
@@ -114,6 +123,11 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
         netcdf.defVarFill(ncid, mwp_id, false, 9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, mwp_id, true, true, 5)
     end
+    if SWITCH.hmax
+        hmax_id = netcdf.defVar(ncid, 'hmax', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 最大波高
+        netcdf.defVarFill(ncid, hmax_id, false, 9.9692100e+36); % 设置缺省值
+        netcdf.defVarDeflate(ncid, hmax_id, true, true, 5)
+    end
     if SWITCH.shww
         shww_id = netcdf.defVar(ncid, 'shww', 'NC_FLOAT', [londimID, latdimID,timedimID]); % 风浪波高
         netcdf.defVarFill(ncid, shww_id, false, 9.9692100e+36); % 设置缺省值
@@ -161,23 +175,26 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
     if SWITCH.mwp
         netcdf.putVar(ncid, mwp_id,  [0,0,0], [size(Velement.Mwp,1), size(Velement.Mwp,2), size(Velement.Mwp,3)],  Velement.Mwp); % 海浪周期
     end
+    if SWITCH.hmax
+        netcdf.putVar(ncid, hmax_id, [0,0,0], [size(Velement.Hmax,1), size(Velement.Hmax,2), size(Velement.Hmax,3)],  Velement.Hmax); % 最大波高
+    end
     if SWITCH.shww
-        netcdf.putVar(ncid, shww_id,  [0,0,0], [size(Velement.Shww,1), size(Velement.Shww,2), size(Velement.Shww,3)],  Velement.Shww); % 风浪波高
+        netcdf.putVar(ncid, shww_id, [0,0,0], [size(Velement.Shww,1), size(Velement.Shww,2), size(Velement.Shww,3)],  Velement.Shww); % 风浪波高
     end
     if SWITCH.mdww
-        netcdf.putVar(ncid, mdww_id,  [0,0,0], [size(Velement.Mdww,1), size(Velement.Mdww,2), size(Velement.Mdww,3)],  Velement.Mdww); % 风浪波向
+        netcdf.putVar(ncid, mdww_id, [0,0,0], [size(Velement.Mdww,1), size(Velement.Mdww,2), size(Velement.Mdww,3)],  Velement.Mdww); % 风浪波向
     end
     if SWITCH.mpww
-        netcdf.putVar(ncid, mpww_id,  [0,0,0], [size(Velement.Mpww,1), size(Velement.Mpww,2), size(Velement.Mpww,3)],  Velement.Mpww); % 风浪周期
+        netcdf.putVar(ncid, mpww_id, [0,0,0], [size(Velement.Mpww,1), size(Velement.Mpww,2), size(Velement.Mpww,3)],  Velement.Mpww); % 风浪周期
     end
     if SWITCH.shts
-        netcdf.putVar(ncid, shts_id,  [0,0,0], [size(Velement.Shts,1), size(Velement.Shts,2), size(Velement.Shts,3)],  Velement.Shts); % 涌浪波高
+        netcdf.putVar(ncid, shts_id, [0,0,0], [size(Velement.Shts,1), size(Velement.Shts,2), size(Velement.Shts,3)],  Velement.Shts); % 涌浪波高
     end
     if SWITCH.mdts
-        netcdf.putVar(ncid, mdts_id,  [0,0,0], [size(Velement.Mdts,1), size(Velement.Mdts,2), size(Velement.Mdts,3)],  Velement.Mdts); % 涌浪波向
+        netcdf.putVar(ncid, mdts_id, [0,0,0], [size(Velement.Mdts,1), size(Velement.Mdts,2), size(Velement.Mdts,3)],  Velement.Mdts); % 涌浪波向
     end
     if SWITCH.mpts
-        netcdf.putVar(ncid, mpts_id,  [0,0,0], [size(Velement.Mpts,1), size(Velement.Mpts,2), size(Velement.Mpts,3)],  Velement.Mpts); % 涌浪周期
+        netcdf.putVar(ncid, mpts_id, [0,0,0], [size(Velement.Mpts,1), size(Velement.Mpts,2), size(Velement.Mpts,3)],  Velement.Mpts); % 涌浪周期
     end
 
     % -----
@@ -215,6 +232,10 @@ function wrnc_wave(ncid,Lon,Lat,time,Velement,varargin)
     if SWITCH.mwp
         netcdf.putAtt(ncid, mwp_id, 'units',     's');                % 海浪周期
         netcdf.putAtt(ncid, mwp_id, 'long_name', 'mean wave period'); % 海浪周期
+    end
+    if SWITCH.hmax
+        netcdf.putAtt(ncid, hmax_id, 'units',     'm');  % 最大波高
+        netcdf.putAtt(ncid, hmax_id, 'long_name', 'expected maximum wave height'); % 最大波高
     end
     if SWITCH.shww
         netcdf.putAtt(ncid, shww_id, 'units',     'm');                                % 风浪波高
