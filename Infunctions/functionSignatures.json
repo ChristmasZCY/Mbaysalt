@@ -430,5 +430,24 @@
             {"name": "side2", "kind": "required", "type": ["numeric"], "purpose": "side2"},
             {"name": "side3", "kind": "required", "type": ["numeric"], "purpose": "side3"}],
         "outputs": [
-            {"name": "S", "type": ["scalar"], "purpose": "Area of triangle"}]}
+            {"name": "S", "type": ["scalar"], "purpose": "Area of triangle"}]},
+    "read_nml_fvcom": {
+        "inputs": [
+            {"name": "fnml", "kind": "required", "type": ["file"], "purpose": "FVCOM namelist file"}],
+        "outputs": [
+            {"name": "NML", "type": ["struct"], "purpose": "FVCOM namelist struct"}]},
+    "write_nml_fvcom": {
+        "inputs": [
+            {"name": "NML", "kind": "required", "type": ["struct"], "purpose": "FVCOM namelist struct"},
+            {"name": "fout", "kind": "required", "type": ["char"], "purpose": "FVCOM namelist file"}],
+        "outputs": []},
+    "FVCOMTOOLS": {
+        "inputs": [],
+        "outputs": [
+            {"name": "FVCOMTOOLS", "type": ["struct"], "purpose": "FVCOMTOOLS"}]},
+    "FVCOMTOOLS": {
+        "inputs": [
+            {"name": "funcName", "kind": "required", "type": ["char"], "purpose": "Function Name"}],
+        "outputs": [
+            {"name": "FVCOMTOOLS", "type": ["function_handle"], "purpose": "FVCOMTOOLS"}]}
 }

@@ -79,7 +79,7 @@ function ST_Mbaysalt(varargin)
     end
     clear i
     
-    if ~exist("Jfile","var") && exist('./INSTALL.json','file')
+    if exist('./INSTALL.json','file')
         Jfile = './INSTALL.json';
     end
     Jstruct = jsondecode(fileread(Jfile)); Jstruct.FILEPATH = Jfile;

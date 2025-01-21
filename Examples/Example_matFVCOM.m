@@ -102,6 +102,11 @@ end
 % plot(a,b)
 write_cst('/Users/christmas/Desktop/x.cst', a,b)
 
+%% Merge nodestrings
+f = f_load_grid("C:\Users\christmas\Desktop\WZAJinu.2dm");
+ns = horzcat(f.ns{:});
+f.h(ns) = 6.8;
+
 %% 飓风路径的计算和数据下载 https://mp.weixin.qq.com/s/xlulz-Mm0ZvKaTpoWWw_lQ
 % slp = f(P, PB, T, QVAPOR, PH, PHB)
 % slp = calc_slp(T, QVAPOR, pres, gp);

@@ -7,6 +7,10 @@ function Str = del_quotation(str)
     % Returns:
     %       Str: string without quotation    || required: True || type: string || format: 'value'
     % =================================================================================================================
+    % Updates:
+    %       ****-**-**: Created,        by Christmas;
+    %       2025-01-13: Added strip,    by Christmas;  
+    % =================================================================================================================
     % Example:
     %       Str = del_quotation("''value''")
     % =================================================================================================================
@@ -25,5 +29,7 @@ function Str = del_quotation(str)
     else
         Str = str;
     end
+
+    Str = strip(Str);
 
 end

@@ -2,11 +2,11 @@
 % Function of creating nesting forcing from the large domain results
 %
 % Input:
-%   fnest_nc  --- nest nc file
-%   indir     --- input data path
-%   fout      --- output file path and name
-%   ymd_start --- starting day in 'yyyymmdd'
-%   ymd_end   --- ending day in 'yyyymmdd'
+%   fnest_file --- nest nc/mat file
+%   indir      --- input data path
+%   fout       --- output file path and name
+%   ymd_start  --- starting day in 'yyyymmdd'
+%   ymd_end    --- ending day in 'yyyymmdd'
 %
 %
 % Siqi Li
@@ -16,12 +16,14 @@
 %           2022-09-28  Created(nesting and initial from EAMS),                 by Siqi Li
 %           2024-02-20  Modified(nesting and initial from FVCOM_Global_v2),     by Christmas
 %           2024-12-18  Changed(nesting for FVCOM_WZAJinu from FVCOM_WZtide3),  by Christmas;
+%           2025-01-17  fnest can be nc/mat file,                               by Christmas;
 %
 %==========================================================================
-function func_create_nesting_wzajunu(fnest_nc, indir, fout, ymd_start, ymd_end)
+function func_create_nesting_wzajunu(fnest_file, indir, fout, ymd_start, ymd_end)
     
     % test =================================
-    % fnest_nc = '/home/ocean/ForecastSystem/FVCOM_WZAJinu/Control/data/fnesting_wzajinu_grid_exp.nc';
+    % fnest_file = '/home/ocean/ForecastSystem/FVCOM_WZAJinu/Control/data/fnesting_wzajinu_grid_exp.nc';
+    % fnest_file = '/home/ocean/ForecastSystem/FVCOM_WZAJinu/Control/data/fnesting_wzajinu_grid.mat';
     % indir = '/home/ocean/ForecastSystem/FVCOM_WZtide3/Run/';
     % fout = '/home/ocean/ForecastSystem/FVCOM_WZAJinu/Data/fvcom_wzajinu_nesting_forecast/fvcom_wzajinu_nesting_20241218.nc';
     % ymd_start = '20241218';
@@ -30,7 +32,12 @@ function func_create_nesting_wzajunu(fnest_nc, indir, fout, ymd_start, ymd_end)
     
     din = fullfile(indir, ymd_start, 'output');
     f1 = f_load_grid(fullfile(din, 'forecast_0001.nc'),'Coordinate','geo');
-    fn = f_load_grid(fnest_nc,"Coordinate","geo"); clear fnest_nc
+    if endsWith(fnest_file, '.nc')
+        fn = f_load_grid(fnest_file,"Coordinate","geo"); clear fnest_file
+    elseif endsWith(fnest_file, '.mat')
+        fn = load(fnest_file, 'fn').fn;
+    end
+    
     weight_node = interp_2d_calc_weight('TRI',f1.x,f1.y,f1.nv,fn.x,fn.y);
     weight_nele = interp_2d_calc_weight('TRI',f1.x,f1.y,f1.nv,fn.xc,fn.yc);
     

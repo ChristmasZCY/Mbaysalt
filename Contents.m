@@ -90,6 +90,9 @@
 %   m_mesh.m                                    -  Draw mesh at m_map
 %   plot_markerTY.m                             -  Plot marker for typhoon
 %   calc_tri_area.m                             -  Calculate triangle area by length of side
+%   read_nml_fvcom.m                            -  Read FVCOM NML file
+%   write_nml_fvcom.m                           -  Write FVCOM NML file
+%   FVCOMTOOLS.m                                -  FVCOM tools functions
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
@@ -117,11 +120,11 @@
 % -----------------------------------------------------------------------------------------------------------------
 %   functionSignatures.json                     -  Function signatures for this folder
 %   Pic_draw_wind.m                             -  Draw wind vector picture
+%   Pic_draw_wind_10m                           -  Draw wind velocity at 10m picture
 %   Pic_draw_precipitation.m                    -  Draw precipitation picture
 %   Pic_draw_swh.m                              -  Draw significant wave height picture
 %   Pic_draw_mwp.m                              -  Draw mean wave period picture
 %   Pic_draw_current.m                          -  Draw current vector picture daily/hourly
-%   Pic_draw_wind_10m                           -  Draw wind velocity at 10m picture
 %   Pic_draw_slp.m                              -  Draw sea level pressure picture
 %
 %
@@ -316,6 +319,7 @@
 %   Post_bbw.conf                               -  Example for Post_fvcom/Postprocess_fvcom
 %   stations.xml                                -  Example of xml file
 %   example.vtk                                 -  Example of vtk file
+%   FVCOM_DEFAULT.nml                           -  Example of FVCOM nml file
 %   Example_draw_global.m                       -  Example for draw global
 %
 %
@@ -465,7 +469,7 @@
 %       f_2d_mask_boundary.m                    -  Mask the region out of the FVCOM grid boundary
 %       f_2d_mesh.m                             -  Draw 2d fvcom mesh
 %       f_load_grid.m                           -  Generate all the information of FVCOM grid
-%       initial.m
+%       initial.m                               -  Reinitial figure
 %       kml_w_mesh.m                            -  Draw FVCOM mesh in KML
 %       minmax.m                                -  Find the minimum and maximum of the data
 %       obs_merge_location.m                    -  Merge the obs struct according to (lon,lat)

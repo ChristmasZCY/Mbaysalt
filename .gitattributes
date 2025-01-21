@@ -1,12 +1,27 @@
 *       text=auto
-*.txt   text
-*.pdf   binary
-*.zip   binary
-*.jpg   -text
-*.png   binary
-*.xlsx  binary
+**/*.txt text
 *.sh    text eol=lf
-*.m    text eol=lf linguist-language=MATLAB
+**/*.m    text eol=lf linguist-language=MATLAB
+**/*.tgz filter=lfs diff=lfs merge=lfs -binary
+**/*.tar.gz filter=lfs diff=lfs merge=lfs -binary
+**/*.tar filter=lfs diff=lfs merge=lfs -binary
+**/*.gz filter=lfs diff=lfs merge=lfs -binary
+**/*.tar.Z filter=lfs diff=lfs merge=lfs -binary
+**/*.zip filter=lfs diff=lfs merge=lfs -binary
+**/*.pdf filter=lfs diff=lfs merge=lfs -binary
+**/*.tar.bz2  filter=lfs diff=lfs merge=lfs -binary
+**/*.tar.xz filter=lfs diff=lfs merge=lfs -binary
+**/*.rpm filter=lfs diff=lfs merge=lfs -binary
+**/*.exe filter=lfs diff=lfs merge=lfs -binary
+**/*.mp4 filter=lfs diff=lfs merge=lfs -binary
+**/*.png filter=lfs diff=lfs merge=lfs -binary
+**/*.jpg filter=lfs diff=lfs merge=lfs -binary
+**/*.nml filter=lfs diff=lfs merge=lfs -binary
+**/*.xlsx filter=lfs diff=lfs merge=lfs -binary
+**/*.mhtml filter=lfs diff=lfs merge=lfs -binary linguist-language=HTML
+**/*.mlx filter=lfs diff=lfs merge=lfs -binary linguist-language=MATLAB
+**/*.md linguist-language=Markdown
+
 # 对于sh文件，标记为文本文件，在文件入Git库时进行规范化，即行尾为LF。在检出到工作目录时，行尾也不会转换为CRLF（即保持LF）。
 # 文件的行尾自动转换。如果是文本文件，则在文件入Git库时，行尾自动转换为LF。如果已经在入Git库中的文件的行尾是GRLF，则文件在入Git库时，不再转换为LF。
 

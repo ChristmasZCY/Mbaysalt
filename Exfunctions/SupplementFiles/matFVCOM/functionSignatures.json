@@ -7,9 +7,10 @@
             {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":"MaxLon"},
-            {"name":"Coordinate","kind":"namevalue","type":["choices={'geo','xy'}"],"purpose":"Coordinate of reading"},
+            {"name":"Coordinate","kind":"namevalue","type":["choices={'geo','xy','auto'}"],"purpose":"Coordinate of reading"},
             {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"},
-            {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"}],
+            {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"},
+            {"name": "PLOT", "kind": "flag", "type": ["char", "choices={'PLOT'}"], "purpose": "PLOT handle"}],
         "outputs":[
             {"name":"fgrid", "type":["struct"], "purpose":"FVCOM grid"}]},
     "f_load_grid":{
@@ -18,9 +19,10 @@
             {"name":"Rotate","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,360}"],"purpose":"MaxLon"},
-            {"name":"Coordinate","kind":"namevalue","type":["choices={'geo','xy'}"],"purpose":"Coordinate of reading"},
+            {"name":"Coordinate","kind":"namevalue","type":["choices={'geo','xy','auto'}"],"purpose":"Coordinate of reading"},
             {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"},
-            {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"}],
+            {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"},
+            {"name": "PLOT", "kind": "flag", "type": ["char", "choices={'PLOT'}"], "purpose": "PLOT handle"}],
         "outputs":[
             {"name":"fgrid", "type":["struct"], "purpose":"FVCOM grid"}]},
     "f_load_grid":{
@@ -33,9 +35,10 @@
             {"name":"Rotate","kind":"namevalue","type":["numeric"],"purpose":""},
             {"name":"Scale","kind":"namevalue","type":["scalar"],"purpose":""},
             {"name":"MaxLon","kind":"namevalue","type":["scalar","choices={180,,360}"],"purpose":""},
-            {"name":"Coordinate","kind":"namevalue","type":["choices={'geo','xy'}"],"purpose":"Coordinate of reading"},
+            {"name":"Coordinate","kind":"namevalue","type":["choices={'geo','xy','auto'}"],"purpose":"Coordinate of reading"},
             {"name":"Global","kind":"flag","type":["char","choices={'Global'}"],"purpose":"Global"},
-            {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"}],
+            {"name":"Nodisp","kind":"flag","type":["char","choices={'Nodisp'}"],"purpose":"Nodisp"},
+            {"name": "PLOT", "kind": "flag", "type": ["char", "choices={'PLOT'}"], "purpose": "PLOT handle"}],
         "outputs":[
             {"name":"fgrid", "type":["struct"], "purpose":"FVCOM grid"}]},
     "esmf_read_weight":{
