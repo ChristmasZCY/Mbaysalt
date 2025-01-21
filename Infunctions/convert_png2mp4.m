@@ -22,7 +22,7 @@ function convert_png2mp4(din, fout, varargin)
 
     [pathstr, name, ext] = fileparts(fout);
     fmid = fullfile(pathstr, [name, '.avi']);
-    convert_fig2avi(fin,  fmid, 'FrameRate', FrameRate);
+    convert_fig2avi(din,  fmid, 'FrameRate', FrameRate);
     convert_avi2mp4(fmid, fout, 'FrameRate', FrameRate);
 
     rmfiles(fmid);

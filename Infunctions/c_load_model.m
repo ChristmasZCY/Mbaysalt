@@ -26,18 +26,6 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('fvcom.nc', 'Coordinate', 'geo');
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('wrf2fvcom.nc', 'Coordinate', 'geo','MaxLon', 180);
     % =================================================================================================================
-    % Dependencies:
-    %       f_load_grid.m
-    %       f_load_time.m
-    %       w_load_grid.m
-    %       nc_var_exist.m
-    %       nc_attrName_exist.m
-    %       nc_attrValue_exist.m
-    %       ncdateread.m
-    %       read_varargin.m
-    %       read_varargin2.m
-    %       Mdatetime.m
-    % =================================================================================================================
 
     arguments(Input)
         fin (1,:) {mustBeFile}
@@ -58,66 +46,79 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             lat = ncread(fin, 'latitude');
             if nc_var_exist(fin, 'tri')
                 nv = ncread(fin, 'tri')';
-                GridStruct = f_load_grid(lon, lat, nv, 'MaxLon', MaxLon);
+                GridStruct = f_load_grid(lon, lat, nv, 'MaxLon', MaxLon, 'PLOT');
+                GridStruct.grid = 'TRI';
             else
                 GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
+                GridStruct.grid = 'GRID';
             end
-            GridStruct.ModelName = 'WW3'; GridStruct.grid = 'TRI';
+            GridStruct.ModelName = 'WW3'; 
         elseif nc_attrName_exist(fin, 'product_name', 'method','START')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'Standard'; GridStruct.grid = 'GRID';
+            GridStruct.ModelName = 'Standard'; 
+            GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin, 'FVCOM', 'method','START')
-            GridStruct = f_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'FVCOM'; GridStruct.grid = 'TRI';
+            GridStruct = f_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon, 'PLOT');
+            GridStruct.ModelName = 'FVCOM'; 
+            GridStruct.grid = 'TRI';
         elseif nc_attrValue_exist(fin, 'wrf2fvcom version', 'method','START')
-            GridStruct = w_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'WRF2FVCOM'; GridStruct.grid = 'GRID';
+            GridStruct = w_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon, 'PLOT');
+            GridStruct.ModelName = 'WRF2FVCOM'; 
+            GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'WRF\s*(V\d+(\.\d+)?)?\s*MODEL')
             % 匹配{"WRF V4.4 MODEL", "WRF V4.1 MODEL", "WRF V1.2 MODEL", "WRF MODEL", "WRFMODEL"};
             % \s*：匹配零个或多个空白字符。
             % (V\d+(\.\d+)?)?：这是一个整体作为可选部分的组，匹配版本号。\d+：匹配一个或多个数字，代表主版本号。
             % (\.\d+)?：这是一个可选组，匹配点后跟一个或多个数字，代表次版本号。
             GridStruct = w_load_grid(fin,Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'WRF'; GridStruct.grid = 'GRID';
+            GridStruct.ModelName = 'WRF'; 
+            GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'CF-1.6') && nc_attrValue_exist(fin,'ecmwf/mars-client/bin/grib_to_netcdf.bin','method','CONTAINS')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'ECMWF'; GridStruct.grid = 'GRID';
+            GridStruct.ModelName = 'ECMWF'; 
+            GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'CF-1.7') && nc_attrValue_exist(fin,'European Centre for Medium-Range Weather Forecasts','method','CONTAINS')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'ECMF'; GridStruct.grid = 'GRID';
+            GridStruct.ModelName = 'ECMWF'; 
+            GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'CMEMS','method','START') && nc_attrValue_exist(fin,'marine.copernicus.eu','method','CONTAINS')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'CMEMS'; GridStruct.grid = 'GRID';
+            GridStruct.ModelName = 'CMEMS'; 
+            GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'CCMP','method','CONTAINS') && nc_attrValue_exist(fin,'RSS','method','CONTAINS')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'CCMP-RSS'; GridStruct.grid = 'GRID';
+            GridStruct.ModelName = 'CCMP-RSS'; 
+            GridStruct.grid = 'GRID';
         elseif  nc_attrValue_exist(fin,'COARDS','method','STRCMP') && nc_attrValue_exist(fin,'created by wgrib2','method','CONTAINS')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'GFS-GRIB'; GridStruct.grid = 'GRID';
+            GridStruct.ModelName = 'GFS-GRIB'; 
+            GridStruct.grid = 'GRID';
         elseif  nc_attrValue_exist(fin,'NCAR','method','START') && nc_attrValue_exist(fin,'CF-1.5','method','STRCMP')
             lon = ncread(fin, 'lon');
             lat = ncread(fin, 'lat');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
-            GridStruct.ModelName = 'NCAR-FNL'; GridStruct.grid = 'GRID';
+            GridStruct.ModelName = 'NCAR-FNL'; 
+            GridStruct.grid = 'GRID';
         else
-            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, ECMF, CMEMS, CCMP-RSS, GFS-GRIB, NCAR-FNL or Standard now !!!')
+            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, CMEMS, CCMP-RSS, GFS-GRIB, NCAR-FNL or Standard now !!!')
         end
         SWITCH.read_var = true;
     elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh') || endsWith(fin, '.14')
-        GridStruct = f_load_grid(fin, 'Global');
-        GridStruct.ModelName = fin(end-2:end); GridStruct.grid = 'TRI';
+        GridStruct = f_load_grid(fin, 'Global', 'PLOT');
+        GridStruct.ModelName = fin(end-2:end); 
+        GridStruct.grid = 'TRI';
         SWITCH.read_var = false;
     else
         warning('No set file format !!! ');
@@ -130,7 +131,31 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
         VarStruct = struct('');
         Ttimes = Mdatetime();
     end
-           
+
+    if ~isfield(GridStruct, 'PLOT')
+        switch GridStruct.grid
+        case 'TRI'
+            GridStruct.PLOT.range           = @(varargin) f_2d_range(GridStruct, varargin{:});
+            GridStruct.PLOT.mesh            = @(varargin) f_2d_mesh(GridStruct, varargin{:});
+            GridStruct.PLOT.coast           = @(varargin) f_2d_coast(GridStruct, varargin{:});
+            GridStruct.PLOT.image           = @(varargin) f_2d_image(GridStruct, varargin{:});
+            GridStruct.PLOT.contour         = @(varargin) f_2d_contour(GridStruct, varargin{:});
+            GridStruct.PLOT.boundary        = @(varargin) f_2d_boundary(GridStruct, varargin{:});
+            GridStruct.PLOT.mask_boundary   = @(varargin) f_2d_mask_boundary(GridStruct, varargin{:});
+            GridStruct.PLOT.lonlat          = @(varargin) f_2d_lonlat(GridStruct, varargin{:});
+            GridStruct.PLOT.cell            = @(varargin) f_2d_cell(GridStruct, varargin{:});
+        case 'GRID'
+            GridStruct.PLOT.mesh            = @(varargin) w_2d_mesh(GridStruct, varargin{:});
+            GridStruct.PLOT.coast           = @(varargin) w_2d_coast(GridStruct, varargin{:});
+            GridStruct.PLOT.boundary        = @(varargin) w_2d_boundary(GridStruct, varargin{:});
+            GridStruct.PLOT.image           = @(varargin) w_2d_image(GridStruct, varargin{:});
+            GridStruct.PLOT.mask_boundary   = @(varargin) w_2d_mask_boundary(GridStruct, varargin{:});
+            GridStruct.PLOT.contour         = @(varargin) w_2d_contour(GridStruct, varargin{:});
+        end
+    end
+
+    return
+
 end
 
 
@@ -155,16 +180,15 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         if all(isfield(VarStruct,{'ua', 'va'}))
             [VarStruct.uva_spd, VarStruct.uva_dir] = calc_uv2sd(VarStruct.ua, VarStruct.va, "current");
         end
-        if nc_var_exist(fin, 'Times') || nc_var_exist(fin, 'Itime')
-            if nc_var_exist(fin, 'Times')
-                ftime = f_load_time(fin, 'Times');
-            elseif nc_var_exist(fin, 'Itime')
-                ftime = f_load_time(fin);
-            end
-            Ttimes = Mdatetime(ftime,'Cdatenum');
+        if nc_var_exist(fin, 'Times')
+            ftime = f_load_time(fin, 'Times');
+        elseif nc_var_exist(fin, 'Itime')
+            ftime = f_load_time(fin);
         else
             Ttimes = Mdatetime();
+            return
         end
+        Ttimes = Mdatetime(ftime,'Cdatenum');
     case 'WRF2FVCOM'
         varList = {'T2', 'U10', 'V10', 'SLP', 'Precipitation', 'Evaporation', ...
                    'Stress_U', 'Stress_V', 'Net_Heat', 'Shortwave', 'Longwave', ...
@@ -188,7 +212,7 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
             Ttimes = Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
         end
     case 'STANDARD'
-        varList = {'wind_U10', 'wind_V10', ...
+        varList = {'wind_U10', 'wind_V10', 'slp', ...
                    'precipitation', 'temperature', ...
                    'ua', 'va', ...
                    'salinity_std', 'salinity_sgm', 'salinity_avg', ...
@@ -228,14 +252,7 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         end
         if nc_var_exist(fin, 'time')
             Ttimes = Mdatetime(ncdateread(fin, 'time'));
-        end
-    case 'ECMF'
-        varList = {'u10', 'v10', '', '', '', '', '', '', '', '', ''};
-        VarStruct = read_var_list(fin, varList);
-        if all(isfield(VarStruct,{'u10', 'v10'}))
-            [VarStruct.uv10_spd, VarStruct.uv10_dir] = calc_uv2sd(VarStruct.u10, VarStruct.v10, "wind");
-        end
-        if nc_var_exist(fin, 'valid_time')
+        elseif nc_var_exist(fin, 'valid_time')
             Ttimes = Mdatetime(ncdateread(fin, 'valid_time'));
         end
     case 'CMEMS'
@@ -257,7 +274,7 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
             Ttimes = Mdatetime(ncdateread(fin, 'time'));
         end
     case 'GFS-GRIB'
-        varList = {'UGRD_10maboveground', 'VGRD_10maboveground', '', '', '', '', '', '', '', '', ''};
+        varList = {'UGRD_10maboveground', 'VGRD_10maboveground', 'PRES_surface', '', '', '', '', '', '', '', ''};
         VarStruct = read_var_list(fin, varList);
         if all(isfield(VarStruct,{'UGRD_10maboveground', 'VGRD_10maboveground'}))
             [VarStruct.UVGRD_10maboveground_spd, VarStruct.UVGRD_10maboveground_dir] = calc_uv2sd(VarStruct.UGRD_10maboveground, VarStruct.VGRD_10maboveground, "wind");

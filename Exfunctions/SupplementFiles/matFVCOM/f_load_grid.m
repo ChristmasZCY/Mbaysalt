@@ -37,10 +37,11 @@
 function fgrid = f_load_grid(varargin)
 
 varargin = read_varargin(varargin, {'Rotate', 'Scale'}, {0, 1});
-varargin = read_varargin(varargin, {'Coordinate'}, {'xy'});
+varargin = read_varargin(varargin, {'Coordinate'}, {'auto'});
 varargin = read_varargin(varargin, {'MaxLon'}, {180});
 varargin = read_varargin2(varargin, {'Global'});
 varargin = read_varargin2(varargin, {'Nodisp'});
+varargin = read_varargin2(varargin, {'PLOT'});
 
 
 fgrid.Scale = Scale;
@@ -51,6 +52,15 @@ switch class(varargin{1})
     case {'char', 'string'}
         if endsWith(varargin{1}, '.nc')
         fnc = varargin{1};
+
+        if strcmp(Coordinate, 'auto') %#ok<*NODEF>
+            x = double(ncread(fnc, 'x'));
+            if any(minmax(minmax(x)))
+                Coordinate = 'xy';
+            else
+                Coordinate = 'geo';
+            end
+        end
         
         switch lower(Coordinate)
             case 'xy'
@@ -312,6 +322,18 @@ if isempty(Nodisp)
     end
     disp('------------------------------------------------')
     disp(' ')
+end
+
+if ~isempty(PLOT)
+    fgrid.PLOT.range           = @(varargin) f_2d_range(fgrid, varargin{:});
+    fgrid.PLOT.mesh            = @(varargin) f_2d_mesh(fgrid, varargin{:});
+    fgrid.PLOT.coast           = @(varargin) f_2d_coast(fgrid, varargin{:});
+    fgrid.PLOT.image           = @(varargin) f_2d_image(fgrid, varargin{:});
+    fgrid.PLOT.contour         = @(varargin) f_2d_contour(fgrid, varargin{:});
+    fgrid.PLOT.boundary        = @(varargin) f_2d_boundary(fgrid, varargin{:});
+    fgrid.PLOT.mask_boundary   = @(varargin) f_2d_mask_boundary(fgrid, varargin{:});
+    fgrid.PLOT.lonlat          = @(varargin) f_2d_lonlat(fgrid, varargin{:});
+    fgrid.PLOT.cell            = @(varargin) f_2d_cell(fgrid, varargin{:});
 end
 
 end

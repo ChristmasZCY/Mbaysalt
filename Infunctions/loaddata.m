@@ -1,6 +1,6 @@
 function loaddata(varargin)
 
-    Coordinate = 'geo';
+    Coordinate = 'auto';
     NAME.GridStruct = 'G';
     NAME.VarStruct = 'V';
     NAME.Ttimes = 'T';
@@ -33,7 +33,7 @@ function loaddata(varargin)
         hold on
         c.draw.range
         c.draw.mesh
-        axis tight
+        % axis tight
         c.draw.coast('Resolution','c','Coordinate',Coordinate)
         % c.draw.image(VarStruct.uv_spd(:,1))
 

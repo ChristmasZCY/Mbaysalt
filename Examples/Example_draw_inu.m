@@ -27,4 +27,4 @@ for i = 1:1:144
     mf_save(pout)
 end
 
-convert_png2mp4('./2024*.png','x.mp4')
+convert_png2mp4('./pics/2025*.png','x.mp4')
