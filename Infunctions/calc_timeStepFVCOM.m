@@ -36,7 +36,7 @@ function Tt = calc_timeStepFVCOM(fgrid, options)
     
     arguments(Input)
         fgrid(1,1) {struct}
-        options.Coordinate {mustBeMember(options.Coordinate,['geo','xy'])} = 'geo'
+        options.Coordinate {mustBeMember(options.Coordinate,['geo','xy',"geo","xy"])} = 'geo'
         options.uMax(1,1) {mustBeFloat} = 5
         options.hMax(1,1) {mustBeFloat} = 10
         options.g(1,1) {mustBeFloat} = 9.81

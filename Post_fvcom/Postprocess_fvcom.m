@@ -37,6 +37,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-12-10:     Added check_conf,                                                   by Christmas;
     %       2024-12-24:     Added output zeta with depth,                                       by Christmas;
     %       2024-12-24:     Changed 'Switch_zeta_with_depth' to Switch_zeta_wet_dry,            by Christmas;
+    %       2025-01-21:     Added Switch of hmax,                                               by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20241227,1)
@@ -122,7 +123,8 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         repmat(' pp',SWITCH.pp), repmat(' sand',SWITCH.sand), ...
         repmat(' swh',SWITCH.swh),   repmat(' mwd',SWITCH.mwd),   repmat(' mwp',SWITCH.mwp), ...
         repmat(' shww',SWITCH.shww), repmat(' mdww',SWITCH.mdww), repmat(' mpww',SWITCH.mpww), ...
-        repmat(' shts',SWITCH.shts), repmat(' mdts',SWITCH.mdts), repmat(' mpts',SWITCH.mpts)])  % 打印处理的变量
+        repmat(' shts',SWITCH.shts), repmat(' mdts',SWITCH.mdts), repmat(' mpts',SWITCH.mpts), ...
+        repmat(' hmax',SWITCH.hmax)])  % 打印处理的变量
 
     for dr = 1 : Length
         dr1 = dr-1;
@@ -293,9 +295,10 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.wave  % wave
             if strcmpi(Model_name, '.WW3.')
                 % all
-                if SWITCH.swh; fncValue_nt.swh = double(ncread(ncfile,'hs'));  end % swh
-                if SWITCH.mwd; fncValue_nt.mwd = double(ncread(ncfile,'dir')); end % mwd
-                if SWITCH.mwp; fncValue_nt.mwp = double(ncread(ncfile,'t02')); end % mwp
+                if SWITCH.swh;  fncValue_nt.swh = double(ncread(ncfile,'hs'));     end % swh
+                if SWITCH.mwd;  fncValue_nt.mwd = double(ncread(ncfile,'dir'));    end % mwd
+                if SWITCH.mwp;  fncValue_nt.mwp = double(ncread(ncfile,'t02'));    end % mwp
+                if SWITCH.hmax; fncValue_nt.hmax = double(ncread(ncfile,'hmaxe')); end % hmax
                 % wind wave
                 if SWITCH.shww; fncValue_nt.shww = double(ncread(ncfile,'phs0'));  end % shww
                 if SWITCH.mdww; fncValue_nt.mdww = double(ncread(ncfile,'pdir0')); end % mdww 
@@ -379,6 +382,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         % fncValue_nt.swh        --> node*t
         % fncValue_nt.mwd        --> node*t
         % fncValue_nt.mwp        --> node*t
+        % fncValue_nt.hmax       --> node*t
         % fncValue_nt.shww       --> node*t
         % fncValue_nt.mdww       --> node*t
         % fncValue_nt.mpww       --> node*t
@@ -579,6 +583,9 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.mwp
             Store_xyt.Mwp       = wncValue_xyt.mwp;       % --> x*y*t
         end
+        if SWITCH.hmax
+            Store_xyt.Hmax      = wncValue_xyt.hmax;      % --> x*y*t
+        end
         if SWITCH.shww
             Store_xyt.Shww      = wncValue_xyt.shww;      % --> x*y*t
         end
@@ -624,6 +631,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.swh;          OutValue_xyt.Swh        = Store_xyt.Swh;        end
         if SWITCH.mwd;          OutValue_xyt.Mwd        = Store_xyt.Mwd;        end
         if SWITCH.mwp;          OutValue_xyt.Mwp        = Store_xyt.Mwp;        end
+        if SWITCH.hmax;         OutValue_xyt.Hmax       = Store_xyt.Hmax;       end
         if SWITCH.shww;         OutValue_xyt.Shww       = Store_xyt.Shww;       end
         if SWITCH.mdww;         OutValue_xyt.Mdww       = Store_xyt.Mdww;       end
         if SWITCH.mpww;         OutValue_xyt.Mpww       = Store_xyt.Mpww;       end
@@ -734,7 +742,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         clear ncfile
         % Store_coor --> Lon Lat Depth_xy Ttimes Depth_std Deplev Deplay  Siglay
         % OutValue_xyzt --> *_sgm *_std *_avg
-        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp Shww Mdww Mpww Shts Mdts Mpts
+        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp Hmax Shww Mdww Mpww Shts Mdts Mpts
 
         if ~exist("OutValue_xyt", "var");  OutValue_xyt = struct('');  end
         if ~exist("OutValue_xyzt", "var"); OutValue_xyzt = struct(''); end
@@ -814,7 +822,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         end
         % Store_coor --> Lon Lat Depth_xy Ttimes Depth_std Deplev Deplay Siglay
         % OutValue_xyzt --> *_sgm *_std *_avg
-        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp Shww Mdww Mpww Shts Mdts Mpts
+        % OutValue_xyt -->  Zeta Ua Va Aice Casfco2 Swh Mwd Mwp Hmax Shww Mdww Mpww Shts Mdts Mpts
         OutValue = merge_struct(OutValue_xyt, OutValue_xyzt);
         clear Store_xyt Store_xyzt OutValue_xyt OutValue_xyzt
 
@@ -934,7 +942,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         if SWITCH.wave
             file = fullfile(OutputDir.wave,['wave',OutputRes,'.nc']);
             ncid = create_nc(file, 'NETCDF4');
-            [wave_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Swh','Mwd','Mwp','Swh','Mwd','Mwp','Shww','Mdww','Mpww','Shts','Mdts','Mpts'});
+            [wave_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Swh','Mwd','Mwp','Hmax','Shww','Mdww','Mpww','Shts','Mdts','Mpts'});
             netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
             clear Velement_csand ncid file
         end
