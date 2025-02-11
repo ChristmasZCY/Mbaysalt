@@ -93,6 +93,7 @@
 %   read_nml_fvcom.m                            -  Read FVCOM NML file
 %   write_nml_fvcom.m                           -  Write FVCOM NML file
 %   FVCOMTOOLS.m                                -  FVCOM tools functions
+%   cm_disp2.m                                  -  Display the MATLAB colormap
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
