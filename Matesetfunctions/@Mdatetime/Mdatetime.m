@@ -19,6 +19,8 @@ classdef Mdatetime
     %       2024-04-04:     Rewrite length ,                    by Christmas;
     %       2024-04-15:     Added set value,                    by Christmas;
     %       2024-05-13:     Change judge method at 'set.TIME',  by Christmas;
+    %       2025-02-10:     Added 'subsref' and 'subsasgn',     by Christmas;
+    %       2025-02-10:     Auto judge 'Cdatenum',     by Christmas;
     % =================================================================================================================
     % Example:
     %       Ttimes = Mdatetime(Times)
@@ -63,27 +65,33 @@ classdef Mdatetime
                 return
             end
 
+            if isa(ttime, 'double') | isa(ttime, 'single')
+                if ttime <= 10000000
+                    Cdatenum = 'Cdatenum';
+                end
+            end
+
             if isempty(Cdatenum)
 
                 switch class(ttime)
-                    case 'datetime'  % datetime 直接赋值
-                        obj.Times = datetime(ttime,'Format',obj.fmt);
-                        obj.time = posixtime(obj.Times);
-                        obj.TIME = char(datetime(obj.Times,'Format',obj.fmt));
-                    case {'double', 'single'}
-                        obj.time = ttime;  % double or single 赋值, 并计算datetime
-                        [obj.Times, ~, obj.units_datetime] = cftime(ttime,obj.units);
-                        obj.TIME = char(datetime(obj.Times,'Format',obj.fmt));
-                    case {'char','string'}
-                        obj.TIME = ttime;
-                        obj.Times = datetime(ttime,'InputFormat',obj.fmt);
-                        if isnat(obj.Times)
-                            osprint2('WARNING', 'Mdatetime: input time convert to datetime failed, please try to transpose matrix.')
-                            if input_yn('Do you want to transpose matrix?')
-                                obj.Times = datetime(ttime','InputFormat',obj.fmt);
-                            end
+                case 'datetime'  % datetime 直接赋值
+                    obj.Times = datetime(ttime,'Format',obj.fmt);
+                    obj.time = posixtime(obj.Times);
+                    obj.TIME = char(datetime(obj.Times,'Format',obj.fmt));
+                case {'double', 'single'}
+                    obj.time = ttime;  % double or single 赋值, 并计算datetime
+                    [obj.Times, ~, obj.units_datetime] = cftime(ttime,obj.units);
+                    obj.TIME = char(datetime(obj.Times,'Format',obj.fmt));
+                case {'char','string'}
+                    obj.TIME = ttime;
+                    obj.Times = datetime(ttime,'InputFormat',obj.fmt);
+                    if isnat(obj.Times)
+                        osprint2('WARNING', 'Mdatetime: input time convert to datetime failed, please try to transpose matrix.')
+                        if input_yn('Do you want to transpose matrix?')
+                            obj.Times = datetime(ttime','InputFormat',obj.fmt);
                         end
-                        obj.time = posixtime(obj.Times);
+                    end
+                    obj.time = posixtime(obj.Times);
                 end
                 obj.datenumC = datenum(obj.Times); %#ok<*DATNM>
             else
@@ -114,6 +122,44 @@ classdef Mdatetime
         end
         function tf = isnat(obj)
             tf = isnat(obj.Times);
+        end
+
+        % 重载 subsref 方法（支持位置索引）
+        function out = subsref(obj, S)
+            id_idx = 1;
+            getName = 'Times';
+            for k = 1:size(S,2)
+                if strcmp(S(k).type, '()')
+                    id_idx = k;
+                end
+                if strcmp(S(k).type, '.')
+                    getName = S(k).subs;
+                end
+            end
+            switch S(id_idx).type
+            case '()'  % 支持 obj(索引) 的访问方式
+                % 提取 Times 属性的指定索引
+                out = obj.(getName)(S(id_idx).subs{:});
+            otherwise
+                % 默认的 subsref 行为
+                out = builtin('subsref', obj, S);
+            end
+        end
+
+        % 重载 subsasgn 方法（支持位置索引赋值）
+        function obj = subsasgn(obj, S, value)
+            switch S(1).type
+            case '()'  % 支持 obj(索引) 的赋值操作
+                obj.Times(S(1).subs{:}) = value;
+            otherwise
+                % 默认的 subsasgn 行为
+                obj = builtin('subsasgn', obj, S, value);
+            end
+        end
+
+        % 重载 end 方法
+        function ind = end(obj, ~, ~)
+            ind = numel(obj.Times);
         end
     end
 

@@ -16,8 +16,9 @@ function [Times, Ttimes] = create_timeRange(dmt_start, varargin)
     %       Ttimes:     time-Range      || type: Mdatetime || format: 1D
     % =================================================================================================================
     % Updates:
-    %       2024-05-27:     Created,        by Christmas;
-    %       2024-09-13:     Added usage2,   by Christmas;
+    %       2024-05-27:     Created,                            by Christmas;
+    %       2024-09-13:     Added usage2,                       by Christmas;
+    %       2025-02-11:     Added str_interval can be duration, by Christmas;
     % =================================================================================================================
     % Examples:
     %       [Times, Ttimes] = create_timeRange([2024, 05, 22, 0, 0, 0], [2024, 06, 02, 0, 0, 0], '1days');
@@ -26,6 +27,7 @@ function [Times, Ttimes] = create_timeRange(dmt_start, varargin)
     %       [Times, Ttimes] = create_timeRange(datetime(2024, 05, 22, 0, 0, 0), datetime(2024, 06, 02, 0, 0, 0), '1hour');
     %       [Times, Ttimes] = create_timeRange(datetime(2024, 05, 22, 0, 0, 0), datetime(2024, 06, 02, 0, 0, 0), '1hours');
     %       Times = create_timeRange(datetime(2024, 05, 22, 0, 0, 0), 20, '1d');
+    %       Times = create_timeRange(datetime(2024, 05, 22, 0, 0, 0), 20, duration(1,0,0));
     % =================================================================================================================
 
     narginchk(3, 3);
@@ -40,23 +42,27 @@ function [Times, Ttimes] = create_timeRange(dmt_start, varargin)
     str_interval = varargin{1};
     varargin(1) = []; %#ok<NASGU>
     
-    str_interval = convertStringsToChars(str_interval);
-    letter = lower(regexp(str_interval, '[a-zA-Z]+', 'match'));
-    number = str2double(regexp(str_interval, '\d+', 'match'));
-    switch letter{1}
-        case {'y','years','year'}
-            dmt_interval = years(number);
-        case {'d','days','day'}
-            dmt_interval = days(number);
-        case {'h','hours','hour'}
-            dmt_interval = hours(number);
-        case {'m','mins','minute'}
-            dmt_interval = minutes(number);
-        case {'s','seconds','second'}
-            dmt_interval = seconds(number);
-        otherwise
-            error([' Wrong unit ''%s''\n' ...
-                ' Please select one from ''%s'' ''%s'' ''%s'' ''%s'''], letter,'y','d','h','s')
+    if isa(str_interval,'duration')
+        dmt_interval = str_interval;
+    else
+        str_interval = convertStringsToChars(str_interval);
+        letter = lower(regexp(str_interval, '[a-zA-Z]+', 'match'));
+        number = str2double(regexp(str_interval, '\d+', 'match'));
+        switch letter{1}
+            case {'y','years','year'}
+                dmt_interval = years(number);
+            case {'d','days','day'}
+                dmt_interval = days(number);
+            case {'h','hours','hour'}
+                dmt_interval = hours(number);
+            case {'m','mins','minute'}
+                dmt_interval = minutes(number);
+            case {'s','seconds','second'}
+                dmt_interval = seconds(number);
+            otherwise
+                error([' Wrong unit ''%s''\n' ...
+                    ' Please select one from ''%s'' ''%s'' ''%s'' ''%s'''], letter,'y','d','h','s')
+        end
     end
 
     if exist("dmt_end", "var")
