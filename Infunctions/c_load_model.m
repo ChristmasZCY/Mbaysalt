@@ -16,6 +16,7 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
     % Updates:
     %       2024-04-03:     Created,                        by Christmas; 
     %       2024-05-13:     Added calculating uv2sd, sd2uv, by Christmas;
+    %       2025-02-14:     Recorrect match WRF file,       by Christmas;
     % =================================================================================================================
     % Examples:
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.2dm');
@@ -68,10 +69,14 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             GridStruct.ModelName = 'WRF2FVCOM'; 
             GridStruct.grid = 'GRID';
         elseif nc_attrValue_exist(fin,'WRF\s*(V\d+(\.\d+)?)?\s*MODEL')
+        elseif nc_attrValue_exist(fin,'WRF\s*(V\d+(\.\d+)*)?\s*MODEL')
+            % WRF\s*(V\d+(\.\d+)?)?\s*MODEL --> 匹配 WRF V4.4 MODEL 不匹配 WRF V4.6.1 MODEL
+            % WRF\s*(V\d+(\.\d+)?)?\s*MODEL --> 匹配 WRF V4.4 MODEL   匹配 WRF V4.6.1 MODEL
             % 匹配{"WRF V4.4 MODEL", "WRF V4.1 MODEL", "WRF V1.2 MODEL", "WRF MODEL", "WRFMODEL"};
-            % \s*：匹配零个或多个空白字符。
-            % (V\d+(\.\d+)?)?：这是一个整体作为可选部分的组，匹配版本号。\d+：匹配一个或多个数字，代表主版本号。
-            % (\.\d+)?：这是一个可选组，匹配点后跟一个或多个数字，代表次版本号。
+            % \s*       : 匹配零个或多个空白字符。
+            % V\d+      : 匹配 "V" + 一个或多个数字（如 "V4"）
+            % (\.\d+)*  : 匹配 零个或多个 ".数字"（如 ".6"、".1"）。
+            % \s*MODEL  : 匹配 "MODEL" 及其前后的 空格
             GridStruct = w_load_grid(fin,Global, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'WRF'; 
             GridStruct.grid = 'GRID';
