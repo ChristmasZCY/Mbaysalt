@@ -298,7 +298,7 @@ function NML_domain = nmlDomain2FORMAT_WRITE(NML_domain, varargin)
         end
         % double to str
         if isa(NML_domain.(fields{i}), 'double')
-            NML_domain.(fields{i}) = num2str(NML_domain.(fields{i}), '%.2f');
+            NML_domain.(fields{i}) = num2str(NML_domain.(fields{i}), '%.5f');
         end
     end
 end
