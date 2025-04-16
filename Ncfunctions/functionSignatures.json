@@ -215,5 +215,12 @@
         "inputs":[
             {"name":"fin", "kind":"required","type":["file"],"purpose":"netCDF filename"}],
         "outputs":[
-            {"name":"isNetcdf", "type":["logical"], "purpose":"is netCDF file"}]}
+            {"name":"isNetcdf", "type":["logical"], "purpose":"is netCDF file"}]},
+    "nc_rename_var": {
+        "inputs":[
+            {"name":"fin", "kind":"required","type":["file=*.nc"],"purpose":"netCDF filename"},
+            {"name":"old_varname", "kind":"required","type":["char"],"purpose":"old variable name"},
+            {"name":"new_varname", "kind":"required","type":["char"],"purpose":"new variable name"},
+            {"name": "NochangeDim","kind": "flag","type": ["choices={'NochangeDim'}", "char"],"purpose":"Whether to keep the dimension unchanged"}],
+        "outputs":[]}
 }

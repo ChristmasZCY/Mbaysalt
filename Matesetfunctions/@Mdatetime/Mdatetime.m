@@ -20,7 +20,8 @@ classdef Mdatetime
     %       2024-04-15:     Added set value,                    by Christmas;
     %       2024-05-13:     Change judge method at 'set.TIME',  by Christmas;
     %       2025-02-10:     Added 'subsref' and 'subsasgn',     by Christmas;
-    %       2025-02-10:     Auto judge 'Cdatenum',     by Christmas;
+    %       2025-02-10:     Auto judge 'Cdatenum',              by Christmas;
+    %       2025-04-11:     Fixed unit can be sconds, hours,    by Christmas;
     % =================================================================================================================
     % Example:
     %       Ttimes = Mdatetime(Times)
@@ -38,6 +39,7 @@ classdef Mdatetime
         TIME_str    % string
         TIME_char   % char
         datenumC    % datenum
+        unitname = 'seconds'    % seconds hours
         units = 'seconds since 1970-01-01 00:00:00'
         units_datetime = datetime(1970,1,1,0,0,0);
         fmt = 'yyyy-MM-dd HH:mm:ss'
@@ -242,7 +244,12 @@ classdef Mdatetime
             time_new = posixtime(obj.Times);
             if ~isequaln(time_new, obj.time)
                 % obj.time = posixtime(obj.Times);
-                obj.time = seconds(duration((obj.Times - obj.units_datetime),"Format","s"));
+                switch obj.unitname
+                case 'seconds'
+                    obj.time = seconds(duration((obj.Times - obj.units_datetime),"Format","s"));
+                case 'hours'
+                    obj.time = hours(duration((obj.Times - obj.units_datetime),"Format","s"));
+                end
                 obj.TIME = char(obj.Times);
                 obj.TIME_str = string(obj.Times);
                 obj.TIME_char = char(obj.Times);
@@ -322,12 +329,18 @@ classdef Mdatetime
             % fmt                   O
             %}
             obj.units = value;
-            [~, ~, units_datetime_new] = cftime(obj.time,obj.units);
+            [~, unitname, units_datetime_new] = cftime(obj.time,obj.units); %#ok<PROPLC>
+            obj.unitname = unitname;
             if ~isequaln(units_datetime_new, obj.units_datetime)
                 obj.units_datetime = units_datetime_new;
                 obj.units_datetime.Format = obj.fmt;
                 gap = duration((obj.Times - obj.units_datetime),"Format","s");
-                obj.time = seconds(gap);
+                switch obj.unitname
+                case 'hours'
+                    obj.time = hours(gap);
+                case 'seconds'
+                    obj.time = seconds(gap);
+                end
 
             end
         end

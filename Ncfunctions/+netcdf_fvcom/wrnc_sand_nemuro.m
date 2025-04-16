@@ -100,16 +100,16 @@ function wrnc_sand_nemuro(ncid,Lon,Lat,Delement,time,Velement,varargin)
 
     if SWITCH.std
         dep_std_id = netcdf.defVar(ncid, 'depth_std', 'NC_FLOAT', [depStddimID]);  % 深度
-        sand_std_id  = netcdf.defVar(ncid, 'PP_std',    'NC_FLOAT', [londimID, latdimID, depStddimID, timedimID]); % Sand
+        sand_std_id  = netcdf.defVar(ncid, 'sand_std',    'NC_FLOAT', [londimID, latdimID, depStddimID, timedimID]); % Sand
         netcdf.defVarFill(ncid, sand_std_id, false, 9.9692100e+36);  % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_std_id, true, true, 5)
         netcdf.defVarDeflate(ncid, sand_std_id,  true, true, 5)
     end
 
     if SWITCH.sgm
-        bathy_id  = netcdf.defVar(ncid, 'bathy',    'NC_FLOAT', [londimID, latdimID]);  % 深度
-        siglay_id = netcdf.defVar(ncid, 'siglay',   'NC_FLOAT', [londimID, latdimID, sigdimID]);  % 深度
-        sand_sgm_id = netcdf.defVar(ncid, 'ZP_sgm',   'NC_FLOAT', [londimID, latdimID, sigdimID, timedimID]);  % 深度
+        bathy_id  = netcdf.defVar(ncid, 'bathy',      'NC_FLOAT', [londimID, latdimID]);  % 深度
+        siglay_id = netcdf.defVar(ncid, 'siglay',     'NC_FLOAT', [londimID, latdimID, sigdimID]);  % 深度
+        sand_sgm_id = netcdf.defVar(ncid, 'sand_sgm', 'NC_FLOAT', [londimID, latdimID, sigdimID, timedimID]);  % 深度
 
         netcdf.defVarFill(ncid, bathy_id,  false, 9.9692100e+36);  % 设置缺省值
         netcdf.defVarFill(ncid, siglay_id, false, 9.9692100e+36);  % 设置缺省值
@@ -122,7 +122,7 @@ function wrnc_sand_nemuro(ncid,Lon,Lat,Delement,time,Velement,varargin)
 
     if SWITCH.avg
         dep_avg_id = netcdf.defVar(ncid, 'depth_avg', 'NC_FLOAT', [depAvgdimID, twodimID]);  % 深度
-        sand_avg_id  = netcdf.defVar(ncid, 'PP_avg',    'NC_FLOAT', [londimID, latdimID, depAvgdimID, timedimID]); % Sand
+        sand_avg_id  = netcdf.defVar(ncid, 'sand_avg',    'NC_FLOAT', [londimID, latdimID, depAvgdimID, timedimID]); % Sand
         netcdf.defVarFill(ncid, sand_avg_id, false,  9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_avg_id, true, true, 5)
         netcdf.defVarDeflate(ncid, sand_avg_id,  true, true, 5)

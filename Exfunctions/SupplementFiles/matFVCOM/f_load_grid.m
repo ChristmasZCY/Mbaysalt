@@ -54,8 +54,7 @@ switch class(varargin{1})
         fnc = varargin{1};
 
         if strcmp(Coordinate, 'auto') %#ok<*NODEF>
-            x = double(ncread(fnc, 'x'));
-            if any(minmax(minmax(x)))
+            if nc_Var_exist(fnc, 'x') && any(minmax(minmax(double(ncread(fnc, 'x')))))
                 Coordinate = 'xy';
             else
                 Coordinate = 'geo';
