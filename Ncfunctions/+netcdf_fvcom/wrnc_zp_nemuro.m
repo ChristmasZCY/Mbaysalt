@@ -100,7 +100,7 @@ function wrnc_zp_nemuro(ncid,Lon,Lat,Delement,time,Velement,varargin)
 
     if SWITCH.std
         dep_std_id = netcdf.defVar(ncid, 'depth_std', 'NC_FLOAT', [depStddimID]);  % 深度
-        zp_std_id  = netcdf.defVar(ncid, 'PP_std',    'NC_FLOAT', [londimID, latdimID, depStddimID, timedimID]); % Zp
+        zp_std_id  = netcdf.defVar(ncid, 'ZP_std',    'NC_FLOAT', [londimID, latdimID, depStddimID, timedimID]); % Zp
         netcdf.defVarFill(ncid, zp_std_id, false, 9.9692100e+36);  % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_std_id, true, true, 5)
         netcdf.defVarDeflate(ncid, zp_std_id,  true, true, 5)
@@ -122,7 +122,7 @@ function wrnc_zp_nemuro(ncid,Lon,Lat,Delement,time,Velement,varargin)
 
     if SWITCH.avg
         dep_avg_id = netcdf.defVar(ncid, 'depth_avg', 'NC_FLOAT', [depAvgdimID, twodimID]);  % 深度
-        zp_avg_id  = netcdf.defVar(ncid, 'PP_avg',    'NC_FLOAT', [londimID, latdimID, depAvgdimID, timedimID]); % Zp
+        zp_avg_id  = netcdf.defVar(ncid, 'ZP_avg',    'NC_FLOAT', [londimID, latdimID, depAvgdimID, timedimID]); % Zp
         netcdf.defVarFill(ncid, zp_avg_id, false,  9.9692100e+36); % 设置缺省值
         netcdf.defVarDeflate(ncid, dep_avg_id, true, true, 5)
         netcdf.defVarDeflate(ncid, zp_avg_id,  true, true, 5)

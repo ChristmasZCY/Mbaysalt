@@ -17,6 +17,7 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
     %       2024-04-03:     Created,                        by Christmas; 
     %       2024-05-13:     Added calculating uv2sd, sd2uv, by Christmas;
     %       2025-02-14:     Recorrect match WRF file,       by Christmas;
+    %       2025-04-11:     Added for FVCOM-MET,            by Christmas;
     % =================================================================================================================
     % Examples:
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.2dm');
@@ -63,6 +64,10 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
         elseif nc_attrValue_exist(fin, 'FVCOM', 'method','START')
             GridStruct = f_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon, 'PLOT');
             GridStruct.ModelName = 'FVCOM'; 
+            GridStruct.grid = 'TRI';
+        elseif nc_attrValue_exist(fin, 'fvcom grid (unstructured) surface forcing', 'method','CONTAINS')
+            GridStruct = f_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon, 'PLOT');
+            GridStruct.ModelName = 'FVCOM-MET'; 
             GridStruct.grid = 'TRI';
         elseif nc_attrValue_exist(fin, 'wrf2fvcom version', 'method','START')
             GridStruct = w_load_grid(fin, Global, "Coordinate", Coordinate, 'MaxLon', MaxLon, 'PLOT');
@@ -117,7 +122,7 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             GridStruct.ModelName = 'NCAR-FNL'; 
             GridStruct.grid = 'GRID';
         else
-            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, ECMWF, CMEMS, CCMP-RSS, GFS-GRIB, NCAR-FNL or Standard now !!!')
+            error('Just for WRF, WRF2FVCOM, WW3, FVCOM, FVCOM-MET, ECMWF, CMEMS, CCMP-RSS, GFS-GRIB, NCAR-FNL or Standard now !!!')
         end
         SWITCH.read_var = true;
     elseif endsWith(fin, '.2dm') || endsWith(fin, '.msh') || endsWith(fin, '.14')
@@ -184,6 +189,21 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         end
         if all(isfield(VarStruct,{'ua', 'va'}))
             [VarStruct.uva_spd, VarStruct.uva_dir] = calc_uv2sd(VarStruct.ua, VarStruct.va, "current");
+        end
+        if nc_var_exist(fin, 'Times')
+            ftime = f_load_time(fin, 'Times');
+        elseif nc_var_exist(fin, 'Itime')
+            ftime = f_load_time(fin);
+        else
+            Ttimes = Mdatetime();
+            return
+        end
+        Ttimes = Mdatetime(ftime,'Cdatenum');
+    case 'FVCOM-MET'
+        varList = {'uwind_speed', 'vwind_speed', 'air_pressure'};
+        VarStruct = read_var_list(fin, varList);
+        if all(isfield(VarStruct,{'uwind_speed', 'vwind_speed'}))
+            [VarStruct.uvwind_speed, VarStruct.uvwind_dir] = calc_uv2sd(VarStruct.uwind_speed, VarStruct.vwind_speed, "wind");
         end
         if nc_var_exist(fin, 'Times')
             ftime = f_load_time(fin, 'Times');

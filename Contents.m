@@ -212,6 +212,7 @@
 %   nc_var_exist.m                              -  Check if the variable exists in the nc file
 %   nc_attrName_exist.m                         -  Check if a netcdf file has a str at Attribute Name
 %   nc_attrValue_exist.m                        -  Check if a netcdf file has a str at Attribute Value
+%   nc_rename_var.m                             -  Rename variable in netcdf file
 %   isNetcdfFile.m                              -  Check if a file is a netcdf file
 %   +netcdf_fvcom                               -  Packages of functions for handling FVCOM netcdf file
 %      wrnc_adt.m                               -  Write adt netcdf file
