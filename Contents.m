@@ -484,6 +484,7 @@
 %       write_2dm.m                             -  Write 2dm file
 %       f_calc_resolution.m                     -  Calculate the resolution of the grid
 %       write_brf_dy.m                          -  Write bottom roughness file
+%       basemap_read.m                          -  Read basemap
 %
 %   matWRF                                      -  Extend matWRF toolbox
 %       functionSignatures.json                 -  Function signatures for toolbox

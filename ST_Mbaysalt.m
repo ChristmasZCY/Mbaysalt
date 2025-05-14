@@ -846,6 +846,7 @@ function Git = get_git_method(Git)
                 Git.method = 'MATLAB';
             else
                 Git.method = 'cmd';
+                setenv('GIT_SSL_NO_VERIFY','1');  % export GIT_SSL_NO_VERIFY=1
             end
         case {'matlab'}
             if ~isMATLABReleaseOlderThan("R2023b")

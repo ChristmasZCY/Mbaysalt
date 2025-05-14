@@ -22,8 +22,8 @@ function [Xdst, Ydst, Vdst, SIZE, varargout] = cutout_xy(xlims, ylims, Xsrc, Ysr
     %       2024-04-26:     Changed more,  by Christmas;
     % =================================================================================================================
     % Examples:
-    %       [Xdst, Ydst, Vdst, SIZE, F] = region_cutout(xlims, ylims, Xsrc, Ysrc, Vsrc);
-    %       [Xdst, Ydst, Vdst, SIZE, F] = region_cutout(xlims, ylims, Xsrc, Ysrc, Vsrc);
+    %       [Xdst, Ydst, Vdst, SIZE, F] = cutout_xy(xlims, ylims, Xsrc, Ysrc, Vsrc);
+    %       [Xdst, Ydst, Vdst, SIZE, F] = cutout_xy(xlims, ylims, Xsrc, Ysrc, Vsrc);
     % =================================================================================================================
     % Explains:
     %       Lon         Lat        Var

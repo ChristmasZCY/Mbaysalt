@@ -569,7 +569,7 @@
              "write_met_forcing_fvcom.m","f_calc_resolution.m",
              "add_restart_el_eqi.m","add_restart_inundation_cells.m",
              "write_2dm.m","write_brf_dy.m","convert_fig2avi.m",
-             "create_tidestruc.m"]},
+             "create_tidestruc.m","basemap_read.m"]},
      "matFigure": {
             "PATH_IN": "Exfunctions/SupplementFiles/matFigure",
             "PATH_OUT": "Exfunctions/matFigure",
