@@ -22,6 +22,7 @@ classdef Mdatetime
     %       2025-02-10:     Added 'subsref' and 'subsasgn',     by Christmas;
     %       2025-02-10:     Auto judge 'Cdatenum',              by Christmas;
     %       2025-04-11:     Fixed unit can be sconds, hours,    by Christmas;
+    %       2025-05-14:     Fixed 'subsref',                    by Christmas;
     % =================================================================================================================
     % Example:
     %       Ttimes = Mdatetime(Times)
@@ -127,26 +128,44 @@ classdef Mdatetime
         end
 
         % 重载 subsref 方法（支持位置索引）
+        % function out = subsref(obj, S)
+        %     id_idx = 1;
+        %     getName = 'Times';
+        %     for k = 1:size(S,2)
+        %         if strcmp(S(k).type, '()')
+        %             id_idx = k;
+        %         end
+        %         if strcmp(S(k).type, '.')
+        %             getName = S(k).subs;
+        %         end
+        %     end
+        %     switch S(id_idx).type
+        %     case '()'  % 支持 obj(索引) 的访问方式
+        %         % 提取 Times 属性的指定索引
+        %         out = obj.(getName)(S(id_idx).subs{:});
+        %     otherwise
+        %         % 默认的 subsref 行为
+        %         out = builtin('subsref', obj, S);
+        %     end
+        % end
+        
+        % --> ChatGPT
         function out = subsref(obj, S)
-            id_idx = 1;
-            getName = 'Times';
-            for k = 1:size(S,2)
-                if strcmp(S(k).type, '()')
-                    id_idx = k;
+            % 支持链式访问，比如 obj(i).Year 等价于 obj.Times(i).Year
+            if strcmp(S(1).type, '()')  % obj(i)
+                idx = S(1).subs{:};     % 提取索引
+                % 递归访问后续字段（如 .Year）
+                if numel(S) > 1
+                    out = subsref(obj.Times(idx), S(2:end));
+                else
+                    out = obj.Times(idx);
                 end
-                if strcmp(S(k).type, '.')
-                    getName = S(k).subs;
-                end
-            end
-            switch S(id_idx).type
-            case '()'  % 支持 obj(索引) 的访问方式
-                % 提取 Times 属性的指定索引
-                out = obj.(getName)(S(id_idx).subs{:});
-            otherwise
-                % 默认的 subsref 行为
+            else
+                % 默认的点访问或其他
                 out = builtin('subsref', obj, S);
             end
         end
+        % <-- ChatGPT
 
         % 重载 subsasgn 方法（支持位置索引赋值）
         function obj = subsasgn(obj, S, value)
