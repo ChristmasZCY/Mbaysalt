@@ -374,6 +374,12 @@
             {"name": "mp4File", "kind": "required", "type": ["char"], "purpose": "mp4 file"},
             {"name": "FrameRate", "kind": "namevalue", "type": ["numeric"], "purpose": "frame rate"}],
         "outputs": []},
+    "convert_png2gif": {
+        "inputs": [
+            {"name": "pngFiles", "kind": "required", "type": ["file=*.png"], "purpose": "png files"},
+            {"name": "gifFile", "kind": "required", "type": ["char"], "purpose": "gif file"},
+            {"name": "DelayTime", "kind": "namevalue", "type": ["numeric"], "purpose": "delay time"}],
+        "outputs": []},
     "ln": {
         "inputs": [
             {"name": "src", "kind": "required", "type": ["char","file","folder"], "purpose": "source file"},

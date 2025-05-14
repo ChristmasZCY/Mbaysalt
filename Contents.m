@@ -80,6 +80,7 @@
 %   getHome.m                                   -  Get home path
 %   convert_avi2mp4.m                           -  Convert avi to mp4
 %   convert_png2mp4.m                           -  Convert pngs to mp4
+%   convert_png2gif.m                           -  Convert pngs to gif
 %   ln.m                                        -  Simulate the ln command in linux
 %   isaequal.m                                  -  Approximate equality A, B(not support NaN)
 %   figcopy.m                                   -  Copy the figure to the clipboard
