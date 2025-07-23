@@ -665,7 +665,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                     warning('on')
                     warning(['%s downloaded failed, please download it manually! \n' ...
                              'URL is %s', ...
-                             'Then return %s !'], pkg.LOCALFILE, pkg_url, mfilename());
+                             'Then return %s !'], pkg.LOCALFILE, pkg.URL, mfilename());
                     warning(warning_state)
                 end
                 if isequal(field, 'mexcdf')

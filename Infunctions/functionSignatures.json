@@ -455,5 +455,24 @@
         "inputs": [
             {"name": "funcName", "kind": "required", "type": ["char"], "purpose": "Function Name"}],
         "outputs": [
-            {"name": "FVCOMTOOLS", "type": ["function_handle"], "purpose": "FVCOMTOOLS"}]}
+            {"name": "FVCOMTOOLS", "type": ["function_handle"], "purpose": "FVCOMTOOLS"}]},
+    "calc_barrierlayer": {
+        "inputs": [
+            {"name": "lon", "kind": "required", "type": ["numeric"], "purpose": "longitude"},
+            {"name": "lat", "kind": "required", "type": ["numeric"], "purpose": "latitude"},
+            {"name": "depth", "kind": "required", "type": ["numeric"], "purpose": "depth"},
+            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature"},
+            {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity"}],
+        "outputs": [
+            {"name": "MLD_total", "type": ["scalar"], "purpose": "mixed layer depth"},
+            {"name": "BLT_total", "type": ["scalar"], "purpose": "barrier layer thickness"}]},
+    "calc_thermocline": {
+        "inputs": [
+            {"name": "depth", "kind": "required", "type": ["numeric"], "purpose": "depth"},
+            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature"}],
+        "outputs": [
+            {"name": "max_grad_total", "type": ["scalar"], "purpose": "thermocline strength"},
+            {"name": "thickness_total", "type": ["scalar"], "purpose": "thermocline thickness"},
+            {"name": "upper_bound_total", "type": ["scalar"], "purpose": "thermocline upper bound"},
+            {"name": "lower_bound_total", "type": ["scalar"], "purpose": "thermocline lower bound"}]}
 }

@@ -95,6 +95,8 @@
 %   write_nml_fvcom.m                           -  Write FVCOM NML file
 %   FVCOMTOOLS.m                                -  FVCOM tools functions
 %   cm_disp2.m                                  -  Display the MATLAB colormap
+%   calc_barrierlayer.m                         -  Calculate the barrier layer thickness and depth
+%   calc_thermocline.m                          -  Calculate the thermocline strength, thickness, upper bound, lower bound
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures
