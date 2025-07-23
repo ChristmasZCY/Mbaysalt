@@ -281,10 +281,13 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
             Ttimes = Mdatetime(ncdateread(fin, 'valid_time'));
         end
     case 'CMEMS'
-        varList = {'adt', 'ugos', 'vgos', '', '', '', '', '', '', '', ''};
+        varList = {'adt', 'ugos', 'vgos', 'uo', 'vo', '', '', '', '', '', ''};
         VarStruct = read_var_list(fin, varList);
         if all(isfield(VarStruct,{'ugos', 'vgos'}))
             [VarStruct.uvgos_spd, VarStruct.uvgos_dir] = calc_uv2sd(VarStruct.ugos, VarStruct.vgos, "current");
+        end
+        if all(isfield(VarStruct,{'uo', 'vo'}))
+            [VarStruct.uvo_spd, VarStruct.uvo_dir] = calc_uv2sd(VarStruct.uo, VarStruct.vo, "current");
         end
         if nc_var_exist(fin, 'time')
             Ttimes = Mdatetime(ncdateread(fin, 'time'));

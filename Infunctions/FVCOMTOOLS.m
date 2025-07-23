@@ -15,6 +15,9 @@ function TOOLS = FVCOMTOOLS(funcName)
     %       TOOLS = FVCOMTOOLS();
     %       TOOLS = FVCOMTOOLS('genFVCOMchar');
     % =================================================================================================================
+    % References:
+    %       https://www.xmswiki.com/wiki/SMS:2D_Mesh_Files_*.2dm
+    % =================================================================================================================
 
     TOOLS = struct();
 
