@@ -9,8 +9,8 @@ function [MLD_total, BLT_total] = calc_barrierlayer(lon, lat, depth, T, S)
     %       S:      sea salinity    || required: True  || type: 4D(lon-lat-depth-time)
     % =================================================================================================================
     % Returns:
-    %       MLD_total: mixed layer depth        ||type: 3D(lon-lat-time) 混合层厚度 混合层深度
-    %       BLT_total: barrier layer thickness  ||type: 3D(lon-lat-time) 障碍层厚度
+    %       MLD_total: mixed layer depth (meter)        ||type: 3D(lon-lat-time) 混合层厚度 混合层深度
+    %       BLT_total: barrier layer thickness (meter)  ||type: 3D(lon-lat-time) 障碍层厚度
     % =================================================================================================================
     % Updates:
     %       ****-**-**:     Created,                by Jiaqi Dou;
