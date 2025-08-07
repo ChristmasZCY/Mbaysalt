@@ -6,13 +6,13 @@ function [max_grad_total, thickness_total, upper_bound_total, lower_bound_total]
     %       T:      sea temperature || required: True  || type: 4D(lon-lat-depth-time)
     % =================================================================================================================
     % Returns:
-    %       max_grad_total: thermocline strength
+    %       max_grad_total: thermocline strength (Celsius/meter)
     %                       the max grad of the sea water temperature   ||type: 3D(lon-lat-time) 温跃层强度
-    %       thickness_total: thermocline thickness
+    %       thickness_total: thermocline thickness (meter)
     %                       thickness of the sea water thermocline      ||type: 3D(lon-lat-time) 温跃层厚度
-    %       upper_bound_total: thermocline upper bound
+    %       upper_bound_total: thermocline upper bound (meter)
     %                       Upper boundary of the sea water thermocline ||type: 3D(lon-lat-time) 温跃层上边界
-    %       lower_bound_total: thermocline lower bound
+    %       lower_bound_total: thermocline lower bound (meter)
     %                       Lower boundary of the sea water thermocline ||type: 3D(lon-lat-time) 温跃层下边界
     % =================================================================================================================
     % Updates:

@@ -474,5 +474,20 @@
             {"name": "max_grad_total", "type": ["scalar"], "purpose": "thermocline strength"},
             {"name": "thickness_total", "type": ["scalar"], "purpose": "thermocline thickness"},
             {"name": "upper_bound_total", "type": ["scalar"], "purpose": "thermocline upper bound"},
-            {"name": "lower_bound_total", "type": ["scalar"], "purpose": "thermocline lower bound"}]}
+            {"name": "lower_bound_total", "type": ["scalar"], "purpose": "thermocline lower bound"}]},
+  "calc_weather_front": {
+        "inputs": [
+            {"name": "lon", "kind": "required", "type": ["numeric"], "purpose": "longitude"},
+            {"name": "lat", "kind": "required", "type": ["numeric"], "purpose": "latitude"},
+            {"name": "depth", "kind": "required", "type": ["numeric"], "purpose": "depth"},
+            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature"},
+            {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity"},
+            {"name": "surface_depth_threshold", "kind": "namevalue", "type": ["numeric"], "purpose": "surface depth threshold"},
+            {"name": "weight_temp", "kind": "namevalue", "type": ["numeric"], "purpose": "weight for temperature"},
+            {"name": "weight_salinity", "kind": "namevalue", "type": ["numeric"], "purpose": "weight for salinity"}],
+        "outputs": [
+            {"name": "combined_fronts", "type": ["scalar"], "purpose": "Ocean Fronts Detection"},
+            {"name": "fronts_strength", "type": ["scalar"], "purpose": "Ocean Fronts Strength"},
+            {"name": "temp_gradient_magnitude", "type": ["scalar"], "purpose": "Temperature Gradient Magnitude"},
+            {"name": "salinity_gradient_magnitude", "type": ["scalar"], "purpose": "Salinity Gradient Magnitude"}]}
 }
