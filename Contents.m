@@ -98,6 +98,7 @@
 %   calc_barrierlayer.m                         -  Calculate the barrier layer thickness and depth
 %   calc_thermocline.m                          -  Calculate the thermocline strength, thickness, upper bound, lower bound
 %   calc_weather_front.m                        -  Calculate the weather front from temperature and salinity
+%   calc_sound_speed.m                          -  Calculate sound speed using Del Grosso (1974) empirical formula
 %
 %
 %                                 Prefunctions  -  Prefunctions for drawing pictures

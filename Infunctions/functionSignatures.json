@@ -489,5 +489,12 @@
             {"name": "combined_fronts", "type": ["scalar"], "purpose": "Ocean Fronts Detection"},
             {"name": "fronts_strength", "type": ["scalar"], "purpose": "Ocean Fronts Strength"},
             {"name": "temp_gradient_magnitude", "type": ["scalar"], "purpose": "Temperature Gradient Magnitude"},
-            {"name": "salinity_gradient_magnitude", "type": ["scalar"], "purpose": "Salinity Gradient Magnitude"}]}
+            {"name": "salinity_gradient_magnitude", "type": ["scalar"], "purpose": "Salinity Gradient Magnitude"}]},
+  "calc_sound_speed": {
+        "inputs": [
+            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature"},
+            {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity"},
+            {"name": "z", "kind": "required", "type": ["numeric"], "purpose": "depth"}],
+        "outputs": [
+            {"name": "c", "type": ["scalar"], "purpose": "Sound Speed"}]}
 }
