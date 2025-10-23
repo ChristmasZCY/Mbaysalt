@@ -14,10 +14,11 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
     %       Ttimes:        Model Ttimes                     || required: False|| type: struct     || example: 
     % =================================================================================================================
     % Updates:
-    %       2024-04-03:     Created,                        by Christmas; 
-    %       2024-05-13:     Added calculating uv2sd, sd2uv, by Christmas;
-    %       2025-02-14:     Recorrect match WRF file,       by Christmas;
-    %       2025-04-11:     Added for FVCOM-MET,            by Christmas;
+    %       2024-04-03:     Created,                            by Christmas; 
+    %       2024-05-13:     Added calculating uv2sd, sd2uv,     by Christmas;
+    %       2025-02-14:     Recorrect match WRF file,           by Christmas;
+    %       2025-04-11:     Added for FVCOM-MET,                by Christmas;
+    %       2025-09-01:     Added TIME format for WRF2FVCOM,    by Christmas;
     % =================================================================================================================
     % Examples:
     %       [GridStruct, VarStruct, Ttimes] = c_load_model('ww3.2dm');
@@ -224,7 +225,11 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         end
         if nc_var_exist(fin, 'Times')
             Times = ncread(fin, 'Times')';
-            Ttimes = Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
+            try
+                Ttimes = Mdatetime(Times,'fmt','yyyy-MM-dd_HH:mm:ss');
+            catch ME1
+                Ttimes = Mdatetime(Times,'fmt',"yyyy-MM-dd'T'HH:mm:ss");
+            end
         end
     case 'WRF'
         varList = {'T2', 'U10', 'V10', '', '', '', '', '', '', '', ''};
@@ -281,7 +286,7 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
             Ttimes = Mdatetime(ncdateread(fin, 'valid_time'));
         end
     case 'CMEMS'
-        varList = {'adt', 'ugos', 'vgos', 'uo', 'vo', '', '', '', '', '', ''};
+        varList = {'adt', 'ugos', 'vgos', 'uo', 'vo', 'so', 'zos', 'thetao', '', '', ''};
         VarStruct = read_var_list(fin, varList);
         if all(isfield(VarStruct,{'ugos', 'vgos'}))
             [VarStruct.uvgos_spd, VarStruct.uvgos_dir] = calc_uv2sd(VarStruct.ugos, VarStruct.vgos, "current");

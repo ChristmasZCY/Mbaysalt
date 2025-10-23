@@ -1,6 +1,6 @@
 function status = copernicusmarine(command, varargin)
     %       Copernicus Marine Toolbox CLI(mimic of the command line interface)
-    %       copernicusmarine subset --dataset-id  dataset-duacs-nrt-global-merged-allsat-phy-l4 -t 2024-03-04 -T 2024-03-04 --username sli12 --password 123qweASDF -f /home/ocean/ForecastSystem/FVCOM_Global_v2/Data/SSH/SSH_NRT_0p25_20240304.nc --force-download
+    %       copernicusmarine subset --dataset-id  dataset-duacs-nrt-global-merged-allsat-phy-l4 -t 2024-03-04 -T 2024-03-04 --username * --password * -f /home/ocean/ForecastSystem/FVCOM_Global_v2/Data/SSH/SSH_NRT_0p25_20240304.nc --force-download
     % =================================================================================================================
     % Parameters:
     %       varargin:       optional parameters      
@@ -35,6 +35,7 @@ function status = copernicusmarine(command, varargin)
     %       GLORYS(nesting-salt)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy-so_anfc_0.083deg_P1D-m                    https://doi.org/10.48670/moi-00016  
     %       GLORYS(nesting-temp)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m                https://doi.org/10.48670/moi-00016  
     %       GLORYS(nesting-zeta)    : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy_anfc_0.083deg_P1D-m                       https://doi.org/10.48670/moi-00016  
+    %       GLORYS(ice)             : GLOBAL_ANALYSISFORECAST_PHY_001_024               cmems_mod_glo_phy_anfc_0.083deg_P1D-m                       https://doi.org/10.48670/moi-00016  
     %       GOBAF(biogeochemistry)  : GLOBAL_ANALYSISFORECAST_BGC_001_028                                                                           https://doi.org/10.48670/moi-00015  
     %       GLORYS12V1(nesting-all) : GLOBAL_MULTIYEAR_PHY_001_030                      cmems_mod_glo_phy_my_0.083deg_P1D-m(daily)                  https://doi.org/10.48670/moi-00021      1993-01-01 2021-06-30
     % =================================================================================================================
