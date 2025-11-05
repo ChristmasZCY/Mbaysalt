@@ -28,6 +28,9 @@ function ST_Mbaysalt(varargin)
     %       2024-12-26:     Added improve:cdt,                                      by Christmas;
     %       2025-01-05:     Changed to improve:tmd_v2_5_parpool for more,           by Christmas;
     %       2025-01-05:     Added test instead of 'INSTALL_all.json',               by Christmas;
+    %       2025-11-04:     Fixed zip overwrite,                                    by Christmas;
+    %       2025-11-04:     Fixed zip rm cannot find checkOS,                       by Christmas;
+    %       2025-11-04:     Fixed mexcdf toolbox,                                   by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -131,11 +134,21 @@ function ST_Mbaysalt(varargin)
     end
     
     if init
-        if ispref('Mbaysalt','PATH_toolbox'); rmpref('Mbaysalt'); end  % Fixed Mainpath 
+        FunPath = fullfile(PATH.basepath, 'Infunctions');
+        if ispref('Mbaysalt','PATH_toolbox'); rmpref('Mbaysalt'); end  % Fixed Mainpath
+        switch cmd
+        case 'rm'
+            addpath(FunPath);
+        end
+        
         if ~checkOS('LNX')  % 非LNX才会设置，因为LNX上不同需要，一个包可能在多个位置出现
             setpref('Mbaysalt','init','DONE')
         else
             if ispref('Mbaysalt','init'); rmpref('Mbaysalt'); end% 之前设置的去掉
+        end
+        switch cmd
+        case 'rm'
+            rmpath(FunPath);
         end
     end
 
@@ -668,7 +681,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                              'Then return %s !'], pkg.LOCALFILE, pkg.URL, mfilename());
                     warning(warning_state)
                 end
-                if isequal(field, 'mexcdf')
+                if isequal(field, 'mexcdf') && contains(pkg.URL, 'svn')  % svn需要
                     [pathstr, name] = fileparts(pkg_localfile);
                     branch_path = fullfile(pathstr,name);
                     move_mexcdf_branch(branch_path, pkg_path);
@@ -776,7 +789,7 @@ end
 function STATUS = unzip_file(fileIn, dirOut)
     STATUS = 0;
     if check_command('unzip')
-        txt = ['unzip ', fileIn, ' -d ', dirOut];
+        txt = ['unzip -o ', fileIn, ' -d ', dirOut];  % 默认overwrite
         % txt = ['unzip ', Edir, 'm_map/data/gshhg-bin-2.3.7.zip -d ', Edir, 'm_map/data/'];
         disp(txt);
         [~, cmdout] = system(txt);
