@@ -129,7 +129,7 @@ function Tt = calc_timeStepWW3_tri(fmin, x, y, nv, h, ns, varargin)
        
     ns1 = [];
     for i = 1:length(ns)
-        ns1 = [ns1;ns{i}];
+        ns1 = [ns1,ns{i}];
     end
     ns = unique(ns1); clear ns1 % 排除边界边 OceanMesh2D中定义的边界点可能有重复，所以要去重
     

@@ -233,7 +233,8 @@
 %      wrnc_sand_nemuro.m                       -  Write sand netcdf file from NEMURO
 %      wrnc_temp.m                              -  Write sea temperature netcdf file at standard level or sigma level
 %      wrnc_zp_nemuro.m                         -  Write zooplankton netcdf file from NEMURO
-%      write_nesting_mexcef.m                   -  Write nesting netcdf file with mexcef
+%      write_nesting_mexcdf.m                   -  Write nesting netcdf file with mexcdf
+%      write_met_mexcdf.m                       -  Write met netcdf file with mexcdf(Not test)
 %   +netcdf_nemuro                              -  Packages of functions for handling NEMURO netcdf file
 %      wrnc_chlorophyll.m                       -  Write numuro chlorophyll netcdf file
 %      wrnc_no3.m                               -  Write numuro NO3 netcdf file

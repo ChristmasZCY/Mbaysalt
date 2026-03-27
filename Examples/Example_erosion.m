@@ -1,13 +1,13 @@
 
-ncfile = '/data/Output_57/Standard/wave/20230325/wave_5.nc'
+ncfile = '/data/Output_57/Standard/wave/20230325/wave_5.nc';
 lon = ncread(ncfile,'longitude');
 lat = ncread(ncfile,'latitude');
 swh = ncread(ncfile,'swh');
 swh = swh(:,:,1);
 I_D = erosion_coast_cal_id(lon, lat, swh, 24, 3);
-[swh] = erosion_coast_via_id(I_D,swh);
+[swh] = erosion_coast_via_id(I_D,swh, 'cycle_dim', 3);
 I_D = erosion_coast_cal_id(lon, lat, swh, 24, 3);
-[Swh] = erosion_coast_via_id(I_D,swh);
+[Swh] = erosion_coast_via_id(I_D,swh, 'cycle_dim', 3);
 [lat,lon] = meshgrid(lat,lon);
 clf
 subplot(1,2,1)

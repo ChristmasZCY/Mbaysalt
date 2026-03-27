@@ -1,6 +1,6 @@
 function map2gray(pin, pout, varargin)
 
-    varargin = read_varargin(varargin, {'oceanWebFile'}, {'https://windytiles.mapy.cz/turist-en/12-3314-1799.png'});
+    varargin = read_varargin(varargin, {'oceanWebFile'}, {'https://tiles.windy.com/v1/maptiles/outdoor/256%402x/12/3314/1799/?lang=en'});
     varargin = read_varargin(varargin, {'oceanPngFile'}, {'./ocean.png'});
     varargin = read_varargin(varargin, {'oceanMatFile'}, {'./ocean.mat'});  %#ok<*NASGU>
  

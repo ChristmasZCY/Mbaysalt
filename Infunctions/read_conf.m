@@ -18,8 +18,9 @@ function varargout = read_conf(confin, varargin)
     %       
     % =================================================================================================================
     % Updates:
-    %       ****-**-**:     Created,            by Christmas;
-    %       2024-12-10:     Added key:FILEPATH, by Christmas;
+    %       ****-**-**:     Created,                by Christmas;
+    %       2024-12-10:     Added key:FILEPATH,     by Christmas;
+    %       2026-01-06:     Fixed strfind maybe >1, by Christmas;
     % =================================================================================================================
     % Example:
     %       conf = read_conf(confin)
@@ -47,9 +48,9 @@ function varargout = read_conf(confin, varargin)
         line = strip(fgetl(fid));
         if contains(line,'=')
             if  ~ startsWith(line,"#")
-                F = strfind(line,"#");
+                F = strfind(line,"#");  % 可能有多个
                 if ~ isempty(F)
-                    line = strip(line(1:F-1));
+                    line = strip(line(1:F(1)-1));
                 end
                 kv_conf{l_num}= line;
                 l_num = l_num + 1;
