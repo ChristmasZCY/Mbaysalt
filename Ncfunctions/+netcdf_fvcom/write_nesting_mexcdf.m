@@ -1,4 +1,4 @@
-function write_nesting_mexcef(fout, fn, time, varargin)
+function write_nesting_mexcdf(fout, fn, time, varargin)
     %       Write the nesting file for FVCOM, with mexcdf
     % =================================================================================================================
     % Parameter:
@@ -7,7 +7,7 @@ function write_nesting_mexcef(fout, fn, time, varargin)
     %       time:            time                    || required: True  || type: double    || format: posix time
     %       varargin:       (Variables below can be writen in to a random order.)
     %           Variable name  | Description        | size               | unit
-    %           Time            time               (nt)                 datenum format
+    %           -------------- | ------------------ | ------------------ | ----------------
     %           Zeta            surface elevation  (node, nt)           m
     %           Temperature     water temperature  (node, siglay, nt)   degree C
     %           Salinity        water salinity     (node, siglay, nt)   psu
@@ -26,7 +26,7 @@ function write_nesting_mexcef(fout, fn, time, varargin)
     %       2024-11-07:     Edited code from Yang Ding, by Christmas;
     % =================================================================================================================
     % Example:
-    %       netcdf_fvcom.write_nesting_mexcef('nesting.nc', fn, time, ...
+    %       netcdf_fvcom.write_nesting_mexcdf('nesting.nc', fn, time, ...
     %                                         'Zeta', Zeta, 'Temperature', Temperature, ...
     %                                         'Salinity', Salinity, 'U', U, 'V', V, 'Hyw', Hyw, ...
     %                                         'weight_node', weight_node, 'weight_cell', weight_cell);

@@ -4,8 +4,8 @@ lon = -179.9:.2:179.9;
 lat = -90:.2:90;
 Indir = '/home/ftp/windy/global/tpxo/5';
 fname = 'tideCurrentLevel_5.nc';
-time_start = datetime(2024, 05, 25, 0, 0, 0);
-time_end = datetime(2024, 08, 25, 0, 0, 0);
+time_start = datetime(2026, 03, 01, 0, 0, 0);
+time_end = datetime(2026, 12, 31, 0, 0, 0);
 
 [Lat,Lon] = meshgrid(lat,lon);
 Times = create_timeRange(time_start, time_end, '1h');
@@ -18,9 +18,10 @@ TPXO_filepath = '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/YS_2010/DATA
 % TPXO_filepath = '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/TPXO10/TPXO10v2_bin/DATA';
 % TPXO_filepath = '/Users/christmas/Documents/Code/MATLAB/数据/TPXO/TPXO10/TPXO10_atlas_v2_bin';
 % TPXO_filepath = '/storage/data/TPXO/TPXO9/TPXO9_atlas_v5_bin';
+% TPXO_filepath = '/storage/data/TPXO/TPXO10/TPXO10_atlas_v2_bin';
 data_tmpdir = './AreaBin';
 % pause
-% parpool("Thread",60);
+% parpool("Threads",60);
 % TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all','Parallel',60);
 TIDE = preuvh2(Lon, Lat, Times, tide_name, TPXO_filepath, data_tmpdir, 'INFO','disp','Vname','all');
 F_equator = find(lat==0);
@@ -28,6 +29,12 @@ F_equator = find(lat==0);
 TIDE.u(:,F_equator,:) = mean([TIDE.u(:,F_equator-1,:),TIDE.u(:,F_equator+1,:)],2);
 TIDE.v(:,F_equator,:) = mean([TIDE.v(:,F_equator-1,:),TIDE.v(:,F_equator+1,:)],2);
 TIDE.h(:,F_equator,:) = mean([TIDE.h(:,F_equator-1,:),TIDE.h(:,F_equator+1,:)],2);
+
+I_D.h = erosion_coast_cal_id(lon, lat, TIDE.h(:,:,1), 24, 2);
+TIDE.h = erosion_coast_via_id(I_D.h, TIDE.h, 'cycle_dim', 3);
+I_D.uv = erosion_coast_cal_id(lon, lat, TIDE.u(:,:,1), 24, 2);
+TIDE.u = erosion_coast_via_id(I_D.uv, TIDE.u, 'cycle_dim', 3);
+TIDE.v = erosion_coast_via_id(I_D.uv, TIDE.v, 'cycle_dim', 3);
 
 iF = find (Times == Times(1)+days(1))-1;
 

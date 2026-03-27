@@ -38,6 +38,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-12-24:     Added output zeta with depth,                                       by Christmas;
     %       2024-12-24:     Changed 'Switch_zeta_with_depth' to Switch_zeta_wet_dry,            by Christmas;
     %       2025-01-21:     Added Switch of hmax,                                               by Christmas;
+    %       2026-01-06:     Added warning if no default conf_file,                              by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20241227,1)
@@ -1150,6 +1151,9 @@ end
 function CONF = gen_conf_DAFAULT()
     PATH.basepath = fileparts(fileparts(mfilename("fullpath")));
     Cfile = fullfile(PATH.basepath,'Configurefiles/Post_fvcom.conf');
+    if ~exist(Cfile,'file')
+        error('Default configuration file ''%s'' is missing!', Cfile);
+    end
     CONF = read_conf(Cfile);
 end
 

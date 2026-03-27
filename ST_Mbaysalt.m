@@ -152,6 +152,8 @@ function ST_Mbaysalt(varargin)
         end
     end
 
+    rehash;
+
 end
 
 

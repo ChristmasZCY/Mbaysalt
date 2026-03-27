@@ -86,7 +86,8 @@ function [GridStruct, VarStruct, Ttimes] = c_load_model(fin, varargin)
             GridStruct = w_load_grid(fin,Global, 'MaxLon', MaxLon);
             GridStruct.ModelName = 'WRF'; 
             GridStruct.grid = 'GRID';
-        elseif nc_attrValue_exist(fin,'CF-1.6') && nc_attrValue_exist(fin,'ecmwf/mars-client/bin/grib_to_netcdf.bin','method','CONTAINS')
+        elseif (nc_attrValue_exist(fin,'CF-1.6') && nc_attrValue_exist(fin,'ecmwf/mars-client/bin/grib_to_netcdf.bin','method','CONTAINS')) || ...
+                nc_attrValue_exist(fin, 'European Centre', 'method','START')
             lon = ncread(fin, 'longitude');
             lat = ncread(fin, 'latitude');
             GridStruct = w_load_grid(lon, lat, Global, 'MaxLon', MaxLon);
@@ -183,13 +184,19 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         end
         
     case 'FVCOM'
-        varList = {'u', 'v', 'ww', 'temp', 'salinity', 'zeta', 'ua', 'va', 'aice', 'vice', ''};
+        varList = {'u', 'v', 'ww', ...
+            'temp', 'salinity', 'zeta', ...
+            'ua', 'va', 'aice', 'vice', ...
+            'uwind_speed', 'vwind_speed', ''};
         VarStruct = read_var_list(fin, varList);
         if all(isfield(VarStruct,{'u', 'v'}))
             [VarStruct.uv_spd, VarStruct.uv_dir] = calc_uv2sd(VarStruct.u, VarStruct.v, "current");
         end
         if all(isfield(VarStruct,{'ua', 'va'}))
             [VarStruct.uva_spd, VarStruct.uva_dir] = calc_uv2sd(VarStruct.ua, VarStruct.va, "current");
+        end
+        if all(isfield(VarStruct,{'uwind_speed', 'vwind_speed'}))
+            [VarStruct.uvwind_speed, VarStruct.uvwind_dir] = calc_uv2sd(VarStruct.uwind_speed, VarStruct.vwind_speed, "wind");
         end
         if nc_var_exist(fin, 'Times')
             ftime = f_load_time(fin, 'Times');
@@ -252,8 +259,9 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
                    'chlo_std', 'chlo_sgm', 'chlo_avg', ...
                    'NO3_std', 'NO3_sgm', 'NO3_avg', ...
                    'pH_std', 'pH_sgm', 'pH_avg', ...
-                   'adt','swh', 'ice', 'aice','tice', ...
+                   'adt', 'ice', 'aice','tice', ...
                    'casfco2', 'bathy', ...
+                   'swh', 'mwd', 'mwp', ...
                    'tide_u', 'tide_v', 'tide_h'};
         VarStruct = read_var_list(fin, varList);
         if all(isfield(VarStruct,{'ua', 'va'}))
@@ -267,6 +275,9 @@ function [VarStruct, Ttimes] = read_nc(fin, GridStruct)
         end
         if all(isfield(VarStruct,{'wind_U10', 'wind_V10'}))
             [VarStruct.UV10_spd, VarStruct.UV10_dir] = calc_uv2sd(VarStruct.wind_U10, VarStruct.wind_V10, "wind");
+        end
+        if all(isfield(VarStruct,{'mwd'}))
+            [VarStruct.mwd_U, VarStruct.mwd_V] = calc_sd2uv(1, VarStruct.mwd,"ww3");
         end
         if nc_var_exist(fin, 'time')
             time = ncdateread(fin, 'time');
