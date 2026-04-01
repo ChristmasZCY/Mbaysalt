@@ -1,0 +1,298 @@
+{
+  "longitude": {
+    "long_name": "longitude",
+    "standard_name": "longitude",
+    "units": "degrees_east",
+    "axis": "X"
+  },
+  "latitude": {
+    "long_name": "latitude",
+    "standard_name": "latitude",
+    "units": "degrees_north",
+    "axis": "Y"
+  },
+  "time": {
+    "long_name": "UTC time",
+    "standard_name": "UTC_time",
+    "units": "seconds since 1970-01-01 00:00:00",
+    "calendar": "gregorian",
+    "axis": "T"
+  },
+  "TIME": {
+    "long_name": "UTC time"
+  },
+  "adt": {
+    "units": "m",
+    "long_name": "absolute dynamic topography",
+    "standard_name": "absolute_dynamic_topography"
+  },
+  "wet_nodes": {
+    "units": "1",
+    "long_name": "wet nodes",
+    "standard_name": "wet_nodes",
+    "reference": "1 for wet nodes, 0 for dry nodes"
+  },
+  "bathy": {
+    "units": "m",
+    "long_name": "bathy of ocean",
+    "standard_name": "bathy_of_ocean"
+  },
+  "casfco2": {
+    "units": "mmol C/m^2/d",
+    "long_name": "Carbonate air-sea flux of CO2, negative when ocean loses CO2",
+    "standard_name": "carbonate_air-sea_flux_of_CO2"
+  },
+  "depth_std": {
+    "units": "m",
+    "long_name": "depth",
+    "standard_name": "standard_deviation_of_depth",
+    "positive": "down"
+  },
+  "chlo_std": {
+    "units": "mg/m^3",
+    "long_name": "chlorophyll at standard levels",
+    "standard_name": "chlorophyll_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "siglay": {
+    "units": "1",
+    "long_name": "sigma layer",
+    "standard_name": "ocean_sigma_coordinate"
+  },
+  "chlo_sgm": {
+    "units": "mg/m^3",
+    "long_name": "chlorophyll at sigma levels",
+    "standard_name": "chlorophyll_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "depth_avg": {
+    "units": "m",
+    "positive": "down"
+  },
+  "chlo_avg": {
+    "units": "mg/m^3",
+    "long_name": "chlorophyll at average levels",
+    "standard_name": "chlorophyll_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "u_std": {
+    "units": "m/s",
+    "long_name": "eastward water velocity at standard levels",
+    "standard_name": "eastward_water_velocity_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "v_std": {
+    "units": "m/s",
+    "long_name": "northward water velocity at standard levels",
+    "standard_name": "northward_water_velocity_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "w_std": {
+    "units": "m/s",
+    "long_name": "vertical water velocity at standard levels",
+    "standard_name": "vertical_water_velocity_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "u_sgm": {
+    "units": "m/s",
+    "long_name": "eastward water velocity at sigma levels",
+    "standard_name": "eastward_water_velocity_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "v_sgm": {
+    "units": "m/s",
+    "long_name": "northward water velocity at sigma levels",
+    "standard_name": "northward_water_velocity_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "w_sgm": {
+    "units": "m/s",
+    "long_name": "vertical water velocity at sigma levels",
+    "standard_name": "vertical_water_velocity_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "u_avg": {
+    "units": "m/s",
+    "long_name": "eastward water velocity at average levels",
+    "standard_name": "eastward_water_velocity_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "v_avg": {
+    "units": "m/s",
+    "long_name": "northward water velocity at average levels",
+    "standard_name": "northward_water_velocity_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "w_avg": {
+    "units": "m/s",
+    "long_name": "vertical water velocity at average levels",
+    "standard_name": "vertical_water_velocity_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "ua": {
+    "units": "m/s",
+    "long_name": "average eastward water velocity",
+    "standard_name": "average_eastward_water_velocity"
+  },
+  "va": {
+    "units": "m/s",
+    "long_name": "average northward water velocity",
+    "standard_name": "average_northward_water_velocity"
+  },
+  "aice": {
+    "units": "1",
+    "long_name": "sea ice concentration",
+    "standard_name": "sea_ice_concentration"
+  },
+  "tice": {
+    "units": "m",
+    "long_name": "sea ice thickness",
+    "standard_name": "sea_ice_thickness"
+  },
+  "no3_std": {
+    "units": "μM",
+    "long_name": "nitrate nitrogen at standard levels",
+    "standard_name": "nitrate_nitrogen_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "no3_sgm": {
+    "units": "μM",
+    "long_name": "nitrate nitrogen at sigma levels",
+    "standard_name": "nitrate_nitrogen_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "no3_avg": {
+    "units": "μM",
+    "long_name": "nitrate nitrogen at average levels",
+    "standard_name": "nitrate_nitrogen_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "pco2_std": {
+    "units": "μatm",
+    "long_name": "carbonate partial pressure of CO2 at standard levels",
+    "standard_name": "carbonate_partial_pressure_of_CO2_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "pco2_sgm": {
+    "units": "μatm",
+    "long_name": "carbonate partial pressure of CO2 at sigma levels",
+    "standard_name": "carbonate_partial_pressure_of_CO2_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "pco2_avg": {
+    "units": "μatm",
+    "long_name": "carbonate partial pressure of CO2 at average levels",
+    "standard_name": "carbonate_partial_pressure_of_CO2_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "ph_std": {
+    "units": "1",
+    "long_name": "carbonate pH on total scale at standard levels",
+    "standard_name": "carbonate_pH_on_total_scale_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "ph_sgm": {
+    "units": "1",
+    "long_name": "carbonate pH on total scale at sigma levels",
+    "standard_name": "carbonate_pH_on_total_scale_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "ph_avg": {
+    "units": "1",
+    "long_name": "carbonate pH on total scale at average levels",
+    "standard_name": "carbonate_pH_on_total_scale_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "pp_std": {
+    "units": "umolN/L",
+    "long_name": "phytoplankton at standard levels",
+    "standard_name": "phytoplankton_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "pp_sgm": {
+    "units": "umolN/L",
+    "long_name": "phytoplankton at sigma levels",
+    "standard_name": "phytoplankton_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "pp_avg": {
+    "units": "umolN/L",
+    "long_name": "phytoplankton at average levels",
+    "standard_name": "phytoplankton_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "salinity_std": {
+    "units": "psu",
+    "long_name": "sea water salinity at standard levels",
+    "standard_name": "sea_water_salinity_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "salinity_sgm": {
+    "units": "psu",
+    "long_name": "sea water salinity at sigma levels",
+    "standard_name": "sea_water_salinity_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "salinity_avg": {
+    "units": "psu",
+    "long_name": "sea water salinity at average levels",
+    "standard_name": "sea_water_salinity_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "sand_std": {
+    "units": "g/L",
+    "long_name": "sand at standard levels",
+    "standard_name": "sand_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "sand_sgm": {
+    "units": "g/L",
+    "long_name": "sand at sigma levels",
+    "standard_name": "sand_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "sand_avg": {
+    "units": "g/L",
+    "long_name": "sand at average levels",
+    "standard_name": "sand_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "temperature_sgm": {
+    "units": "Celsius",
+    "long_name": "sea water temperature at sigma levels",
+    "standard_name": "sea_water_temperature_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "temperature_avg": {
+    "units": "Celsius",
+    "long_name": "sea water temperature at average levels",
+    "standard_name": "sea_water_temperature_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "temperature_std": {
+    "units": "Celsius",
+    "long_name": "sea water temperature at standard levels",
+    "standard_name": "sea_water_temperature_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "zp_std": {
+    "units": "umolN/L",
+    "long_name": "zooplankton at standard levels",
+    "standard_name": "zooplankton_at_standard_levels",
+    "coordinates": "standard levels"
+  },
+  "zp_sgm": {
+    "units": "umolN/L",
+    "long_name": "zooplankton at sigma levels",
+    "standard_name": "zooplankton_at_sigma_levels",
+    "coordinates": "sigma levels"
+  },
+  "zp_avg": {
+    "units": "umolN/L",
+    "long_name": "zooplankton at average levels",
+    "standard_name": "zooplankton_at_average_levels",
+    "coordinates": "average levels"
+  },
+  "GLOBAL": {
+  }
+}

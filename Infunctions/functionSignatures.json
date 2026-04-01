@@ -368,6 +368,11 @@
         "inputs": [],
         "outputs": [
             {"name": "home", "type": ["folder"], "purpose": "home folder"}]},
+    "getPath": {
+        "inputs": [
+            {"name": "filename", "kind": "required", "type": ["file", "char","dir"], "purpose": "Filename or folder name"}],
+        "outputs": [
+            {"name": "path", "type": ["file","folder","char"], "purpose": "path of file or folder"}]},
     "convert_avi2mp4": {
         "inputs": [
             {"name": "aviFile", "kind": "required", "type": ["file=*.avi"], "purpose": "avi file"},
@@ -496,5 +501,13 @@
             {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity"},
             {"name": "z", "kind": "required", "type": ["numeric"], "purpose": "depth"}],
         "outputs": [
-            {"name": "c", "type": ["scalar"], "purpose": "Sound Speed"}]}
+            {"name": "c", "type": ["scalar"], "purpose": "Sound Speed"}]},
+    "calc_scale_offset": {
+        "inputs": [
+            {"name": "data", "kind": "required", "type": ["numeric"], "purpose": "input data"},
+            {"name": "dtype", "kind": "required", "type": ["char","choices={'int16','int32','uint16','uint32'}"], "purpose": "data type to be converted"}],
+        "outputs": [
+            {"name": "scale_factor", "type": ["scalar"], "purpose": "Scale factor"},
+            {"name": "add_offset", "type": ["scalar"], "purpose": "Add offset"},
+            {"name": "data_converted", "type": ["scalar"], "purpose": "Converted data"}]}
 }

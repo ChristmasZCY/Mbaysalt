@@ -17,10 +17,7 @@ function varargout = touch(fin)
     % =================================================================================================================
 
 
-    if startsWith(fin, '~/')
-        HOME = getHome();
-        fin = replace(fin, '~/', [HOME, filesep]);
-    end
+    fin = getPath(fin);
     
     path = fileparts(fin);  % get the path of the file
     makedirs(path);       % create the path if it does not exist

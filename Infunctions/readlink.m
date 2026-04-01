@@ -5,8 +5,8 @@ function [YN, Ofile] = readlink(file)
     %       file: path of file or folder            || required: True || type: char    || format: 'D:\data\mask.nc'
     % =================================================================================================================
     % Returns:
-    %       Ofile: Original file                    || required: True || type: char    || example: 'D:\data\mask.nc'
     %       YN: whether link or not                 || required: True || type: logical || example: 1
+    %       Ofile: Original file                    || required: True || type: char    || example: 'D:\data\mask.nc'
     % =================================================================================================================
     % Update:
     %       ****-**-**:     Created,                                        by Christmas;
@@ -14,6 +14,7 @@ function [YN, Ofile] = readlink(file)
     %       2024-04-16:     swap output order,                              by Christmas;
     %       2024-05-13:     Fixed opposite output, judge'file not found',   by Christmas;
     %       2024-09-19:     Use isSymbolicLink(>=R2024b),                   by Christmas;
+    %       2026-03-30:     Dealing with ~/ in input file,                  by Christmas;
     % =================================================================================================================
     % Example:
     %       [YN, Ofile] = readlink('D:\data\mask.nc')
@@ -28,18 +29,20 @@ function [YN, Ofile] = readlink(file)
         Ofile
     end
 
-    file = convertStringsToChars(file);
-
-    if startsWith(file, './') || ~contains(file, filesep)
-        file = fullfile(pwd, file);
-    end
+    file = getPath(file);
 
     if isempty(file) || (~exist(file,"file") && ~exist(file,"dir"))
-        error('file not found')
+        warning('file not found')
+        YN = false;
+        Ofile = file;
+        return
     end
 
     if ~isMATLABReleaseOlderThan("R2024b")
         [YN, Ofile] = isSymbolicLink(file);
+        if ~YN
+            Ofile = file;
+        end
         return
     end
 
