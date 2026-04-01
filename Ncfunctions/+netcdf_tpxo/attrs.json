@@ -1,0 +1,39 @@
+{
+  "longitude": {
+    "long_name": "longitude",
+    "standard_name": "longitude",
+    "units": "degrees_east",
+    "axis": "X"
+  },
+    "latitude": {
+    "long_name": "latitude",
+    "standard_name": "latitude",
+    "units": "degrees_north",
+    "axis": "Y"
+  },
+  "time": {
+    "long_name": "UTC time",
+    "standard_name": "UTC_time",
+    "units": "seconds since 1970-01-01 00:00:00",
+    "calendar": "gregorian",
+    "axis": "T"
+    },
+  "TIME": {
+    "long_name": "UTC time"
+  },
+  "tide_u": {
+    "units": "m/s",
+    "long_name": "tide eastward water velocity"
+  },
+  "tide_v": {
+    "units": "m/s",
+    "long_name": "tide northward water velocity"
+  },
+  "tide_h": {
+    "units": "m",
+    "long_name": "tide water height"
+  },
+  "GLOBAL": {
+    "source": "TPXO"
+  }
+}

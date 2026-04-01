@@ -1,0 +1,41 @@
+{
+  "longitude": {
+    "long_name": "longitude",
+    "standard_name": "longitude",
+    "units": "degrees_east",
+    "axis": "X"
+  },
+  "latitude": {
+    "long_name": "latitude",
+    "standard_name": "latitude",
+    "units": "degrees_north",
+    "axis": "Y"
+  },
+  "time": {
+    "long_name": "UTC time",
+    "standard_name": "UTC_time",
+    "units": "seconds since 1970-01-01 00:00:00",
+    "calendar": "gregorian",
+    "axis": "T"
+  },
+  "TIME": {
+    "long_name": "UTC time"
+  },
+  "wind_U10": {
+    "units": "m/s",
+    "long_name": "10 meter U wind component",
+    "standard_name": "eastward_wind"
+  },
+  "wind_V10": {
+    "units": "m/s",
+    "long_name": "10 meter V wind component",
+    "standard_name": "northward_wind"
+  },
+  "temperature": {
+    "units": "K",
+    "long_name": "temperature at 2m",
+    "standard_name": "temperature_at_2m"
+  },
+  "GLOBAL": {
+  }
+}

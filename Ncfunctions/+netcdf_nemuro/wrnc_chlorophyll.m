@@ -14,13 +14,18 @@ function wrnc_chlorophyll(ncid,Lon,Lat,Depth,time,Chlo,GA_start_date)
     %       netcdf_nemuro.wrnc_chlorophyll(ncid,Lon,Lat,Depth,time,Chlo,GA_start_date)
     % =================================================================================================================
 
+    warning('Mbaysalt:DeprecationWarning: \n%s \n%s \n%s', ...
+        '       This function is deprecated and will be removed in future versions.', ...
+        '       Please use the updated function with improved performance and additional features.', ...
+        '       See NETCDF_FVCOM.WRNC_CHLO_ERSEM instead');
+
     % version
-    Version = '2.1';
+    Version = '1.3';
     % time && TIME
     [TIME,TIME_reference,TIME_start_date,TIME_end_date,time_filename] = time_to_TIME(time);
 
     % standard_name
-    ResName = num2str(1/nanmean(diff(Lon)), '%2.f');
+    ResName = num2str(1/nanmean(diff(Lon)), '%2.f');2698
     S_name = standard_filename('chlorophyll',Lon,Lat,time_filename,ResName); % 标准文件名
     osprint2('INFO',['Transfor --> ',S_name])
 
@@ -47,7 +52,7 @@ function wrnc_chlorophyll(ncid,Lon,Lat,Depth,time,Chlo,GA_start_date)
     TIME_id =  netcdf.defVar(ncid, 'TIME',      'NC_CHAR',  [TIMEdimID,timedimID]);          % 时间char
     chlo_id =  netcdf.defVar(ncid, 'chlorophyll',    'NC_FLOAT', [londimID, latdimID,depdimID,timedimID]); % 叶绿素
 
-    netcdf.defVarFill(ncid,      chlo_id,      false,      9.9692100e+36); % 设置缺省值
+    netcdf.defVarFill(ncid,      chlo_id,      false,      realmax('single')); % 设置缺省值
 
     netcdf.defVarDeflate(ncid, lon_id, true, true, 5)
     netcdf.defVarDeflate(ncid, lat_id, true, true, 5)
@@ -97,10 +102,10 @@ function wrnc_chlorophyll(ncid,Lon,Lat,Depth,time,Chlo,GA_start_date)
 
     % 写入global attribute
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'product_name',   S_name);         % 文件名
+    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'WriteProgram',   ['netcdf_nemuro:', mfilename, ' V', Version]); % 写入程序信息
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'source',         '147-NEMURO_SCS'); % 数据源
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'start',          GA_start_date);    % 起报时间
     netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'history',        ['Created by Matlab at ' char(datetime("now","Inputformat","yyyy-MM-dd HH:mm:SS"))]); % 操作历史记录
-    netcdf.putAtt(ncid,netcdf.getConstant('NC_GLOBAL'),'program_version',['V',Version]);    % 程序版本号
     netcdf.close(ncid);    % 关闭nc文件
 
 end

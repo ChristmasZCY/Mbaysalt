@@ -1,0 +1,72 @@
+{
+  "longitude": {
+    "long_name": "longitude",
+    "standard_name": "longitude",
+    "units": "degrees_east",
+    "axis": "X"
+  },
+  "latitude": {
+    "long_name": "latitude",
+    "standard_name": "latitude",
+    "units": "degrees_north",
+    "axis": "Y"
+  },
+  "time": {
+    "long_name": "UTC time",
+    "standard_name": "UTC_time",
+    "units": "seconds since 1970-01-01 00:00:00",
+    "calendar": "gregorian",
+    "axis": "T"
+  },
+  "TIME": {
+    "long_name": "UTC time"
+  },
+  "swh": {
+    "units": "m",
+    "long_name": "significant height of combined wind waves and swell"
+  },
+  "mwd": {
+    "units": "degree",
+    "long_name": "mean wave direction",
+    "direction_0": "coming from the north",
+    "direction_90": "coming from the east"
+  },
+  "mwp": {
+    "units": "s",
+    "long_name": "mean wave period"
+  },
+  "hmax": {
+    "units": "m",
+    "long_name": "expected maximum wave height"
+  },
+  "shww": {
+    "units": "m",
+    "long_name": "significant height of wind waves"
+  },
+  "mdww": {
+    "units": "degree",
+    "long_name": "mean direction of wind waves",
+    "direction_0": "coming from the north",
+    "direction_90": "coming from the east"
+  },
+  "mpww": {
+    "units": "s",
+    "long_name": "mean period of wind waves"
+  },
+  "shts": {
+    "units": "m",
+    "long_name": "significant height of total swell"
+  },
+  "mdts": {
+    "units": "degree",
+    "long_name": "mean direction of total swell",
+    "direction_0": "coming from the north",
+    "direction_90": "coming from the east"
+  },
+  "mpts": {
+    "units": "s",
+    "long_name": "mean period of total swell"
+  },
+  "GLOBAL": {
+  }
+}
