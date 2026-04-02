@@ -1,14 +1,15 @@
 % Mbaysalt Toolbox
-% Version 2.5 (R2024b) 2024-12-09
+% Version 2.6.0 (R2025b) 2026-04-01
 % =================================================================================================================
-% Version 0.1 (R2023b) 2023-03-01   (Created by Christmas, Dovelet, Qidi Ma)
-% Version 1.0 (R2023b) 2023-10-18   (Fixed by Christmas)
-% Version 2.0 (R2023b) 2023-11-22   (Fixed by Christmas)    --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.0>
-% Version 2.1 (R2023b) 2023-12-27   (Modified by Christmas)
-% Version 2.2 (R2023b) 2024-01-31   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.2>
-% Version 2.3 (R2024a) 2024-04-04   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.3>
-% Version 2.4 (R2024a) 2024-07-26   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.4>
-% Version 2.5 (R2024b) 2024-12-09   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/v2.5>
+% Version 0.1   (R2023b) 2023-03-01   (Created by Christmas, Dovelet, Qidi Ma)
+% Version 1.0   (R2023b) 2023-10-18   (Fixed by Christmas)
+% Version 2.0   (R2023b) 2023-11-22   (Fixed by Christmas)    --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.0>
+% Version 2.1   (R2023b) 2023-12-27   (Modified by Christmas)
+% Version 2.2   (R2023b) 2024-01-31   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.2>
+% Version 2.3   (R2024a) 2024-04-04   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.3>
+% Version 2.4   (R2024a) 2024-07-26   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/release-v2.4>
+% Version 2.5   (R2024b) 2024-12-09   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/v2.5>
+% Version 2.6.0 (R2025b) 2026-04-01   (Modified by Christmas) --->  Release: <https://github.com/ChristmasZCY/Mbaysalt/releases/tag/v2.6.0>
 %
 % This toolbox is used to postpocess model data and draw pictures.
 % The model data is from FVCOM, NEMURO, ERSEM, WAVE WATCH III, WRF, MITgcm and so on.
@@ -455,7 +456,7 @@
 %   ETOPO1_Bed_g_gmt4            (optional)     -  ETOPO1_Bed_g_gmt4.grd                       ||  https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/bedrock/grid_registered/netcdf/ETOPO1_Bed_g_gmt4.grd.gz
 %   ETOPO1_Ice_g_gmt4            (optional)     -  ETOPO1_Ice_g_gmt4.grd                       ||  https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/netcdf/ETOPO1_Ice_g_gmt4.grd.gz
 %
-%   %% builtin
+%   %% Builtin
 %   cprintf                      (optional)     -  Color printf                                ||  https://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window
 %   ellipse                      (optional)     -  ellipse                                     ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/289-ellipse-m
 %   genpath_exclude              (optional)     -  genpath_exclude                             ||  https://ww2.mathworks.cn/matlabcentral/fileexchange/22209-genpath_exclude
@@ -546,10 +547,7 @@
 %
 %
 % Author        :  Christmas, Dovelet, Qidi Ma
-% Organization  :  Ocean University of China, Qingdao, China; Qingdao Ekman Technology Co., Ltd 
+% Organization  :  Ocean University of China,           Qingdao, China;
+%                  Qingdao Ekman Technology Co., Ltd,   Qingdao, China;
 % Email         :  273519355@qq.com
-% Website       :  https://www.iocean.cn  (visualization)
-%                  https://data.iocean.cn (database)
-%                  https://github.com/ChristmasZCY/Mbaysalt (github)
-%                  https://gitea.iocean.cn/Christmas/Mbaysalt (gitea)
-
+% Website       :  https://github.com/ChristmasZCY/Mbaysalt (github)
