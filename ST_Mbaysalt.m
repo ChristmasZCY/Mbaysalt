@@ -31,6 +31,7 @@ function ST_Mbaysalt(varargin)
     %       2025-11-04:     Fixed zip overwrite,                                    by Christmas;
     %       2025-11-04:     Fixed zip rm cannot find checkOS,                       by Christmas;
     %       2025-11-04:     Fixed mexcdf toolbox,                                   by Christmas;
+    %       2026-04-18:     Added improve:cftime,                                   by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -230,6 +231,9 @@ function STATUS = Fixed_functions(Jstruct)
     if Jstruct.improve.cdt
         STATUS_list = [STATUS_list,supplement_cdt(Jstruct)];  % 完善包函数
     end
+    if Jstruct.improve.cftime
+        STATUS_list = [STATUS_list,fixed_cftime(Jstruct)];  % 修正cftime bug
+    end
     STATUS = any(STATUS_list);
 end
 
@@ -324,7 +328,7 @@ function STATUS = supplement_matFVCOM(Jstruct)
         % file_basename = replace(file_out,strcat(fileparts(file_out),filesep),'');
         % file_basename = Jstruct.supplement.matFVCOM.FILES{i};
         if ~exist(file_out,"file")
-            if checkOS("MAC") & strcmp(getHome(),'/Users/christmas')
+            if check_MacBookProChristmas()
                 % only for MacBook test
                 str = sprintf('ln -sf %s %s', file_in, file_out);
                 system(str,"-echo");
@@ -339,7 +343,13 @@ function STATUS = supplement_matFVCOM(Jstruct)
                     copyfile(file_out,file_out_bak);
                 end
                 if ~strcmp(fileread(file_in), fileread(file_out))
-                    copyfile(file_in,file_out);
+                    if check_MacBookProChristmas()
+                        % only for MacBook test
+                        str = sprintf('ln -sf %s %s', file_in, file_out);
+                        system(str,"-echo");
+                    else
+                        copyfile(file_in,file_out);
+                    end
                     STATUS_list(i) = 1;
                 else
                     STATUS_list(i) = 0;
@@ -526,6 +536,59 @@ function STATUS = fixed_m_etopo2(Jstruct)
         newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
         fOWC(m_filepath, 'w', newContent);
     end
+    STATUS = 1;
+end
+
+function STATUS = fixed_cftime(Jstruct)
+    % 修正cftime.m
+    %{
+        == 1 ==
+        tparts = textscan(tunit, '%s since %s', 1);
+        -->
+        % tparts = textscan(tunit, '%s since %s', 1);
+        tparts = textscan(tunit, '%s since %[^\n]', 1);
+
+        == 2 ==
+        tparts = textscan(tunit, '%s since %D', 1);
+        -->
+        % tparts = textscan(tunit, '%s since %D', 1);
+        tparts = textscan(tunit, '%s since %[^\n]', 1);
+        tparts{2} = datetime(tparts{2});
+    %}
+    m_filepath = fullfile(fileparts(fileparts(Jstruct.FILEPATH)),Jstruct.packages.gitclone.cdt.PATH,'cdt','cftime.m');  % which('cftime.m');
+    STATUS = 0;
+    if ~exist(m_filepath,"file")
+        return
+    end
+    % 备份源文件
+    path_DIR = fileparts(m_filepath);
+    m_filecopy = fullfile(path_DIR,'cftime_origin.m');
+    if ~ exist(m_filecopy,'file')
+        copyfile(m_filepath,m_filecopy);
+    end
+    % 1
+    fileContent = fileread(m_filepath);  % 读取文件内容
+    searchStr = "tparts = textscan(tunit, '%s since %s', 1);";  % 定义要查找的字符串
+    replaceStr = "% tparts = textscan(tunit, '%s since %s', 1);" + newline + ...
+        "    tparts = textscan(tunit, '%s since %[^\n]', 1);";  % 定义替换后的字符串
+    Fstr = grep(m_filepath,searchStr);
+    if startsWith(Fstr, '%')  % 被注释则不需要替换
+        return
+    end
+    newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
+    fOWC(m_filepath, 'w', newContent);
+    % 2
+    fileContent = fileread(m_filepath);  % 读取文件内容
+    searchStr = "tparts = textscan(tunit, '%s since %D', 1);";  % 定义要查找的字符串
+    replaceStr = "% tparts = textscan(tunit, '%s since %D', 1);" + newline + ...
+        "    tparts = textscan(tunit, '%s since %[^\n]', 1);" + newline + ...
+        "    tparts{2} = datetime(tparts{2});";  % 定义替换后的字符串
+    Fstr = grep(m_filepath,searchStr);
+    if startsWith(Fstr, '%')  % 被注释则不需要替换
+        return
+    end
+    newContent = strrep(fileContent, searchStr, replaceStr);  % 执行替换操作
+    fOWC(m_filepath, 'w', newContent);
     STATUS = 1;
 end
 
@@ -889,6 +952,16 @@ function fOWC(filename, mode, content)
     fid = fopen(filename, mode);  % 将修改后的内容写回文件
     fwrite(fid, content);
     fclose(fid);
+end
+
+function TF = check_MacBookProChristmas()
+    % for MacBook test
+    TF = false;
+    if checkOS("MAC") & strcmp(getHome(),'/Users/christmas')
+        TF = true;
+        return
+    end
+
 end
 
 function print_info1()
