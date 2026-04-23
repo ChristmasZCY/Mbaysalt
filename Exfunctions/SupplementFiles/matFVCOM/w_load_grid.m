@@ -212,6 +212,8 @@ for i = 1 : nvars
     end
 end
 
+netcdf.close(ncid);
+
 end
 
 
