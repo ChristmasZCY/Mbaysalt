@@ -395,7 +395,7 @@
         "inputs":[
             {"name":"A",  "kind":"required", "type":["numeric"], "purpose":"Matrix A"},
             {"name":"B",  "kind":"required", "type":["numeric"], "purpose":"Matrix B"},
-            {"name":"eps",  "kind":"positional", "type":["numeric"], "purpose":"Tolerance"}],
+            {"name":"tol",  "kind":"positional", "type":["numeric"], "purpose":"Tolerance"}],
         "outputs":[
             {"name":"TF", "type":["logical","scalar"], "purpose":"Equal or not"}]},
     "figcopy":{
