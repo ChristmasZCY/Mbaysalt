@@ -231,7 +231,7 @@ function rtn = wrnc_casfco2_ersem(NC,Lon,Lat,time,Casfco2,varargin)
             NC = read_NC(conf);
             fields = fieldnames(NC);
             for iname = 1 : length(fields)
-                ncwriteatt(ncname, fields{iname}, NC.(fields{iname}));
+                ncwriteatt(ncname, '/', fields{iname}, NC.(fields{iname}));
             end
         end
         ncwriteatt(ncname, '/', 'product_name', S_name); % 文件名
