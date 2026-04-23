@@ -12,9 +12,10 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
     %       None
     % =================================================================================================================
     % Update:
-    %       2023-**-**:     Created, only for t2m.  by Christmas;
-    %       2023-12-26:     Added wind.             by Christmas;
-    %       2023-10-18:     Modified to a function, by Christmas;
+    %       2023-**-**:     Created, only for t2m,                      by Christmas;
+    %       2023-12-26:     Added wind,                                 by Christmas;
+    %       2023-10-18:     Modified to a function,                     by Christmas;
+    %       2026-04-23:     Changed writing ncfile with compression,    by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_wrf2fvcom_domain('20231008',5)
@@ -153,12 +154,10 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
         end     
         
         if SWITCH.t2m
-            ncid = create_nc(fout.t2m,'NETCDF4');
-            netcdf_wrf.wrnc_t2m(ncid, domain_ll.lon_dst, domain_ll.lat_dst, Ttimes.time, T2_dst, 'GA',struct('START_DATE',START_DATE), 'conf',conf)
+            netcdf_wrf.wrnc_t2m(fout.t2m, domain_ll.lon_dst, domain_ll.lat_dst, Ttimes.time, T2_dst, 'GA',struct('START_DATE',START_DATE), 'conf',conf)
         end
         if SWITCH.wind10m
-            ncid = create_nc(fout.wind10m,'NETCDF4');
-            netcdf_wrf.wrnc_wind10m(ncid, domain_ll.lon_dst, domain_ll.lat_dst, Ttimes.time,U10_dst,V10_dst, 'GA', struct('START_DATE',START_DATE), 'conf',conf)
+            netcdf_wrf.wrnc_wind10m(fout.wind10m, domain_ll.lon_dst, domain_ll.lat_dst, Ttimes.time,U10_dst,V10_dst, 'GA', struct('START_DATE',START_DATE), 'conf',conf)
         end
     end
 end

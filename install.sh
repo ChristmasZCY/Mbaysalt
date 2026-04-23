@@ -22,6 +22,7 @@ if [ "$1" == "all" ]; then
 elif [ "$1" == "new" ]; then
     echo "git clone new..."
     git clone --branch $branch0 --depth=1 $url0
+    git submodule update --init --recursive
     # https://zhuanlan.zhihu.com/p/597688197
     # git pull --unshallow
 else

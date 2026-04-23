@@ -39,6 +39,7 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
     %       2024-12-24:     Changed 'Switch_zeta_with_depth' to Switch_zeta_wet_dry,            by Christmas;
     %       2025-01-21:     Added Switch of hmax,                                               by Christmas;
     %       2026-01-06:     Added warning if no default conf_file,                              by Christmas;
+    %       2026-04-23:     Changed writing ncfile with compression,                            by Christmas;
     % =================================================================================================================
     % Example:
     %       Postprocess_fvcom('Post_fvcom.conf','hourly',20241227,1)
@@ -842,110 +843,95 @@ function Postprocess_fvcom(conf_file, interval, yyyymmdd, day_length, varargin)
         %% 写入
         if SWITCH.vel_all || SWITCH.vel_vertical || SWITCH.vel_average
             file = fullfile(OutputDir.curr,['current',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [current_Struct,OutValue] = getfields_key_from_struct(OutValue,{'U_std','U_sgm','U_avg','V_std','V_sgm','V_avg','W_std','W_sgm','W_avg','Ua','Va'});
-            netcdf_fvcom.wrnc_current(ncid,Lon,Lat,Delement,time,current_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear current_Struct ncid file
+            netcdf_fvcom.wrnc_current(file,Lon,Lat,Delement,time,current_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear current_Struct file
         end
 
         if SWITCH.temp
             file = fullfile(OutputDir.temp,['temperature',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [temperature_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Temp_std','Temp_sgm','Temp_avg'});
-            netcdf_fvcom.wrnc_temp(ncid,Lon,Lat,Delement,time,temperature_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear temperature_Struct ncid file
+            netcdf_fvcom.wrnc_temp(file,Lon,Lat,Delement,time,temperature_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear temperature_Struct file
         end
 
         if SWITCH.salt
             file = fullfile(OutputDir.salt,['salinity',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [salt_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Salt_std','Salt_sgm','Salt_avg'});
-            netcdf_fvcom.wrnc_salt(ncid,Lon,Lat,Delement,time,salt_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear salt_Struct ncid file
+            netcdf_fvcom.wrnc_salt(file,Lon,Lat,Delement,time,salt_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear salt_Struct file
         end
 
         if SWITCH.zeta
             file = fullfile(OutputDir.zeta,['adt',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [zeta_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Zeta','Wet_nodes'});
             if SWITCH.zeta_wet_dry
-                netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len,'Wet_nodes',int32(zeta_Struct.Wet_nodes),'Bathy',Store_coor.Depth_xy);  % Store_coor.Depth_xy <==> Delement.Bathy
+                netcdf_fvcom.wrnc_adt(file,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len,'Wet_nodes',int32(zeta_Struct.Wet_nodes),'Bathy',Store_coor.Depth_xy);  % Store_coor.Depth_xy <==> Delement.Bathy
             else
-                netcdf_fvcom.wrnc_adt(ncid,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len);
+                netcdf_fvcom.wrnc_adt(file,Lon,Lat,time,zeta_Struct.Zeta,'conf',para_conf,'INFO','Text_len',Text_len);
             end
-            clear zeta_Struct ncid file
+            clear zeta_Struct file
         end
 
         if SWITCH.ice
             file = fullfile(OutputDir.ice,['ice',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [aice_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Aice','Tice'});
-            netcdf_fvcom.wrnc_ice(ncid,Lon,Lat,time,aice_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear aice_Struct ncid file
+            netcdf_fvcom.wrnc_ice(file,Lon,Lat,time,aice_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear aice_Struct file
         end
 
         if SWITCH.ph
             file = fullfile(OutputDir.ph,['ph',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [ph_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Ph_std','Ph_sgm','Ph_avg'});
-            netcdf_fvcom.wrnc_ph_ersem(ncid,Lon,Lat,Delement,time,ph_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear ph_Struct ncid file
+            netcdf_fvcom.wrnc_ph_ersem(file,Lon,Lat,Delement,time,ph_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
         end
         if SWITCH.no3
             file = fullfile(OutputDir.no3,['no3',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [no3_Struct,OutValue] = getfields_key_from_struct(OutValue,{'No3_std','No3_sgm','No3_avg'});
-            netcdf_fvcom.wrnc_no3_ersem(ncid,Lon,Lat,Delement,time,no3_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear no3_Struct ncid file
+            netcdf_fvcom.wrnc_no3_ersem(file,Lon,Lat,Delement,time,no3_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear no3_Struct file
         end
         if SWITCH.pco2
             file = fullfile(OutputDir.pco2,['pco2',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [pco2_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Pco2_std','Pco2_sgm','Pco2_avg'});
-            netcdf_fvcom.wrnc_pco2_ersem(ncid,Lon,Lat,Delement,time,pco2_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear pco2_Struct ncid file
+            netcdf_fvcom.wrnc_pco2_ersem(file,Lon,Lat,Delement,time,pco2_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear pco2_Struct file
         end
         if SWITCH.chlo
             file = fullfile(OutputDir.chlo,['chlorophyll',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [chlo_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Chlo_std','Chlo_sgm','Chlo_avg'});
-            netcdf_fvcom.wrnc_chlo_ersem(ncid,Lon,Lat,Delement,time,chlo_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear chlo_Struct ncid file
+            netcdf_fvcom.wrnc_chlo_ersem(file,Lon,Lat,Delement,time,chlo_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear chlo_Struct file
         end
         if SWITCH.casfco2
             file = fullfile(OutputDir.casfco2,['casfco2',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [casfco2_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Casfco2'});
-            netcdf_fvcom.wrnc_casfco2_ersem(ncid,Lon,Lat,time,casfco2_Struct.Casfco2,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear casfco2_Struct ncid file
+            netcdf_fvcom.wrnc_casfco2_ersem(file,Lon,Lat,time,casfco2_Struct.Casfco2,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear casfco2_Struct file
         end
         if SWITCH.zp
             file = fullfile(OutputDir.zp,['zooplankton',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [zp_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Zp_std','Zp_sgm','Zp_avg'});
-            netcdf_fvcom.wrnc_zp_nemuro(ncid,Lon,Lat,Delement,time,zp_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear zp_Struct ncid file
+            netcdf_fvcom.wrnc_zp_nemuro(file,Lon,Lat,Delement,time,zp_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear zp_Struct file
         end
         if SWITCH.pp
             file = fullfile(OutputDir.pp,['phytoplankton',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [pp_struct,OutValue] = getfields_key_from_struct(OutValue,{'Pp_std','Pp_sgm','Pp_avg'});
-            netcdf_fvcom.wrnc_pp_nemuro(ncid,Lon,Lat,Delement,time,pp_struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear pp_struct ncid file
+            netcdf_fvcom.wrnc_pp_nemuro(file,Lon,Lat,Delement,time,pp_struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear pp_struct file
         end
         if SWITCH.sand
             file = fullfile(OutputDir.sand,['sand',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [sand_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Sand_std','Sand_sgm','Sand_avg'});
-            netcdf_fvcom.wrnc_sand_nemuro(ncid,Lon,Lat,Delement,time,sand_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear sand_Struct ncid file
+            netcdf_fvcom.wrnc_sand_nemuro(file,Lon,Lat,Delement,time,sand_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear sand_Struct file
         end
         if SWITCH.wave
             file = fullfile(OutputDir.wave,['wave',OutputRes,'.nc']);
-            ncid = create_nc(file, 'NETCDF4');
             [wave_Struct,OutValue] = getfields_key_from_struct(OutValue,{'Swh','Mwd','Mwp','Hmax','Shww','Mdww','Mpww','Shts','Mdts','Mpts'});
-            netcdf_ww3.wrnc_wave(ncid,Lon,Lat,time,wave_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
-            clear Velement_csand ncid file
+            netcdf_ww3.wrnc_wave(file,Lon,Lat,time,wave_Struct,'conf',para_conf,'INFO','Text_len',Text_len);
+            clear Velement_csand file
         end
 
         para_conf = rmfield(para_conf,'NC_start');
