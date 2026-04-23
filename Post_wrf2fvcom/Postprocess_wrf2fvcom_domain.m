@@ -154,10 +154,10 @@ function Postprocess_wrf2fvcom_domain(yyyymmdd,day_len,varargin)
         end     
         
         if SWITCH.t2m
-            netcdf_wrf.wrnc_t2m(fout.t2m, domain_ll.lon_dst, domain_ll.lat_dst, Ttimes.time, T2_dst, 'GA',struct('START_DATE',START_DATE), 'conf',conf)
+            netcdf_wrf.wrnc_t2m(fout.t2m, domain_ll.lon_dst, domain_ll.lat_dst, Ttimes.time, T2_dst, 'GA',struct('START_DATE',START_DATE), 'conf',conf);
         end
         if SWITCH.wind10m
-            netcdf_wrf.wrnc_wind10m(fout.wind10m, domain_ll.lon_dst, domain_ll.lat_dst, Ttimes.time,U10_dst,V10_dst, 'GA', struct('START_DATE',START_DATE), 'conf',conf)
+            netcdf_wrf.wrnc_wind10m(fout.wind10m, domain_ll.lon_dst, domain_ll.lat_dst, Ttimes.time,U10_dst,V10_dst, 'GA', struct('START_DATE',START_DATE), 'conf',conf);
         end
     end
 end
