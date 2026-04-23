@@ -47,6 +47,7 @@ function rtn = wrnc_casfco2_ersem(NC,Lon,Lat,time,Casfco2,varargin)
         ncid = NC;
         Version = '1.3 (netcdf.putVar)';
         Method = 'LowLevel';
+        cleanupObj = onCleanup(@() netcdf.close(ncid));
     elseif ischar(NC) || isstring(NC)
         ncname = NC;
         Version = '2.0 (ncwrite)';

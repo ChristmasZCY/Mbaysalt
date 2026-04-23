@@ -17,7 +17,7 @@ function rtn = wrnc_adt(NC,Lon,Lat,time,Zeta,varargin)
     %           conf:        configuration struct   || required: False  || type: namevalue  || format: struct
     %           INFO:        Whether print msg      || required: False  || type: flag       || format: 'INFO'
     %           Text_len:    Length of msg str      || required: False  || type: namevalue  || format: 'Text_len',45
-    %           dtype:       data type of variable  || required: False  || type: namevalue || format: 'dtype','int16'
+    %           dtype:       data type of variable  || required: False  || type: namevalue  || format: 'dtype','int16'
     % =================================================================================================================
     % Returns:
     %       rtn:            return struct with info
@@ -55,6 +55,7 @@ function rtn = wrnc_adt(NC,Lon,Lat,time,Zeta,varargin)
         ncid = NC;
         Version = '1.3 (netcdf.putVar)';
         Method = 'LowLevel';
+        cleanupObj = onCleanup(@() netcdf.close(ncid));
     elseif ischar(NC) || isstring(NC)
         ncname = NC;
         Version = '2.0 (ncwrite)';

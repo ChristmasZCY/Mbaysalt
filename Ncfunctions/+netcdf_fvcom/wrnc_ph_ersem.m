@@ -44,7 +44,7 @@ function rtn = wrnc_ph_ersem(NC,Lon,Lat,Delement,time,Velement,varargin)
     %       netcdf_fvcom.wrnc_ph_ersem('ph.nc',Lon,Lat,Delement,time,Velement,'conf',conf)
     %       netcdf_fvcom.wrnc_ph_ersem('ph.nc',Lon,Lat,Delement,time,Velement,'conf',conf,'INFO')
     %       netcdf_fvcom.wrnc_ph_ersem('ph.nc',Lon,Lat,Delement,time,Velement,'conf',conf,'INFO','Text_len',45)
-  %       netcdf_fvcom.wrnc_ph_ersem('ph.nc',Lon,Lat,Delement,time,Velement,'dtype','int16')
+    %       netcdf_fvcom.wrnc_ph_ersem('ph.nc',Lon,Lat,Delement,time,Velement,'dtype','int16')
     % =================================================================================================================
 
     varargin = read_varargin(varargin,{'conf'},{struct('')});
@@ -56,6 +56,7 @@ function rtn = wrnc_ph_ersem(NC,Lon,Lat,Delement,time,Velement,varargin)
         ncid = NC;
         Version = '1.3 (netcdf.putVar)';
         Method = 'LowLevel';
+        cleanupObj = onCleanup(@() netcdf.close(ncid));
     elseif ischar(NC) || isstring(NC)
         ncname = NC;
         Version = '2.0 (ncwrite)';

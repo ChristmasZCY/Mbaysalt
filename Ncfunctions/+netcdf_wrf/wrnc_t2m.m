@@ -43,6 +43,7 @@ function rtn = wrnc_t2m(NC,Lon,Lat,time,T2,varargin)
         ncid = NC;
         Version = '1.3 (netcdf.putVar)';
         Method = 'LowLevel';
+        cleanupObj = onCleanup(@() netcdf.close(ncid));
     elseif ischar(NC) || isstring(NC)
         ncname = NC;
         Version = '2.0 (ncwrite)';

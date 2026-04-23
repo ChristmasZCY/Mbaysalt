@@ -55,6 +55,7 @@ function rtn = wrnc_chlo_ersem(NC,Lon,Lat,Delement,time,Velement,varargin)
         ncid = NC;
         Version = '1.3 (netcdf.putVar)';
         Method = 'LowLevel';
+        cleanupObj = onCleanup(@() netcdf.close(ncid));
     elseif ischar(NC) || isstring(NC)
         ncname = NC;
         Version = '2.0 (ncwrite)';
