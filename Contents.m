@@ -66,6 +66,8 @@
 %   cutout_xy.m                                 -  Cutout small region from a large region
 %   del_filesep.m                               -  Delete the last filesep from a path
 %   del_quotation.m                             -  Delete quotation from a string
+%   erosion_coast_cal_id.m                      -  Calculate the erosion of the coast id
+%   erosion_coast_via_id.m                      -  Erosion of the coast via id
 %   figcopy.m                                   -  Copy the figure to the clipboard
 %   FVCOMTOOLS.m                                -  FVCOM tools functions
 %   genNaNlegend.m                              -  Generate NaN legend
@@ -146,13 +148,6 @@
 %   Postprocess_fvcom.m                         -  Read and postprocess fvcom triangle data, contains daily/hourly
 %   standard_filename.m                         -  Standard filename from variable matrix
 %   time_to_TIME.m                              -  To get TIME from time
-%
-%
-%                                     Post_ww3  -  Functions for handling ww3 data
-% -----------------------------------------------------------------------------------------------------------------
-%   functionSignatures.json                     -  Function signatures for this folder
-%   erosion_coast_cal_id.m                      -  Calculate the erosion of the coast id
-%   erosion_coast_via_id.m                      -  Erosion of the coast via id
 %
 %
 %                                    Post_tpxo  -  Functions for handling tpxo data

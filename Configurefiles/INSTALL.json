@@ -500,7 +500,6 @@
             "Picfunctions",
             "Infunctions",
             "Post_fvcom",
-            "Post_ww3",
             "Post_tpxo",
             "Post_wrf2fvcom",
             "Post_mitgcm",

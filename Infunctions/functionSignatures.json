@@ -509,5 +509,11 @@
         "outputs": [
             {"name": "scale_factor", "type": ["scalar"], "purpose": "Scale factor"},
             {"name": "add_offset", "type": ["scalar"], "purpose": "Add offset"},
-            {"name": "data_converted", "type": ["scalar"], "purpose": "Converted data"}]}
+            {"name": "data_converted", "type": ["scalar"], "purpose": "Converted data"}]},
+    "erosion_coast_via_id":{
+        "inputs":[],
+        "outputs":[]},
+    "erosion_coast_cal_id":{
+        "inputs":[],
+        "outputs":[]}
 }
