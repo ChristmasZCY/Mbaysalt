@@ -7,15 +7,15 @@ function rtn = wrnc_wave(NC,Lon,Lat,time,Velement,varargin)
     %       NC:             netCDF                  || required: one of || type: int/char
     %           ncid:       netcdf file id                              || type: int        || example: 1
     %           ncname:     netcdf file name                            || type: char       || example: 'tide.nc'
-    %       Lon:             longitude              || required: True  || type: double      || format: [120.5, 121.5]
-    %       Lat:             latitude               || required: True  || type: double      || format: [30.5, 31.5]
-    %       time:            time                   || required: True  || type: double      || format: posixtime
-    %       Velement:        wave struct            || required: True  || type: struct      || format: struct
+    %       Lon:             longitude              || required: True   || type: double     || format: [120.5, 121.5]
+    %       Lat:             latitude               || required: True   || type: double     || format: [30.5, 31.5]
+    %       time:            time                   || required: True   || type: double     || format: posixtime
+    %       Velement:        wave struct            || required: True   || type: struct     || format: struct
     %       varargin:        optional parameters     
-    %           conf:        configuration struct   || required: False || type: namevalue   || format: struct
-    %           INFO:        Whether print msg      || required: False || type: flag        || format: 'INFO'
-    %           Text_len:    Length of msg str      || required: False || type: namevalue   || format: 'Text_len',45
-    %           dtype:       data type of variables || required: False || type: namevalue   || format: 'dtype','int16'
+    %           conf:        configuration struct   || required: False  || type: namevalue  || format: struct
+    %           INFO:        Whether print msg      || required: False  || type: flag       || format: 'INFO'
+    %           Text_len:    Length of msg str      || required: False  || type: namevalue  || format: 'Text_len',45
+    %           dtype:       data type of variables || required: False  || type: namevalue  || format: 'dtype','int16'
     % =================================================================================================================
     % Returns:
     %       rtn:            return struct with info
@@ -48,6 +48,7 @@ function rtn = wrnc_wave(NC,Lon,Lat,time,Velement,varargin)
         ncid = NC;
         Version = '1.3 (netcdf.putVar)';
         Method = 'LowLevel';
+        cleanupObj = onCleanup(@() netcdf.close(ncid));
     elseif ischar(NC) || isstring(NC)
         ncname = NC;
         Version = '2.0 (ncwrite)';
