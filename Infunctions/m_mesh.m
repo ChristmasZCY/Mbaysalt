@@ -1,4 +1,4 @@
-function h = m_mesh(Grid,varargin)
+function h = m_mesh(Grid, varargin)
     %       Added more function for m_map toolbox,  (f_2d_mesh w_2d_mesh)
     % =================================================================================================================
     % Parameters:
@@ -24,7 +24,7 @@ function h = m_mesh(Grid,varargin)
     %       m_proj('Mercator','lon',minmax(f.x),'lat',minmax(f.y));
     %       m_mesh(f); m_grid;
     %       m_grid;
-    %       
+    %
     %   **CASE2**:
     %       fin = '/Users/christmas/Desktop/exampleNC/d02.nc';
     %       w = w_load_grid(fin);
@@ -34,36 +34,38 @@ function h = m_mesh(Grid,varargin)
     % References:
     %       See also M_MAP F_2D_MESH W_2D_MESH
     % =================================================================================================================
-    
+
     varargin = read_varargin(varargin, {'Color'}, {'k'});
 
-    if isfield(Grid,'node')
+    if isfield(Grid, 'node')
         SWITCH.type = 'FVCOM';
         varargin = read_varargin2(varargin, {'Global'});
     else
         SWITCH.type = 'WRF';
     end
 
-    [x,y] = m_ll2xy(Grid.x,Grid.y);
+    [x, y] = m_ll2xy(Grid.x, Grid.y);
     nv = Grid.nv;
 
     switch SWITCH.type
-    case 'FVCOM'
-        if ~isempty(Global) || strcmp(Grid.type, 'Global')
-            edge_cell = max(x(nv), [], 2) - min(x(nv), [], 2)>181;
-            nv(edge_cell, :) = [];
-        end
-    case 'WRF'
+        case 'FVCOM'
+
+            if ~isempty(Global) || strcmp(Grid.type, 'Global')
+                edge_cell = max(x(nv), [], 2) - min(x(nv), [], 2) > 181;
+                nv(edge_cell, :) = [];
+            end
+
+        case 'WRF'
     end
-    h = patch('Vertices',[x(:),y(:)], 'Faces',nv, 'FaceColor','k','FaceAlpha',0, 'EdgeColor', Color);
+
+    h = patch('Vertices', [x(:), y(:)], 'Faces', nv, 'FaceColor', 'k', 'FaceAlpha', 0, 'EdgeColor', Color);
 
     if (~isempty(varargin))
         set(h, varargin{:});
     end
 
-    if nargout == 0 
+    if nargout == 0
         clear h
     end
+
 end
-
-

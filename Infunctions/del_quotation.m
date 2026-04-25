@@ -9,23 +9,24 @@ function Str = del_quotation(str)
     % =================================================================================================================
     % Updates:
     %       ****-**-**: Created,        by Christmas;
-    %       2025-01-13: Added strip,    by Christmas;  
+    %       2025-01-13: Added strip,    by Christmas;
     % =================================================================================================================
     % Example:
     %       Str = del_quotation("''value''")
     % =================================================================================================================
-    
-    arguments(Input)
+
+    arguments (Input)
         str {mustBeTextScalar}
     end
 
-    arguments(Output)
+    arguments (Output)
         Str {mustBeTextScalar}
     end
 
     str = convertStringsToChars(str);
-    if or(and(startsWith(str, "'") , endsWith(str, "'")) , and(startsWith(str, '"') , endsWith(str, '"')))
-        Str = str(2:end-1);
+
+    if or(and(startsWith(str, "'"), endsWith(str, "'")), and(startsWith(str, '"'), endsWith(str, '"')))
+        Str = str(2:end - 1);
     else
         Str = str;
     end

@@ -1,4 +1,4 @@
-function Sproj = select_proj_s_ll(area_name,varargin)
+function Sproj = select_proj_s_ll(area_name, varargin)
     %       Select the projection and the area to plot
     % =================================================================================================================
     % Parameter:
@@ -28,7 +28,7 @@ function Sproj = select_proj_s_ll(area_name,varargin)
         Sproj.lat_select = [15 23];
         Sproj.title_area = 'South China Sea';
         Sproj.Fname_section = 'scs_project';
-    elseif strcmp(area_name,"scs_project2")
+    elseif strcmp(area_name, "scs_project2")
         % 南海结题大区域
         Sproj.projection = 'Mercator';
         Sproj.gshhs = 'f';
@@ -36,7 +36,7 @@ function Sproj = select_proj_s_ll(area_name,varargin)
         Sproj.lat_select = [0 25];
         Sproj.title_area = 'South China Sea';
         Sproj.Fname_section = 'scs_project2';
-    elseif strcmp(area_name,"scs")
+    elseif strcmp(area_name, "scs")
         % 南海
         Sproj.projection = 'Miller Cylindrical';
         Sproj.gshhs = 'l';
@@ -44,7 +44,7 @@ function Sproj = select_proj_s_ll(area_name,varargin)
         Sproj.lat_select = [-2 25];
         Sproj.title_area = 'South China Sea';
         Sproj.Fname_section = 'southchinasea';
-    elseif strcmp(area_name,"ecs")
+    elseif strcmp(area_name, "ecs")
         % 东海
         Sproj.projection = 'Miller';
         Sproj.gshhs = 'l';
@@ -52,7 +52,7 @@ function Sproj = select_proj_s_ll(area_name,varargin)
         Sproj.lat_select = [21 42];
         Sproj.title_area = 'East China Sea';
         Sproj.Fname_section = 'eastchinasea';
-    elseif strcmp(area_name,"global")
+    elseif strcmp(area_name, "global")
         % 全球
         Sproj.projection = 'miller';
         Sproj.gshhs = 'l';
@@ -61,4 +61,5 @@ function Sproj = select_proj_s_ll(area_name,varargin)
         Sproj.title_area = 'Global';
         Sproj.Fname_section = 'global';
     end
+
 end

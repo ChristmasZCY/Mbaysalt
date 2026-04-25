@@ -15,11 +15,12 @@ function TF = isNetcdfFile(fin, varargin)
     % Example:
     %       TF = isNetcdfFile('wrfout_d01_2023-09-08_00:00:00');
     % =================================================================================================================
-    
-    arguments(Input)
+
+    arguments (Input)
         fin {mustBeFile}
     end
-    arguments(Input, Repeating)
+
+    arguments (Input, Repeating)
         varargin
     end
 
@@ -29,4 +30,5 @@ function TF = isNetcdfFile(fin, varargin)
     catch
         TF = false;
     end
+
 end

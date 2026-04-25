@@ -1,4 +1,4 @@
-function  new_filename = standard_filename(pre, lon, lat, yyyymmdd, res)
+function new_filename = standard_filename(pre, lon, lat, yyyymmdd, res)
     %       This function is used to make standard filename
     % =================================================================================================================
     % Parameter:
@@ -20,7 +20,7 @@ function  new_filename = standard_filename(pre, lon, lat, yyyymmdd, res)
     if max(lon) < 0; Lon_2 = [num2str(abs(max(lon)), '%3.2f'), 'W']; else; Lon_2 = [num2str(max(lon), '%3.2f'), 'E']; end
     if min(lat) < 0; Lat_1 = [num2str(abs(min(lat)), '%2.2f'), 'S']; else; Lat_1 = [num2str(min(lat), '%2.2f'), 'N']; end
     if max(lat) < 0; Lat_2 = [num2str(abs(max(lat)), '%2.2f'), 'S']; else; Lat_2 = [num2str(max(lat), '%2.2f'), 'N']; end
-    new_filename = [pre,'_', Lon_1, '_', Lon_2, '_', Lat_1, '_', Lat_2, '_', yyyymmdd, '_', res ,'.nc'];
+    new_filename = [pre, '_', Lon_1, '_', Lon_2, '_', Lat_1, '_', Lat_2, '_', yyyymmdd, '_', res, '.nc'];
     clear  Lon_* Lat_*
 
 end

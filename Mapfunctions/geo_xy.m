@@ -1,4 +1,4 @@
-function [xlon_dst,ylat_dst] = geo_xy(proj_ori,proj_dst,xlon_ori,ylat_ori,options)
+function [xlon_dst, ylat_dst] = geo_xy(proj_ori, proj_dst, xlon_ori, ylat_ori, options)
     %       Convert the lat/lon to x/y coordinate or x/y coordinate to lat/lon
     % =================================================================================================================
     % Parameter:
@@ -28,7 +28,7 @@ function [xlon_dst,ylat_dst] = geo_xy(proj_ori,proj_dst,xlon_ori,ylat_ori,option
     %       [lon,lat] = geo_xy('4326','4326',118.5,31.5,'Method','web')
     %       [x,y] = geo_xy('4326','UTM',118.5,31.5,'Method','web')
     % =================================================================================================================
-    % Explains: 
+    % Explains:
     %       Geographic Coordinate Systems, GCS: (经纬度坐标, 地理坐标系, 大地坐标系)
     %           1. WGS84: 4326 --> (Ellipsoidal 2D CS. Axes: latitude, longitude. Orientations: north, east. UoM: degree)
     %           2. NAD83: 4269 --> (Ellipsoidal 2D CS. Axes: latitude, longitude. Orientations: north, east. UoM: degree)
@@ -52,95 +52,106 @@ function [xlon_dst,ylat_dst] = geo_xy(proj_ori,proj_dst,xlon_ori,ylat_ori,option
     %           3. NSIDC EASE-Grid North: 3408 --> (Cartesian 2D CS. Axes: easting, northing (X,Y). Orientations: east, north. UoM: m.)
     % =================================================================================================================
 
-    arguments(Input)
-        proj_ori 
+    arguments (Input)
+        proj_ori
         proj_dst
         xlon_ori
         ylat_ori
-        options.Method {mustBeMember(options.Method,{'Mapping','web'})} = 'Mapping'
+        options.Method {mustBeMember(options.Method, {'Mapping', 'web'})} = 'Mapping'
     end
 
     proj_ori = convertStringsToChars(proj_ori);
     proj_dst = convertStringsToChars(proj_dst);
 
-    if strcmp(proj_ori,proj_dst)
+    if strcmp(proj_ori, proj_dst)
         ylat_dst = ylat_ori;
         xlon_dst = xlon_ori;
         return
     end
 
     switch options.Method
-    case 'Mapping'
-        % if all(proj_ori == '4326') && all(proj_dst == '3857') % WGS84 to Web Mercator (经纬度坐标转平面坐标)
-        if strcmp(proj_ori,'4326') && strcmp(proj_dst,'3857') % WGS84 to Web Mercator (经纬度坐标转平面坐标)
-            proj = projcrs(str2double(proj_dst));
-            [xlon_dst,ylat_dst] = projfwd(proj,ylat_ori,xlon_ori);
-        % elseif all(proj_ori == '3857') && all(proj_dst == '4326') % Web Mercator to WGS84 (平面坐标转经纬度坐标)
-        elseif strcmp(proj_ori,'3857') && strcmp(proj_dst,'4326') % Web Mercator to WGS84 (平面坐标转经纬度坐标)
-            proj = projcrs(str2double(proj_ori));
-            [ylat_dst,xlon_dst] = projinv(proj,xlon_ori,ylat_ori);
-        % elseif all(proj_ori == '4326') && strcmp(proj_dst,'UTM') % WGS84 to UTM (经纬度坐标转 UTM 坐标)
-        elseif strcmp(proj_ori,'4326') && strcmp(proj_dst,'UTM') % Web Mercator to UTM (平面坐标转 UTM 坐标)
-            esriCode = latlonToUTMESRI(xlon_ori,ylat_ori);
-            if max(esriCode) - min(esriCode) ~= 0
-                warning(sprintf(['There are at least 2 UTM Region at matrix. \n' ...
-                    '      Maybe %d UTM region'], int16(max(esriCode) - min(esriCode)+1)))
-            end
-            esriCode = round(mean(esriCode(:)),0);
-            proj = projcrs(esriCode);
-            [xlon_dst,ylat_dst] = projfwd(proj,ylat_ori,xlon_ori);
-        else
-            % The projection is not supported!
-            % The supported projection is:
-            %   1. WGS84 to Web Mercator(4326 to 3857)
-            %   2. Web Mercator to WGS84(3857 to 4326)
-            %   3. Web Mercator to Web Mercator(3857 to 3857)
-            %   4. WGS84 to WGS84(4326 to 4326)
-            %   5. WGS84 to UTM(4326 to UTM)
-            error(sprintf(['The projection is not supported!\n' ...
-                ' The supported projection is:\n ' ...
-                '   1. WGS84 to Web Mercator(4326 to 3857)\n ' ...
-                '   2. Web Mercator to WGS84(3857 to 4326)\n ' ...
-                '   3. Web Mercator to Web Mercator(3857 to 3857)\n ' ...
-                '   4. WGS84 to WGS84(4326 to 4326)\n ' ...
-                '   5. WGS84 to UTM(4326 to UTM)']));
-        end
-    case 'web'
-        if length(xlon_ori) == 1 && length(ylat_ori) == 1
-            if strcmp(proj_dst,'UTM')
-                proj_dst = latlonToUTMESRI(xlon_ori,ylat_ori);
-            end
-            if isa(proj_ori,"char")
-                proj_ori = str2double(proj_ori);
-            end
-            if isa(proj_dst,"char")
-                proj_dst = str2double(proj_dst);
-            end
-            url = sprintf('https://epsg.io/srs/transform/%f,%f.json?key=default&s_srs=%d&t_srs=%d',xlon_ori,ylat_ori,proj_ori,proj_dst);
-            try
-                data = webread(url);
-            catch ME1
-                if (strcmp(ME1.identifier,'MATLAB:webservices:HTTP422StatusCodeError'))
-                    xlon_dst = NaN;
-                    ylat_dst = NaN;
-                    warning(sprintf('Wrong input!\n Something makes error in the input parameters!\n Please check the input parameters!'));  %#ok<*SPWRN>
-                    return
-                end
-            end
-            xlon_dst = data.results.x;
-            ylat_dst = data.results.y;
-        else
-            error(sprintf('The method:web is just for test the function is right or not!\n The input xlon_ori and ylat_ori must be a single value!'));
-        end
+        case 'Mapping'
+            % if all(proj_ori == '4326') && all(proj_dst == '3857') % WGS84 to Web Mercator (经纬度坐标转平面坐标)
+            if strcmp(proj_ori, '4326') && strcmp(proj_dst, '3857') % WGS84 to Web Mercator (经纬度坐标转平面坐标)
+                proj = projcrs(str2double(proj_dst));
+                [xlon_dst, ylat_dst] = projfwd(proj, ylat_ori, xlon_ori);
+                % elseif all(proj_ori == '3857') && all(proj_dst == '4326') % Web Mercator to WGS84 (平面坐标转经纬度坐标)
+            elseif strcmp(proj_ori, '3857') && strcmp(proj_dst, '4326') % Web Mercator to WGS84 (平面坐标转经纬度坐标)
+                proj = projcrs(str2double(proj_ori));
+                [ylat_dst, xlon_dst] = projinv(proj, xlon_ori, ylat_ori);
+                % elseif all(proj_ori == '4326') && strcmp(proj_dst,'UTM') % WGS84 to UTM (经纬度坐标转 UTM 坐标)
+            elseif strcmp(proj_ori, '4326') && strcmp(proj_dst, 'UTM') % Web Mercator to UTM (平面坐标转 UTM 坐标)
+                esriCode = latlonToUTMESRI(xlon_ori, ylat_ori);
 
-    otherwise
-        error(sprintf('The method is not supported!\n The supported method is:\n 1. Mapping Toolbox\n 2. epsg web'));
+                if max(esriCode) - min(esriCode) ~= 0
+                    warning(sprintf(['There are at least 2 UTM Region at matrix. \n' ...
+                                     '      Maybe %d UTM region'], int16(max(esriCode) - min(esriCode) + 1)))
+                end
+
+                esriCode = round(mean(esriCode(:)), 0);
+                proj = projcrs(esriCode);
+                [xlon_dst, ylat_dst] = projfwd(proj, ylat_ori, xlon_ori);
+            else
+                % The projection is not supported!
+                % The supported projection is:
+                %   1. WGS84 to Web Mercator(4326 to 3857)
+                %   2. Web Mercator to WGS84(3857 to 4326)
+                %   3. Web Mercator to Web Mercator(3857 to 3857)
+                %   4. WGS84 to WGS84(4326 to 4326)
+                %   5. WGS84 to UTM(4326 to UTM)
+                error(sprintf(['The projection is not supported!\n' ...
+                                   ' The supported projection is:\n ' ...
+                                   '   1. WGS84 to Web Mercator(4326 to 3857)\n ' ...
+                                   '   2. Web Mercator to WGS84(3857 to 4326)\n ' ...
+                                   '   3. Web Mercator to Web Mercator(3857 to 3857)\n ' ...
+                                   '   4. WGS84 to WGS84(4326 to 4326)\n ' ...
+                               '   5. WGS84 to UTM(4326 to UTM)']));
+            end
+
+        case 'web'
+
+            if length(xlon_ori) == 1 && length(ylat_ori) == 1
+
+                if strcmp(proj_dst, 'UTM')
+                    proj_dst = latlonToUTMESRI(xlon_ori, ylat_ori);
+                end
+
+                if isa(proj_ori, "char")
+                    proj_ori = str2double(proj_ori);
+                end
+
+                if isa(proj_dst, "char")
+                    proj_dst = str2double(proj_dst);
+                end
+
+                url = sprintf('https://epsg.io/srs/transform/%f,%f.json?key=default&s_srs=%d&t_srs=%d', xlon_ori, ylat_ori, proj_ori, proj_dst);
+
+                try
+                    data = webread(url);
+                catch ME1
+
+                    if (strcmp(ME1.identifier, 'MATLAB:webservices:HTTP422StatusCodeError'))
+                        xlon_dst = NaN;
+                        ylat_dst = NaN;
+                        warning(sprintf('Wrong input!\n Something makes error in the input parameters!\n Please check the input parameters!')); %#ok<*SPWRN>
+                        return
+                    end
+
+                end
+
+                xlon_dst = data.results.x;
+                ylat_dst = data.results.y;
+            else
+                error(sprintf('The method:web is just for test the function is right or not!\n The input xlon_ori and ylat_ori must be a single value!'));
+            end
+
+        otherwise
+            error(sprintf('The method is not supported!\n The supported method is:\n 1. Mapping Toolbox\n 2. epsg web'));
     end
 
 end
 
-
-function esriCode = latlonToUTMESRI(lon,lat)
+function esriCode = latlonToUTMESRI(lon, lat)
     % 根据给定的经纬度计算对应的 ESRI UTM 代码
     % 输入：
     %   lon - 经度
@@ -159,4 +170,5 @@ function esriCode = latlonToUTMESRI(lon,lat)
         % 北半球
         esriCode = 32600 + zone;
     end
+
 end

@@ -1,4 +1,4 @@
-function var = nr(fin,varName, varargin)
+function var = nr(fin, varName, varargin)
     %       Read netcdf file, the same as ncread
     % =================================================================================================================
     % Parameters:
@@ -17,19 +17,20 @@ function var = nr(fin,varName, varargin)
     %       var = nr(file,'x',[1,1],[Inf,Inf]);
     % =================================================================================================================
 
-    arguments(Input)
+    arguments (Input)
         fin % {mustBeFile}
         varName {mustBeTextScalar}
     end
 
-    arguments(Input,Repeating)
+    arguments (Input, Repeating)
         varargin
     end
 
-    arguments(Output)
+    arguments (Output)
         var
     end
+
     fin = strtrim(fin);
-    var = ncread(fin,varName, varargin{:});
+    var = ncread(fin, varName, varargin{:});
 
 end

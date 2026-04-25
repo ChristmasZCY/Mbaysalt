@@ -16,17 +16,19 @@ function makedirs(varargin)
     %       makedirs(path1)
     %       makedirs(path1,path2)
     % =================================================================================================================
-    
-    arguments(Input,Repeating)
+
+    arguments (Input, Repeating)
         varargin
     end
 
-    for num = 1: nargin
+    for num = 1:nargin
         % if ~exist(varargin{num},'dir') && ~isempty(varargin{num})
         dir1 = strip(convertStringsToChars(varargin{num}));
+
         if ~isfolder(dir1) && ~isempty(dir1)
             mkdir(dir1);
         end
+
     end
 
 end

@@ -1,4 +1,4 @@
-function varargout =  listStr_to_cell(str,index)
+function varargout = listStr_to_cell(str, index)
     %       Convert str of python list format to matlab cell
     % =================================================================================================================
     % Parameters:
@@ -6,7 +6,7 @@ function varargout =  listStr_to_cell(str,index)
     %       index: index of cell             || required: False|| type: int    || example: 1
     % =================================================================================================================
     % Returns:
-    %       varargout: 
+    %       varargout:
     %         nargin == 1:
     %           cell                  || required: False|| type: cell   || example: {'key1','key2','key3'}
     %         nargin == 2:
@@ -21,7 +21,7 @@ function varargout =  listStr_to_cell(str,index)
     % No need arguments
 
     str = convertStringsToChars(str);
-    str = str(2:end-1);
+    str = str(2:end - 1);
     cellstr = strsplit(str, ',');
     cellstr = strip(cellstr);
     cellstr = strip(cellstr, "'");

@@ -4,7 +4,7 @@ function [Xdst, Ydst, bdy] = zoom_ploygon(Xsrc, Ysrc, varargin)
     % Parameters:
     %       Xsrc:       source longitude                 || required: True || type: double    || format: 1D
     %       Ysrc:       source latitude                  || required: True || type: double    || format: 1D
-    %       varargin:       optional parameters      
+    %       varargin:       optional parameters
     %           d:      distance of buffer               || required: True || type: double    || format: number
     %           figOn:  figure on or off                 || required: False|| type: flag      || format: 'figOn'
     % =================================================================================================================
@@ -27,24 +27,24 @@ function [Xdst, Ydst, bdy] = zoom_ploygon(Xsrc, Ysrc, varargin)
     % =================================================================================================================
 
     varargin = read_varargin2(varargin, {'figOn'});
-    
-    poly_old = polyshape(Xsrc, Ysrc);  % 创建多边形
-    poly_new = polybuffer(poly_old,varargin{:});  % 创建缓冲区 ——> d>0为外扩; d<0为内缩
-    
-    bdy.old = poly_old.Vertices;  % 得到原始边界
-    bdy.new = poly_new.Vertices;  % 得到缓冲区边界
 
-    Xdst = bdy.new(:,1);
-    Ydst = bdy.new(:,2);
-    
+    poly_old = polyshape(Xsrc, Ysrc); % 创建多边形
+    poly_new = polybuffer(poly_old, varargin{:}); % 创建缓冲区 ——> d>0为外扩; d<0为内缩
+
+    bdy.old = poly_old.Vertices; % 得到原始边界
+    bdy.new = poly_new.Vertices; % 得到缓冲区边界
+
+    Xdst = bdy.new(:, 1);
+    Ydst = bdy.new(:, 2);
+
     if ~isempty(figOn)
         figure
-        plot(poly_old,'facecolor',[101 147 80]/256); % 原多边形区域
+        plot(poly_old, 'facecolor', [101 147 80] / 256); % 原多边形区域
         hold on
         axis equal
-        plot(poly_new,'facecolor',[124 191 160]/256,'linestyle','none'); % 扩展后多边形区域
-        plot(bdy.old(:,1),bdy.old(:,2),'k.');% 黑点为外扩后得到的缓冲区边界点
-        plot(bdy.new(:,1),bdy.new(:,2),'r.');% 红点为外扩后得到的缓冲区边界点
+        plot(poly_new, 'facecolor', [124 191 160] / 256, 'linestyle', 'none'); % 扩展后多边形区域
+        plot(bdy.old(:, 1), bdy.old(:, 2), 'k.'); % 黑点为外扩后得到的缓冲区边界点
+        plot(bdy.new(:, 1), bdy.new(:, 2), 'r.'); % 红点为外扩后得到的缓冲区边界点
     end
 
     return

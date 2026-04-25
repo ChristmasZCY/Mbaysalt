@@ -26,11 +26,12 @@ function [scale_factor, add_offset, data2] = calc_scale_offset(data, dtype, vara
     %   data = data2 * scale_factor + add_offset
     % =================================================================================================================
 
-    arguments(Input)
+    arguments (Input)
         data
         dtype char {mustBeMember(dtype, {'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32'})} = 'int16'
     end
-    arguments(Repeating)
+
+    arguments (Repeating)
         varargin
     end
 
@@ -38,17 +39,19 @@ function [scale_factor, add_offset, data2] = calc_scale_offset(data, dtype, vara
     if all(isnan(data(:)))
         scale_factor = 1;
         add_offset = 0;
+
         if nargout > 2
             data2 = cast(data, dtype);
         end
+
         return;
     end
 
-    valid_min = min(data(:),[],'omitnan');
-    valid_max = max(data(:),[],'omitnan');
+    valid_min = min(data(:), [], 'omitnan');
+    valid_max = max(data(:), [], 'omitnan');
 
-    packed_min = double(intmin(dtype))+1;
-    packed_max = double(intmax(dtype))-1;
+    packed_min = double(intmin(dtype)) + 1;
+    packed_max = double(intmax(dtype)) - 1;
 
     % Calculate the scale
     if isaequal(valid_min, valid_max)
@@ -59,6 +62,7 @@ function [scale_factor, add_offset, data2] = calc_scale_offset(data, dtype, vara
         scale_factor = (valid_max - valid_min) / (packed_max - packed_min);
         add_offset = valid_min - packed_min * scale_factor;
     end
+
     if nargout > 2
         data2 = (data - add_offset) / scale_factor;
         data2 = cast(data2, dtype);

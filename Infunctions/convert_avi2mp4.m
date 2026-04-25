@@ -19,15 +19,17 @@ function convert_avi2mp4(fin, fout, varargin)
     % =================================================================================================================
 
     varargin = read_varargin(varargin, {'FrameRate'}, {3});
-    
-    videoFReader = VideoReader(fin);  % Read Video
-    videoFWrite = VideoWriter(fout,'MPEG-4'); % Write Video
+
+    videoFReader = VideoReader(fin); % Read Video
+    videoFWrite = VideoWriter(fout, 'MPEG-4'); % Write Video
     videoFWrite.FrameRate = FrameRate;
     open(videoFWrite);
-    for count = 1:abs(videoFReader.Duration*videoFReader.FrameRate)
-        key_frame = read(videoFReader,count);
-        writeVideo(videoFWrite,key_frame);
+
+    for count = 1:abs(videoFReader.Duration * videoFReader.FrameRate)
+        key_frame = read(videoFReader, count);
+        writeVideo(videoFWrite, key_frame);
     end
+
     % close(videoFReader);
     close(videoFWrite);
 end

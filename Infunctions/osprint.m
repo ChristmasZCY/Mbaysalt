@@ -11,10 +11,10 @@ function osprint(varargin)
     %       osprint('hello world1', 'hello world2')
     % =================================================================================================================
 
-    arguments(Input,Repeating)
+    arguments (Input, Repeating)
         varargin{mustBeTextScalar}
     end
 
     for i = 1:nargin
-        system(['echo `date "+%Y-%m-%d %T"` "--->" "', convertStringsToChars(varargin{i}),'"']);
+        system(['echo `date "+%Y-%m-%d %T"` "--->" "', convertStringsToChars(varargin{i}), '"']);
     end

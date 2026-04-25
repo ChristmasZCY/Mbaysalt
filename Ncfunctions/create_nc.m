@@ -21,18 +21,18 @@ function [ncid, NC] = create_nc(fin, mode, varargin)
     %       [ncid, NC] = create_nc('test.nc', 'NETCDF4')
     % =================================================================================================================
 
-
     fin = getPath(fin);
-    
-    path = fileparts(fin);  % get the path of the file
-    makedirs(path);       % create the path if it does not exist
 
-    rmfiles(fin);       % remove the file if it exists
+    path = fileparts(fin); % get the path of the file
+    makedirs(path); % create the path if it does not exist
+
+    rmfiles(fin); % remove the file if it exists
+
     if nargin == 1
         mode = 'NETCDF4';
     end
 
-    ncid = netcdf.create(fin, mode, varargin{:});  % create the file
+    ncid = netcdf.create(fin, mode, varargin{:}); % create the file
 
     NC.ncid = ncid;
     NC.fin = fin;

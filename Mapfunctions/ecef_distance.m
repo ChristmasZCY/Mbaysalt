@@ -1,4 +1,4 @@
-function [deltaX,deltaY,deltaZ,d] = ecef_distance(lat1,lon1,h1,lat2,lon2,h2,options)
+function [deltaX, deltaY, deltaZ, d] = ecef_distance(lat1, lon1, h1, lat2, lon2, h2, options)
     %       Calculate cartesian ECEF offset between geodetic coordinates
     % =================================================================================================================
     % Parameter:
@@ -28,20 +28,20 @@ function [deltaX,deltaY,deltaZ,d] = ecef_distance(lat1,lon1,h1,lat2,lon2,h2,opti
     % =================================================================================================================
 
     arguments
-        lat1 (:,1) {mustBeNumeric,mustBeReal,mustBeFinite}
-        lon1 (:,1) {mustBeNumeric,mustBeReal,mustBeFinite}
-        h1 (:,1) {mustBeNumeric,mustBeReal,mustBeFinite}
-        lat2 (:,1) {mustBeNumeric,mustBeReal,mustBeFinite}
-        lon2 (:,1) {mustBeNumeric,mustBeReal,mustBeFinite}
-        h2 (:,1) {mustBeNumeric,mustBeReal,mustBeFinite}
-        options.lengthUnit (1,:) char {mustBeMember(options.lengthUnit,{'meter','kilometer'})} = 'meter'
+        lat1 (:, 1) {mustBeNumeric, mustBeReal, mustBeFinite}
+        lon1 (:, 1) {mustBeNumeric, mustBeReal, mustBeFinite}
+        h1 (:, 1) {mustBeNumeric, mustBeReal, mustBeFinite}
+        lat2 (:, 1) {mustBeNumeric, mustBeReal, mustBeFinite}
+        lon2 (:, 1) {mustBeNumeric, mustBeReal, mustBeFinite}
+        h2 (:, 1) {mustBeNumeric, mustBeReal, mustBeFinite}
+        options.lengthUnit (1, :) char {mustBeMember(options.lengthUnit, {'meter', 'kilometer'})} = 'meter'
     end
 
     spheroid = wgs84Ellipsoid(options.lengthUnit);
-    [deltaX,deltaY,deltaZ] = ecefOffset(spheroid,lat1,lon1,h1,lat2,lon2,h2);
+    [deltaX, deltaY, deltaZ] = ecefOffset(spheroid, lat1, lon1, h1, lat2, lon2, h2);
 
     if nargout == 4
-        d = norm([deltaX,deltaY,deltaZ]);
+        d = norm([deltaX, deltaY, deltaZ]);
     end
 
 end

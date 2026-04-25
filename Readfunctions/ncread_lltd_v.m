@@ -1,4 +1,4 @@
-function [lon, lat, dep, time, varargout]  = ncread_lltd_v(ncfile,lon_vname,lat_vname,dep_vname,time_vname,depth_range,time_range,varargin)
+function [lon, lat, dep, time, varargout] = ncread_lltd_v(ncfile, lon_vname, lat_vname, dep_vname, time_vname, depth_range, time_range, varargin)
     %       Read lon,lat,time,depth and variable from netcdf file
     % =================================================================================================================
     % Parameter:
@@ -9,7 +9,7 @@ function [lon, lat, dep, time, varargout]  = ncread_lltd_v(ncfile,lon_vname,lat_
     %       depth_range: depth range       || required: True || type: double || format: [1 10]
     %       time_vname: time variable name || required: True || type: char   || format: 'time'
     %       depth_range: time range        || required: True || type: double || format: [1 10]
-    %       varargin{n}: 
+    %       varargin{n}:
     %           variable name              || required: True || type: char   || format: 'temp'
     %       lon: longitude                 || required: True || type: double || format: martix
     %       lat: latitude                  || required: True || type: double || format: martix
@@ -23,13 +23,14 @@ function [lon, lat, dep, time, varargout]  = ncread_lltd_v(ncfile,lon_vname,lat_
     %       [Lon,lat,dep,time,temp,salt] = ncread_lltd_v('example.nc','lon','lat','depth',[1 10],'time',[1 10],'temp','salt')
     % =================================================================================================================
 
-    lon = ncread(ncfile,lon_vname);
-    lat = ncread(ncfile,lat_vname);
-    dep = ncread(ncfile,dep_vname);
-    Time = ncdateread(ncfile,time_vname); 
+    lon = ncread(ncfile, lon_vname);
+    lat = ncread(ncfile, lat_vname);
+    dep = ncread(ncfile, dep_vname);
+    Time = ncdateread(ncfile, time_vname);
     time = Time(time_range(1):time_range(2));
 
     for num = 1:length(varargin)
-        varargout{num} = squeeze(ncread(ncfile,varargin{num},[1 1 depth_range(1) time_range(1)],[Inf Inf depth_range(2) time_range(2)]));
+        varargout{num} = squeeze(ncread(ncfile, varargin{num}, [1 1 depth_range(1) time_range(1)], [Inf Inf depth_range(2) time_range(2)]));
     end
+
 end

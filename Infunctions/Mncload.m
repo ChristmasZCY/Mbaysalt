@@ -5,7 +5,7 @@ function [V] = Mncload(ncFile, varName, varargin)
     % Parameter:
     %       ncFile: file name                                  || required: True  || type: string || format: "file"
     %       varName: variable name                             || required: False || type: string || format: "var1"
-    %       varargin: 
+    %       varargin:
     %           None: No need           || required: False || type: int    || format: [1,1]
     % =================================================================================================================
     % Example:
@@ -17,18 +17,24 @@ function [V] = Mncload(ncFile, varName, varargin)
     % No need arguments
 
     ncFile = convertStringsToChars(ncFile);
+
     if nargin == 1
         S = ncload(ncFile);
+
         for s = fieldnames(S)'
+
             if nargout == 0
                 assignin('base', s{1}, S.(s{1}));
             else
-                eval(sprintf('V.%s=S.(''%s'');',s{1},s{1}));
+                eval(sprintf('V.%s=S.(''%s'');', s{1}, s{1}));
             end
+
         end
+
     else
         varName = convertStringsToChars(varName);
-        if nargout == 0 
+
+        if nargout == 0
             assignin('base', varName, ncload(ncFile, varName));
         else
             V = ncload(ncFile, varName);
@@ -36,5 +42,4 @@ function [V] = Mncload(ncFile, varName, varargin)
 
     end
 
-    
 end

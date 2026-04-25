@@ -29,7 +29,7 @@ function c = Del_Grosso_cn(T, S, z)
     end
 
     if numel(z) == len(z) && ndims(T) == 4 % lon*lat*depth*time
-        if size(z, 2) ~= 1; z = z'; end  % 1*31 --> 31*1
+        if size(z, 2) ~= 1; z = z'; end % 1*31 --> 31*1
         z = permute(z, [3, 4, 1, 2]); % 31*1 --> 1*1*31*1
         z = repmat(z, [size(T, [1, 2]), 1, size(T, 4)]); % --> 140*100*31*120
     end

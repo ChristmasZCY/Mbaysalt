@@ -37,37 +37,41 @@ function ln(fin, fout, varargin)
     fout = convertStringsToChars(fout);
 
     switch checkOS
-    case {'WIN'}
-        % $shell = New-Object -ComObject WScript.Shell
-        % $desktop = [System.Environment]::GetFolderPath('Desktop')
-        % $shortcut = $shell.CreateShortcut("$desktop\clickme.lnk")
-        % $shortcut.TargetPath = "calc.exe"
-        % $shortcut.IconLocation = "shell32.dll,23"
-        % $shortcut.Save()
-        if ~endsWith(fout, '.lnk') || ~endsWith(fout, '.url')
-            fout = [fout, '.lnk'];
-        end
-        cmd = sprintf(['powershell -Command "', ...
-            '$shell = New-Object -ComObject WScript.Shell; ', ...
-            '$shortcut = $shell.CreateShortcut(''%s''); ', ...
-            '$shortcut.TargetPath = ''%s'';  ', ...
-            '$shortcut.Save()"'],fout,fin);
-        disp(cmd);
-    case {'MAC', 'LNX'}
-        cmd = ['ln -s ', fin, ' ', fout];
+        case {'WIN'}
+            % $shell = New-Object -ComObject WScript.Shell
+            % $desktop = [System.Environment]::GetFolderPath('Desktop')
+            % $shortcut = $shell.CreateShortcut("$desktop\clickme.lnk")
+            % $shortcut.TargetPath = "calc.exe"
+            % $shortcut.IconLocation = "shell32.dll,23"
+            % $shortcut.Save()
+            if ~endsWith(fout, '.lnk') || ~endsWith(fout, '.url')
+                fout = [fout, '.lnk'];
+            end
+
+            cmd = sprintf(['powershell -Command "', ...
+                               '$shell = New-Object -ComObject WScript.Shell; ', ...
+                               '$shortcut = $shell.CreateShortcut(''%s''); ', ...
+                               '$shortcut.TargetPath = ''%s'';  ', ...
+                           '$shortcut.Save()"'], fout, fin);
+            disp(cmd);
+        case {'MAC', 'LNX'}
+            cmd = ['ln -s ', fin, ' ', fout];
     end
 
     switch upper(mode)
-    case 'O'
-    case 'P'
-        if exist(fout,"file") || exist(fout, "dir")
-            error('%s is existing!', fout)
-        end
+        case 'O'
+        case 'P'
+
+            if exist(fout, "file") || exist(fout, "dir")
+                error('%s is existing!', fout)
+            end
+
     end
 
     if ~isMATLABReleaseOlderThan("R2024b")
-        createSymbolicLink(fout, fin,"ReplacementRule","overwrite");
+        createSymbolicLink(fout, fin, "ReplacementRule", "overwrite");
     else
         system(cmd);
     end
+
 end

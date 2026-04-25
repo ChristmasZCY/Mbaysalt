@@ -16,11 +16,11 @@ function lgdHdl = genNaNlegend()
     % References:
     %       https://mp.weixin.qq.com/s/DQtW64Na7stpZB1tLO2d7A
     % =================================================================================================================
-    
-    nanHdl = fill([0,1,1,0]-1000,[0,0,1,1]-1000,[240,240,240]./255,...
-                  'EdgeColor','none','EdgeColor',[160,160,160]./255,'LineWidth',1.2,...
-                  'DisplayName',' NaN');
+
+    nanHdl = fill([0, 1, 1, 0] - 1000, [0, 0, 1, 1] - 1000, [240, 240, 240] ./ 255, ...
+        'EdgeColor', 'none', 'EdgeColor', [160, 160, 160] ./ 255, 'LineWidth', 1.2, ...
+        'DisplayName', ' NaN');
     lgdHdl = legend(nanHdl);
     lgdHdl.Box = 'off';
-    lgdHdl.ItemTokenSize = [16,16];
+    lgdHdl.ItemTokenSize = [16, 16];
 end

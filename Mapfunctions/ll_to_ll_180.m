@@ -1,4 +1,4 @@
-function [Lon,varargout] = ll_to_ll_180(lon,varargin)
+function [Lon, varargout] = ll_to_ll_180(lon, varargin)
     %       change the lon and lat 0-360 to -180-180
     % =================================================================================================================
     % Parameter:
@@ -15,17 +15,17 @@ function [Lon,varargout] = ll_to_ll_180(lon,varargin)
         error('lon must be 1D or 2D')
     end
 
-    if size(lon,2) ~= 1 && size(lon,1) == 1
+    if size(lon, 2) ~= 1 && size(lon, 1) == 1
         lon = lon';
     end
 
-    if ~ (all(diff(lon) > 0) || all(diff(lon) < 0))
+    if ~(all(diff(lon) > 0) || all(diff(lon) < 0))
         error(' lon must be humdrum !!!')
     end
 
-    lon(lon>180) = lon(lon>180)-360;
-    F = find(lon<0,1,'first');
-    Lon = cat(1,lon(F:end,:),lon(1:F-1,:));
+    lon(lon > 180) = lon(lon > 180) - 360;
+    F = find(lon < 0, 1, 'first');
+    Lon = cat(1, lon(F:end, :), lon(1:F - 1, :));
 
     if nargin == 1
         return
@@ -37,7 +37,7 @@ function [Lon,varargout] = ll_to_ll_180(lon,varargin)
         ele = varargin{i};
         % 将ele向量化
         ele_size = size(ele);
-        ele = reshape(ele,size(ele,1),size(ele,2),[]);
+        ele = reshape(ele, size(ele, 1), size(ele, 2), []);
 
         % if ndims(ele) == 2
         %     varargout{i} = cat(1,ele(F:end,:),ele(1:F-1,:));
@@ -49,9 +49,9 @@ function [Lon,varargout] = ll_to_ll_180(lon,varargin)
         %     varargout{i} = cat(1,ele(F:end,:,:,:,:),ele(1:F-1,:,:,:,:));
         % end
 
-        ele = cat(1,ele(F:end,:),ele(1:F-1,:));
+        ele = cat(1, ele(F:end, :), ele(1:F - 1, :));
         % 将ele还原
-        varargout{i} = reshape(ele,ele_size);
+        varargout{i} = reshape(ele, ele_size);
 
     end
 

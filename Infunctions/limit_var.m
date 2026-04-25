@@ -21,7 +21,7 @@ function varOut = limit_var(varIn, range, varargin)
     % Check input
     arguments (Input)
         varIn
-        range (1,2) double {mustBeNumeric, mustBeReal}
+        range (1, 2) double {mustBeNumeric, mustBeReal}
     end
 
     arguments (Repeating)

@@ -23,23 +23,24 @@ function write_vtk(fout, x, y, nv, z, cell_type, cell_data, options)
     %       write_vtk('./output_mesh.vtk',x,y,nv)
     %       write_vtk('./output_mesh.vtk',x,y,nv,"Coordinate",'geo')
     % =================================================================================================================
-    % Explains: 
+    % Explains:
     %       https://www.zhihu.com/tardis/zm/art/273522056
     % =================================================================================================================
 
-    arguments(Input)
+    arguments (Input)
         fout {mustBeTextScalar}
-        x (:,1) {mustBeNumeric}
-        y (:,1) {mustBeNumeric}
-        nv (:,3) {mustBeNumeric}
-        z (:,1)  = zeros(length(x),1);
-        cell_type = ones([length(nv),1]) * 5
-        cell_data = ones([length(nv),1])
+        x (:, 1) {mustBeNumeric}
+        y (:, 1) {mustBeNumeric}
+        nv (:, 3) {mustBeNumeric}
+        z (:, 1) = zeros(length(x), 1);
+        cell_type = ones([length(nv), 1]) * 5
+        cell_data = ones([length(nv), 1])
         options.Coordinate = 'geo'
     end
+
     Coordinate = options.Coordinate;
 
-    if min(nv(:)) >1 || max(nv(:)) ~= length(x)
+    if min(nv(:)) > 1 || max(nv(:)) ~= length(x)
         error('Wrong nv!')
     elseif min(nv(:)) == 0
         nv = nv + 1;
@@ -48,65 +49,81 @@ function write_vtk(fout, x, y, nv, z, cell_type, cell_data, options)
     if sum(isnan(x)) > 0
         error("NaN in 'x' !")
     end
+
     if sum(isnan(y)) > 0
         error("NaN in 'y' !")
     end
+
     if sum(isnan(z)) > 0
         error("NaN in 'z' !")
     end
-       
-    fid=fopen(fout,'w');
-    fprintf(fid,'%s\n','# vtk DataFile Version 2.0');
-    fprintf(fid,'%s\n','Triangle mesh, created by write_vtk.m');
-    fprintf(fid,'%s\n','ASCII');
-    fprintf(fid,'%s\n','DATASET UNSTRUCTURED_GRID');
-    fprintf(fid,'%s%10d%10s\n','POINTS',length(x),'double');
-    
+
+    fid = fopen(fout, 'w');
+    fprintf(fid, '%s\n', '# vtk DataFile Version 2.0');
+    fprintf(fid, '%s\n', 'Triangle mesh, created by write_vtk.m');
+    fprintf(fid, '%s\n', 'ASCII');
+    fprintf(fid, '%s\n', 'DATASET UNSTRUCTURED_GRID');
+    fprintf(fid, '%s%10d%10s\n', 'POINTS', length(x), 'double');
+
     % points
     switch lower(Coordinate)
-    case 'geo'
-        for j=1:length(x)
-            if isequal(z,zeros(length(x),1))
-                if isequal(z,zeros(length(x),1))
-                    fprintf(fid,'%14.9f %13.9f %1d\n',x(j),y(j),z(j));
+        case 'geo'
+
+            for j = 1:length(x)
+
+                if isequal(z, zeros(length(x), 1))
+
+                    if isequal(z, zeros(length(x), 1))
+                        fprintf(fid, '%14.9f %13.9f %1d\n', x(j), y(j), z(j));
+                    else
+                        fprintf(fid, '%14.9f %13.9f %13.9f\n', x(j), y(j), z(j));
+                    end
+
                 else
-                    fprintf(fid,'%14.9f %13.9f %13.9f\n',x(j),y(j),z(j));
                 end
-            else
+
             end
-        end
-    case 'xy'
-        for j=1:length(x)
-            if isequal(z,zeros(length(x),1))
-                fprintf(fid,'%16.9f %16.9f %1d\n',x(j),y(j),z(j));
-            else
-                fprintf(fid,'%16.9f %16.9f %16.9f\n',x(j),y(j),z(j));
+
+        case 'xy'
+
+            for j = 1:length(x)
+
+                if isequal(z, zeros(length(x), 1))
+                    fprintf(fid, '%16.9f %16.9f %1d\n', x(j), y(j), z(j));
+                else
+                    fprintf(fid, '%16.9f %16.9f %16.9f\n', x(j), y(j), z(j));
+                end
+
             end
-        end
+
     end
-    fprintf(fid,'\n');
-    
+
+    fprintf(fid, '\n');
+
     % cells
-    fprintf(fid,'%s%8d%9d\n','CELLS',length(nv),(size(nv,2)+1)*length(nv));
-    for j=1:length(nv)
-        fprintf(fid,'%1d %8d %8d %8d \n',size(nv,2),nv(j,1),nv(j,2),nv(j,3));
+    fprintf(fid, '%s%8d%9d\n', 'CELLS', length(nv), (size(nv, 2) + 1) * length(nv));
+
+    for j = 1:length(nv)
+        fprintf(fid, '%1d %8d %8d %8d \n', size(nv, 2), nv(j, 1), nv(j, 2), nv(j, 3));
     end
-    
+
     % cell types
-    fprintf(fid,'\n');
-    fprintf(fid,'%s %8d\n','CELL_TYPES',length(cell_type));
-    for j=1:length(nv)
-        fprintf(fid,'%1d\n',cell_type(j));
+    fprintf(fid, '\n');
+    fprintf(fid, '%s %8d\n', 'CELL_TYPES', length(cell_type));
+
+    for j = 1:length(nv)
+        fprintf(fid, '%1d\n', cell_type(j));
     end
-    
+
     % cell data
-    fprintf(fid,'\n');
-    fprintf(fid,'%s %8d\n','CELL_DATA',length(cell_data));
-    fprintf(fid,'%s\n','SCALARS CellEntityIds int 1');
-    fprintf(fid,'%s\n','LOOKUP_TABLE default');
-    for j=1:length(nv)
-        fprintf(fid,'%1d\n',cell_data(j));
+    fprintf(fid, '\n');
+    fprintf(fid, '%s %8d\n', 'CELL_DATA', length(cell_data));
+    fprintf(fid, '%s\n', 'SCALARS CellEntityIds int 1');
+    fprintf(fid, '%s\n', 'LOOKUP_TABLE default');
+
+    for j = 1:length(nv)
+        fprintf(fid, '%1d\n', cell_data(j));
     end
+
     fclose(fid);
 end
-

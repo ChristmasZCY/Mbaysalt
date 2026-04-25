@@ -14,25 +14,27 @@ function I_D = erosion_coast_cal_id(lon, lat, value, K, judge_num)
     % =================================================================================================================
 
     if numel(lon) == length(lon)
-        [lat,lon] = meshgrid(lat,lon);
-        lon=reshape(lon,[],1);
-        lat=reshape(lat,[],1);
+        [lat, lon] = meshgrid(lat, lon);
+        lon = reshape(lon, [], 1);
+        lat = reshape(lat, [], 1);
     end
+
     if ndims(value) > 2
-        value = value(:,:,1,1,1,1);
+        value = value(:, :, 1, 1, 1, 1);
     end
-    % Find the nearest K points in the two-dimensional grid data to the grid point 
-    [Idx,D] = knnsearch([lon,lat],[lon,lat],"K",K+1);
+
+    % Find the nearest K points in the two-dimensional grid data to the grid point
+    [Idx, D] = knnsearch([lon, lat], [lon, lat], "K", K + 1);
     judge_nan = ~isnan(value(Idx));
-    nan_number = sum(judge_nan,2);
-    
+    nan_number = sum(judge_nan, 2);
+
     flag = find(nan_number > judge_num);
-    judge_nan = judge_nan(flag,:);
-    id = Idx(flag,:);
-    d = D(flag,:);
-    flag_0 = find(judge_nan(:,1) == 1);
-    id(flag_0,:) = [];
-    d(flag_0,:) = [];
+    judge_nan = judge_nan(flag, :);
+    id = Idx(flag, :);
+    d = D(flag, :);
+    flag_0 = find(judge_nan(:, 1) == 1);
+    id(flag_0, :) = [];
+    d(flag_0, :) = [];
     I_D.id = id;
     I_D.distance = d;
     I_D.judgeNum = [K, judge_num];

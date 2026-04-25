@@ -21,9 +21,9 @@ function osprint2(level, message, options)
     %       osprint2('INFO', 'hello world', 'output', 'log.txt', 'ddt_log', false)
     %       osprint2('INFO', 'hello world', 'output', 'log.txt', 'new_line', false, 'ddt_log', false)
     % =================================================================================================================
-    
-    arguments(Input)
-        level {mustBeMember(level,["DEBUG","INFO","WARNING","ERROR","CRACTICAL"])}
+
+    arguments (Input)
+        level {mustBeMember(level, ["DEBUG", "INFO", "WARNING", "ERROR", "CRACTICAL"])}
         message {mustBeTextScalar}
         options.output {mustBeTextScalar} = 'screen'
         options.newline {mustBeNonnegative} = true
@@ -37,16 +37,16 @@ function osprint2(level, message, options)
     newline = options.newline;
     ddt_log = options.ddt_log;
 
-    ddt = char(datetime('now','Format','yyyy-MM-dd HH:mm:ss'));
+    ddt = char(datetime('now', 'Format', 'yyyy-MM-dd HH:mm:ss'));
 
-    ddt_disp = [ddt,' ---> '];
+    ddt_disp = [ddt, ' ---> '];
     log_disp = sprintf('[%s] ', level);
-    mess_disp = [message,' '];
+    mess_disp = [message, ' '];
 
     switch level
-        case {'WARNING','WARN'}
+        case {'WARNING', 'WARN'}
             color_l = '*[255, 165, 0]';
-            color_m = [1,0.5,0];
+            color_m = [1, 0.5, 0];
         case 'INFO'
             color_l = '*blue';
             color_m = 'blue';
@@ -62,29 +62,37 @@ function osprint2(level, message, options)
             error('UNKOWN log mode')
     end
 
-    if strcmp(output,'screen')
+    if strcmp(output, 'screen')
+
         if ddt_log
-            cprintf('text',ddt_disp);
-            cprintf(color_l,log_disp);
+            cprintf('text', ddt_disp);
+            cprintf(color_l, log_disp);
         end
+
         cprintf(color_m, mess_disp);
+
         if newline
             cprintf('\n');
         end
+
     else
-        fid = fopen(output,'a+');
+        fid = fopen(output, 'a+');
         % 判断是否是从头一行的开头开始写入
         if newline
+
             if fid > 0
                 cont = readlines(output);
+
                 if ~isempty(char(cont(end)))
-                    fprintf(fid,'\n');
+                    fprintf(fid, '\n');
                 end
+
             end
+
         end
 
         if ddt_log
-            fprintf(fid,[ddt_disp, log_disp, mess_disp]);
+            fprintf(fid, [ddt_disp, log_disp, mess_disp]);
         else
             fprintf(fid, mess_disp);
         end
@@ -92,5 +100,5 @@ function osprint2(level, message, options)
         % fprintf(fid,'\n');
         fclose(fid);
     end
-        
+
 end

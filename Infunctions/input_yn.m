@@ -11,15 +11,16 @@ function yn = input_yn(prompt)
     %       yn = input_yn('Are you sure you want to do this?')
     % =================================================================================================================
 
-    arguments(Input)
+    arguments (Input)
         prompt {mustBeTextScalar}
     end
 
-    arguments(Output)
+    arguments (Output)
         yn {mustBeNonnegative}
     end
 
     yn = input(prompt, 's');
+
     switch lower(yn)
         case {'y', 'yes', 'true', '1', 't', 'on', 'enable', 'enabled', 'active', 'activated'}
             yn = true;
@@ -28,4 +29,5 @@ function yn = input_yn(prompt)
         otherwise
             error('Invalid input');
     end
+
 end

@@ -28,15 +28,15 @@ function [x, y, nv, h, ob, lb, tail, id] = read_sms_grd(fin, varargin)
     %       [x, y, nv, h, ob, lb, tail, id] = read_sms_grd('./input_mesh.grd', 'INFO', 'method', 'rewind');
     %       read_sms_grd('./input_mesh.grd', 'INFO');
     % =================================================================================================================
-    
-    arguments(Input)
-        fin (1,:) % {mustBeFile}
+
+    arguments (Input)
+        fin (1, :) % {mustBeFile}
     end
-    
-    arguments(Input, Repeating)
+
+    arguments (Input, Repeating)
         varargin
     end
-    
+
     varargin = read_varargin2(varargin, {'INFO'});
     varargin = read_varargin(varargin, {'method'}, {'rewind'});
 
@@ -51,19 +51,19 @@ function [x, y, nv, h, ob, lb, tail, id] = read_sms_grd(fin, varargin)
     clear num_cell_node
 
     switch method
-        case 'rewind'  % rewind
+        case 'rewind' % rewind
             % Read the data to get the x, y, h
             frewind(fid);
-            ixyh = textscan(fid, '%d %f %f %f',length_node, 'headerlines', 2);
+            ixyh = textscan(fid, '%d %f %f %f', length_node, 'headerlines', 2);
             % Read the data to get the nv
             frewind(fid);
-            nvc = textscan(fid, '%d %d %d %d %d',length_cell, 'headerlines', 2+length_node);
-        case 'ctu'  % continue
-            ixyh = textscan(fid, '%d %f %f %f',length_node);
-            nvc = textscan(fid, '%d %d %d %d %d',length_cell);
+            nvc = textscan(fid, '%d %d %d %d %d', length_cell, 'headerlines', 2 + length_node);
+        case 'ctu' % continue
+            ixyh = textscan(fid, '%d %f %f %f', length_node);
+            nvc = textscan(fid, '%d %d %d %d %d', length_cell);
         otherwise
             error("  Method not supported! \n " + ...
-                  " Method must 'rewind' or 'ctu'%s", '.');
+                " Method must 'rewind' or 'ctu'%s", '.');
     end
 
     id = ixyh{1};
@@ -74,71 +74,82 @@ function [x, y, nv, h, ob, lb, tail, id] = read_sms_grd(fin, varargin)
 
     nv = [nvc{3} nvc{4} nvc{5}];
 
-    iline = 2+length_node+length_cell;
+    iline = 2 + length_node + length_cell;
 
     % open boundaries
     frewind(fid);
-    N_ob = textscan(fid, '%d %s %s %s %s %s',1, 'headerlines', iline);
+    N_ob = textscan(fid, '%d %s %s %s %s %s', 1, 'headerlines', iline);
+
     if N_ob{1} == 0
         ob = {};
     else
-        ob = cell(N_ob{1},1);
+        ob = cell(N_ob{1}, 1);
     end
-    ob_all = textscan(fid, '%d %s %s %s %s %s %s %s',1);
-    iline = iline+2;
-    for i = 1 : length(ob)
-        ob1 = textscan(fid, '%d %s %s %s %s %s %s %s %d',1);
+
+    ob_all = textscan(fid, '%d %s %s %s %s %s %s %s', 1);
+    iline = iline + 2;
+
+    for i = 1:length(ob)
+        ob1 = textscan(fid, '%d %s %s %s %s %s %s %s %d', 1);
         ob1_count = ob1{1};
-        ob1_cell = textscan(fid,'%d',ob1_count);
+        ob1_cell = textscan(fid, '%d', ob1_count);
         ob{i} = ob1_cell{1};
         iline = iline + 1 + ob1_count;
     end
+
     clear i N_ob ob_all ob1 ob1_count ob1_cell
 
     % land boundary
-    N_lb = textscan(fid, '%d %s %s %s %s %s',1);
+    N_lb = textscan(fid, '%d %s %s %s %s %s', 1);
+
     if N_lb{1} == 0
         lb = {};
     else
-        lb = cell(N_lb{1},1);
+        lb = cell(N_lb{1}, 1);
     end
-    lb_all = textscan(fid, '%d %s %s %s %s %s %s %s',1);
-    iline = iline+2;
-    for i = 1 : length(lb)
-        lb1 = textscan(fid, '%d %d %s %s %s %s %s %s %s %d',1);
+
+    lb_all = textscan(fid, '%d %s %s %s %s %s %s %s', 1);
+    iline = iline + 2;
+
+    for i = 1:length(lb)
+        lb1 = textscan(fid, '%d %d %s %s %s %s %s %s %s %d', 1);
         lb1_count = lb1{1};
-        lb1_cell = textscan(fid,'%d',lb1_count);
+        lb1_cell = textscan(fid, '%d', lb1_count);
         lb{i} = lb1_cell{1};
         iline = iline + 1 + lb1_count;
     end
+
     clear i N_lb lb_all lb1 lb1_count lb1_cell
 
     % tail
     tail = {};
     frewind(fid);
+
     for i = 1:iline
         fgetl(fid);
     end
+
     while ~feof(fid)
-        tail{end+1} = fgetl(fid);  %#ok<AGROW>
+        tail{end + 1} = fgetl(fid); %#ok<AGROW>
     end
+
     tail = tail';
 
     clear nvc length_node length_cell
     fclose(fid);
 
     if nargout == 0
-        assignin('caller','x',x);
-        assignin('caller','y',y);
-        assignin('caller','nv',nv);
+        assignin('caller', 'x', x);
+        assignin('caller', 'y', y);
+        assignin('caller', 'nv', nv);
     end
-    
+
     if ~isempty(INFO)
         disp(' ')
         disp('------------------------------------------------')
         disp(['SMS_grd file: ' fin])
         disp(['Node #: ' num2str(length(x))])
-        disp(['Cell #: ' num2str(size(nv,1))])
+        disp(['Cell #: ' num2str(size(nv, 1))])
         disp(['x range: ' num2str(min(x)) ' ~ ' num2str(max(x))])
         disp(['y range: ' num2str(min(y)) ' ~ ' num2str(max(y))])
         disp(['h range: ' num2str(min(h)) ' ~ ' num2str(max(h))])
@@ -147,4 +158,3 @@ function [x, y, nv, h, ob, lb, tail, id] = read_sms_grd(fin, varargin)
     end
 
 end
-
