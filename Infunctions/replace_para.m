@@ -14,44 +14,54 @@ function Sout = replace_para(Sin, replaced_format, new_str)
     %       Sout = replace_para(struct, 'yyyymmdd', '20190101')
     % =================================================================================================================
 
-    arguments(Input)
+    arguments (Input)
         Sin
         replaced_format {mustBeTextScalar}
         new_str {mustBeTextScalar}
     end
 
-    arguments(Output)
+    arguments (Output)
         Sout
     end
 
     replaced_str = ['${', replaced_format, '}$'];
-    
+
     if isa(Sin, 'struct')
         Sout = Sin;
         key = fieldnames(Sin);
-        for i = 1 : length(key)
+
+        for i = 1:length(key)
             tmp_1 = char(Sin.(key{i}));
-            if isa(tmp_1,'char')
+
+            if isa(tmp_1, 'char')
                 var = regexp(tmp_1, '\${(.*?)}\$', 'match');
-                for j = 1 : length(var)
+
+                for j = 1:length(var)
+
                     if strcmp(replaced_str, var{j})
                         tmp_2 = strrep(tmp_1, replaced_str, new_str);
                         Sout.(key{i}) = tmp_2;
                     end
+
                 end
-              
+
             end
+
         end
+
     elseif isa(Sin, 'char') || isa(Sin, 'string')
         Sin = convertStringsToChars(Sin);
         Sout = '';
         var = regexp(Sin, '\${(.*?)}\$', 'match');
-        for j = 1 : length(var)
+
+        for j = 1:length(var)
+
             if strcmp(replaced_str, var{1})
                 Sout = strrep(Sin, replaced_str, new_str);
             end
+
         end
+
     end
 
 end
-

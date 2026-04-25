@@ -24,36 +24,36 @@ function read_gebco_to_sms(fin, fout, lon_range, lat_range, res)
     Lon = lon_range;
     Lat = lat_range;
 
-    lon = ncread(file,'lon');
-    lat = ncread(file,'lat');
+    lon = ncread(file, 'lon');
+    lat = ncread(file, 'lat');
 
-    i_inx = find( lon <= Lon(end) & lon>= Lon(1) );
-    j_inx = find( lat <= Lat(end) & lat>= Lat(1) );
+    i_inx = find(lon <= Lon(end) & lon >= Lon(1));
+    j_inx = find(lat <= Lat(end) & lat >= Lat(1));
     n_lon = length(i_inx);
     n_lat = length(j_inx);
-    lon  = lon(i_inx);
-    lat  = lat(j_inx);
-    ele = double(ncread(file,'elevation',[i_inx(1) j_inx(1)],[n_lon n_lat]))';
+    lon = lon(i_inx);
+    lat = lat(j_inx);
+    ele = double(ncread(file, 'elevation', [i_inx(1) j_inx(1)], [n_lon n_lat]))';
 
     clearvars i_* n_*
 
-    [lon,lat] = meshgrid(lon,lat);
+    [lon, lat] = meshgrid(lon, lat);
 
-    lon = lon(1:res:end,1:res:end);
-    lat = lat(1:res:end,1:res:end);
-    ele = ele(1:res:end,1:res:end);
+    lon = lon(1:res:end, 1:res:end);
+    lat = lat(1:res:end, 1:res:end);
+    ele = ele(1:res:end, 1:res:end);
 
-    lon = reshape(lon,[],1);
-    lat = reshape(lat,[],1);
-    ele = reshape(ele,[],1);
+    lon = reshape(lon, [], 1);
+    lat = reshape(lat, [], 1);
+    ele = reshape(ele, [], 1);
 
     % lon(ele>10) = [];
     % lat(ele>10) = [];
     % ele(ele>10) = [];
     % ele(ele>0) = -0.5;
 
-    fid = fopen(fout,"w+");
-    fprintf(fid,'%12.8f %12.8f %12.8f \n',[lon';lat';ele']);
+    fid = fopen(fout, "w+");
+    fprintf(fid, '%12.8f %12.8f %12.8f \n', [lon'; lat'; ele']);
     fclose(fid);
 
 end

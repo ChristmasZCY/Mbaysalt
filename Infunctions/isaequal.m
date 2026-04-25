@@ -5,7 +5,7 @@ function TF = isaequal(A, B, tol, varargin)
     %       A:          input A             || required: True       || type: matrix     || format: matrix
     %       B:          input B             || required: True       || type: matrix     || format: matrix
     %       tol:        tolerance           || required: positional || type: double     || format: numeric
-    %       varargin: (optional) 
+    %       varargin: (optional)
     % =================================================================================================================
     % Returns:
     %       TF:         logical             || required: True       || type: logical    || format: matrix
@@ -22,23 +22,23 @@ function TF = isaequal(A, B, tol, varargin)
 
     narginchk(2, 4)
 
-    if any(isnan(A),"all") || any(isnan(B),"all")
+    if any(isnan(A), "all") || any(isnan(B), "all")
         error('There''s NaN in %s or %s, please use ''isaequaln'' instead!', inputname(1), inputname(2))
     end
 
     % eps是函数
-    if ~ exist("tol","var") == 1
+    if ~exist("tol", "var") == 1
         tol = eps;
     end
 
     if ~isMATLABReleaseOlderThan("R2024b")
         % TF1 = isapprox(A, B);
         TF1 = isapprox(A, B, "AbsoluteTolerance", tol);
-        TF = all(TF1,'all');
+        TF = all(TF1, 'all');
     else
-        TF = max(A-B)<tol;
+        TF = max(A - B) < tol;
     end
-    
+
     return
 
 end

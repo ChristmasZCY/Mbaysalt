@@ -26,12 +26,12 @@ figure('Position', [1 1 1521 732])
 hold on
 f_2d_range(f);
 % mf_background(gca);
-f_2d_mask_boundary(f, 'FaceColor', [222,184,135]/255);
-f_2d_image(f, spd2(:,1));
+f_2d_mask_boundary(f, 'FaceColor', [222, 184, 135] / 255);
+f_2d_image(f, spd2(:, 1));
 cb = colorbar;
 colormap(cm);
-plot([0 360], [0 0 ], 'k-')
-quiver(f.xc(k), f.yc(k), u2(k,1), v2(k,1), 6, 'Color', 'r')
+plot([0 360], [0 0], 'k-')
+quiver(f.xc(k), f.yc(k), u2(k, 1), v2(k, 1), 6, 'Color', 'r')
 xlabel('Longitude (^o)')
 ylabel('Latitude (^o)')
 title('GFVCOM-v1.1: 2-m Current')
@@ -43,12 +43,12 @@ figure('Position', [1 1 1521 732])
 hold on
 f_2d_range(f);
 % mf_background(gca);
-f_2d_mask_boundary(f, 'FaceColor', [222,184,135]/255);
-f_2d_image(f, T(:,1));
+f_2d_mask_boundary(f, 'FaceColor', [222, 184, 135] / 255);
+f_2d_image(f, T(:, 1));
 caxis([0 30])
 cb = colorbar;
 colormap(cm);
-plot([0 360], [0 0 ], 'k-')
+plot([0 360], [0 0], 'k-')
 xlabel('Longitude (^o)')
 ylabel('Latitude (^o)')
 title('GFVCOM-v1.1 ts+DA: SST on 2021-01-14')
@@ -60,14 +60,13 @@ figure('Position', [1 1 1521 732])
 hold on
 f_2d_range(f);
 % mf_background(gca);
-f_2d_mask_boundary(f, 'FaceColor', [222,184,135]/255);
+f_2d_mask_boundary(f, 'FaceColor', [222, 184, 135] / 255);
 f_2d_image(f, zeta);
 caxis([-2 2])
 cb = colorbar;
 colormap(cm);
-plot([0 360], [0 0 ], 'k-')
+plot([0 360], [0 0], 'k-')
 xlabel('Longitude (^o)')
 ylabel('Latitude (^o)')
 title('GFVCOM-v1.1 ts+DA: SSH on 2021-01-14')
 % mf_save('GFVCOM_ts_da_wd_ssh_20210114.png')
-

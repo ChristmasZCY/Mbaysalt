@@ -1,4 +1,4 @@
-function [preu,prev,preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, varargin)
+function [preu, prev, preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, varargin)
     %       Predict the tidal current velocity or elevation at a given time
     % =================================================================================================================
     % Parameter:
@@ -24,44 +24,44 @@ function [preu,prev,preh] = preuvh(ua, up, va, vp, ha, hp, lat, time, varargin)
     % =================================================================================================================
 
     varargin = read_varargin2(varargin, {'Cdisp'});
-    varargin = read_varargin(varargin,{'tidecon'},{'../tidecon-name-freq-12-atlas.mat'});
+    varargin = read_varargin(varargin, {'tidecon'}, {'../tidecon-name-freq-12-atlas.mat'});
 
     warning('Not recommended, replaced by ''preuvh2''!')
 
-    [~,lat_num,lon_num] = size(ua);
+    [~, lat_num, lon_num] = size(ua);
     load(tidecon, 'FREQ', 'NAME')
 
-    preu = zeros(lat_num,lon_num, length(time));
+    preu = zeros(lat_num, lon_num, length(time));
     prev = preu; preh = preu;
 
     for i = 1:lat_num
+
         for j = 1:lon_num
-            Tidecon_u(:,1) = ua(:,i,j);
-            Tidecon_u(:,2) = 100;
-            Tidecon_u(:,3) = up(:,i,j);
-            Tidecon_u(:,4) = 100;
-            preu(j,i,:)=t_predic(time,NAME,FREQ,Tidecon_u,lat(i));
+            Tidecon_u(:, 1) = ua(:, i, j);
+            Tidecon_u(:, 2) = 100;
+            Tidecon_u(:, 3) = up(:, i, j);
+            Tidecon_u(:, 4) = 100;
+            preu(j, i, :) = t_predic(time, NAME, FREQ, Tidecon_u, lat(i));
 
-            Tidecon_v(:,1) = va(:,i,j);
-            Tidecon_v(:,2) = 100;
-            Tidecon_v(:,3) = vp(:,i,j);
-            Tidecon_v(:,4) = 100;
-            prev(j,i,:)=t_predic(time,NAME,FREQ,Tidecon_v,lat(i));
+            Tidecon_v(:, 1) = va(:, i, j);
+            Tidecon_v(:, 2) = 100;
+            Tidecon_v(:, 3) = vp(:, i, j);
+            Tidecon_v(:, 4) = 100;
+            prev(j, i, :) = t_predic(time, NAME, FREQ, Tidecon_v, lat(i));
 
-            Tidecon_h(:,1) = ha(:,i,j);
-            Tidecon_h(:,2) = 100;
-            Tidecon_h(:,3) = hp(:,i,j);
-            Tidecon_h(:,4) = 100;
-            preh(j,i,:)=t_predic(time,NAME,FREQ,Tidecon_h,lat(i));
+            Tidecon_h(:, 1) = ha(:, i, j);
+            Tidecon_h(:, 2) = 100;
+            Tidecon_h(:, 3) = hp(:, i, j);
+            Tidecon_h(:, 4) = 100;
+            preh(j, i, :) = t_predic(time, NAME, FREQ, Tidecon_h, lat(i));
         end
 
         if ~isempty(Cdisp)
             d_num = length(num2str(lat_num));
-            D_num = ['%',num2str(d_num),'d'];
-            osprint2('INFO',[sprintf(D_num,i),'/',sprintf(D_num,lat_num)])
+            D_num = ['%', num2str(d_num), 'd'];
+            osprint2('INFO', [sprintf(D_num, i), '/', sprintf(D_num, lat_num)])
         end
 
     end
 
 end
-

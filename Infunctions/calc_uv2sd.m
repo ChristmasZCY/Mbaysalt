@@ -1,4 +1,4 @@
-function [spd, dir] = calc_uv2sd(u ,v, opt)
+function [spd, dir] = calc_uv2sd(u, v, opt)
     %       Calculate velocity to speed and direction
     % =================================================================================================================
     % Parameters:
@@ -47,28 +47,27 @@ function [spd, dir] = calc_uv2sd(u ,v, opt)
     arguments
         u {mustBeFloat}
         v {mustBeFloat}
-        opt  {mustBeMember(opt,{'current','wind','wave','ww3'})}
+        opt {mustBeMember(opt, {'current', 'wind', 'wave', 'ww3'})}
     end
 
     switch opt
-    case 'current'
-        [spd, dir] = uv2sd_to(u, v);
-    case 'wind'
-        [spd, dir] = uv2sd_from(u, v);
-    case {'wave','ww3'}
-        [spd, dir] = uv2sd_from(u, v);
-    otherwise
-        error('opt must be one of ''current'',''wind'',''wave'',''ww3'', but you set ''%s''.', opt);
+        case 'current'
+            [spd, dir] = uv2sd_to(u, v);
+        case 'wind'
+            [spd, dir] = uv2sd_from(u, v);
+        case {'wave', 'ww3'}
+            [spd, dir] = uv2sd_from(u, v);
+        otherwise
+            error('opt must be one of ''current'',''wind'',''wave'',''ww3'', but you set ''%s''.', opt);
     end
 
 end
-
 
 function [spd, dir] = uv2sd_from(u, v)
     % uv to direction(from), such as wind, wave --> 来向 0 为正北，顺时针，90为正东
 
     [spd, dir] = calc_uv2wind(u, v);
-    
+
 end
 
 function [spd, dir] = uv2sd_to(u, v)

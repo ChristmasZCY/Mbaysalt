@@ -7,7 +7,7 @@ function [Xdst, Ydst, Vdst, SIZE, varargout] = cutout_xy(xlims, ylims, Xsrc, Ysr
     %       Xsrc:       source longitude                 || required: True || type: double    || format: 1D or 2D
     %       Ysrc:       source latitude                  || required: True || type: double    || format: 1D or 2D
     %       Vsrc:       source variable                  || required: True || type: double    || format: nD array
-    %       varargin:       optional parameters      
+    %       varargin:       optional parameters
     % =================================================================================================================
     % Returns:
     %       Xdst:       destination longitude             || type: double || format: 1D or 2D
@@ -31,12 +31,12 @@ function [Xdst, Ydst, Vdst, SIZE, varargout] = cutout_xy(xlims, ylims, Xsrc, Ysr
     %      1800*1     1800*1     1800*n           % SCATTER   散点
     % =================================================================================================================
 
-    
     if nargout >= 5
-        mode = 'FIND';  % 'FIND' or 'ASSIGN'
+        mode = 'FIND'; % 'FIND' or 'ASSIGN'
     else
         mode = 'ASSIGN';
     end
+
     xlims = minmax(xlims);
     ylims = minmax(ylims);
 
@@ -44,74 +44,81 @@ function [Xdst, Ydst, Vdst, SIZE, varargout] = cutout_xy(xlims, ylims, Xsrc, Ysr
     size_y = size(Ysrc);
     size_v = size(Vsrc);
 
-    if all(size_x~=size_y) && numel(Xsrc)*numel(Ysrc)== prod(size_v(1:2))
+    if all(size_x ~= size_y) && numel(Xsrc) * numel(Ysrc) == prod(size_v(1:2))
         Gtype = 'LL';
-    elseif numel(Xsrc)==numel(Ysrc) && numel(Ysrc)==numel(Vsrc(:,1,1,1))
+    elseif numel(Xsrc) == numel(Ysrc) && numel(Ysrc) == numel(Vsrc(:, 1, 1, 1))
         Gtype = 'SCATTER';
     end
 
     switch Gtype
-    case 'LL'
-        if size_x(1) == 1 && size_x(2) ~= 1
-            Xsrc = Xsrc';
-        end
-        if size_y(1) == 1 && size_y(2) ~= 1
-            Ysrc = Ysrc';
-        end
-        SIZE.xr = length(Xsrc);
-        SIZE.yr = length(Ysrc);
-        SIZE.vr = size(Vsrc);
-        SIZE.xyr = SIZE.vr(1:2);
-        Vsrc = reshape(Vsrc,SIZE.xyr(1),SIZE.xyr(2),[]);  % x*y*zt
+        case 'LL'
 
-    case 'SCATTER'
-        SIZE.xr = length(Xsrc);
-        SIZE.yr = length(Ysrc);
-        SIZE.vr = size(Vsrc);
-        SIZE.xyr = SIZE.vr(1);
-        Vsrc = reshape(Vsrc,SIZE.xyr(1),[]);  % --> n*zt 
+            if size_x(1) == 1 && size_x(2) ~= 1
+                Xsrc = Xsrc';
+            end
 
-    otherwise
+            if size_y(1) == 1 && size_y(2) ~= 1
+                Ysrc = Ysrc';
+            end
+
+            SIZE.xr = length(Xsrc);
+            SIZE.yr = length(Ysrc);
+            SIZE.vr = size(Vsrc);
+            SIZE.xyr = SIZE.vr(1:2);
+            Vsrc = reshape(Vsrc, SIZE.xyr(1), SIZE.xyr(2), []); % x*y*zt
+
+        case 'SCATTER'
+            SIZE.xr = length(Xsrc);
+            SIZE.yr = length(Ysrc);
+            SIZE.vr = size(Vsrc);
+            SIZE.xyr = SIZE.vr(1);
+            Vsrc = reshape(Vsrc, SIZE.xyr(1), []); % --> n*zt
+
+        otherwise
     end
+
     clear size_x size_y size_v
 
     switch Gtype
-    case 'LL'
-        switch mode
-        case 'FIND'
-            NO.F1 = find(Xsrc>xlims(1) & Xsrc<xlims(end));
-            Xdst = Xsrc(NO.F1); Vdst = Vsrc(NO.F1,:,:);
+        case 'LL'
 
-            NO.F2 = find(Ysrc>ylims(1) & Ysrc<ylims(end));
-            Ydst = Ysrc(NO.F2); Vdst = Vdst(:,NO.F2,:);
+            switch mode
+                case 'FIND'
+                    NO.F1 = find(Xsrc > xlims(1) & Xsrc < xlims(end));
+                    Xdst = Xsrc(NO.F1); Vdst = Vsrc(NO.F1, :, :);
 
-        case 'ASSIGN'
-            Xdst = Xsrc; Ydst = Ysrc; Vdst = Vsrc;
-            Vdst = Vdst(Xdst>=xlims(1) & Xdst<=xlims(2), Ydst>=ylims(1) & Ydst<=ylims(2),:);
-            Xdst = Xdst(Xdst>=xlims(1) & Xdst<=xlims(2));
-            Ydst = Ydst(Ydst>=ylims(1) & Ydst<=ylims(2));
-        end
-        SIZE.xo = length(Xdst);
-        SIZE.yo = length(Ydst);
-        SIZE.vo = [SIZE.xo, SIZE.yo, SIZE.vr(3:end)];
-        SIZE.xyo = SIZE.vo(1:2);
-        Vdst = reshape(Vdst,SIZE.vo);
+                    NO.F2 = find(Ysrc > ylims(1) & Ysrc < ylims(end));
+                    Ydst = Ysrc(NO.F2); Vdst = Vdst(:, NO.F2, :);
 
-    case 'SCATTER'
-        NO.F1 = (Xsrc>=xlims(1) & Xsrc<=xlims(2) & Ysrc>=ylims(1) & Ysrc<=ylims(2));
-        Xdst = Xsrc(NO.F1);
-        Ydst = Ysrc(NO.F1);
-        Vdst = Vsrc(NO.F1,:);
+                case 'ASSIGN'
+                    Xdst = Xsrc; Ydst = Ysrc; Vdst = Vsrc;
+                    Vdst = Vdst(Xdst >= xlims(1) & Xdst <= xlims(2), Ydst >= ylims(1) & Ydst <= ylims(2), :);
+                    Xdst = Xdst(Xdst >= xlims(1) & Xdst <= xlims(2));
+                    Ydst = Ydst(Ydst >= ylims(1) & Ydst <= ylims(2));
+            end
 
-        SIZE.xo = length(Xdst);
-        SIZE.yo = length(Vdst);
-        SIZE.xyo = SIZE.xo(1);
-        SIZE.vo = [SIZE.xyo, SIZE.vr(2:end)];
-        
-        Vdst = reshape(Vdst,SIZE.vo);
+            SIZE.xo = length(Xdst);
+            SIZE.yo = length(Ydst);
+            SIZE.vo = [SIZE.xo, SIZE.yo, SIZE.vr(3:end)];
+            SIZE.xyo = SIZE.vo(1:2);
+            Vdst = reshape(Vdst, SIZE.vo);
 
-    otherwise
+        case 'SCATTER'
+            NO.F1 = (Xsrc >= xlims(1) & Xsrc <= xlims(2) & Ysrc >= ylims(1) & Ysrc <= ylims(2));
+            Xdst = Xsrc(NO.F1);
+            Ydst = Ysrc(NO.F1);
+            Vdst = Vsrc(NO.F1, :);
+
+            SIZE.xo = length(Xdst);
+            SIZE.yo = length(Vdst);
+            SIZE.xyo = SIZE.xo(1);
+            SIZE.vo = [SIZE.xyo, SIZE.vr(2:end)];
+
+            Vdst = reshape(Vdst, SIZE.vo);
+
+        otherwise
     end
+
     clearvars mode
     varargout{1} = NO;
     return

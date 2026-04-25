@@ -12,26 +12,27 @@ function varargout = del_filesep(varargin)
     %       [path1,path2] = del_filesep('/home/xxx/xxx', '/home/xxx/yyy/')
     % =================================================================================================================
 
-    arguments(Input,Repeating)
+    arguments (Input, Repeating)
         varargin
     end
 
-    arguments(Output,Repeating)
+    arguments (Output, Repeating)
         varargout
     end
 
-    varargout = cellfun(@zeros,cell(1:nargin),'UniformOutput',false);
+    varargout = cellfun(@zeros, cell(1:nargin), 'UniformOutput', false);
 
-    for i = 1 : nargin
+    for i = 1:nargin
         varargin{i} = convertStringsToChars(varargin{i});
         % if ~ischar(varargin{i})
         %     varargin{i} = char(varargin{i});
         % end
         if varargin{i}(end) == filesep
-            varargout{i} = varargin{i}(1:end-1);
+            varargout{i} = varargin{i}(1:end - 1);
         else
             varargout{i} = varargin{i};
         end
+
     end
 
 end

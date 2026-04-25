@@ -2,11 +2,11 @@ function set_proxy(TF, varargin)
     %       Set proxy for web
     % =================================================================================================================
     % Parameters:
-    %       varargin:       optional parameters      
+    %       varargin:       optional parameters
     %           TF:       whether to use proxy            || required: True  || type: bool   || example: true
     %           host:     proxy host                      || required: False || type: text   || default: '127.0.0.1'
     %           port:     proxy port                      || required: False || type: text   || default: '7890'
-    %           
+    %
     % =================================================================================================================
     % Returns:
     %       None
@@ -22,16 +22,17 @@ function set_proxy(TF, varargin)
     %       set_proxy(true, 'host', '127.0.0.1', 'port', '7890');
     % =================================================================================================================
 
-    arguments(Input)
+    arguments (Input)
         TF = true
     end
-    arguments(Input,Repeating)
+
+    arguments (Input, Repeating)
         varargin
     end
 
     varargin = read_varargin(varargin, {'host'}, {'127.0.0.1'});
     varargin = read_varargin(varargin, {'port'}, {'7890'});
-    
+
     if TF
         com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true) %#ok<*JAPIMATHWORKS>
         com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost('127.0.0.1')
@@ -40,6 +41,7 @@ function set_proxy(TF, varargin)
         com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(false)
         return
     end
+
     %% the proxy authentication is required
     % com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxyAuthentication(false)
     % com.mathworks.mlwidgets.html.HTMLPrefs.setProxyUsername('test')

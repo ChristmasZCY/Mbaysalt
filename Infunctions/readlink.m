@@ -20,18 +20,18 @@ function [YN, Ofile] = readlink(file)
     %       [YN, Ofile] = readlink('D:\data\mask.nc')
     % =================================================================================================================
 
-    arguments(Input)
+    arguments (Input)
         file {mustBeTextScalar}
     end
 
-    arguments(Output)
+    arguments (Output)
         YN logical
         Ofile
     end
 
     file = getPath(file);
 
-    if isempty(file) || (~exist(file,"file") && ~exist(file,"dir"))
+    if isempty(file) || (~exist(file, "file") && ~exist(file, "dir"))
         warning('file not found')
         YN = false;
         Ofile = file;
@@ -40,9 +40,11 @@ function [YN, Ofile] = readlink(file)
 
     if ~isMATLABReleaseOlderThan("R2024b")
         [YN, Ofile] = isSymbolicLink(file);
+
         if ~YN
             Ofile = file;
         end
+
         return
     end
 
@@ -50,10 +52,11 @@ function [YN, Ofile] = readlink(file)
         case {'WIN'}
             % $lnkPath = "D:\Beihai(lonlat3).2dm.lnk"; $shell = New-Object -ComObject WScript.Shell; $shortcut = $shell.CreateShortcut($lnkPath); Write-Host "$($shortcut.TargetPath)"
             cmd = sprintf("powershell -Command ""$lnkPath = '%s'; " + ...
-                          "$shell = New-Object -ComObject WScript.Shell; " + ...
-                          "$shortcut = $shell.CreateShortcut($lnkPath); " + ...
-                          "Write-Host $shortcut.TargetPath""", file);
-            if endsWith(file,".lnk")
+                "$shell = New-Object -ComObject WScript.Shell; " + ...
+                "$shortcut = $shell.CreateShortcut($lnkPath); " + ...
+                "Write - Host $shortcut.TargetPath""", file);
+
+            if endsWith(file, ".lnk")
                 YN = true;
                 [~, Ofile] = system(cmd);
                 Ofile = strip(Ofile);
@@ -61,18 +64,22 @@ function [YN, Ofile] = readlink(file)
                 YN = false;
                 Ofile = file;
             end
+
         case {'MAC', 'LNX'}
             cmd = ['readlink -f ', file];
             [~, Ofile] = system(cmd);
             Ofile = strip(Ofile);
+
             if ~strcmp(file, Ofile)
                 YN = true;
             else
                 YN = false;
             end
+
         otherwise
             error('platform error')
     end
+
     return
 
 end

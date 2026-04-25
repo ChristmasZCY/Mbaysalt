@@ -1,4 +1,4 @@
-function [lon,lat,varargout] = region_cutout(lon_range,lat_range,lon,lat,varargin)
+function [lon, lat, varargout] = region_cutout(lon_range, lat_range, lon, lat, varargin)
     %       Cut out a region from a map
     % =================================================================================================================
     % Parameter:
@@ -14,23 +14,24 @@ function [lon,lat,varargout] = region_cutout(lon_range,lat_range,lon,lat,varargi
 
     size_lon = size(lon);
     size_lat = size(lat);
+
     if min(size_lon) ~= 1 || min(size_lat) ~= 1
         error('lon and lat must be 1D array')
     end
 
-    Fx = find(lon<lon_range(1) | lon>lon_range(end));
+    Fx = find(lon < lon_range(1) | lon > lon_range(end));
     lon(Fx) = [];
 
     for num = 1:length(varargin)
         tm{num} = varargin{num};
-        tm{num}(Fx,:,:) = [];
+        tm{num}(Fx, :, :) = [];
     end
 
-    Fy = find(lat<lat_range(1) | lat>lat_range(end));
+    Fy = find(lat < lat_range(1) | lat > lat_range(end));
     lat(Fy) = [];
 
     for num = 1:length(varargin)
-        tm{num}(:,Fy,:) = [];
+        tm{num}(:, Fy, :) = [];
         varargout{num} = tm{num};
     end
 

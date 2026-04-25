@@ -1,8 +1,8 @@
 function HOME = getHome()
-    %       Get home path 
+    %       Get home path
     % =================================================================================================================
     % Parameter:
-    %       
+    %
     % =================================================================================================================
     % Returns:
     %       HOME:   Home path                || type: char || format: '/Users/christmas'
@@ -15,12 +15,12 @@ function HOME = getHome()
     % =================================================================================================================
 
     switch checkOS
-    case {'WIN'}
-        HOME = getenv('UserProfile');
-    case {'MAC', 'LNX'}
-        HOME = getenv('HOME');
-    otherwise
-        error('Unidentification system !!!')
+        case {'WIN'}
+            HOME = getenv('UserProfile');
+        case {'MAC', 'LNX'}
+            HOME = getenv('HOME');
+        otherwise
+            error('Unidentification system !!!')
     end
 
 end

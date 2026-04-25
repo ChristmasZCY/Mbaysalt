@@ -1,4 +1,4 @@
-function [xlon_dst,ylat_dst,zh_dst] = geo_ecef(rule,xlon_ori,ylat_ori,zh_ori,options)
+function [xlon_dst, ylat_dst, zh_dst] = geo_ecef(rule, xlon_ori, ylat_ori, zh_ori, options)
     %       Transform geocentric Earth-centered Earth-fixed coordinates to geodetic or reverse
     % =================================================================================================================
     % Parameter:
@@ -25,7 +25,7 @@ function [xlon_dst,ylat_dst,zh_dst] = geo_ecef(rule,xlon_ori,ylat_ori,zh_ori,opt
     % =================================================================================================================
 
     arguments
-        rule {mustBeMember(rule,{'geo2ecef','ecef2geo'})}
+        rule {mustBeMember(rule, {'geo2ecef', 'ecef2geo'})}
         xlon_ori
         ylat_ori
         zh_ori
@@ -33,11 +33,11 @@ function [xlon_dst,ylat_dst,zh_dst] = geo_ecef(rule,xlon_ori,ylat_ori,zh_ori,opt
     end
 
     wgs84 = wgs84Ellipsoid(options.lengthUnit);
-    if strcmp(rule,'geo2ecef')
-        [xlon_dst,ylat_dst,zh_dst] = geodetic2ecef(wgs84,ylat_ori,xlon_ori,zh_ori);
-    elseif strcmp(rule,'ecef2geo')
-        [ylat_dst,xlon_dst,zh_dst] = ecef2geodetic(wgs84,xlon_ori,ylat_ori,zh_ori);
-    end
 
+    if strcmp(rule, 'geo2ecef')
+        [xlon_dst, ylat_dst, zh_dst] = geodetic2ecef(wgs84, ylat_ori, xlon_ori, zh_ori);
+    elseif strcmp(rule, 'ecef2geo')
+        [ylat_dst, xlon_dst, zh_dst] = ecef2geodetic(wgs84, xlon_ori, ylat_ori, zh_ori);
+    end
 
 end

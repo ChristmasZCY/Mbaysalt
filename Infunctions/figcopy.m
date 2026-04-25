@@ -2,7 +2,7 @@ function figcopy(varargin)
     %       Copy the figure to the clipboard
     % =================================================================================================================
     % Parameters:
-    %   varargin: (optional) 
+    %   varargin: (optional)
     %       fig:        figure handle       || required: positional || type: figure || example: gcf
     % =================================================================================================================
     % Returns:
@@ -17,7 +17,7 @@ function figcopy(varargin)
     %       figcopy(gcf);
     % =================================================================================================================
 
-    if len(varargin) >0 && isa(varargin{1},'matlab.ui.Figure')
+    if len(varargin) > 0 && isa(varargin{1}, 'matlab.ui.Figure')
         fig = varargin{1};
         varargin(1) = [];
     else
@@ -27,8 +27,10 @@ function figcopy(varargin)
     copygraphics(fig);
 
     contents = clipboard('paste');
+
     if len(contents) == 0
         disp('Use print!')
-        print(fig,'-clipboard','-dbitmap');
+        print(fig, '-clipboard', '-dbitmap');
     end
+
 end

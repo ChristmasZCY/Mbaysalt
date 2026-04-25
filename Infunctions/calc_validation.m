@@ -1,11 +1,11 @@
 function S = calc_validation(model, observation, varargin)
-    %       To calculate data validation 
+    %       To calculate data validation
     % =================================================================================================================
     % Parameter:
     %      model:          model data          || required: True || type: double    || example:  [1 2 3 4 5 6 7 8 9 10]
     %      observation:    observation data    || required: True || type: double    || example:  [1 2 3 4 5 6 7 8 9 10]
     %       varargin:           optional parameters
-    %           
+    %
     % =================================================================================================================
     % Returns:
     %       S:          struct data            || type: struct
@@ -23,8 +23,8 @@ function S = calc_validation(model, observation, varargin)
     % =================================================================================================================
     % Update:
     %       2024-04-13:     Created,                        by Christmas;
-    %       2024-09-19:     Fixed corrcoef with 'complete', by Christmas;    
-    %       2024-12-08:     Added DIFMM,                    by Christmas;    
+    %       2024-09-19:     Fixed corrcoef with 'complete', by Christmas;
+    %       2024-12-08:     Added DIFMM,                    by Christmas;
     % =================================================================================================================
     % Example:
     %       S = calc_validation(model, observation);
@@ -41,11 +41,12 @@ function S = calc_validation(model, observation, varargin)
     % =================================================================================================================
 
     arguments (Input)
-        model (1,:) {mustBeFloat}
-        observation (1,:) {mustBeFloat}
+        model (1, :) {mustBeFloat}
+        observation (1, :) {mustBeFloat}
     end
+
     arguments (Input, Repeating)
-        varargin 
+        varargin
     end
 
     if numel(observation) ~= numel(model)
@@ -56,17 +57,17 @@ function S = calc_validation(model, observation, varargin)
     dif = model - observation;
 
     % R 相关系数
-    R = corrcoef(observation, model, 'Rows', 'complete');  % complete 忽略NaN
-    S.R = R(1,2);
+    R = corrcoef(observation, model, 'Rows', 'complete'); % complete 忽略NaN
+    S.R = R(1, 2);
 
     % Bias  偏差
-    S.Bias = sum(dif)/len;
+    S.Bias = sum(dif) / len;
 
     % SSE   和方差/残差平方和 --> [0,+∞), 值越大误差越大
-    S.SSE = sum((dif).^2);
+    S.SSE = sum((dif) .^ 2);
 
     % MSE   均方误差 --> [0,+∞), 值越大误差越大
-    S.MSE = S.SSE/len;
+    S.MSE = S.SSE / len;
 
     % RMSE  均方根误差 --> [0,+∞), 值越大误差越大   % 波高大概在0.3-0.5
     S.RMSE = sqrt(S.MSE);
@@ -75,25 +76,24 @@ function S = calc_validation(model, observation, varargin)
     S.ACCE = 1 - S.RMSE;
 
     % MAE   平均绝对误差 --> [0,+∞), 值越大误差越大
-    S.MAE = sum(abs(dif))/len;
+    S.MAE = sum(abs(dif)) / len;
 
     % MAPE  平均绝对百分比误差  --> [0,+∞), 值越大误差越大  !! 当真实值=0时，该公式不可用！自动去掉0项
-    F = find(observation==0);
+    F = find(observation == 0);
     obs_1 = observation;
     dif_1 = dif;
     obs_1(F) = [];
     dif_1(F) = [];
-    S.MAPE = sum(abs((dif_1)./obs_1))/len;
+    S.MAPE = sum(abs((dif_1) ./ obs_1)) / len;
 
     % SI   散度指数 --> [0,+∞), 值越大误差越大
-    S.SI = std(dif,"omitnan") /mean(observation);
-    
-    % MRE 平均相对误差   相对误差（相对误差是指误差相对于真实值的比例）绝对值的平均值 
+    S.SI = std(dif, "omitnan") / mean(observation);
+
+    % MRE 平均相对误差   相对误差（相对误差是指误差相对于真实值的比例）绝对值的平均值
     % MRE可以反映相对误差的大小，但是不能反映绝对误差的大小。
-    S.MRE = sum(abs(dif)/observation)/len;
+    S.MRE = sum(abs(dif) / observation) / len;
 
     S.DIFMM = minmax(abs(dif));
 
     return
 end
-

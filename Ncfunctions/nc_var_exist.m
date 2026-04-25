@@ -14,14 +14,14 @@ function TF = nc_var_exist(fin, varname, varargin)
     % Example:
     %       TF = nc_var_exist('test.nc', 'swh')
     % =================================================================================================================
-    
+
     arguments (Input)
         fin {mustBeFile}
         varname {mustBeText}
     end
 
     arguments (Input, Repeating)
-        varargin 
+        varargin
     end
 
     nc_info = ncinfo(fin);

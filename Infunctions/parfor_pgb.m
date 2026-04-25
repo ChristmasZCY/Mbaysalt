@@ -25,18 +25,18 @@ classdef parfor_pgb < handle
     % =================================================================================================================
 
     properties
-        N;  % 总迭代次数
-        Nnum = 0;  % 迭代次数
-        widthBar = 50;  % 宽度
-        ipcfile = fullfile(tempdir, sprintf('%s%d.txt', mfilename, round(rand*1000))); % Path to temporary file for inter-process communication
-        percent = 0;  % 0.99
+        N; % 总迭代次数
+        Nnum = 0; % 迭代次数
+        widthBar = 50; % 宽度
+        ipcfile = fullfile(tempdir, sprintf('%s%d.txt', mfilename, round(rand * 1000))); % Path to temporary file for inter-process communication
+        percent = 0; % 0.99
         LineN = true;
     end
 
-
     methods
+
         function obj = parfor_pgb(N, varargin)
-            varargin = read_varargin(varargin,{'LineN'},{obj.LineN});
+            varargin = read_varargin(varargin, {'LineN'}, {obj.LineN});
             obj.LineN = LineN;
             obj.N = N;
             rmfiles(obj.ipcfile);
@@ -45,24 +45,28 @@ classdef parfor_pgb < handle
         end
 
         function iterate(obj, num)
+
             if nargin == 0
-                num = 1;  % default
+                num = 1; % default
             end
-            fid = fopen(obj.ipcfile,"a+");
+
+            fid = fopen(obj.ipcfile, "a+");
             fprintf(fid, '%d\n', num);
             fclose(fid);
 
-            fid = fopen(obj.ipcfile, 'r' );
-            obj.Nnum = max(obj.Nnum,sum(fscanf(fid, '%d')));
+            fid = fopen(obj.ipcfile, 'r');
+            obj.Nnum = max(obj.Nnum, sum(fscanf(fid, '%d')));
             obj.percent = obj.Nnum / obj.N;
-            obj.percent = max(0, min(1,obj.percent) );
+            obj.percent = max(0, min(1, obj.percent));
             fclose(fid);
-            perc = sprintf('% 6.1f%%', obj.percent*100);
+            perc = sprintf('% 6.1f%%', obj.percent * 100);
+
             if obj.LineN
-                txt = sprintf('[%s>%s]%s',repmat('=', 1, round(obj.percent*obj.widthBar)),repmat(' ', 1, obj.widthBar - round(obj.percent*obj.widthBar)),perc);
+                txt = sprintf('[%s>%s]%s', repmat('=', 1, round(obj.percent * obj.widthBar)), repmat(' ', 1, obj.widthBar - round(obj.percent * obj.widthBar)), perc);
             else
-                txt = sprintf('%s[%s>%s]%s',[repmat(char(8), 1, (obj.widthBar+12))],repmat('=', 1, round(obj.percent*obj.widthBar)),repmat(' ', 1, obj.widthBar - round(obj.percent*obj.widthBar)),perc);
+                txt = sprintf('%s[%s>%s]%s', [repmat(char(8), 1, (obj.widthBar + 12))], repmat('=', 1, round(obj.percent * obj.widthBar)), repmat(' ', 1, obj.widthBar - round(obj.percent * obj.widthBar)), perc);
             end
+
             disp(txt);
 
         end
@@ -70,9 +74,9 @@ classdef parfor_pgb < handle
         function close(obj)
             rmfiles(obj.ipcfile)
             w = obj.widthBar;
-            disp([ '[', repmat('=', 1, w+1), '] 100.0%']);
+            disp(['[', repmat('=', 1, w + 1), '] 100.0%']);
         end
+
     end
 
 end
-

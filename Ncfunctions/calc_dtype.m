@@ -72,6 +72,7 @@ function dtype = calc_dtype(values, method, varargin)
             else
                 if strcmpi(method, 'HighLevel'); dtype = 'double'; else; dtype = 'NC_DOUBLE'; end
             end
+
             return
         end
 

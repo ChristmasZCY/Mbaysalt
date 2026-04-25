@@ -1,4 +1,4 @@
-function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
+function [lon, lat, depth, time, varargout] = read_ncfile_lldtv(fnc, varargin)
     %       Read nc file
     % =================================================================================================================
     % Parameter:
@@ -26,16 +26,16 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     %                                                          'Switch_log','Log_file','log.txt')
     % =================================================================================================================
 
-    varargin = read_varargin(varargin,{'Lon_Name'},{false});
-    varargin = read_varargin(varargin,{'Lat_Name'},{false});
-    varargin = read_varargin(varargin,{'Depth_Name'},{false});
-    varargin = read_varargin(varargin,{'Time_Name'},{false});
-    varargin = read_varargin(varargin,{'Time_type'},{false});
-    varargin = read_varargin(varargin,{'Time_format'},{false});
-    varargin = read_varargin(varargin,{'Var_Name'},{false});
-    varargin = read_varargin2(varargin,{'Switch_log'});
-    varargin = read_varargin(varargin,{'Log_file'},{false});
-    varargin = read_varargin2(varargin,{'INFO'});
+    varargin = read_varargin(varargin, {'Lon_Name'}, {false});
+    varargin = read_varargin(varargin, {'Lat_Name'}, {false});
+    varargin = read_varargin(varargin, {'Depth_Name'}, {false});
+    varargin = read_varargin(varargin, {'Time_Name'}, {false});
+    varargin = read_varargin(varargin, {'Time_type'}, {false});
+    varargin = read_varargin(varargin, {'Time_format'}, {false});
+    varargin = read_varargin(varargin, {'Var_Name'}, {false});
+    varargin = read_varargin2(varargin, {'Switch_log'});
+    varargin = read_varargin(varargin, {'Log_file'}, {false});
+    varargin = read_varargin2(varargin, {'INFO'});
 
     if ~isempty(Switch_log)
         Switch_log = true;
@@ -52,6 +52,7 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     if ~iscell(Var_Name)
         Var_Name = {Var_Name};
     end
+
     Var_Name = [Var_Name{:}];
 
     para_conf.Lon_Name = 'longitude';
@@ -60,21 +61,21 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     para_conf.Time_type = 'datetime';
     para_conf.Time_format = 'yyyy-MM-dd HH:mm:ss';
     para_conf.Depth_Name = 'depth';
-    para_conf.Var_Name = ['swh','mpts','w'];
+    para_conf.Var_Name = ['swh', 'mpts', 'w'];
     para_conf.Switch_log = false;
-    name_cell = {Lon_Name, Lat_Name,Depth_Name,Time_Name,Time_type,Time_format,Var_Name,Switch_log};
-    conf_cell = {para_conf.Lon_Name, para_conf.Lat_Name,para_conf.Depth_Name,para_conf.Time_Name, ...
-                para_conf.Time_type,para_conf.Time_format,para_conf.Var_Name,para_conf.Switch_log};
+    name_cell = {Lon_Name, Lat_Name, Depth_Name, Time_Name, Time_type, Time_format, Var_Name, Switch_log};
+    conf_cell = {para_conf.Lon_Name, para_conf.Lat_Name, para_conf.Depth_Name, para_conf.Time_Name, ...
+                     para_conf.Time_type, para_conf.Time_format, para_conf.Var_Name, para_conf.Switch_log};
 
-    Name_cell = cellfun(@isexist_var, name_cell,conf_cell, 'UniformOutput', false);
-    [Lon_Name, Lat_Name,Depth_Name,Time_Name,Time_type,Time_format,Var_Name,Switch_log] = Name_cell{:};
+    Name_cell = cellfun(@isexist_var, name_cell, conf_cell, 'UniformOutput', false);
+    [Lon_Name, Lat_Name, Depth_Name, Time_Name, Time_type, Time_format, Var_Name, Switch_log] = Name_cell{:};
     clearvars name_cell conf_cell Name_cell
 
-    lldt_name = {'Lon_Name', 'Lat_Name','Depth_Name','Time_Name','Var_Name','Switch_log'};
-    lldt_name_var = {Lon_Name, Lat_Name,Depth_Name,Time_Name,Var_Name,Switch_log};
+    lldt_name = {'Lon_Name', 'Lat_Name', 'Depth_Name', 'Time_Name', 'Var_Name', 'Switch_log'};
+    lldt_name_var = {Lon_Name, Lat_Name, Depth_Name, Time_Name, Var_Name, Switch_log};
 
     % var_name_of_read
-    var_name_of_read = cell2struct(lldt_name_var,lldt_name,2);
+    var_name_of_read = cell2struct(lldt_name_var, lldt_name, 2);
     clear lldt_name lldt_name_var
 
     % nc_contains_var_name
@@ -92,7 +93,7 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     % read lon
     if any(strcmp(nc_contains_var_name, var_name_of_read.Lon_Name))
         read_lon = true;
-        lon = nr(fnc,var_name_of_read.Lon_Name);
+        lon = nr(fnc, var_name_of_read.Lon_Name);
     else
         lon = [];
     end
@@ -100,7 +101,7 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     % read lat
     if any(strcmp(nc_contains_var_name, var_name_of_read.Lat_Name))
         read_lat = true;
-        lat = nr(fnc,var_name_of_read.Lat_Name);
+        lat = nr(fnc, var_name_of_read.Lat_Name);
     else
         lat = [];
     end
@@ -108,7 +109,7 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     % read depth
     if any(strcmp(nc_contains_var_name, var_name_of_read.Depth_Name))
         read_depth = true;
-        depth = nr(fnc,var_name_of_read.Depth_Name);
+        depth = nr(fnc, var_name_of_read.Depth_Name);
     else
         depth = [];
     end
@@ -116,50 +117,61 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
     % read time
     if any(strcmp(nc_contains_var_name, var_name_of_read.Time_Name))
         read_time = true;
+
         switch Time_type
             case 'datetime'
-                time = ncdateread(fnc,Time_Name);
+                time = ncdateread(fnc, Time_Name);
                 time.Format = Time_format;
             case 'double'
-                time = nr(fnc,Time_Name);
+                time = nr(fnc, Time_Name);
             otherwise
                 error('Time_type must be datetime or double')
         end
+
     else
+
         switch Time_type
             case 'datetime'
-                time = datetime([],[],[],[],[],[]);
+                time = datetime([], [], [], [], [], []);
                 time.Format = Time_format;
             case 'double'
                 time = [];
             otherwise
                 error('Time_type must be datetime or double')
         end
+
     end
 
     % read var
     for i = 1:length(var_name_of_read.Var_Name)
+
         if any(strcmp(nc_contains_var_name, var_name_of_read.Var_Name{i}))
             read_var = true;
-            varargout{i} = nr(fnc,var_name_of_read.Var_Name{i});
+            varargout{i} = nr(fnc, var_name_of_read.Var_Name{i});
         else
             varargout{i} = [];
         end
+
     end
 
     var_of_read = [];
+
     if read_lon
         var_of_read = [var_of_read, Lon_Name, ' '];
     end
+
     if read_lat
         var_of_read = [var_of_read, Lat_Name, ' '];
     end
+
     if read_depth
         var_of_read = [var_of_read, Depth_Name, ' '];
     end
+
     if read_time
         var_of_read = [var_of_read, Time_Name, ' '];
     end
+
     if read_var
         var_of_read_var = cellfun(@(x) [x, ' '], Var_Name, 'UniformOutput', false);
         var_of_read = [var_of_read, var_of_read_var{:}, ' '];
@@ -167,22 +179,25 @@ function [lon,lat,depth,time,varargout] = read_ncfile_lldtv(fnc, varargin)
 
     % log
     if INFO
+
         if Switch_log
+
             if ~Log_file
                 Log_file = para_conf.Log_file;
             end
-            osprint2('INFO','Reading from nc','newline',1,'ddt_log',1,'output',Log_file)
-            osprint2('INFO',var_of_read,'newline',0,'ddt_log',0,'output',Log_file)
+
+            osprint2('INFO', 'Reading from nc', 'newline', 1, 'ddt_log', 1, 'output', Log_file)
+            osprint2('INFO', var_of_read, 'newline', 0, 'ddt_log', 0, 'output', Log_file)
         else
-            osprint2('INFO','Reading from nc','newline',0,'ddt_log',1)
-            osprint2('INFO',var_of_read,'newline',1,'ddt_log',0)
+            osprint2('INFO', 'Reading from nc', 'newline', 0, 'ddt_log', 1)
+            osprint2('INFO', var_of_read, 'newline', 1, 'ddt_log', 0)
         end
+
     end
 
     % varargout{1} = cell(varargin);
 
 end
-
 
 function vout = isexist_var(vin, conf)
     %       Check whether assigned variable, if not, assign default value
@@ -196,20 +211,22 @@ function vout = isexist_var(vin, conf)
     %       vout = isexist_var({"Lon_Name","Lat_Name"}, {"lon","lat"})
     % =================================================================================================================
 
-    
     vin = convertStringsToChars(vin);
-   
-    % if iscell(vin) 
+
+    % if iscell(vin)
     %     vin = vin{1};
     % end
-    
+
     if islogical(vin)
-        if  ~vin
+
+        if ~vin
             vout = conf;
         else
             vout = vin;
         end
+
     else
         vout = vin;
     end
+
 end

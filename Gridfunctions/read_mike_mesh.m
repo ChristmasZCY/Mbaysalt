@@ -25,22 +25,23 @@ function [x, y, nv, h, bounds, prj, tail, id] = read_mike_mesh(fin, varargin)
     %       [x, y, nv, h, bounds, prj, tail, id] = read_mike_mesh('./input_mesh.mesh', 'INFO');
     %       read_mike_mesh('./input_mesh.mesh', 'INFO');
     % =================================================================================================================
-    
-    arguments(Input)
-        fin (1,:) % {mustBeFile}
+
+    arguments (Input)
+        fin (1, :) % {mustBeFile}
     end
-    
-    arguments(Input, Repeating)
+
+    arguments (Input, Repeating)
         varargin
     end
-    
+
     varargin = read_varargin2(varargin, {'INFO'});
 
     fid = fopen(fin);
 
-    data = textscan(fid, '%s', 'Delimiter','\n');
+    data = textscan(fid, '%s', 'Delimiter', '\n');
 
     C = strsplit(strip(data{1}{1}));
+
     if isscalar(C)
         frewind(fid);
         num_node = textscan(fid, '%d %s', 1, 'headerlines', 0);
@@ -48,7 +49,7 @@ function [x, y, nv, h, bounds, prj, tail, id] = read_mike_mesh(fin, varargin)
         prj = num_node{2}{1};
         clear num_node
     else
-        F = find(startsWith(C,'PROJCS'));
+        F = find(startsWith(C, 'PROJCS'));
         length_node = str2double(C{3});
         prj = C(F:end);
         prj = strjoin(prj, ' ');
@@ -56,14 +57,14 @@ function [x, y, nv, h, bounds, prj, tail, id] = read_mike_mesh(fin, varargin)
 
     % Read the data to get the x, y, h, type
     frewind(fid);
-    ixyht = textscan(fid, '%d %f %f %f %d',length_node, 'headerlines', 1);
+    ixyht = textscan(fid, '%d %f %f %f %d', length_node, 'headerlines', 1);
 
     % Read the data to get the nv
     frewind(fid);
-    num_cell = textscan(fid, '%d %d %d', 1, 'headerlines', 1+length_node);
+    num_cell = textscan(fid, '%d %d %d', 1, 'headerlines', 1 + length_node);
     length_cell = num_cell{1};
     frewind(fid);
-    nvc = textscan(fid, '%d %d %d %d',length_cell, 'headerlines', 2+length_node);
+    nvc = textscan(fid, '%d %d %d %d', length_cell, 'headerlines', 2 + length_node);
     clear num_cell
 
     id = ixyht{1};
@@ -71,40 +72,43 @@ function [x, y, nv, h, bounds, prj, tail, id] = read_mike_mesh(fin, varargin)
     y = ixyht{3};
     h = ixyht{4};
     type = ixyht{5};
-    bounds = find(type~=0);
+    bounds = find(type ~= 0);
     bounds = {bounds};
     clear ixyht
 
     nv = [nvc{2} nvc{3} nvc{4}];
 
-    iline = 2+length_node+length_cell;
+    iline = 2 + length_node + length_cell;
 
     % tail
     tail = {};
     frewind(fid);
+
     for i = 1:iline
         fgetl(fid);
     end
+
     while ~feof(fid)
-        tail{end+1} = fgetl(fid);  %#ok<AGROW>
+        tail{end + 1} = fgetl(fid); %#ok<AGROW>
     end
+
     tail = tail';
 
     clear nvc length_node length_cell
     fclose(fid);
 
     if nargout == 0
-        assignin('caller','x',x);
-        assignin('caller','y',y);
-        assignin('caller','nv',nv);
+        assignin('caller', 'x', x);
+        assignin('caller', 'y', y);
+        assignin('caller', 'nv', nv);
     end
-    
+
     if ~isempty(INFO)
         disp(' ')
         disp('------------------------------------------------')
         disp(['SMS_grd file: ' fin])
         disp(['Node #: ' num2str(length(x))])
-        disp(['Cell #: ' num2str(size(nv,1))])
+        disp(['Cell #: ' num2str(size(nv, 1))])
         disp(['x range: ' num2str(min(x)) ' ~ ' num2str(max(x))])
         disp(['y range: ' num2str(min(y)) ' ~ ' num2str(max(y))])
         disp(['h range: ' num2str(min(h)) ' ~ ' num2str(max(h))])
@@ -113,4 +117,3 @@ function [x, y, nv, h, bounds, prj, tail, id] = read_mike_mesh(fin, varargin)
     end
 
 end
-

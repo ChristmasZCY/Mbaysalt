@@ -13,13 +13,13 @@ function varargout = time_to_TIME(ptime, varargin)
 
     varargin = read_varargin(varargin, {'time_format'}, {'yyyy-MM-dd HH:mm:ss'});
     varargin = read_varargin(varargin, {'out_type'}, {'char'});
-    Time = datetime(ptime,'ConvertFrom','posixtime');
-    TIME = datetime(Time,'format','yyyy-MM-dd HH:mm:ss');
+    Time = datetime(ptime, 'ConvertFrom', 'posixtime');
+    TIME = datetime(Time, 'format', 'yyyy-MM-dd HH:mm:ss');
 
-    TIME_reference = datetime(Time(1),'Format','yyyy-MM-dd');   % TIME:units的时间部分
-    TIME_start_date = datetime(Time(1),  'Format','yyyy-MM-dd HH:mm:ss'); % TIME:start_date部分
-    TIME_end_date = datetime(Time(end),'Format','yyyy-MM-dd HH:mm:ss'); % TIME:end_date部分
-    time_filename = datetime(Time(1),'Format','yyyyMMdd'); % 文件名的时间部分
+    TIME_reference = datetime(Time(1), 'Format', 'yyyy-MM-dd'); % TIME:units的时间部分
+    TIME_start_date = datetime(Time(1), 'Format', 'yyyy-MM-dd HH:mm:ss'); % TIME:start_date部分
+    TIME_end_date = datetime(Time(end), 'Format', 'yyyy-MM-dd HH:mm:ss'); % TIME:end_date部分
+    time_filename = datetime(Time(1), 'Format', 'yyyyMMdd'); % 文件名的时间部分
 
     switch out_type
         case 'char'

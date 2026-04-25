@@ -17,11 +17,11 @@ function rmfiles(varargin)
     %       rmfiles(path1,path2)
     % =================================================================================================================
 
-    arguments(Input,Repeating)
+    arguments (Input, Repeating)
         varargin {mustBeTextScalar}
     end
 
-    for num = 1: nargin
+    for num = 1:nargin
         file = strip(convertStringsToChars(varargin{num}));
         % if exist(file, 'file') || exist(file, 'dir')
         if isfolder(file)
@@ -29,6 +29,7 @@ function rmfiles(varargin)
         elseif isfile(file)
             delete(file);
         end
+
     end
 
 end

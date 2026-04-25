@@ -16,16 +16,15 @@ function varargout = touch(fin)
     %       fin = touch('~/test.md');
     % =================================================================================================================
 
-
     fin = getPath(fin);
-    
-    path = fileparts(fin);  % get the path of the file
-    makedirs(path);       % create the path if it does not exist
 
-    fid = fopen(fin,"A+");
+    path = fileparts(fin); % get the path of the file
+    makedirs(path); % create the path if it does not exist
+
+    fid = fopen(fin, "A+");
     fclose(fid);
 
-    if nargout > 0 
+    if nargout > 0
         varargout{1} = fin;
     end
 

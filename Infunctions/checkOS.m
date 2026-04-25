@@ -29,7 +29,7 @@ function OS = checkOS(str)
         error('Platform error !!!')
     end
 
-    if nargin > 0 
+    if nargin > 0
         OS = strcmp(OS, str);
     end
 

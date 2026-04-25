@@ -23,21 +23,21 @@ function [node, mdst] = calc_nearest_node(fgrid, lon_dst, lat_dst)
     % Reference:
     %       https://www.bilibili.com/read/cv4527582/
     % =================================================================================================================
-    
-    R = 6378137;  % earth radius
 
-    if(lon_dst<0)
-        lon_dst = lon_dst+360;
+    R = 6378137; % earth radius
+
+    if (lon_dst < 0)
+        lon_dst = lon_dst + 360;
     end
 
     lon_src = fgrid.x;
     lat_src = fgrid.y;
 
-    dtx = cos(lat_src./180.*pi).*(lon_dst-lon_src)./180.*pi.*R;
-    dty = (lat_dst-lat_src)./180.*pi.*R;
-    dst = sqrt(dtx.^2+(dty.^2));
+    dtx = cos(lat_src ./ 180 .* pi) .* (lon_dst - lon_src) ./ 180 .* pi .* R;
+    dty = (lat_dst - lat_src) ./ 180 .* pi .* R;
+    dst = sqrt(dtx .^ 2 + (dty .^ 2));
 
-    [mdst,node] = min(dst);  % mdst is minium distant of node(m), node is indice
+    [mdst, node] = min(dst); % mdst is minium distant of node(m), node is indice
 
     return
 end

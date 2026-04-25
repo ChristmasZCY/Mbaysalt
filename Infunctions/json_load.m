@@ -1,9 +1,9 @@
-function jdata = json_load(file,varargin)
+function jdata = json_load(file, varargin)
     %       Load json file
     % =================================================================================================================
     % Parameters:
     %       file: file name                  || required: True || type: string || example: "file.json"
-    %       varargin: 
+    %       varargin:
     %           Method_load                  || required: False|| type: string || example: "MATLAB" or "jsonlab"
     % =================================================================================================================
     % Returns:
@@ -15,22 +15,22 @@ function jdata = json_load(file,varargin)
     %       jdata = json_load('file.json','method','jsonlab');
     % =================================================================================================================
 
-    arguments(Input)
+    arguments (Input)
         file % {mustBeFile}
     end
 
-    arguments(Input,Repeating)
+    arguments (Input, Repeating)
         varargin
     end
 
-    arguments(Output)
+    arguments (Output)
         jdata {struct}
     end
 
     file = convertStringsToChars(file);
 
-    varargin = read_varargin(varargin,{'method'},{'MATLAB'});
-    
+    varargin = read_varargin(varargin, {'method'}, {'MATLAB'});
+
     switch method
         case "MATLAB"
             json_str = fileread(file);
@@ -39,7 +39,7 @@ function jdata = json_load(file,varargin)
             jdata = loadjson(file);
     end
 
-    if ~isfield(jdata,'FILEPATH') && isscalar(jdata)
+    if ~isfield(jdata, 'FILEPATH') && isscalar(jdata)
         jdata.FILEPATH = file;
     end
 

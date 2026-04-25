@@ -5,7 +5,7 @@ function S = closefile()
     %       None
     % =================================================================================================================
     % Returns:
-    %       S: Structs of opened files.  || required: False  || type: struct ||  example: 
+    %       S: Structs of opened files.  || required: False  || type: struct ||  example:
     % =================================================================================================================
     % Update:
     %       2024-03-25:     Created, by Christmas;
@@ -13,8 +13,8 @@ function S = closefile()
     % Example:
     %       closefile
     % =================================================================================================================
-    
-    fids = openedFiles();  % fopen('all')
+
+    fids = openedFiles(); % fopen('all')
 
     S = struct('filename', {}, 'permission', {}, 'machinefmt', {}, 'encodingOut', {});
 

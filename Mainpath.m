@@ -2,7 +2,7 @@ function varargout = Mainpath(varargin)
     %       Mainpath is a function to add all path of this package
     % =================================================================================================================
     % Parameters:
-    %       varargin:       optional parameters      
+    %       varargin:       optional parameters
     %           add:        add all path                    || required: False|| type: Text || format: 'add'
     %           rm:         remove all path                 || required: False|| type: Text || format: 'rm'
     %           noclone:    add all path without clone git  || required: False|| type: Text || format: 'noclone'
@@ -22,9 +22,9 @@ function varargout = Mainpath(varargin)
     %       2024-02-22:     Added Exfunctions-kmz2struct, by Christmas;
     %       2024-02-22:     Added Exfunctions/SupplementFiles for toolox, by Christmas;
     %       2024-03-17:     Added Exfunctions/inpolygons-pkg for toolox, by Christmas;
-    %       2024-03-21:     Added seawater, GSW, WindRose toolbox , by Christmas; 
-    %       2024-03-21:     Extract download,unzip to function, by Christmas; 
-    %       2024-04-01:     Added Post_mitgcm, MITgcmTools, by Christmas; 
+    %       2024-03-21:     Added seawater, GSW, WindRose toolbox , by Christmas;
+    %       2024-03-21:     Extract download,unzip to function, by Christmas;
+    %       2024-04-01:     Added Post_mitgcm, MITgcmTools, by Christmas;
     %       2024-04-03:     Added install DHI-MATLAB-Toolbox,   by Christmas;
     %       2024-04-04:     Added noset,   by Christmas;
     %       2024-04-07:     Fixed init, change noset,    by Christmas;
@@ -44,8 +44,8 @@ function varargout = Mainpath(varargin)
     %       Mainpath('noset', true)         % Do not set pref
     %       Mainpath('add','init', true)    % Initialize and add all path
     % =================================================================================================================
-    
-    arguments(Input, Repeating)
+
+    arguments (Input, Repeating)
         varargin
     end
 

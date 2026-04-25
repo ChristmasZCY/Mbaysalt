@@ -1,30 +1,30 @@
 %% CDT
 %% time
-[dt, unit, refdate] = cftime(t(1),'seconds since 1970-01-01 00:00:00'); %#ok<*ASGLU>
-[dt, t, unit, refdate] = ncdateread(data,'time');
-tunit = ncreadatt(data,'time', 'units');tunit;
+[dt, unit, refdate] = cftime(t(1), 'seconds since 1970-01-01 00:00:00'); %#ok<*ASGLU>
+[dt, t, unit, refdate] = ncdateread(data, 'time');
+tunit = ncreadatt(data, 'time', 'units'); tunit;
 
 %% draw
-borders('countries','color',rgb('dark gray'))  % 岸线
-cmocean thermal  % colorbar
-[latout,lonout,ustd,vstd] = recenter(G.y1D,G.x1D,V.u_std,V.v_std,'center',180) ;   % 更改中心经纬度
-quiversc(lon,lat,u10,v10)  % 自动缩放箭头
-cbarrow  % colorbar
-bordersm('countries','color',rgb('dark gray'))  % 岸线
+borders('countries', 'color', rgb('dark gray')) % 岸线
+cmocean thermal % colorbar
+[latout, lonout, ustd, vstd] = recenter(G.y1D, G.x1D, V.u_std, V.v_std, 'center', 180); % 更改中心经纬度
+quiversc(lon, lat, u10, v10) % 自动缩放箭头
+cbarrow % colorbar
+bordersm('countries', 'color', rgb('dark gray')) % 岸线
 cbdate % 将颜色条刻度格式为日期字符串。
-earthimage('center',0)
+earthimage('center', 0)
 globeborders
-globeimage  % 创建一个“蓝色大理石”三维地球图像。
-borders  % 边界绘制国家或美国国家边界没有matlab的映射工具箱。如果您想在由matlab的映射工具箱生成的地图上绘制边界，请使用bordersm。
+globeimage % 创建一个“蓝色大理石”三维地球图像。
+borders % 边界绘制国家或美国国家边界没有matlab的映射工具箱。如果您想在由matlab的映射工具箱生成的地图上绘制边界，请使用bordersm。
 
 %% xyz file
-[x,y,z] = xyzread('Curie_Depth.xyz');
-[X,Y,Z] = xyz2grid(x,y,z);
-pcolor(X,Y,Z)
+[x, y, z] = xyzread('Curie_Depth.xyz');
+[X, Y, Z] = xyz2grid(x, y, z);
+pcolor(X, Y, Z)
 shading flat
 
 %% 创建一个纬度和经度的全球网格
-[lat,lon] = cdtgrid;
+[lat, lon] = cdtgrid;
 
 %% dist2coast 决定了从任何地理位置到最近海岸线的距离
 
@@ -47,23 +47,23 @@ shading flat
 
 %% nc
 A = ncstruct(fin);
-A = ncdatelim(fin,'time');
+A = ncdatelim(fin, 'time');
 
 %% near1
-row = near1(lat,23);
+row = near1(lat, 23);
 
 %% datetick
 datetick()
 
 %% deseason
-sst_ds = deseason(sst,t);
+sst_ds = deseason(sst, t);
 
 %% trend
-trend(sst,12)
+trend(sst, 12)
 
 %% cmocean
 cmocean('thermal')
-cmocean('balance','pivot')
+cmocean('balance', 'pivot')
 
 %% stipple 点画在网格内创建一个hatch填充或点画。该函数主要用于显示空间地图中具有统计意义的区域
 stipple

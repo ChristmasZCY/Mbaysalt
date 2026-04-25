@@ -53,21 +53,29 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
     if length(Weight_node(:)) == fn.node
         Weight_node = repmat(Weight_node(:), 1, nt);
     end
+
     if length(Weight_cell(:)) == fn.nele
         Weight_cell = repmat(Weight_cell(:), 1, nt);
     end
 
     dzc = -diff(fn.siglevc, 1, 2);
+
     if isempty(Ua) && ~isempty(U)
-        for it = 1 : nt
-            Ua(:,it) = sum(U(:,:,it).*dzc, 2);
+
+        for it = 1:nt
+            Ua(:, it) = sum(U(:, :, it) .* dzc, 2);
         end
+
     end
+
     if isempty(Va) && ~isempty(V)
-        for it = 1 : nt
-            Va(:,it) = sum(V(:,:,it).*dzc, 2);
+
+        for it = 1:nt
+            Va(:, it) = sum(V(:, :, it) .* dzc, 2);
         end
+
     end
+
     %=====================================================================================================
     % Write nc file
     %=====================================================================================================
@@ -80,34 +88,34 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
     % Global Attributes
     %=====================================================================================================
 
-    OPT.title                  = 'nscs';
-    OPT.institution            = 'Ocean University of China';
-    OPT.source                 = 'FVCOM_5.0';
-    OPT.history                = 'model started at: 10/28/2020   09:26';
-    OPT.references             = 'http://fvcom.smast.umassd.edu, http://codfish.smast.umassd.edu';
-    OPT.Conventions            = 'CF-1.0';
-    OPT.CoordinateSystem       = 'GeoReferenced';
-    OPT.CoordinateProjection   = 'none';
+    OPT.title = 'nscs';
+    OPT.institution = 'Ocean University of China';
+    OPT.source = 'FVCOM_5.0';
+    OPT.history = 'model started at: 10/28/2020   09:26';
+    OPT.references = 'http://fvcom.smast.umassd.edu, http://codfish.smast.umassd.edu';
+    OPT.Conventions = 'CF-1.0';
+    OPT.CoordinateSystem = 'GeoReferenced';
+    OPT.CoordinateProjection = 'none';
 
-    nc_attput(fout, nc_global, 'title'                 , OPT.title);
-    nc_attput(fout, nc_global, 'institution'           , OPT.institution);
-    nc_attput(fout, nc_global, 'source'                , OPT.source);
-    nc_attput(fout, nc_global, 'history'               , OPT.history);
-    nc_attput(fout, nc_global, 'references'            , OPT.references);
-    nc_attput(fout, nc_global, 'Conventions'           , OPT.Conventions);
-    nc_attput(fout, nc_global, 'CoordinateSystem'      , OPT.CoordinateSystem);
-    nc_attput(fout, nc_global, 'CoordinateProjection'  , OPT.CoordinateProjection);
+    nc_attput(fout, nc_global, 'title', OPT.title);
+    nc_attput(fout, nc_global, 'institution', OPT.institution);
+    nc_attput(fout, nc_global, 'source', OPT.source);
+    nc_attput(fout, nc_global, 'history', OPT.history);
+    nc_attput(fout, nc_global, 'references', OPT.references);
+    nc_attput(fout, nc_global, 'Conventions', OPT.Conventions);
+    nc_attput(fout, nc_global, 'CoordinateSystem', OPT.CoordinateSystem);
+    nc_attput(fout, nc_global, 'CoordinateProjection', OPT.CoordinateProjection);
 
     %=====================================================================================================
     % Dimensions
     %=====================================================================================================
 
-    nc_add_dimension(fout, 'nele',   fn.nele);
-    nc_add_dimension(fout, 'node',   fn.node);
+    nc_add_dimension(fout, 'nele', fn.nele);
+    nc_add_dimension(fout, 'node', fn.node);
     nc_add_dimension(fout, 'siglay', fn.kbm1);
     nc_add_dimension(fout, 'siglev', fn.kb);
-    nc_add_dimension(fout, 'three',  3);
-    nc_add_dimension(fout, 'time',   0);
+    nc_add_dimension(fout, 'three', 3);
+    nc_add_dimension(fout, 'time', 0);
     nc_add_dimension(fout, 'DateStrLen', 26)
 
     % x
@@ -145,7 +153,7 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
     % nv
     varstruct.Name = 'nv';
     varstruct.Datatype = 'int';
-    varstruct.Dimension = {'three','nele'};
+    varstruct.Dimension = {'three', 'nele'};
     nc_addvar(fout, varstruct);
     nc_attput(fout, 'nv', 'long_name', 'nodes surrounding element');
 
@@ -188,7 +196,7 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
     % siglay
     varstruct.Name = 'siglay';
     varstruct.Datatype = 'single';
-    varstruct.Dimension = {'siglay','node'};
+    varstruct.Dimension = {'siglay', 'node'};
     nc_addvar(fout, varstruct);
     nc_attput(fout, 'siglay', 'long_name', 'Sigma Layers');
     nc_attput(fout, 'siglay', 'standard_name', 'ocean_sigma/general_coordinate');
@@ -200,19 +208,19 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
     % siglev
     varstruct.Name = 'siglev';
     varstruct.Datatype = 'single';
-    varstruct.Dimension = {'siglev','node'};
+    varstruct.Dimension = {'siglev', 'node'};
     nc_addvar(fout, varstruct);
     nc_attput(fout, 'siglev', 'long_name', 'Sigma levels');
     nc_attput(fout, 'siglev', 'standard_name', 'ocean_sigma/general_coordinate');
     nc_attput(fout, 'siglev', 'positive', 'up');
     nc_attput(fout, 'siglev', 'valid_min', '-1.f');
-    nc_attput(fout, 'siglev', 'valid_max', '0.f' );
+    nc_attput(fout, 'siglev', 'valid_max', '0.f');
     nc_attput(fout, 'siglev', 'formula_terms', 'sigma: siglay eta: zeta depth: h');
 
     % siglay_center
     varstruct.Name = 'siglay_center';
     varstruct.Datatype = 'single';
-    varstruct.Dimension = {'siglay','nele'};
+    varstruct.Dimension = {'siglay', 'nele'};
     nc_addvar(fout, varstruct);
     nc_attput(fout, 'siglay_center', 'long_name', 'Sigma Layers');
     nc_attput(fout, 'siglay_center', 'standard_name', 'ocean_sigma/general_coordinate');
@@ -224,13 +232,13 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
     % siglev_center
     varstruct.Name = 'siglev_center';
     varstruct.Datatype = 'single';
-    varstruct.Dimension = {'siglev','nele'};
+    varstruct.Dimension = {'siglev', 'nele'};
     nc_addvar(fout, varstruct);
     nc_attput(fout, 'siglev_center', 'long_name', 'Sigma levels');
     nc_attput(fout, 'siglev_center', 'standard_name', 'ocean_sigma/general_coordinate');
     nc_attput(fout, 'siglev_center', 'positive', 'up');
     nc_attput(fout, 'siglev_center', 'valid_min', '-1.f');
-    nc_attput(fout, 'siglev_center', 'valid_max', '0.f' );
+    nc_attput(fout, 'siglev_center', 'valid_max', '0.f');
     nc_attput(fout, 'siglev_center', 'formula_terms', 'sigma: siglay eta: zeta depth: h');
 
     % h
@@ -263,41 +271,41 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
     varstruct.Name = 'time';
     varstruct.Datatype = 'single';
     varstruct.Dimension = {'time'};
-    nc_addvar(fout,varstruct);
-    nc_attput(fout, 'time' , 'long_name' , 'time');
-    nc_attput(fout, 'time' , 'units' , 'days since 1858-11-17 00:00:00');
-    nc_attput(fout, 'time' , 'format' , 'modified julian day(MJD)');
-    nc_attput(fout, 'time' , 'time_zone' , 'UTC');
+    nc_addvar(fout, varstruct);
+    nc_attput(fout, 'time', 'long_name', 'time');
+    nc_attput(fout, 'time', 'units', 'days since 1858-11-17 00:00:00');
+    nc_attput(fout, 'time', 'format', 'modified julian day(MJD)');
+    nc_attput(fout, 'time', 'time_zone', 'UTC');
 
     % Itime
     varstruct.Name = 'Itime';
     varstruct.Datatype = 'int';
     varstruct.Dimension = {'time'};
-    nc_addvar(fout,varstruct);
-    nc_attput(fout, 'Itime' , 'units' , 'days since 1858-11-17 00:00:00');
-    nc_attput(fout, 'Itime' , 'format' , 'modified julian day(MJD)');
-    nc_attput(fout, 'Itime' , 'time_zone' , 'UTC');
+    nc_addvar(fout, varstruct);
+    nc_attput(fout, 'Itime', 'units', 'days since 1858-11-17 00:00:00');
+    nc_attput(fout, 'Itime', 'format', 'modified julian day(MJD)');
+    nc_attput(fout, 'Itime', 'time_zone', 'UTC');
 
     % Itime2
     varstruct.Name = 'Itime2';
     varstruct.Datatype = 'int';
     varstruct.Dimension = {'time'};
-    nc_addvar(fout,varstruct);
-    nc_attput(fout, 'Itime2' , 'units' , 'msec since 00:00:00');
-    nc_attput(fout, 'Itime2' , 'time_zone' , 'UTC');
+    nc_addvar(fout, varstruct);
+    nc_attput(fout, 'Itime2', 'units', 'msec since 00:00:00');
+    nc_attput(fout, 'Itime2', 'time_zone', 'UTC');
 
     % Times
     varstruct.Name = 'Times';
     varstruct.Datatype = 'char';
     varstruct.Dimension = {'time', 'DateStrLen'};
-    nc_addvar(fout,varstruct);
-    nc_attput(fout, 'Times' , 'time_zone' , 'UTC');
+    nc_addvar(fout, varstruct);
+    nc_attput(fout, 'Times', 'time_zone', 'UTC');
 
     if ~isempty(Zeta)
         % zeta
         varstruct.Name = 'zeta';
         varstruct.Datatype = 'single';
-        varstruct.Dimension = {'time','node'};
+        varstruct.Dimension = {'time', 'node'};
         nc_addvar(fout, varstruct);
         nc_attput(fout, 'zeta', 'long_name', 'Water Surface Elevation');
         nc_attput(fout, 'zeta', 'units', 'meters');
@@ -312,7 +320,7 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
         % u
         varstruct.Name = 'u';
         varstruct.Datatype = 'single';
-        varstruct.Dimension = {'time','siglay','nele'};
+        varstruct.Dimension = {'time', 'siglay', 'nele'};
         nc_addvar(fout, varstruct);
         nc_attput(fout, 'u', 'long_name', 'Eastward Water Velocity');
         nc_attput(fout, 'u', 'units', 'meters s-1');
@@ -324,7 +332,7 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
         % v
         varstruct.Name = 'v';
         varstruct.Datatype = 'single';
-        varstruct.Dimension = {'time','siglay','nele'};
+        varstruct.Dimension = {'time', 'siglay', 'nele'};
         nc_addvar(fout, varstruct);
         nc_attput(fout, 'v', 'long_name', 'Northward Water Velocity');
         nc_attput(fout, 'v', 'units', 'meters s-1');
@@ -336,7 +344,7 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
         % ua
         varstruct.Name = 'ua';
         varstruct.Datatype = 'single';
-        varstruct.Dimension = {'time','nele'};
+        varstruct.Dimension = {'time', 'nele'};
         nc_addvar(fout, varstruct);
         nc_attput(fout, 'ua', 'long_name', 'Vertically Averaged x-velocity');
         nc_attput(fout, 'ua', 'units', 'meters s-1');
@@ -348,7 +356,7 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
         % va
         varstruct.Name = 'va';
         varstruct.Datatype = 'single';
-        varstruct.Dimension = {'time','nele'};
+        varstruct.Dimension = {'time', 'nele'};
         nc_addvar(fout, varstruct);
         nc_attput(fout, 'va', 'long_name', 'Vertically Averaged y-velocity');
         nc_attput(fout, 'va', 'units', 'meters s-1');
@@ -360,13 +368,13 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
         % temperature
         varstruct.Name = 'temp';
         varstruct.Datatype = 'single';
-        varstruct.Dimension = {'time','siglay','node'};
+        varstruct.Dimension = {'time', 'siglay', 'node'};
         nc_addvar(fout, varstruct);
         nc_attput(fout, 'temp', 'long_name', 'temperature');
-        nc_attput(fout, 'temp', 'standard_name','sea_water_temperature');
+        nc_attput(fout, 'temp', 'standard_name', 'sea_water_temperature');
         nc_attput(fout, 'temp', 'units', 'degrees_C');
         nc_attput(fout, 'temp', 'grid', 'fvcom_grid');
-        nc_attput(fout, 'temp', 'coordinates','time siglay lat lon');
+        nc_attput(fout, 'temp', 'coordinates', 'time siglay lat lon');
         nc_attput(fout, 'temp', 'type', 'data');
     end
 
@@ -374,13 +382,13 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
         % salinity
         varstruct.Name = 'salinity';
         varstruct.Datatype = 'single';
-        varstruct.Dimension = {'time','siglay','node'};
+        varstruct.Dimension = {'time', 'siglay', 'node'};
         nc_addvar(fout, varstruct);
         nc_attput(fout, 'salinity', 'long_name', 'salinity');
-        nc_attput(fout, 'salinity', 'standard_name','sea_water_salinity');
+        nc_attput(fout, 'salinity', 'standard_name', 'sea_water_salinity');
         nc_attput(fout, 'salinity', 'units', '1e-3');
         nc_attput(fout, 'salinity', 'grid', 'fvcom_grid');
-        nc_attput(fout, 'salinity', 'coordinates','time siglay lat lon');
+        nc_attput(fout, 'salinity', 'coordinates', 'time siglay lat lon');
         nc_attput(fout, 'salinity', 'type', 'data');
     end
 
@@ -388,7 +396,7 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
         % hyw
         varstruct.Name = 'hyw';
         varstruct.Datatype = 'single';
-        varstruct.Dimension = {'time','siglev','node'};
+        varstruct.Dimension = {'time', 'siglev', 'node'};
         nc_addvar(fout, varstruct);
         nc_attput(fout, 'hyw', 'long_name', 'hydro static vertical velocity');
         nc_attput(fout, 'hyw', 'units', 'm/s');
@@ -396,48 +404,56 @@ function write_nesting_mexcdf(fout, fn, time, varargin)
         nc_attput(fout, 'hyw', 'type', 'data');
     end
 
-    nc_varput(fout,'x', fn.x);
-    nc_varput(fout,'y', fn.y);
-    nc_varput(fout,'xc', fn.xc);
-    nc_varput(fout,'yc', fn.yc);
-    nc_varput(fout,'nv', fn.nv');
-    nc_varput(fout,'h', fn.h);
-    nc_varput(fout,'lon', fn.LON);
-    nc_varput(fout,'lat', fn.LAT);
-    nc_varput(fout,'lonc', mean(fn.LON(fn.nv), 2));
-    nc_varput(fout,'latc', mean(fn.LAT(fn.nv), 2));
-    nc_varput(fout,'siglay', fn.siglay');
-    nc_varput(fout,'siglev',fn.siglev');
-    nc_varput(fout,'h_center', fn.hc);
-    nc_varput(fout,'siglay_center', fn.siglayc');
-    nc_varput(fout,'siglev_center',fn.siglevc');
-    nc_varput(fout,'time', time);
-    nc_varput(fout,'Itime', Itime);
-    nc_varput(fout,'Itime2', Itime2);
-    nc_varput(fout,'Times', Times);
+    nc_varput(fout, 'x', fn.x);
+    nc_varput(fout, 'y', fn.y);
+    nc_varput(fout, 'xc', fn.xc);
+    nc_varput(fout, 'yc', fn.yc);
+    nc_varput(fout, 'nv', fn.nv');
+    nc_varput(fout, 'h', fn.h);
+    nc_varput(fout, 'lon', fn.LON);
+    nc_varput(fout, 'lat', fn.LAT);
+    nc_varput(fout, 'lonc', mean(fn.LON(fn.nv), 2));
+    nc_varput(fout, 'latc', mean(fn.LAT(fn.nv), 2));
+    nc_varput(fout, 'siglay', fn.siglay');
+    nc_varput(fout, 'siglev', fn.siglev');
+    nc_varput(fout, 'h_center', fn.hc);
+    nc_varput(fout, 'siglay_center', fn.siglayc');
+    nc_varput(fout, 'siglev_center', fn.siglevc');
+    nc_varput(fout, 'time', time);
+    nc_varput(fout, 'Itime', Itime);
+    nc_varput(fout, 'Itime2', Itime2);
+    nc_varput(fout, 'Times', Times);
+
     if ~isempty(Zeta)
-        nc_varput(fout,'zeta', Zeta);
+        nc_varput(fout, 'zeta', Zeta);
     end
+
     if ~isempty(Temperature)
-        nc_varput(fout,'temp', Temperature);
+        nc_varput(fout, 'temp', Temperature);
     end
+
     if ~isempty(Salinity)
-        nc_varput(fout,'salinity', Salinity);
+        nc_varput(fout, 'salinity', Salinity);
     end
+
     if ~isempty(U)
-        nc_varput(fout,'u', U);
+        nc_varput(fout, 'u', U);
     end
+
     if ~isempty(V)
-        nc_varput(fout,'v', V);
+        nc_varput(fout, 'v', V);
     end
+
     if ~isempty(Ua)
-        nc_varput(fout,'ua', Ua);
+        nc_varput(fout, 'ua', Ua);
     end
+
     if ~isempty(Va)
-        nc_varput(fout,'va', Va);
+        nc_varput(fout, 'va', Va);
     end
+
     if ~isempty(Hyw)
-        nc_varput(fout,'hyw', Hyw);
+        nc_varput(fout, 'hyw', Hyw);
     end
 
 end
