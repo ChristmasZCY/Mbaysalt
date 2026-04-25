@@ -211,6 +211,8 @@
 %                                  Ncfunctions  -  Functions for netcdf
 % -----------------------------------------------------------------------------------------------------------------
 %   functionSignatures.json                     -  Function signatures for this folder
+%   calc_dtype.m                                -  Calculate the data type for netcdf variable
+%   calc_fillvalue.m                            -  Calculate the fill value for netcdf variable
 %   create_nc.m                                 -  Create NETCDF file as input
 %   isNetcdfFile.m                              -  Check if a file is a netcdf file
 %   nc_attrName_exist.m                         -  Check if a netcdf file has a str at Attribute Name
