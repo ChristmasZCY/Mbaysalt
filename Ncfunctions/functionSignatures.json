@@ -1,4 +1,3 @@
-
 {
     "_schemaVersion": "1.0.0",
     "create_nc":{
@@ -7,6 +6,17 @@
             {"name":"File format","kind":"positional","type":["choices={'CLOBBER','NOCLOBBER','SHARE','64BIT_OFFSET','NETCDF4','CLASSIC_MODEL'}"],"purpose":"Format of netCDF file"}],
         "outputs":[
             {"name":"ncid", "type":["scalar"], "purpose":"netCDF ID"}]},
+    "calc_dtype": {
+        "inputs":[
+            {"name":"data", "kind":"required","type":["numeric"],"purpose":"input data"},
+            {"name":"method", "kind":"positional","type":["char","choices={'HighLevel','LowLevel'}"],"purpose":"output format"}],
+        "outputs":[
+            {"name":"dtype", "type":["char"], "purpose":"calculated data type"}]},
+    "calc_fillvalue": {
+        "inputs":[
+            {"name":"dtype", "kind":"required","type":["char"],"purpose":"data type"}],
+        "outputs":[
+            {"name":"fillvalue", "type":["scalar"], "purpose":"calculated fill value"}]},
     "netcdf_wrf.wrnc_wind10m":{
         "inputs":[
             {"name":"ncid", "kind":"required","type":["numeric"],"purpose":"netCDF ID"},
