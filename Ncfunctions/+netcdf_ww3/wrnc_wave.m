@@ -395,7 +395,7 @@ function rtn = wrnc_wave(NC, Lon, Lat, time, Velement, varargin)
             netcdf.putAtt(ncid, varid_GA, 'Mbaysalt_version', ver('Mbaysalt').Version); % Mbaysalt版本信息
             netcdf.putAtt(ncid, varid_GA, 'Mbaysalt_gitHash', getGitHash(ST_Mbaysalt('cd'), 'long')); % Mbaysalt git
             netcdf.putAtt(ncid, varid_GA, 'MATLAB_version', version); % MATLAB版本信息
-            netcdf.close(ncid); % 关闭nc文件
+            % netcdf.close(ncid);  % ncid is closed automatically by cleanupObj. % 关闭nc文件
 
         case 'HighLevel'
             ncname = getPath(ncname);
