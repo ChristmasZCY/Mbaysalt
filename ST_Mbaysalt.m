@@ -1,4 +1,4 @@
-function ST_Mbaysalt(varargin)
+function varargout = ST_Mbaysalt(varargin)
     %       To setup path of Mbaysalt
     % =================================================================================================================
     % Parameters:
@@ -11,7 +11,8 @@ function ST_Mbaysalt(varargin)
     %           *.json:     INSTALL JsonFile    || required: False|| type: positional || format: './INSTALL.json'
     % =================================================================================================================
     % Returns:
-    %       None
+    %       varargout: (optional)
+    %               'cd' && nargout == 1:    current path         || type: char || format: '/Users/christmas/Mbaysalt'
     % =================================================================================================================
     % Updates:
     %       ****-**-**:     See Mainpath.m
@@ -62,8 +63,15 @@ function ST_Mbaysalt(varargin)
                 varargin(i) = [];
                 break
             case {'cd'} % cd to the path of this function
-                cd(fileparts(mfilename("fullpath")))
+
+                if nargout == 1
+                    varargout{1} = PATH.basepath;
+                else
+                    cd(PATH.basepath)
+                end
+
                 return
+
         end
 
     end
