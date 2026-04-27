@@ -24,6 +24,14 @@ function hash = getGitHash(din, varargin)
 
     narginchk(1, 4);
 
+    din = getPath(din);
+    % 如果文件夹中没有.git文件或文件，则抛出错误
+    if ~exist(fullfile(din, '.git'), 'dir') && ~exist(fullfile(din, '.git'), 'file')
+        hash = 'N/A';
+        warning('Not a git repository: %s. Returning ''N/A''.', din);
+        return;
+    end
+
     % 从可变参数中获取len、opts和method的值，如果没有提供则使用默认值
     % 匹配提取
     % len: short or long
@@ -74,8 +82,6 @@ function hash = getGitHash(din, varargin)
         end
 
     end
-
-    din = getPath(din);
 
     switch upper(method)
         case 'CMD'

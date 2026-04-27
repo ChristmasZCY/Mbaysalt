@@ -140,23 +140,25 @@ function rtn = wrnc_t2m(NC, Lon, Lat, time, T2, varargin)
                 netcdf.putAtt(ncid, T2_id, key{1}, ATTRS.temperature.(key{1}));
             end
 
-            % 写入global attribute
             varid_GA = netcdf.getConstant('NC_GLOBAL');
-
+            % 写入global attribute
             for key = fieldnames(ATTRS.GLOBAL)'
-                netcdf.putAtt(ncid, varid_GA, key{1}, ATTRS.global.(key{1}));
+                netcdf.putAtt(ncid, varid_GA, key{1}, ATTRS.GLOBAL.(key{1}));
             end % global attribute
 
-            netcdf.putAtt(ncid, netcdf.getConstant('NC_GLOBAL'), 'product_name', S_name); % 文件名
-            netcdf.putAtt(ncid, netcdf.getConstant('NC_GLOBAL'), 'WriteProgram', ['netcdf_wrf:', mfilename, ' V', Version]); % 写入程序信息
-
             if class(conf) == "struct" && isfield(conf, "P_Source")
-                netcdf.putAtt(ncid, netcdf.getConstant('NC_GLOBAL'), 'source', conf.P_Source); % 数据源
+                netcdf.putAtt(ncid, varid_GA, 'source', conf.P_Source); % 数据源
             end
 
-            netcdf.putAtt(ncid, netcdf.getConstant('NC_GLOBAL'), 'start', GA.START_DATE); % 起报时间
-            netcdf.putAtt(ncid, netcdf.getConstant('NC_GLOBAL'), 'history', ['Created by Matlab at ' char(datetime("now", "Inputformat", "yyyy-MM-dd HH:mm:SS"))]); % 操作历史记录
+            netcdf.putAtt(ncid, varid_GA, 'product_name', S_name); % 文件名
+            netcdf.putAtt(ncid, varid_GA, 'WriteProgram', sprintf('netcdf_wrf:%s_V%s', mfilename, Version)); % 写入程序信息
+            netcdf.putAtt(ncid, varid_GA, 'start', GA.START_DATE); % 起报时间
+            netcdf.putAtt(ncid, varid_GA, 'history', ['Created by Matlab at ' char(datetime("now", "Inputformat", "yyyy-MM-dd HH:mm:SS"))]); % 操作历史记录
+            netcdf.putAtt(ncid, varid_GA, 'Mbaysalt_version', ver('Mbaysalt').Version); % Mbaysalt版本信息
+            netcdf.putAtt(ncid, varid_GA, 'Mbaysalt_gitHash', getGitHash(ST_Mbaysalt('cd'), 'long')); % Mbaysalt git hash
+            netcdf.putAtt(ncid, varid_GA, 'MATLAB_version', version); % MATLAB版本信息
             netcdf.close(ncid); % 关闭nc文件
+
         case 'HighLevel'
             ncname = getPath(ncname);
             rmfiles(ncname);
@@ -239,20 +241,23 @@ function rtn = wrnc_t2m(NC, Lon, Lat, time, T2, varargin)
             ncwriteatt(ncname, 'temperature', 'add_offset', add_offset);
             ncwrite(ncname, 'temperature', T2, [1, 1, 1]);
 
+            varid_GA = netcdf.getConstant('NC_GLOBAL');
             % 写入global attribute
             for key = fieldnames(ATTRS.GLOBAL)'
                 ncwriteatt(ncname, '/', key{1}, ATTRS.GLOBAL.(key{1}));
             end
 
-            ncwriteatt(ncname, '/', 'product_name', S_name);
-            ncwriteatt(ncname, '/', 'WriteProgram', ['netcdf_wrf:', mfilename, ' V', Version]);
-
             if class(conf) == "struct" && isfield(conf, "P_Source")
                 ncwriteatt(ncname, '/', 'source', conf.P_Source);
             end
 
+            ncwriteatt(ncname, '/', 'product_name', S_name);
+            ncwriteatt(ncname, '/', 'WriteProgram', sprintf('netcdf_wrf:%s_V%s', mfilename, Version));
             ncwriteatt(ncname, '/', 'start', GA.START_DATE);
             ncwriteatt(ncname, '/', 'history', ['Created by Matlab at ' char(datetime("now", "Inputformat", "yyyy-MM-dd HH:mm:SS"))]);
+            ncwriteatt(ncname, '/', 'Mbaysalt_version', ver('Mbaysalt').Version);
+            ncwriteatt(ncname, '/', 'Mbaysalt_gitHash', getGitHash(ST_Mbaysalt('cd'), 'long'));
+            ncwriteatt(ncname, '/', 'MATLAB_version', version);
 
     end
 
