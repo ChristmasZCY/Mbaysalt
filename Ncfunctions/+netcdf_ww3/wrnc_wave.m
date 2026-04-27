@@ -652,10 +652,9 @@ function rtn = wrnc_wave(NC, Lon, Lat, time, Velement, varargin)
                 ncwrite(ncname, 'mpts', Velement.Mpts, [1, 1, 1]);
             end
 
-            varid_GA = netcdf.getConstant('NC_GLOBAL');
             % 写入global attribute
             for key = fieldnames(ATTRS.GLOBAL)'
-                ncwriteatt(ncname, varid_GA, key{1}, ATTRS.GLOBAL.(key{1}));
+                ncwriteatt(ncname, '/', key{1}, ATTRS.GLOBAL.(key{1}));
             end
 
             if ~isempty(conf)
@@ -663,17 +662,17 @@ function rtn = wrnc_wave(NC, Lon, Lat, time, Velement, varargin)
                 fields = fieldnames(NC);
 
                 for iname = 1:length(fields)
-                    ncwriteatt(ncname, varid_GA, fields{iname}, NC.(fields{iname}));
+                    ncwriteatt(ncname, '/', fields{iname}, NC.(fields{iname}));
                 end
 
             end
 
-            ncwriteatt(ncname, varid_GA, 'product_name', S_name);
-            ncwriteatt(ncname, varid_GA, 'WriteProgram', sprintf('netcdf_ww3:%s_V%s', mfilename, Version));
-            ncwriteatt(ncname, varid_GA, 'history', ['Created by Matlab at ' char(datetime("now", "Inputformat", "yyyy-MM-dd HH:mm:SS"))]);
-            ncwriteatt(ncname, varid_GA, 'Mbaysalt_version', ver('Mbaysalt').Version);
-            ncwriteatt(ncname, varid_GA, 'Mbaysalt_gitHash', getGitHash(ST_Mbaysalt('cd'), 'long'));
-            ncwriteatt(ncname, varid_GA, 'MATLAB_version', version);
+            ncwriteatt(ncname, '/', 'product_name', S_name);
+            ncwriteatt(ncname, '/', 'WriteProgram', sprintf('netcdf_ww3:%s_V%s', mfilename, Version));
+            ncwriteatt(ncname, '/', 'history', ['Created by Matlab at ' char(datetime("now", "Inputformat", "yyyy-MM-dd HH:mm:SS"))]);
+            ncwriteatt(ncname, '/', 'Mbaysalt_version', ver('Mbaysalt').Version);
+            ncwriteatt(ncname, '/', 'Mbaysalt_gitHash', getGitHash(ST_Mbaysalt('cd'), 'long'));
+            ncwriteatt(ncname, '/', 'MATLAB_version', version);
 
     end
 

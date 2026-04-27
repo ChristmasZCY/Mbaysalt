@@ -241,7 +241,6 @@ function rtn = wrnc_t2m(NC, Lon, Lat, time, T2, varargin)
             ncwriteatt(ncname, 'temperature', 'add_offset', add_offset);
             ncwrite(ncname, 'temperature', T2, [1, 1, 1]);
 
-            varid_GA = netcdf.getConstant('NC_GLOBAL');
             % 写入global attribute
             for key = fieldnames(ATTRS.GLOBAL)'
                 ncwriteatt(ncname, '/', key{1}, ATTRS.GLOBAL.(key{1}));
