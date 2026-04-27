@@ -1,4 +1,3 @@
-
 {
     "_schemaVersion": "1.0.0",
     "read_conf":{
@@ -510,6 +509,14 @@
             {"name": "scale_factor", "type": ["scalar"], "purpose": "Scale factor"},
             {"name": "add_offset", "type": ["scalar"], "purpose": "Add offset"},
             {"name": "data_converted", "type": ["scalar"], "purpose": "Converted data"}]},
+    "getGitHash": {
+        "inputs": [
+          {"name": "repoPath", "kind": "required", "type": ["char", "string", "folder"], "purpose": "Path of git repository"},
+          {"name": "len", "kind": "ordered", "type": ["choices={'short','long'}"], "purpose": "Length of git hash"},
+          {"name": "opts", "kind": "ordered", "type": ["choices={'local','remote'}"], "purpose": "Local or remote git hash"}
+        ],
+        "outputs": [
+          {"name": "GitHash", "type": ["char"], "purpose": "Git hash of current code"}]},
     "erosion_coast_via_id":{
         "inputs":[],
         "outputs":[]},
