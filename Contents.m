@@ -71,6 +71,7 @@
 %   figcopy.m                                   -  Copy the figure to the clipboard
 %   FVCOMTOOLS.m                                -  FVCOM tools functions
 %   genNaNlegend.m                              -  Generate NaN legend
+%   getGitHash.m                                -  Get git hash of the current code
 %   getHome.m                                   -  Get home path
 %   getPath.m                                   -  Get the path of file or folder
 %   grep.m                                      -  Grep something from a file (not recommend)
