@@ -92,11 +92,14 @@ function hash = getGitHash(din, varargin)
                     end
 
                 case 'remote'
-                    cmd = sprintf('git -C "%s" ls-remote origin HEAD', din);
+                    % cmd = sprintf('git -C "%s" ls-remote origin HEAD', din);
+                    cmd = sprintf('git -C "%s" ls-remote |grep HEAD', din);
                     [~, hash] = system(cmd);
                     hash = strtrim(hash); % 去除前后空格
                     hash = strsplit(hash, '\t'); % 按制表符分割字符串
                     hash = strtrim(hash{1}); % 获取第一个部分，即hash值
+                    hash = strsplit(hash, '\n'); % 按换行符分割字符串
+                    hash = strtrim(hash{2}); % 获取第二个部分，即hash值
 
                     if strcmpi(len, 'short')
                         hash = hash(1:7); % 取前7位
