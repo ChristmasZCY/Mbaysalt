@@ -1,8 +1,9 @@
-function fill_value = calc_fillvalue(dtype)
+function fill_value = calc_fillvalue(dtype, varargin)
     %       Calculates fill value constant for a given netCDF data type.
     % =================================================================================================================
     % Parameter:
     %       dtype:          netCDF data type string       || required: True   || type: string     || example: 'NC_FLOAT', 'int16', 'string', etc.
+    %       varargin: (optional) Additional arguments for future use
     % =================================================================================================================
     % Returns:
     %       fill_value:    fill value constant for the given netCDF data type

@@ -13,6 +13,7 @@ function TF = isaequal(A, B, tol, varargin)
     % Updates:
     %       2024-09-19:     Created,                by Christmas;
     %       2026-04-23;     Fixed error at R2022b,  by Christmas;
+    %       2026-04-28:     Fixed error at R2022b,  by Christmas;
     % =================================================================================================================
     % Examples:
     %       TF = isaequal(A, B);
@@ -36,7 +37,7 @@ function TF = isaequal(A, B, tol, varargin)
         TF1 = isapprox(A, B, "AbsoluteTolerance", tol);
         TF = all(TF1, 'all');
     else
-        TF = max(A - B) < tol;
+        TF = abs(max(A - B)) < tol;
     end
 
     return
