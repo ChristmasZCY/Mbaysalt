@@ -37,6 +37,7 @@
 %   calc_geodistance.m                          -  Calculate the geodistance between arrays of lon/lat
 %   calc_geodistance_readme.mlx                 -  README for Calculate the geodistance between arrays of lon/lat
 %   calc_nearest_node.m                         -  Calculate the nearest node and distance from FVCOM grid
+%   calc_rh3.m                                  -  Calculate relative humidity from temperature and dew point using the Tetens formula
 %   calc_scale_offset.m                         -  Calculate the scale and offset for netcdf variable
 %   calc_sd2uv                                  -  Calculate speed and direction to vector velocity
 %   calc_sound_speed.m                          -  Calculate sound speed using Del Grosso (1974) empirical formula

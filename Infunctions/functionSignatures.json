@@ -517,6 +517,12 @@
         ],
         "outputs": [
           {"name": "GitHash", "type": ["char"], "purpose": "Git hash of current code"}]},
+    "calc_rh3": {
+        "inputs": [
+            {"name": "T2m", "kind": "required", "type": ["numeric"], "purpose": "2m temperature"},
+            {"name": "T2d", "kind": "required", "type": ["numeric"], "purpose": "2m dew point temperature"}],
+        "outputs": [
+            {"name": "RH", "type": ["scalar"], "purpose": "Relative Humidity"}]},
     "erosion_coast_via_id":{
         "inputs":[],
         "outputs":[]},
