@@ -67,6 +67,7 @@
 %   cutout_xy.m                                 -  Cutout small region from a large region
 %   del_filesep.m                               -  Delete the last filesep from a path
 %   del_quotation.m                             -  Delete quotation from a string
+%   encrypt_code.m                              -  Encrypt MATLAB code using pcode
 %   erosion_coast_cal_id.m                      -  Calculate the erosion of the coast id
 %   erosion_coast_via_id.m                      -  Erosion of the coast via id
 %   figcopy.m                                   -  Copy the figure to the clipboard

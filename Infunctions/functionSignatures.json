@@ -523,6 +523,11 @@
             {"name": "T2d", "kind": "required", "type": ["numeric"], "purpose": "2m dew point temperature"}],
         "outputs": [
             {"name": "RH", "type": ["scalar"], "purpose": "Relative Humidity"}]},
+    "encrypt_code": {
+        "inputs": [
+            {"name": "din", "kind": "required", "type": ["char","string","dir"], "purpose": "input file or folder"},
+            {"name": "dout", "kind": "required", "type": ["char","string","dir"], "purpose": "output file or folder"}],
+        "outputs": []},
     "erosion_coast_via_id":{
         "inputs":[],
         "outputs":[]},
