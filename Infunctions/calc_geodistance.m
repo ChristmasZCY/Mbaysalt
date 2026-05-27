@@ -60,7 +60,7 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
                 dx = R * cos((deg2rad(latArray1) + deg2rad(latArray2)) / 2) .* (-x);
             end
 
-        %{
+            %{
         dx = lonArray2 - lonArray1;
         dy = latArray2 - latArray1;
         if dy >= 0
@@ -71,7 +71,7 @@ function [d, dx, dy] = calc_geodistance(lonArray1, latArray1, lonArray2, latArra
 
         dx = d.*cos(theta);
         dy = d.*sin(theta);
-        %}
+            %}
 
         case 'matlab'
             wgs84 = wgs84Ellipsoid("m");
@@ -118,8 +118,8 @@ function arcl = fvcom_spherical_arc(xx1, yy1, xx2, yy2)
     yb = cos(y2) .* sin(x2);
     zb = sin(y2);
 
-    ab = sqrt((xb - xa) .^ 2 + (yb - ya) .^ 2 + (zb - za) .^ 2);
-    aob = (2 .- ab .* ab) / 2.;
+    ab = sqrt((xb-xa).^2+(yb-ya).^2+(zb-za).^2);
+    aob = (2.-ab.*ab)/2.;
     aob = acos(aob);
     arcl = Rearth * aob;
 

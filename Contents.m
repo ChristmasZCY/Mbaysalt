@@ -317,7 +317,7 @@
 %   Example_matFVCOM_interp_ESMF.m              -  Example for matFVCOM interp ESMF
 %   Example_matFVCOM_interp_MATLAB.m            -  Example for matFVCOM interp MATLAB
 %   Example_nctoolbox.m                         -  Example for nctoolbox
-%   Example_predict_tide.m                         -  Example for predict tide with tpxo and t_tide
+%   Example_predict_tide.m                      -  Example for predict tide with tpxo and t_tide
 %   Example_py.m                                -  Example for matlab-python code
 %   Example_read_draw_christmas.m               -  Example for read and draw by Christmas
 %   Example_read_kml_xml.m                      -  Example for read kml xml (Uncompleted)
@@ -423,7 +423,7 @@
 %   matWRF                       (optional)     -  WRF toolbox                                 ||  https://github.com/SiqiLiOcean/matWRF
 %   MESH2D                       (optional)     -  MESH2D toolbox                              ||  https://github.com/dengwirda/mesh2d
 %   mitgcm_toolbox               (optional)     -  mitgcm_toolbox                              ||  https://github.com/seamanticscience/mitgcm_toolbox
-%   nctoolbox                    (optional)     -  NCTOOLBOX                                   ||  https://github.com/nctoolbox/nctoolbox | http://nctoolbox.github.io/nctoolbox/
+%   nctoolbox                    (optional)     -  NCTOOLBOX                                   ||  https://github.com/nctoolbox/nctoolbox | http://nctoolbox.github.io/nctoolbox/ | https://code.google.com/archive/p/nctoolbox/downloads
 %   OceanData                    (optional)     -  Compare with famous ocean data              ||  https://github.com/SiqiLiOcean/OceanData
 %   ocean_data_tools             (optional)     -  ocean_data_tools toolbox                    ||  https://github.com/lnferris/ocean_data_tools
 %   OceanMesh2D                  (optional)     -  OceanMesh2D toolbox                         ||  https://github.com/CHLNDDEV/OceanMesh2D.git
