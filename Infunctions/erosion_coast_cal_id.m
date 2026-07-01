@@ -13,7 +13,7 @@ function I_D = erosion_coast_cal_id(lon, lat, value, K, judge_num)
     %       I_D = erosion_coast_cal_id(lon, lat, value, 16, 5);
     % =================================================================================================================
 
-    if numel(lon) == length(lon)
+    if numel(lon) == length(lon) && numel(lon) < numel(value)
         [lat, lon] = meshgrid(lat, lon);
         lon = reshape(lon, [], 1);
         lat = reshape(lat, [], 1);
