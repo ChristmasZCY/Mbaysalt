@@ -412,11 +412,14 @@
             {"name":"TF", "type":["logical"], "purpose":"true or false"}]},
     "makedepends":{
         "inputs":[
-            {"name":"funName", "kind":"required", "type":["file=*.m"], "purpose":"function Name"},
-            {"name":"depDir",  "kind":"namevalue", "type":["char"], "purpose":"depends output dir"}],
+            {"name":"funName", "kind":"required", "type":["char","string","cell"], "purpose":"MATLAB function files or names"},
+            {"name":"depDir", "kind":"namevalue", "type":["char","string"], "purpose":"dependency output directory; empty means analysis only"},
+            {"name":"sourceRoot", "kind":"namevalue", "type":["char","string"], "purpose":"source root whose directory structure is preserved"},
+            {"name":"overwrite", "kind":"namevalue", "type":["logical","scalar"], "purpose":"overwrite existing dependency files"}],
         "outputs":[
             {"name":"fList", "type":["cell"], "purpose":"file list"},
-            {"name":"pList", "type":["cell"], "purpose":"product list"}]},
+            {"name":"pList", "type":["struct"], "purpose":"product list"},
+            {"name":"entryFiles", "type":["string"], "purpose":"resolved entry function files"}]},
     "m_mesh.m": {
         "inputs": [
             {"name": "Grid", "kind": "required", "type": ["struct"], "purpose": "Grid struct"},
@@ -475,10 +478,10 @@
             {"name": "depth", "kind": "required", "type": ["numeric"], "purpose": "depth"},
             {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature"}],
         "outputs": [
-            {"name": "max_grad_total", "type": ["scalar"], "purpose": "thermocline strength"},
-            {"name": "thickness_total", "type": ["scalar"], "purpose": "thermocline thickness"},
-            {"name": "upper_bound_total", "type": ["scalar"], "purpose": "thermocline upper bound"},
-            {"name": "lower_bound_total", "type": ["scalar"], "purpose": "thermocline lower bound"}]},
+            {"name": "max_grad_total", "type": ["numeric"], "purpose": "thermocline strength"},
+            {"name": "thickness_total", "type": ["numeric"], "purpose": "thermocline thickness"},
+            {"name": "upper_bound_total", "type": ["numeric"], "purpose": "thermocline upper bound"},
+            {"name": "lower_bound_total", "type": ["numeric"], "purpose": "thermocline lower bound"}]},
   "calc_weather_front": {
         "inputs": [
             {"name": "lon", "kind": "required", "type": ["numeric"], "purpose": "longitude"},
@@ -488,19 +491,19 @@
             {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity"},
             {"name": "surface_depth_threshold", "kind": "namevalue", "type": ["numeric"], "purpose": "surface depth threshold"},
             {"name": "weight_temp", "kind": "namevalue", "type": ["numeric"], "purpose": "weight for temperature"},
-            {"name": "weight_salinity", "kind": "namevalue", "type": ["numeric"], "purpose": "weight for salinity"}],
+            {"name": "weight_salt", "kind": "namevalue", "type": ["numeric"], "purpose": "weight for salinity"}],
         "outputs": [
-            {"name": "combined_fronts", "type": ["scalar"], "purpose": "Ocean Fronts Detection"},
-            {"name": "fronts_strength", "type": ["scalar"], "purpose": "Ocean Fronts Strength"},
-            {"name": "temp_gradient_magnitude", "type": ["scalar"], "purpose": "Temperature Gradient Magnitude"},
-            {"name": "salinity_gradient_magnitude", "type": ["scalar"], "purpose": "Salinity Gradient Magnitude"}]},
+            {"name": "combined_fronts", "type": ["numeric"], "purpose": "Ocean Fronts Detection"},
+            {"name": "fronts_strength", "type": ["numeric"], "purpose": "Ocean Fronts Strength"},
+            {"name": "temp_gradient_magnitude", "type": ["numeric"], "purpose": "Temperature Gradient Magnitude"},
+            {"name": "salt_gradient_magnitude", "type": ["numeric"], "purpose": "Salinity Gradient Magnitude"}]},
   "calc_sound_speed": {
         "inputs": [
             {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature"},
             {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity"},
             {"name": "z", "kind": "required", "type": ["numeric"], "purpose": "depth"}],
         "outputs": [
-            {"name": "c", "type": ["scalar"], "purpose": "Sound Speed"}]},
+            {"name": "c", "type": ["numeric"], "purpose": "Sound Speed"}]},
     "calc_scale_offset": {
         "inputs": [
             {"name": "data", "kind": "required", "type": ["numeric"], "purpose": "input data"},

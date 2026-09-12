@@ -20,12 +20,19 @@
 % Toolbox contents
 %
 %   install.sh                                  -  Install the toolbox
+%   .VERSION                                    -  Toolbox version synchronized with this file
 %   Contents.m                                  -  This file
 %   ST_Mbaysalt.m                               -  Set toolbox path
 %   Mainpath.m                                  -  Set main path for toolbox (not recommend)
 %   README.md                                   -  README file
 %   README_zh.md                                -  README file in Chinese
 %   functionSignatures.json                     -  Function signatures for toolbox
+%
+%
+%                                      Scripts  -  Toolbox build scripts
+% -----------------------------------------------------------------------------------------------------------------
+%   functionSignatures.json                     -  Function signatures for this folder
+%   build_python_package.m                      -  Build selected MATLAB functions as CTF or shared libraries
 %
 %
 %                                  Infunctions  -  Internal functions for toolbox

@@ -42,11 +42,31 @@ function [combined_fronts, ...
     % =================================================================================================================
 
     % 默认表层深度阈值为0.5米
-    varargin = read_varargin(varargin, {'surface_depth_threshold'}, {0.5});
+    surface_depth_threshold = 0.5;
     % 计算综合锋面强度
     % 使用加权平均，温度梯度权重更高
-    varargin = read_varargin(varargin, {'weight_temp'}, {0.6});
-    varargin = read_varargin(varargin, {'weight_salt'}, {0.6});
+    weight_temp = 0.6;
+    weight_salt = 0.6;
+
+    if mod(length(varargin), 2) ~= 0
+        error('calc_weather_front:InvalidOption', 'Options must be name-value pairs.');
+    end
+
+    for iOption = 1:2:length(varargin)
+        optionName = varargin{iOption};
+        optionValue = varargin{iOption + 1};
+
+        if strcmpi(optionName, 'surface_depth_threshold')
+            surface_depth_threshold = optionValue;
+        elseif strcmpi(optionName, 'weight_temp')
+            weight_temp = optionValue;
+        elseif strcmpi(optionName, 'weight_salt')
+            weight_salt = optionValue;
+        else
+            error('calc_weather_front:InvalidOption', 'Unknown option: %s', optionName);
+        end
+
+    end
 
     % 找到表层深度索引
     surface_depth_idx = find(depth <= surface_depth_threshold);
@@ -58,7 +78,6 @@ function [combined_fronts, ...
     salt_gradient_magnitude = zeros(nx, ny, length(surface_depth_idx), nt);
     combined_fronts = zeros(nx, ny, length(surface_depth_idx), nt);
     fronts_strength = zeros(nx, ny, length(surface_depth_idx), nt);
-    clear nx ny
 
     % 计算网格间距（假设为规则网格）
     dx = abs(lon(2) - lon(1)) * 111000; % 转换为米（近似）

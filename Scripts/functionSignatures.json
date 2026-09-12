@@ -1,0 +1,13 @@
+{
+    "_schemaVersion": "1.0.0",
+    "build_python_package": {
+        "inputs": [
+            {"name": "functionFiles", "kind": "required", "type": ["char", "string", "cell"], "purpose": "MATLAB function files to export"},
+            {"name": "Target", "kind": "namevalue", "type": ["char", "string", "choices={'ctf','so','coder'}"], "purpose": "Build target"},
+            {"name": "PackageName", "kind": "namevalue", "type": ["char", "string"], "purpose": "Package or library base name"},
+            {"name": "OutputDir", "kind": "namevalue", "type": ["char", "string"], "purpose": "Build output directory"},
+            {"name": "CoderArgs", "kind": "namevalue", "type": ["cell"], "purpose": "Per-entry MATLAB Coder argument types"}],
+        "outputs": [
+            {"name": "result", "purpose": "MATLAB Compiler SDK or MATLAB Coder build result"},
+            {"name": "products", "type": ["struct"], "purpose": "Required MathWorks products"}]}
+}

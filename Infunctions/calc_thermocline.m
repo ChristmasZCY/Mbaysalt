@@ -34,25 +34,23 @@ function [max_grad_total, thickness_total, upper_bound_total, lower_bound_total]
     lower_bound_total = nan(size(T, [1, 2, 4]));
 
     for it = 1:size(T, 4)
-        t0 = squeeze(T(:, :, :, it));
-
         % Thermocline Detection using Vertical Gradient Method
         % This program calculates thermocline boundaries from 3D temperature data
         % Based on the paper "A study of thermocline calculations in the China Sea"
         % pcolor(thickness');
         % shading interp;
 
-        upper_bound = nan(size(t0, [1, 2]));
-        lower_bound = nan(size(t0, [1, 2]));
-        thickness = nan(size(t0, [1, 2]));
-        max_grad = nan(size(t0, [1, 2]));
+        upper_bound = nan(size(T, [1, 2]));
+        lower_bound = nan(size(T, [1, 2]));
+        thickness = nan(size(T, [1, 2]));
+        max_grad = nan(size(T, [1, 2]));
 
         % Loop through each horizontal grid point
         for i = 1:size(T, 1)
 
             for j = 1:size(T, 2)
                 % Extract temperature profile at this location
-                profile = squeeze(t0(i, j, :));
+                profile = reshape(T(i, j, :, it), [], 1);
 
                 % Skip locations with NaN (land or missing data)
                 if all(isnan(profile))
@@ -124,71 +122,33 @@ function [upper_bound, lower_bound, thickness, max_grad] = find_thermocline_boun
         return;
     end
 
-    % Find continuous segments of thermocline
-    segments = find_continuous_segments(thermo_indices);
+    % Find the continuous segment with the largest average gradient.
+    best_start = thermo_indices(1);
+    best_end = best_start;
+    best_average = -inf;
+    segment_start = 1;
 
-    % If multiple segments exist, select the one with maximum average gradient
-    if ~isempty(segments)
-        max_avg_grad = 0;
-        best_segment = [];
+    for k = 2:(length(thermo_indices) + 1)
 
-        for k = 1:length(segments)
-            segment = segments{k};
-            avg_grad = mean(abs(grad(segment)));
+        if k > length(thermo_indices) || thermo_indices(k) ~= thermo_indices(k - 1) + 1
+            segment_end = k - 1;
+            start_index = thermo_indices(segment_start);
+            end_index = thermo_indices(segment_end);
+            average_gradient = mean(abs(grad(start_index:end_index)));
 
-            if avg_grad > max_avg_grad
-                max_avg_grad = avg_grad;
-                best_segment = segment;
+            if average_gradient > best_average
+                best_average = average_gradient;
+                best_start = start_index;
+                best_end = end_index;
             end
 
-        end
-
-        % Use the selected segment to define thermocline boundaries
-        if ~isempty(best_segment)
-            upper_idx = best_segment(1);
-            lower_idx = best_segment(end);
-
-            upper_bound = depth_grad(upper_idx);
-            lower_bound = depth_grad(lower_idx);
-            thickness = lower_bound - upper_bound;
-            max_grad = max(abs(grad(best_segment)));
-            return;
+            segment_start = k;
         end
 
     end
 
-    % If no continuous segments found, use the point of maximum gradient
-    [max_grad_val, max_idx] = max(abs(grad));
-    upper_bound = depth_grad(max_idx);
-    lower_bound = depth_grad(max_idx);
-    thickness = 0;
-    max_grad = max_grad_val;
-end
-
-function segments = find_continuous_segments(indices)
-    % Find continuous segments from an array of indices
-    segments = {};
-
-    if isempty(indices)
-        return;
-    end
-
-    start_idx = indices(1);
-    current_segment = start_idx;
-
-    for i = 2:length(indices)
-
-        if indices(i) == indices(i - 1) + 1
-            % Continue current segment
-            current_segment = [current_segment, indices(i)];
-        else
-            % End of segment, start a new one
-            segments{end + 1} = current_segment;
-            current_segment = indices(i);
-        end
-
-    end
-
-    % Add the last segment
-    segments{end + 1} = current_segment;
+    upper_bound = depth_grad(best_start);
+    lower_bound = depth_grad(best_end);
+    thickness = lower_bound - upper_bound;
+    max_grad = max(abs(grad(best_start:best_end)));
 end

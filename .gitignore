@@ -108,3 +108,5 @@ Callcodes/gzh2html/1.xlsx
 **/*.m~
 **/*.asv
 
+# Python 包构建生成物 #
+build/

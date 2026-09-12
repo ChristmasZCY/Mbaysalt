@@ -70,6 +70,69 @@
 
    It will reserve basepath, and remove all other paths.
 
+## Build a Python package or shared library
+
+The build script resolves entry-function dependencies automatically. `Target` supports:
+
+- `ctf`: Default. Build a Python package and CTF with MATLAB Compiler SDK in `build/python`.
+- `so`: Build a MATLAB Runtime-dependent C shared library with MATLAB Compiler SDK in `build/shared`. The native file is `.so` on Linux, `.dylib` on macOS, and `.dll` on Windows.
+- `coder`: Build a standalone native shared library with MATLAB Coder in `build/coder`. `CoderArgs` must define the input type and dimensions for each entry function.
+
+Build the Python/CTF package:
+
+```matlab
+repoRoot = fileparts(which('ST_Mbaysalt'));
+addpath(fullfile(repoRoot, 'Scripts'));
+build_python_package({'calc_weather_front.m', ...
+                      'calc_thermocline.m', ...
+                      'calc_sound_speed.m'}, ...
+                     'Target', 'ctf');
+```
+
+Build a MATLAB Compiler SDK shared library:
+
+```matlab
+build_python_package({'calc_weather_front.m', ...
+                      'calc_thermocline.m', ...
+                      'calc_sound_speed.m'}, ...
+                     'Target', 'so');
+```
+
+MATLAB Coder requires a fixed or bounded interface. This example builds all three functions:
+
+```matlab
+vector = coder.typeof(0, [Inf 1], [1 0]);
+array4d = coder.typeof(0, [Inf Inf Inf Inf], [1 1 1 1]);
+build_python_package({'calc_weather_front.m', ...
+                      'calc_thermocline.m', ...
+                      'calc_sound_speed.m'}, ...
+                     'Target', 'coder', ...
+                     'CoderArgs', {{vector, vector, vector, array4d, array4d}, ...
+                                   {vector, array4d}, ...
+                                   {array4d, array4d, vector}});
+```
+
+On the target machine, install a MATLAB Runtime matching the build release, operating system, and CPU architecture, then install the generated Python package:
+
+```shell
+cd build/python
+python -m pip install .
+```
+
+Python example:
+
+```python
+import mbaysalt
+
+toolbox = mbaysalt.initialize()
+try:
+    sound_speed = toolbox.calc_sound_speed(10.0, 35.0, 100.0, nargout=1)
+finally:
+    toolbox.terminate()
+```
+
+A CTF containing only MATLAB code can be used across its declared supported platforms, but the target still needs a MATLAB Runtime matching the build release and the target operating system and CPU architecture. Rebuild and verify per platform if dependencies include MEX files or other native libraries. On macOS, use the MATLAB/Runtime `mwpython` command described in the generated `readme.txt`. For array inputs, use MATLAB array types such as `matlab.double`. Shared-library targets generate the library, headers, and examples only; they do not create an importable Python module. Python needs a separate `ctypes`, C-extension, or other binding for the generated interface. On Linux and macOS, the default shared-library filename starts with `lib`.
+
 ## Contains
 
 <details> <summary> Click to expand to see more</summary>

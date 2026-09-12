@@ -1,4 +1,4 @@
-function c = Del_Grosso_cn(T, S, z)
+function c = calc_sound_speed(T, S, z)
     %       Calculate sound speed using Del Grosso (1974) empirical formula
     % =================================================================================================================
     % Parameters:
@@ -17,7 +17,7 @@ function c = Del_Grosso_cn(T, S, z)
     %       T = nr('/Users/christmas/Downloads/forecast_0p05_20250819_5d.nc', 'to');
     %       S = nr('/Users/christmas/Downloads/forecast_0p05_20250819_5d.nc', 'so');
     %       z = nr('./data/temperature_20250513.nc', 'depth');
-    %       c = Del_Grosso_cn(T, S, z);
+    %       c = calc_sound_speed(T, S, z);
     % =================================================================================================================
     % References:
     %       Del Grosso, V. A., 'New Equation for the Speed of Sound in Natural Water (with comparisons to other equations)', J. Acoust. Soc. Am., Vol.56 No.4, p.1084 1974
@@ -28,16 +28,17 @@ function c = Del_Grosso_cn(T, S, z)
         error('T, S must have the same size');
     end
 
-    if numel(z) == len(z) && ndims(T) == 4 % lon*lat*depth*time
-        if size(z, 2) ~= 1; z = z'; end % 1*31 --> 31*1
-        z = permute(z, [3, 4, 1, 2]); % 31*1 --> 1*1*31*1
-        z = repmat(z, [size(T, [1, 2]), 1, size(T, 4)]); % --> 140*100*31*120
+    if isvector(z) && numel(z) == size(T, 3) % lon*lat*depth*time
+        depth = reshape(z, 1, 1, [], 1);
+        pressure_depth = repmat(depth, [size(T, 1), size(T, 2), 1, size(T, 4)]);
+    else
+        pressure_depth = z;
     end
 
     P = 1.033 ...
-        +1.028126e-1 .* z ...
-        +2.38e-7 .* z .^ 2 ...
-        -6.8e-17 .* z .^ 4;
+        +1.028126e-1 .* pressure_depth ...
+        +2.38e-7 .* pressure_depth .^ 2 ...
+        -6.8e-17 .* pressure_depth .^ 4;
     %P=1.04+0.102506*(1.+0.00528*(sin(fai*pi/180))^2)*z+...
     %   2.524e-7*z^2; % Valid Except in Black Sea and Baltic Sea
 

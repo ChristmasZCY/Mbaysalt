@@ -70,6 +70,69 @@
 
    它将保留基本路径，并删除所有其他路径。
 
+## 构建 Python 包或共享库
+
+构建脚本会自动分析入口函数依赖。`Target` 支持以下取值：
+
+- `ctf`：默认值，使用 MATLAB Compiler SDK 生成 Python 包和 CTF，输出到 `build/python`。
+- `so`：使用 MATLAB Compiler SDK 生成依赖 MATLAB Runtime 的 C 共享库，输出到 `build/shared`。Linux 产物为 `.so`，macOS 为 `.dylib`，Windows 为 `.dll`。
+- `coder`：使用 MATLAB Coder 生成不依赖 MATLAB Runtime 的本地共享库，输出到 `build/coder`；必须通过 `CoderArgs` 指定每个入口函数的输入类型和维度。
+
+生成 Python/CTF 包：
+
+```matlab
+repoRoot = fileparts(which('ST_Mbaysalt'));
+addpath(fullfile(repoRoot, 'Scripts'));
+build_python_package({'calc_weather_front.m', ...
+                      'calc_thermocline.m', ...
+                      'calc_sound_speed.m'}, ...
+                     'Target', 'ctf');
+```
+
+生成 Compiler SDK 共享库：
+
+```matlab
+build_python_package({'calc_weather_front.m', ...
+                      'calc_thermocline.m', ...
+                      'calc_sound_speed.m'}, ...
+                     'Target', 'so');
+```
+
+MATLAB Coder 必须固定或限定接口类型。以下示例会构建全部三个函数：
+
+```matlab
+vector = coder.typeof(0, [Inf 1], [1 0]);
+array4d = coder.typeof(0, [Inf Inf Inf Inf], [1 1 1 1]);
+build_python_package({'calc_weather_front.m', ...
+                      'calc_thermocline.m', ...
+                      'calc_sound_speed.m'}, ...
+                     'Target', 'coder', ...
+                     'CoderArgs', {{vector, vector, vector, array4d, array4d}, ...
+                                   {vector, array4d}, ...
+                                   {array4d, array4d, vector}});
+```
+
+在目标机器安装与构建版本、操作系统和 CPU 架构匹配的 MATLAB Runtime，然后安装生成的 Python 包：
+
+```shell
+cd build/python
+python -m pip install .
+```
+
+Python 调用示例：
+
+```python
+import mbaysalt
+
+toolbox = mbaysalt.initialize()
+try:
+    sound_speed = toolbox.calc_sound_speed(10.0, 35.0, 100.0, nargout=1)
+finally:
+    toolbox.terminate()
+```
+
+CTF 仅包含纯 MATLAB 代码时可在其声明支持的平台间使用，但目标机器仍需安装与构建版本一致、适合目标系统和 CPU 架构的 MATLAB Runtime；如果依赖包含 MEX 或其他本地库，则应按平台重新构建并验证。macOS 必须按照生成目录中的 `readme.txt` 使用 MATLAB/Runtime 提供的 `mwpython`。数组输入请使用 Runtime 提供的 `matlab.double` 等 MATLAB 数组类型。共享库目标只生成库、头文件及示例，不会自动生成可 `import` 的 Python 模块；Python 需要根据生成接口另写 `ctypes`、C 扩展或其他绑定。Linux 和 macOS 的默认共享库文件名以 `lib` 开头。
+
 ## Contains
 
 <details> <summary> 点击展开查看更多</summary>
