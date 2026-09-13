@@ -78,6 +78,8 @@
 - `so`：使用 MATLAB Compiler SDK 生成依赖 MATLAB Runtime 的 C 共享库，输出到 `build/shared`。Linux 产物为 `.so`，macOS 为 `.dylib`，Windows 为 `.dll`。
 - `coder`：使用 MATLAB Coder 生成不依赖 MATLAB Runtime 的本地共享库，输出到 `build/coder`；必须通过 `CoderArgs` 指定每个入口函数的输入类型和维度。
 
+三种目标构建成功后都会在输出目录生成 `api.json`。该文件只列出本次选中的公开入口函数，包含输入输出、维度和单位、预期产物、平台架构，以及是否需要 MATLAB Runtime 或额外 Python 绑定。
+
 生成 Python/CTF 包：
 
 ```matlab

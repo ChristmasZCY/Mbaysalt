@@ -84,6 +84,14 @@
             {"name":"Key of Value", "purpose":"Key of Value"},
             {"name":"Struct(1*1)", "type":["struct"], "purpose":"Strucct (1*1)"},
             {"name":"Struct(name,value)", "type":["struct"], "purpose":"Strucct (n*1)"}]},
+    "parse_varargin":{
+        "inputs":[
+            {"name":"in", "kind":"required", "type":["cell"], "purpose":"varargin cell array"},
+            {"name":"names", "kind":"ordered", "type":["cell","char","string"], "purpose":"name-value option names"},
+            {"name":"defaults", "kind":"ordered", "type":["cell"], "purpose":"name-value option defaults"},
+            {"name":"flags", "kind":"ordered", "type":["cell","char","string"], "purpose":"standalone switch names"}],
+        "outputs":[
+            {"name":"out", "type":["cell"], "purpose":"unrecognized input arguments"}]},
     "listStr_to_cell":{
         "inputs":[
             {"name":"List text",  "kind":"required", "type":["char","string"], "purpose":"List test"}],
@@ -473,37 +481,37 @@
         "outputs": [
             {"name": "MLD_total", "type": ["scalar"], "purpose": "mixed layer depth"},
             {"name": "BLT_total", "type": ["scalar"], "purpose": "barrier layer thickness"}]},
-    "calc_thermocline": {
+  "calc_thermocline": {
         "inputs": [
-            {"name": "depth", "kind": "required", "type": ["numeric"], "purpose": "depth"},
-            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature"}],
+            {"name": "depth", "kind": "required", "type": ["numeric"], "purpose": "depth vector (m)"},
+            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature array: lon x lat x depth x time"}],
         "outputs": [
-            {"name": "max_grad_total", "type": ["numeric"], "purpose": "thermocline strength"},
-            {"name": "thickness_total", "type": ["numeric"], "purpose": "thermocline thickness"},
-            {"name": "upper_bound_total", "type": ["numeric"], "purpose": "thermocline upper bound"},
-            {"name": "lower_bound_total", "type": ["numeric"], "purpose": "thermocline lower bound"}]},
+            {"name": "max_grad_total", "type": ["numeric"], "purpose": "thermocline strength: lon x lat x time"},
+            {"name": "thickness_total", "type": ["numeric"], "purpose": "thermocline thickness (m): lon x lat x time"},
+            {"name": "upper_bound_total", "type": ["numeric"], "purpose": "thermocline upper bound (m): lon x lat x time"},
+            {"name": "lower_bound_total", "type": ["numeric"], "purpose": "thermocline lower bound (m): lon x lat x time"}]},
   "calc_weather_front": {
         "inputs": [
-            {"name": "lon", "kind": "required", "type": ["numeric"], "purpose": "longitude"},
-            {"name": "lat", "kind": "required", "type": ["numeric"], "purpose": "latitude"},
-            {"name": "depth", "kind": "required", "type": ["numeric"], "purpose": "depth"},
-            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature"},
-            {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity"},
-            {"name": "surface_depth_threshold", "kind": "namevalue", "type": ["numeric"], "purpose": "surface depth threshold"},
-            {"name": "weight_temp", "kind": "namevalue", "type": ["numeric"], "purpose": "weight for temperature"},
-            {"name": "weight_salt", "kind": "namevalue", "type": ["numeric"], "purpose": "weight for salinity"}],
+            {"name": "lon", "kind": "required", "type": ["numeric"], "purpose": "longitude vector"},
+            {"name": "lat", "kind": "required", "type": ["numeric"], "purpose": "latitude vector"},
+            {"name": "depth", "kind": "required", "type": ["numeric"], "purpose": "depth vector (m)"},
+            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature array: lon x lat x depth x time"},
+            {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity array: lon x lat x depth x time"},
+            {"name": "surface_depth_threshold", "kind": "namevalue", "type": ["numeric"], "purpose": "surface depth threshold (m), default 0.5"},
+            {"name": "weight_temp", "kind": "namevalue", "type": ["numeric"], "purpose": "temperature gradient weight, default 0.6"},
+            {"name": "weight_salt", "kind": "namevalue", "type": ["numeric"], "purpose": "salinity gradient weight, default 0.6"}],
         "outputs": [
-            {"name": "combined_fronts", "type": ["numeric"], "purpose": "Ocean Fronts Detection"},
-            {"name": "fronts_strength", "type": ["numeric"], "purpose": "Ocean Fronts Strength"},
-            {"name": "temp_gradient_magnitude", "type": ["numeric"], "purpose": "Temperature Gradient Magnitude"},
-            {"name": "salt_gradient_magnitude", "type": ["numeric"], "purpose": "Salinity Gradient Magnitude"}]},
+            {"name": "combined_fronts", "type": ["numeric"], "purpose": "front mask: lon x lat x selected depth x time"},
+            {"name": "fronts_strength", "type": ["numeric"], "purpose": "normalized front strength: lon x lat x selected depth x time"},
+            {"name": "temp_gradient_magnitude", "type": ["numeric"], "purpose": "temperature gradient (degrees C/m): lon x lat x selected depth x time"},
+            {"name": "salt_gradient_magnitude", "type": ["numeric"], "purpose": "salinity gradient (PSU/m): lon x lat x selected depth x time"}]},
   "calc_sound_speed": {
         "inputs": [
-            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature"},
-            {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity"},
-            {"name": "z", "kind": "required", "type": ["numeric"], "purpose": "depth"}],
+            {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature array: lon x lat x depth x time"},
+            {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity array: same size as T"},
+            {"name": "z", "kind": "required", "type": ["numeric"], "purpose": "depth vector or depth array compatible with T (m)"}],
         "outputs": [
-            {"name": "c", "type": ["numeric"], "purpose": "Sound Speed"}]},
+            {"name": "c", "type": ["numeric"], "purpose": "sound speed (m/s): same size as T"}]},
     "calc_scale_offset": {
         "inputs": [
             {"name": "data", "kind": "required", "type": ["numeric"], "purpose": "input data"},

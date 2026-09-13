@@ -90,6 +90,7 @@
 %   json_load.m                                 -  Load json file with matlab builtin function or jsonlab
 %   json_to_struct.m                            -  Convert json to struct
 %   KeyValue2Struct.m                           -  Convert key-value to struct
+%   parse_varargin.m                            -  Parse name-value options and standalone flags
 %   len.m                                       -  As length
 %   limit_var.m                                 -  Limit the variable in a range
 %   listStr_to_cell.m                           -  Convert list str to cell

@@ -16,6 +16,10 @@ function [result, products] = build_python_package(functionFiles, varargin)
     %       result:                 MATLAB Compiler SDK or MATLAB Coder build result.
     %       products:               Required MathWorks products reported by dependency analysis.
     % =================================================================================================================
+    % Updates:
+    %       2026-09-12: Created, by Codex;
+    %       2026-09-13: Added api.json manifest and unified varargin parsing, by Codex;
+    % =================================================================================================================
     % Examples:
     %       build_python_package({'calc_weather_front.m', 'calc_thermocline.m', 'calc_sound_speed.m'});
     %       build_python_package({'calc_sound_speed.m'}, 'Target', 'so');
@@ -23,6 +27,9 @@ function [result, products] = build_python_package(functionFiles, varargin)
     %       depth = coder.typeof(0, [Inf 1], [1 0]);
     %       build_python_package({'calc_sound_speed.m'}, 'Target', 'coder', ...
     %           'CoderArgs', {{array4d, array4d, depth}});
+    % =================================================================================================================
+    % References:
+    %       None
     % =================================================================================================================
 
     arguments (Input)
@@ -40,12 +47,9 @@ function [result, products] = build_python_package(functionFiles, varargin)
     remove_user_paths;
     add_build_paths(repoRoot);
 
-    Target = 'ctf';
-    PackageName = 'mbaysalt';
-    OutputDir = '';
-    CoderArgs = {};
-    varargin = read_varargin(varargin, {'Target', 'PackageName', 'OutputDir', 'CoderArgs'}, ...
-        {Target, PackageName, OutputDir, CoderArgs});
+    varargin = parse_varargin(varargin, ...
+        {'Target', 'PackageName', 'OutputDir', 'CoderArgs'}, ...
+        {'ctf', 'mbaysalt', '', {}});
 
     if ~isempty(varargin)
         error('build_python_package:InvalidOption', 'Unknown or incomplete name-value option.');
@@ -99,6 +103,94 @@ function [result, products] = build_python_package(functionFiles, varargin)
                 OutputDir, CoderArgs);
     end
 
+    write_api_manifest(OutputDir, PackageName, Target, entryFiles, repoRoot);
+
+end
+
+function write_api_manifest(outputDir, packageName, target, entryFiles, repoRoot)
+    api = struct;
+    api.schemaVersion = '1.0.0';
+    api.packageName = char(packageName);
+    api.target = target;
+    api.matlabRelease = ['R', version('-release')];
+    api.architecture = computer('arch');
+    api.runtimeRequired = ~strcmp(target, 'coder');
+    api.pythonImportable = strcmp(target, 'ctf');
+    api.bindingRequired = ~strcmp(target, 'ctf');
+
+    if strcmp(target, 'ctf')
+        api.artifact = fullfile(char(packageName), [char(packageName), '.ctf']);
+    else
+        api.artifact = [native_library_name(packageName), shared_library_extension()];
+    end
+
+    api.functions = load_entry_signatures(entryFiles, repoRoot);
+    apiFile = fullfile(outputDir, 'api.json');
+    fileId = fopen(apiFile, 'w');
+
+    if fileId < 0
+        error('build_python_package:ApiManifestWriteFailed', ...
+            'Cannot write API manifest: %s', apiFile);
+    end
+
+    fileCleanup = onCleanup(@() fclose(fileId)); %#ok<NASGU>
+    fprintf(fileId, '%s\n', jsonencode(api, 'PrettyPrint', true));
+end
+
+function functions = load_entry_signatures(entryFiles, repoRoot)
+    functions = cell(numel(entryFiles), 1);
+
+    for i = 1:numel(entryFiles)
+        entryFile = entryFiles(i);
+        [entryDir, functionName] = fileparts(entryFile);
+        signatureFile = fullfile(entryDir, 'functionSignatures.json');
+        entry = struct;
+        entry.name = functionName;
+        entry.source = relative_source_path(entryFile, repoRoot);
+        entry.inputs = cell(0, 1);
+        entry.outputs = cell(0, 1);
+
+        if isfile(signatureFile)
+            signatures = jsondecode(fileread(signatureFile));
+
+            if isfield(signatures, functionName)
+                signature = signatures.(functionName);
+
+                if isfield(signature, 'inputs'); entry.inputs = num2cell(signature.inputs); end
+                if isfield(signature, 'outputs'); entry.outputs = num2cell(signature.outputs); end
+            else
+                warning('build_python_package:SignatureMissing', ...
+                    'No signature entry for %s in %s.', functionName, signatureFile);
+            end
+
+        else
+            warning('build_python_package:SignatureFileMissing', ...
+                'No functionSignatures.json next to %s.', entryFile);
+        end
+
+        functions{i} = entry;
+    end
+end
+
+function relativePath = relative_source_path(sourceFile, repoRoot)
+    sourceFile = string(sourceFile);
+    rootPrefix = string(repoRoot) + filesep;
+
+    if startsWith(sourceFile, rootPrefix)
+        sourceFile = extractAfter(sourceFile, strlength(rootPrefix));
+    end
+
+    relativePath = char(replace(sourceFile, filesep, '/'));
+end
+
+function extension = shared_library_extension()
+    if ispc
+        extension = '.dll';
+    elseif ismac
+        extension = '.dylib';
+    else
+        extension = '.so';
+    end
 end
 
 function remove_user_paths()

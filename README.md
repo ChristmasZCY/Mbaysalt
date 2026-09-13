@@ -78,6 +78,8 @@ The build script resolves entry-function dependencies automatically. `Target` su
 - `so`: Build a MATLAB Runtime-dependent C shared library with MATLAB Compiler SDK in `build/shared`. The native file is `.so` on Linux, `.dylib` on macOS, and `.dll` on Windows.
 - `coder`: Build a standalone native shared library with MATLAB Coder in `build/coder`. `CoderArgs` must define the input type and dimensions for each entry function.
 
+Every successful target also writes `api.json` to its output directory. The manifest lists only the selected public entry functions, their inputs and outputs, dimensions and units, the expected artifact, platform architecture, and whether MATLAB Runtime or a separate Python binding is required.
+
 Build the Python/CTF package:
 
 ```matlab

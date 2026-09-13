@@ -24,6 +24,7 @@ function [combined_fronts, ...
     % Updates:
     %       ****-**-**:     Created,                by Jiaqi Dou;
     %       2025-08-06:     Code Refactoring,       by Christmas;
+    %       2026-09-14:     Unified varargin parsing, by Codex;
     % =================================================================================================================
     % Examples:
     %       lon = nr('./data/salinity_20250513.nc','longitude');
@@ -48,24 +49,14 @@ function [combined_fronts, ...
     weight_temp = 0.6;
     weight_salt = 0.6;
 
-    if mod(length(varargin), 2) ~= 0
-        error('calc_weather_front:InvalidOption', 'Options must be name-value pairs.');
-    end
+    if ~isempty(varargin)
+        varargin = parse_varargin(varargin, ...
+            {'surface_depth_threshold', 'weight_temp', 'weight_salt'}, ...
+            {surface_depth_threshold, weight_temp, weight_salt});
 
-    for iOption = 1:2:length(varargin)
-        optionName = varargin{iOption};
-        optionValue = varargin{iOption + 1};
-
-        if strcmpi(optionName, 'surface_depth_threshold')
-            surface_depth_threshold = optionValue;
-        elseif strcmpi(optionName, 'weight_temp')
-            weight_temp = optionValue;
-        elseif strcmpi(optionName, 'weight_salt')
-            weight_salt = optionValue;
-        else
-            error('calc_weather_front:InvalidOption', 'Unknown option: %s', optionName);
+        if ~isempty(varargin)
+            error('calc_weather_front:InvalidOption', 'Unknown or incomplete name-value option.');
         end
-
     end
 
     % 找到表层深度索引
