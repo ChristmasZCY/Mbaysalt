@@ -107,6 +107,16 @@
             "CHECK": ["dacefit.m","file","2"],
             "INDEX": "https://www.omicron.dk/dace.html",
             "MANUAL": "https://www.omicron.dk/dace/dace.pdf"},
+        "UTide": {
+            "INSTALL": false,
+            "SETPATH": true,
+            "VERSION": "1.0.0.0",
+            "URL": "https://www.po.gso.uri.edu/~codiga/utide/UTideCurrentVersion.zip",
+            "LOCALFILE": "Exfunctions/UTideCurrentVersion.zip",
+            "PATH": "Exfunctions/UTideCurrentVersion",
+            "CHECK": ["ut_reconstr.m","file","2"],
+            "INDEX": "https://www.po.gso.uri.edu/~codiga/utide/utide.htm",
+            "MANUAL": "https://www.researchgate.net/publication/280722790_Unified_tidal_analysis_and_prediction_using_the_UTide_Matlab_functions"},
         "Mesh2d": {
             "INSTALL": false,
             "SETPATH": true,

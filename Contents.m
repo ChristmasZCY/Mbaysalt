@@ -463,6 +463,7 @@
 %   WindRose                     (optional)     -  WindRose toolbox                            ||  https://dpereira.asempyme.com/windrose/
 %   ETOPO1_Bed_g_gmt4            (optional)     -  ETOPO1_Bed_g_gmt4.grd                       ||  https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/bedrock/grid_registered/netcdf/ETOPO1_Bed_g_gmt4.grd.gz
 %   ETOPO1_Ice_g_gmt4            (optional)     -  ETOPO1_Ice_g_gmt4.grd                       ||  https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/netcdf/ETOPO1_Ice_g_gmt4.grd.gz
+%   UTide                        (optional)     -  Unified Tidal Analysis                      ||  https://www.po.gso.uri.edu/~codiga/utide/utide.htm || http://www.mathworks.com/matlabcentral/fileexchange/46523--utide--unified-tidal-analysis-and-prediction-functions
 %
 %   %% Builtin
 %   cprintf                      (optional)     -  Color printf                                ||  https://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window

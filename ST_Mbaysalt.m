@@ -886,7 +886,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
                 switch field
                     case {'m_map', 'mexcdf', 'dace'}
                         STAUS_unzip = unzip_file(pkg_localfile, fileparts(pkg_localfile)); % Exfunctions/
-                    case {'DHIMIKE', 't_tide', 'GSW', 'seawater', 'WindRose', 'gshhs', 'etopo1', 'Mesh2d'}
+                    case {'DHIMIKE', 't_tide', 'GSW', 'seawater', 'WindRose', 'gshhs', 'etopo1', 'Mesh2d', 'UTide'}
                         STAUS_unzip = unzip_file(pkg_localfile, pkg_path); % Exfunctions/t_tide
                     case {'ETOPO1_Bed_g_gmt4', 'ETOPO1_Ice_g_gmt4'}
                         STAUS_unzip = ungz_file(pkg_localfile, pkg_path); %.gz
