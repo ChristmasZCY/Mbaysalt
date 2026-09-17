@@ -33,6 +33,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       2026-09-17:     Keep requested tide order,       by Christmas;
     %       2026-09-17:     Validate cache, files and tides, by Christmas;
     %       2026-09-17:     Fix TPXO subset boundaries,      by Christmas;
+    %       2026-09-17:     Reduce grid I/O and loop work,    by Christmas;
     % =================================================================================================================
     % Reerences:
     %       tpxo7.2只有9个分潮。是从所有潮总分离出来9个，其他的都掺杂在这9个里面
@@ -185,9 +186,9 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         error('''%s'' and ''%s'' are not exist !!!', TPXO_fileDir, gFile_area);
     end
 
-    [gridLimits, gridDepth] = grd_in(boundsGridFile);
-    [xlims, ylims, lon] = tpxo_subset_bounds(lon, lat, gridLimits, size(gridDepth));
-    clear boundsGridFile gridLimits gridDepth
+    [gridLimits, gridSize] = read_tpxo_grid_header(boundsGridFile);
+    [xlims, ylims, lon] = tpxo_subset_bounds(lon, lat, gridLimits, gridSize);
+    clear boundsGridFile gridLimits gridSize
 
     cacheCompatible = true;
 
@@ -314,6 +315,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
 
         num = numel(lon);
         size_ll = size(lon);
+        dmtDatenum = datenum(dmt); %#ok<*DATNM>
     end
 
     %{
@@ -392,16 +394,25 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
             [amp, pha, ~] = tmd_extract_HC(hug_filepath, lat(:), lon(:), 'z', Cid);
             amp = amp';
             pha = pha';
+            tide_zeta_template = create_tidestruc(tideList, zeros(1, length(tideList)), zeros(1, length(tideList)));
+            [templateTidesFound, templateTideIndex] = ismember(strtrim(string(tide_zeta_template.name)), tideList);
+
+            if ~all(templateTidesFound)
+                error('Failed to create elevation tide prediction template.')
+            end
 
             if ~isempty(Parallel)
+                hbar = [];
 
                 if ~strcmp(INFO, 'none')
                     hbar = parfor_pgb(num);
                 end
 
                 parfor i = 1:num
-                    tide_zeta_struct = create_tidestruc(tideList, amp(i, :), pha(i, :));
-                    tide_zeta(i, :) = t_predic(datenum(dmt), tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0); %#ok<*DATNM>
+                    tide_zeta_struct = tide_zeta_template;
+                    tide_zeta_struct.tidecon(:, 1) = amp(i, templateTideIndex).';
+                    tide_zeta_struct.tidecon(:, 3) = pha(i, templateTideIndex).';
+                    tide_zeta(i, :) = t_predic(dmtDatenum, tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0);
 
                     if mod(i, 100) == 0 & ~strcmp(INFO, 'none')
                         hbar.iterate(100);
@@ -416,8 +427,10 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
             else
 
                 for i = 1:num
-                    tide_zeta_struct = create_tidestruc(tideList, amp(i, :), pha(i, :));
-                    tide_zeta(i, :) = t_predic(datenum(dmt), tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0); %#ok<*DATNM>
+                    tide_zeta_struct = tide_zeta_template;
+                    tide_zeta_struct.tidecon(:, 1) = amp(i, templateTideIndex).';
+                    tide_zeta_struct.tidecon(:, 3) = pha(i, templateTideIndex).';
+                    tide_zeta(i, :) = t_predic(dmtDatenum, tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0);
 
                     if mod(i, 100) == 0
                         txt = sprintf('Predicting tide elevation: %4.4d / %4.4d', i, num);
@@ -445,7 +458,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
                 TIDE.hcon.pha = reshape(pha, [size_ll, size(amp, 2)]);
             end
 
-            clear amp pha i Cid tide_zeta_struct txt
+            clear amp pha i Cid tide_zeta_struct tide_zeta_template templateTidesFound templateTideIndex txt
     end
 
     %% uv
@@ -476,16 +489,28 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
             % Convert unit from cm/s to m/s
             fmaj = fmaj / 100;
             fmin = fmin / 100;
+            tide_uv_template = create_tidestruc(tideList, zeros(1, length(tideList)), zeros(1, length(tideList)), ...
+                zeros(1, length(tideList)), zeros(1, length(tideList)));
+            [templateTidesFound, templateTideIndex] = ismember(strtrim(string(tide_uv_template.name)), tideList);
+
+            if ~all(templateTidesFound)
+                error('Failed to create current tide prediction template.')
+            end
 
             if ~isempty(Parallel)
+                hbar = [];
 
                 if ~strcmp(INFO, 'none')
                     hbar = parfor_pgb(num);
                 end
 
                 parfor i = 1:num
-                    tide_uv_struct = create_tidestruc(tideList, fmaj(i, :), fmin(i, :), finc(i, :), pha(i, :));
-                    tide_uv(i, :) = t_predic(datenum(dmt), tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
+                    tide_uv_struct = tide_uv_template;
+                    tide_uv_struct.tidecon(:, 1) = fmaj(i, templateTideIndex).';
+                    tide_uv_struct.tidecon(:, 3) = fmin(i, templateTideIndex).';
+                    tide_uv_struct.tidecon(:, 5) = finc(i, templateTideIndex).';
+                    tide_uv_struct.tidecon(:, 7) = pha(i, templateTideIndex).';
+                    tide_uv(i, :) = t_predic(dmtDatenum, tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
 
                     if mod(i, 100) == 0 & ~strcmp(INFO, 'none')
                         hbar.iterate(100);
@@ -500,8 +525,12 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
             else
 
                 for i = 1:num
-                    tide_uv_struct = create_tidestruc(tideList, fmaj(i, :), fmin(i, :), finc(i, :), pha(i, :));
-                    tide_uv(i, :) = t_predic(datenum(dmt), tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
+                    tide_uv_struct = tide_uv_template;
+                    tide_uv_struct.tidecon(:, 1) = fmaj(i, templateTideIndex).';
+                    tide_uv_struct.tidecon(:, 3) = fmin(i, templateTideIndex).';
+                    tide_uv_struct.tidecon(:, 5) = finc(i, templateTideIndex).';
+                    tide_uv_struct.tidecon(:, 7) = pha(i, templateTideIndex).';
+                    tide_uv(i, :) = t_predic(dmtDatenum, tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
 
                     if mod(i, 100) == 0
                         txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
@@ -525,7 +554,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
             tide_v = reshape(tide_v, [size_ll, length(dmt)]);
             TIDE.u = tide_u;
             TIDE.v = tide_v;
-            clear fmaj fmin pha finc tide_uv_struct tide_uv txt i
+            clear fmaj fmin pha finc tide_uv_struct tide_uv tide_uv_template templateTidesFound templateTideIndex txt i
     end
 
     clear tide_zeta tide_u tide_v INFO tideList
@@ -589,4 +618,42 @@ function [lonLimits, latLimits, lon] = tpxo_subset_bounds(lon, lat, gridLimits, 
     sourceLatLimits = sort(gridLimits(3:4));
     latLimits = [max(sourceLatLimits(1), min(lat(:)) - 2 * latStep), ...
                  min(sourceLatLimits(2), max(lat(:)) + 2 * latStep)];
+end
+
+function [gridLimits, gridSize] = read_tpxo_grid_header(gridFile)
+    %       Read TPXO grid limits and dimensions without loading grid arrays
+    % =================================================================================================================
+    % Parameters:
+    %       gridFile:       TPXO grid file                || required: True || type: filename
+    % =================================================================================================================
+    % Returns:
+    %       gridLimits:     TPXO grid limits              || type: double || format: [lon1 lon2 lat1 lat2]
+    %       gridSize:       TPXO grid size                || type: double || format: [nlon nlat]
+    % =================================================================================================================
+    % Updates:
+    %       2026-09-17:     Created, by Christmas;
+    % =================================================================================================================
+
+    fileID = fopen(gridFile, 'r', 'b');
+
+    if fileID == -1
+        error('Unable to open TPXO grid file ''%s''.', gridFile)
+    end
+
+    cleanupFile = onCleanup(@() fclose(fileID));
+    fseek(fileID, 4, 'bof');
+    gridSize = [fread(fileID, 1, 'long'), fread(fileID, 1, 'long')];
+    latLimits = fread(fileID, 2, 'float');
+    lonLimits = fread(fileID, 2, 'float');
+    timeStep = fread(fileID, 1, 'float');
+
+    if numel(latLimits) ~= 2 || numel(lonLimits) ~= 2 || any(gridSize == 0)
+        error('Invalid TPXO grid header in ''%s''.', gridFile)
+    end
+
+    if all(lonLimits < 0) && timeStep > 0
+        lonLimits = lonLimits + 360;
+    end
+
+    gridLimits = [lonLimits; latLimits];
 end

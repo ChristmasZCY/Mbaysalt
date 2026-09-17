@@ -7,8 +7,36 @@ function test_tpxo_subset_bounds()
     addpath(fullfile(repoRoot, 'Exfunctions', 'SupplementFiles', 'matFVCOM'));
     addpath(fullfile(repoRoot, 'Exfunctions', 'TMDToolbox_v2_5', 'TMD', 'FUNCTIONS'));
 
+    test_tide_template();
     test_preuvh2_bounds();
     test_atlas_crop();
+end
+
+function test_tide_template()
+    tideList = ["M2", "N2", "K1", "O1"];
+    amplitude = [0.2, 0.3, 0.4, 0.5];
+    phase = [20, 30, 40, 50];
+    reference = create_tidestruc(tideList, amplitude, phase);
+    template = create_tidestruc(tideList, zeros(size(amplitude)), zeros(size(phase)));
+    [found, tideIndex] = ismember(strtrim(string(template.name)), tideList);
+    assert(all(found));
+    template.tidecon(:, 1) = amplitude(tideIndex).';
+    template.tidecon(:, 3) = phase(tideIndex).';
+    assert(isequal(reference, template));
+
+    major = [0.2, 0.3, 0.4, 0.5];
+    minor = [-0.02, 0.03, -0.04, 0.05];
+    inclination = [60, 70, 80, 90];
+    reference = create_tidestruc(tideList, major, minor, inclination, phase);
+    template = create_tidestruc(tideList, zeros(size(major)), zeros(size(minor)), ...
+        zeros(size(inclination)), zeros(size(phase)));
+    [found, tideIndex] = ismember(strtrim(string(template.name)), tideList);
+    assert(all(found));
+    template.tidecon(:, 1) = major(tideIndex).';
+    template.tidecon(:, 3) = minor(tideIndex).';
+    template.tidecon(:, 5) = inclination(tideIndex).';
+    template.tidecon(:, 7) = phase(tideIndex).';
+    assert(isequal(reference, template));
 end
 
 function test_preuvh2_bounds()
@@ -28,7 +56,7 @@ function test_preuvh2_bounds()
         gridLimits(3:4), gridLimits(1:2), 'M2  ');
 
     cases = {
-        [170, -170], [0, 0], [150; 210; -20; 20];
+        [170, -170], [-10, 10], [150; 210; -30; 30];
         [-1, 359, 1], [0, 0, 0], [-20; 20; -20; 20];
         [120, 120.01, 130], [0, 0, 0], [100; 150; -20; 20]
     };
@@ -40,6 +68,13 @@ function test_preuvh2_bounds()
         outputLimits = grd_in(fullfile(areaDir, 'grid_area'));
         assert(max(abs(outputLimits - cases{index, 3})) < 1e-12);
     end
+
+    times = datetime(2026, 1, 1) + hours(0:5);
+    tide = preuvh2(cases{1, 1}, cases{1, 2}, times, "M2", [], ...
+        fullfile(testDir, 'area_1'), 'Vname', 'all');
+    assert(all(isfinite(tide.h), 'all'));
+    assert(all(isfinite(tide.u), 'all'));
+    assert(all(isfinite(tide.v), 'all'));
 end
 
 function test_atlas_crop()
