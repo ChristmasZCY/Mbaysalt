@@ -146,6 +146,37 @@ function test_preuvh2_bounds()
         tmdPerigee(:), tmdNode(:), tmdPhase, tmdOmega);
     assert(max(abs(squeeze(tmd3Tide.h(1, 1, :)) - expectedHeight)) < 1e-6);
     assert(max(abs(squeeze(tmd3Tide.h(1, 2, :)) - expectedHeight)) < 1e-6);
+
+    [uAmp, uPhase] = tmd_extract_HC(char(referenceControl), tmd3Lat(:), tmd3Lon(:), 'u', [2, 1]);
+    [vAmp, vPhase] = tmd_extract_HC(char(referenceControl), tmd3Lat(:), tmd3Lon(:), 'v', [2, 1]);
+    uHC = reshape(uAmp, [numel(tideList), numel(tmd3Lon)]) .* ...
+        exp(-1i * deg2rad(reshape(uPhase, [numel(tideList), numel(tmd3Lon)]))) / 100;
+    vHC = reshape(vAmp, [numel(tideList), numel(tmd3Lon)]) .* ...
+        exp(-1i * deg2rad(reshape(vPhase, [numel(tideList), numel(tmd3Lon)]))) / 100;
+
+    for pointIndex = 1:numel(tmd3Lon)
+        expectedU = tmd_harp(timeDatenum(:), uHC(:, pointIndex), tmdConstituents, ...
+            tmdPerigee(:), tmdNode(:), tmdPhase, tmdOmega);
+        expectedV = tmd_harp(timeDatenum(:), vHC(:, pointIndex), tmdConstituents, ...
+            tmdPerigee(:), tmdNode(:), tmdPhase, tmdOmega);
+        assert(max(abs(squeeze(tmd3Tide.u(1, pointIndex, :)) - expectedU)) < 1e-6);
+        assert(max(abs(squeeze(tmd3Tide.v(1, pointIndex, :)) - expectedV)) < 1e-6);
+    end
+
+    matrixLon = [170, -170; 175, -175];
+    matrixLat = [-2, -1; 1, 2];
+    singleTtide = preuvh2(matrixLon, matrixLat, times, "M2", [], areaDir, ...
+        'Vname', 'all', 'Predictor', 'ttide');
+    singleTmd3 = preuvh2(matrixLon, matrixLat, times, "M2", [], areaDir, ...
+        'Vname', 'all', 'Predictor', 'tmd3');
+    assert(isequal(size(singleTtide.h), [2, 2, numel(times)]));
+    assert(isequal(size(singleTtide.u), [2, 2, numel(times)]));
+    assert(isequal(size(singleTmd3.h), [2, 2, numel(times)]));
+    assert(isequal(size(singleTmd3.u), [2, 2, numel(times)]));
+    assert(all(isfinite(singleTtide.h), 'all'));
+    assert(all(isfinite(singleTtide.u), 'all'));
+    assert(all(isfinite(singleTmd3.h), 'all'));
+    assert(all(isfinite(singleTmd3.u), 'all'));
 end
 
 function test_atlas_crop()

@@ -435,6 +435,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
                 elevationHC = (amp .* exp(-1i * deg2rad(pha))).';
                 tide_zeta = predict_tmd3_harmonics(dmtDatenum, elevationHC, tmdConstituents, ...
                     tmdPerigee, tmdNode, tmdPhase, tmdOmega);
+                clear elevationHC
             else
                 tide_zeta = nan(num, length(dmt));
                 tide_zeta_template = create_tidestruc(tideList, zeros(1, length(tideList)), zeros(1, length(tideList)));
@@ -510,9 +511,10 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     switch Vname
         case {'all', 'uv', 'u', 'v', 'current'}
             if Predictor == "tmd3"
-                [~, ~, ~, ~, currentUHC, currentVHC] = tmd_ellipse_batch(hug_filepath, lat(:), lon(:), I_uvConList);
+                [~, ~, ~, ~, currentUHC, currentVHC] = tmd_ellipse_batch(hug_filepath, lat(:), lon(:), I_uvConList, false);
                 tide_uv = predict_tmd3_harmonics(dmtDatenum, [currentUHC.' currentVHC.'], tmdConstituents, ...
                     tmdPerigee, tmdNode, tmdPhase, tmdOmega);
+                clear currentUHC currentVHC
                 tide_u = tide_uv(1:num, :);
                 tide_v = tide_uv(num + 1:end, :);
             else
@@ -715,7 +717,7 @@ function [gridLimits, gridSize] = read_tpxo_grid_header(gridFile)
     gridLimits = [lonLimits; latLimits];
 end
 
-function [majorAxis, minorAxis, phase, inclination, complexU, complexV] = tmd_ellipse_batch(modelFile, lat, lon, constituentIndex)
+function [majorAxis, minorAxis, phase, inclination, complexU, complexV] = tmd_ellipse_batch(modelFile, lat, lon, constituentIndex, calculateEllipse)
     %       Calculate tidal ellipses while loading the shared TPXO grid only once
     % =================================================================================================================
     % Parameters:
@@ -723,6 +725,7 @@ function [majorAxis, minorAxis, phase, inclination, complexU, complexV] = tmd_el
     %       lat:                target latitude               || required: True || type: double || format: vector
     %       lon:                target longitude              || required: True || type: double || format: vector
     %       constituentIndex:   current constituent indices   || required: True || type: double || format: vector
+    %       calculateEllipse:   calculate ellipse parameters  || required: False|| type: logical || default: true
     % =================================================================================================================
     % Returns:
     %       majorAxis:          ellipse major axes            || type: double || unit: cm/s
@@ -734,7 +737,12 @@ function [majorAxis, minorAxis, phase, inclination, complexU, complexV] = tmd_el
     % =================================================================================================================
     % Updates:
     %       2026-09-17:         Created, by Christmas;
+    %       2026-09-17:         Skip unused TMD3 ellipses, by Christmas;
     % =================================================================================================================
+
+    if nargin < 5
+        calculateEllipse = true;
+    end
 
     [currentFile, gridFile, coordinateFunction] = rdModFile(modelFile, 2);
 
@@ -761,12 +769,19 @@ function [majorAxis, minorAxis, phase, inclination, complexU, complexV] = tmd_el
 
     pointCount = numel(lon);
     constituentCount = numel(constituentIndex);
-    majorAxis = nan(pointCount, constituentCount);
-    minorAxis = nan(pointCount, constituentCount);
-    phase = nan(pointCount, constituentCount);
-    inclination = nan(pointCount, constituentCount);
+    majorAxis = [];
+    minorAxis = [];
+    phase = [];
+    inclination = [];
     complexU = [];
     complexV = [];
+
+    if calculateEllipse
+        majorAxis = nan(pointCount, constituentCount);
+        minorAxis = nan(pointCount, constituentCount);
+        phase = nan(pointCount, constituentCount);
+        inclination = nan(pointCount, constituentCount);
+    end
 
     if nargout > 4
         complexU = complex(nan(pointCount, constituentCount));
@@ -790,6 +805,9 @@ function [majorAxis, minorAxis, phase, inclination, complexU, complexV] = tmd_el
             complexV(:, index) = targetV / 100; %#ok<AGROW>
         end
 
-        [majorAxis(:, index), minorAxis(:, index), inclination(:, index), phase(:, index)] = TideEl(targetU, targetV);
+        if calculateEllipse
+            [majorAxis(:, index), minorAxis(:, index), inclination(:, index), phase(:, index)] = TideEl(targetU, targetV); %#ok<AGROW>
+        end
+
     end
 end
