@@ -30,6 +30,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       2024-12-20:     Perfected get Cid,              by Christmas;
     %       2024-12-27:     Added for more data,            by Christmas;
     %       2025-01-03:     Get amp pha, no need to get z,  by Christmas;
+    %       2026-09-17:     Keep requested tide order,       by Christmas;
     % =================================================================================================================
     % Reerences:
     %       tpxo7.2只有9个分潮。是从所有潮总分离出来9个，其他的都掺杂在这9个里面
@@ -262,18 +263,21 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     end
     % ==================
     %}
+    conList = strip(upper(string(conList)'));
+
     if isempty(tideList)
-        tideList = strip(upper(string(conList)'));
+        tideList = conList;
         I_conList = 1:len(tideList);
     else
-        [assemble, I_conList, I_tideList] = intersect(strip(upper(string(conList)')), tideList); %#ok<ASGLU>
+        tideList = strip(upper(string(tideList)));
+        [isIncluded, I_conList] = ismember(tideList, conList);
 
-        if ~all(ismember(tideList, assemble))
-            assemble_lack = setdiff(tideList, assemble); % 取差集
+        if ~all(isIncluded)
+            assemble_lack = tideList(~isIncluded);
             error('Tide %s is not included !', strjoin(assemble_lack))
         end
 
-        clear I_tideList I_tideList I_tideList
+        clear isIncluded
     end
 
     if ~isempty(Parallel)
