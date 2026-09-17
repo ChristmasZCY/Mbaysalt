@@ -31,6 +31,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       2024-12-27:     Added for more data,            by Christmas;
     %       2025-01-03:     Get amp pha, no need to get z,  by Christmas;
     %       2026-09-17:     Keep requested tide order,       by Christmas;
+    %       2026-09-17:     Validate cache and temp files,   by Christmas;
     % =================================================================================================================
     % Reerences:
     %       tpxo7.2只有9个分潮。是从所有潮总分离出来9个，其他的都掺杂在这9个里面
@@ -89,8 +90,9 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
             INFO = 'none';
     end
 
-    hug_filepath = fullfile(tempdir, 'hug_files.txt'); % /tmp/hug_files.txt (contains ./AreaBin/h_area ./AreaBin/uv_area ./AreaBin/grid_area)
-    tpxobin_filepath = fullfile(tempdir, 'tpxobin_file.txt'); % /tmp/tpxobin_file.txt (contains ./TPXO9-atlas-v5/bin/h_*.nc ./TPXO9-atlas-v5/bin/u_*.nc ./TPXO9-atlas-v5/bin/grid_*.nc)
+    hug_filepath = [tempname, '.txt']; % contains ./AreaBin/h_area ./AreaBin/uv_area ./AreaBin/grid_area
+    tpxobin_filepath = [tempname, '.txt']; % contains TPXO h_*.nc, u_*.nc and grid_*.nc
+    cleanupTempFiles = onCleanup(@() rmfiles(hug_filepath, tpxobin_filepath));
 
     if min(lat(:)) <- 90 || max(lat(:)) > 90 % check lat range
         error('lat range not in [-90 90], but [%.2f ~ %.2f]', minmax(lat))
@@ -100,9 +102,13 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     hFile_area = sprintf('%s/h_area', data_midDir); % ./AreaBin/h_area
     uFile_area = sprintf('%s/uv_area', data_midDir); % ./AreaBin/uv_area
     gFile_area = sprintf('%s/grid_area', data_midDir); % ./AreaBin/grid_area
+    metaFile_area = fullfile(data_midDir, 'area_meta.json');
     writelines(hFile_area, hug_filepath, "WriteMode", "overwrite"); % ./AreaBin/h_area
     writelines(uFile_area, hug_filepath, "WriteMode", "append"); % ./AreaBin/uv_area
     writelines(gFile_area, hug_filepath, "WriteMode", "append"); % ./AreaBin/grid_area
+
+    requestedAllTides = isempty(tideList);
+    requestedTides = sort(strip(upper(string(tideList(:)))));
 
     if isscalar(lon) % 单点
         xdiff = 0.1;
@@ -174,6 +180,38 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
 
         end
 
+        if ~isfile(gFile)
+            error('TPXO grid file ''%s'' does not exist.', gFile)
+        end
+
+        sourceGrid = string(gFile);
+
+    end
+
+    cacheCompatible = true;
+
+    if isfile(gFile_area) && SWITCH.create
+        cacheCompatible = false;
+
+        if isfile(metaFile_area)
+
+            try
+                areaMeta = jsondecode(fileread(metaFile_area));
+                sourceCompatible = isfield(areaMeta, 'sourceGrid') && strcmp(string(areaMeta.sourceGrid), sourceGrid);
+
+                if requestedAllTides
+                    tideCompatible = isfield(areaMeta, 'allConstituents') && areaMeta.allConstituents;
+                else
+                    tideCompatible = isfield(areaMeta, 'constituents') && all(ismember(requestedTides, strip(upper(string(areaMeta.constituents(:))))));
+                end
+
+                cacheCompatible = sourceCompatible && tideCompatible;
+            catch
+                cacheCompatible = false;
+            end
+
+        end
+
     end
 
     if exist(gFile_area, "file") == 2
@@ -201,7 +239,9 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
                xlims(1) ylims(1)];
     [in, on] = inpolygon(box_new(:, 1), box_new(:, 2), box_old(:, 1), box_old(:, 2)); % box_new in box_old
 
-    if all(in | on)
+    cacheRebuilt = false;
+
+    if all(in | on) && cacheCompatible
 
         if isempty(tideList)
             warning(['Please check \n' ...
@@ -222,18 +262,30 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
                 copyfile(gFile, gFile_area, "f"); % cp grid_tpxo9.v1.nc ./AreaBin/grid_area
         end
 
+        cacheRebuilt = true;
+
+    end
+
+
+    conList = rd_con(hFile_area);
+
+    if cacheRebuilt && SWITCH.create
+        areaMeta.schemaVersion = 1;
+        areaMeta.sourceGrid = char(sourceGrid);
+        areaMeta.requestedTides = cellstr(requestedTides);
+        areaMeta.allConstituents = requestedAllTides || ~SWITCH.atlas;
+        areaMeta.constituents = cellstr(strip(upper(string(conList)')));
+        areaMeta.bounds = grd_in(gFile_area)';
+        writelines(jsonencode(areaMeta, 'PrettyPrint', true), metaFile_area)
     end
 
     clear xlims xdiff ylims ydiff ll_lims
     clear hFile uFile gFile
-    clear hFile_area uFile_area gFile_area
+    clear hFile_area uFile_area gFile_area metaFile_area
     clear box_new box_old in on
     clear data_midDir
 
-    rmfiles(tpxobin_filepath);
-
     if ~isempty(createOnly)
-        rmfiles(hug_filepath);
         TIDE.u = NaN; TIDE.v = NaN; TIDE.h = NaN;
         return
     else
@@ -246,7 +298,6 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         size_ll = size(lon);
     end
 
-    [~, ~, ~, conList] = tmd_extract_HC(hug_filepath, lon(1), lat(1), 'z', []);
     %{
     tideList      = ["M2" "N2" "S2" "K2" "K1" "O1" "P1" "Q1"];
     conList       = ["M2" "N2" "S2" "K2" "K1" "O1" "Q1","Ma"];
@@ -378,8 +429,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
 
             end
 
-            rmfiles(tpxobin_filepath)
-            clear i tpxobin_filepath
+            clear i
             % Convert unit from cm/s to m/s
             fmaj = fmaj / 100;
             fmin = fmin / 100;
@@ -436,7 +486,6 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     end
 
     clear tide_zeta tide_u tide_v INFO tideList
-    rmfiles(hug_filepath);
 
 end
 
