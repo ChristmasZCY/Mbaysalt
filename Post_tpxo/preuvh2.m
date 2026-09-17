@@ -31,7 +31,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       2024-12-27:     Added for more data,            by Christmas;
     %       2025-01-03:     Get amp pha, no need to get z,  by Christmas;
     %       2026-09-17:     Keep requested tide order,       by Christmas;
-    %       2026-09-17:     Validate cache and temp files,   by Christmas;
+    %       2026-09-17:     Validate cache, files and tides, by Christmas;
     % =================================================================================================================
     % Reerences:
     %       tpxo7.2只有9个分潮。是从所有潮总分离出来9个，其他的都掺杂在这9个里面
@@ -80,6 +80,8 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     varargin = read_varargin2(varargin, {'createOnly'});
     INFO = lower(INFO); %#ok<*NODEF> % beacause of parfor
     Vname = lower(Vname);
+    needsElevation = any(strcmp(Vname, {'all', 'z', 'zeta', 'h'}));
+    needsCurrent = any(strcmp(Vname, {'all', 'uv', 'u', 'v', 'current'}));
 
     switch INFO
         case {'cprintf', 'osprint2'}
@@ -200,9 +202,19 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
                 sourceCompatible = isfield(areaMeta, 'sourceGrid') && strcmp(string(areaMeta.sourceGrid), sourceGrid);
 
                 if requestedAllTides
-                    tideCompatible = isfield(areaMeta, 'allConstituents') && areaMeta.allConstituents;
+                    elevationTideCompatible = isfield(areaMeta, 'allConstituents') && areaMeta.allConstituents;
+                    currentTideCompatible = elevationTideCompatible && isfield(areaMeta, 'currentConstituents');
                 else
-                    tideCompatible = isfield(areaMeta, 'constituents') && all(ismember(requestedTides, strip(upper(string(areaMeta.constituents(:))))));
+                    elevationTideCompatible = isfield(areaMeta, 'constituents') && all(ismember(requestedTides, strip(upper(string(areaMeta.constituents(:))))));
+                    currentTideCompatible = isfield(areaMeta, 'currentConstituents') && all(ismember(requestedTides, strip(upper(string(areaMeta.currentConstituents(:))))));
+                end
+
+                if needsElevation && needsCurrent
+                    tideCompatible = elevationTideCompatible && currentTideCompatible;
+                elseif needsCurrent
+                    tideCompatible = currentTideCompatible;
+                else
+                    tideCompatible = elevationTideCompatible;
                 end
 
                 cacheCompatible = sourceCompatible && tideCompatible;
@@ -267,14 +279,21 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     end
 
 
-    conList = rd_con(hFile_area);
+    hConList = strip(upper(string(rd_con(hFile_area))'));
+
+    if isfile(uFile_area)
+        uvConList = strip(upper(string(rd_con(uFile_area))'));
+    else
+        uvConList = strings(1, 0);
+    end
 
     if cacheRebuilt && SWITCH.create
         areaMeta.schemaVersion = 1;
         areaMeta.sourceGrid = char(sourceGrid);
         areaMeta.requestedTides = cellstr(requestedTides);
         areaMeta.allConstituents = requestedAllTides || ~SWITCH.atlas;
-        areaMeta.constituents = cellstr(strip(upper(string(conList)')));
+        areaMeta.constituents = cellstr(hConList);
+        areaMeta.currentConstituents = cellstr(uvConList);
         areaMeta.bounds = grd_in(gFile_area)';
         writelines(jsonencode(areaMeta, 'PrettyPrint', true), metaFile_area)
     end
@@ -314,18 +333,43 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     end
     % ==================
     %}
-    conList = strip(upper(string(conList)'));
+    if needsCurrent && isempty(uvConList)
+        error('AreaBin current constituent file does not exist.')
+    end
 
-    if isempty(tideList)
-        tideList = conList;
-        I_conList = 1:len(tideList);
+    if requestedAllTides
+
+        if needsElevation
+            tideList = hConList;
+        else
+            tideList = uvConList;
+        end
+
+        if needsElevation && needsCurrent && (~all(ismember(hConList, uvConList)) || ~all(ismember(uvConList, hConList)))
+            error('Elevation and current constituent lists do not match.')
+        end
+
     else
         tideList = strip(upper(string(tideList)));
-        [isIncluded, I_conList] = ismember(tideList, conList);
+    end
+
+    if needsElevation
+        [isIncluded, I_conList] = ismember(tideList, hConList);
 
         if ~all(isIncluded)
             assemble_lack = tideList(~isIncluded);
-            error('Tide %s is not included !', strjoin(assemble_lack))
+            error('Elevation tide %s is not included !', strjoin(assemble_lack))
+        end
+
+        clear isIncluded
+    end
+
+    if needsCurrent
+        isIncluded = ismember(tideList, uvConList);
+
+        if ~all(isIncluded)
+            assemble_lack = tideList(~isIncluded);
+            error('Current tide %s is not included !', strjoin(assemble_lack))
         end
 
         clear isIncluded
