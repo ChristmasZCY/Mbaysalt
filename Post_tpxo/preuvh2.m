@@ -366,7 +366,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     end
 
     if needsCurrent
-        isIncluded = ismember(tideList, uvConList);
+        [isIncluded, I_uvConList] = ismember(tideList, uvConList);
 
         if ~all(isIncluded)
             assemble_lack = tideList(~isIncluded);
@@ -465,27 +465,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     switch Vname
         case {'all', 'uv', 'u', 'v', 'current'}
             tide_uv = nan(num, length(dmt));
-            % Extract the tide vector components
-            fmaj = zeros(num, length(tideList)); fmin = zeros(num, length(tideList));
-            pha = zeros(num, length(tideList)); finc = zeros(num, length(tideList));
-            % 函数或变量 'ic1' 无法识别。--> 分潮在data_midDir中不存在
-            if ~isempty(Parallel)
-                lat1 = lat(:); lon1 = lon(:);
-
-                parfor i = 1:length(tideList)
-                    [fmaj(:, i), fmin(:, i), pha(:, i), finc(:, i)] = tmd_ellipse(hug_filepath, lat1, lon1, tideList{i});
-                end
-
-                clear lat1 lon1
-            else
-
-                for i = 1:length(tideList)
-                    [fmaj(:, i), fmin(:, i), pha(:, i), finc(:, i)] = tmd_ellipse(hug_filepath, lat(:), lon(:), tideList{i});
-                end
-
-            end
-
-            clear i
+            [fmaj, fmin, pha, finc] = tmd_ellipse_batch(hug_filepath, lat(:), lon(:), I_uvConList);
             % Convert unit from cm/s to m/s
             fmaj = fmaj / 100;
             fmin = fmin / 100;
@@ -656,4 +636,68 @@ function [gridLimits, gridSize] = read_tpxo_grid_header(gridFile)
     end
 
     gridLimits = [lonLimits; latLimits];
+end
+
+function [majorAxis, minorAxis, phase, inclination] = tmd_ellipse_batch(modelFile, lat, lon, constituentIndex)
+    %       Calculate tidal ellipses while loading the shared TPXO grid only once
+    % =================================================================================================================
+    % Parameters:
+    %       modelFile:          TMD model control file        || required: True || type: filename
+    %       lat:                target latitude               || required: True || type: double || format: vector
+    %       lon:                target longitude              || required: True || type: double || format: vector
+    %       constituentIndex:   current constituent indices   || required: True || type: double || format: vector
+    % =================================================================================================================
+    % Returns:
+    %       majorAxis:          ellipse major axes            || type: double || unit: cm/s
+    %       minorAxis:          ellipse minor axes            || type: double || unit: cm/s
+    %       phase:              ellipse phases                || type: double || unit: degree
+    %       inclination:        ellipse inclinations          || type: double || unit: degree
+    % =================================================================================================================
+    % Updates:
+    %       2026-09-17:         Created, by Christmas;
+    % =================================================================================================================
+
+    [currentFile, gridFile, coordinateFunction] = rdModFile(modelFile, 2);
+
+    if isempty(currentFile) || isempty(gridFile)
+        error('Invalid TMD model control file ''%s''.', modelFile)
+    end
+
+    isCartesian = ~isempty(coordinateFunction);
+
+    if isCartesian
+        [targetX, targetY] = feval(coordinateFunction, lon, lat, 'F');
+    else
+        targetX = lon;
+        targetY = lat;
+    end
+
+    [gridLimits, depth] = grd_in(gridFile);
+    [nLon, nLat] = size(depth);
+    [gridX, gridY] = XY(gridLimits, nLon, nLat);
+    currentX = gridX - (gridX(2) - gridX(1)) / 2;
+    currentY = gridY - (gridY(2) - gridY(1)) / 2;
+    depth(depth == 0) = NaN;
+    targetDepth = BLinterp(gridX, gridY, depth, targetX, targetY, isCartesian);
+
+    pointCount = numel(lon);
+    constituentCount = numel(constituentIndex);
+    majorAxis = nan(pointCount, constituentCount);
+    minorAxis = nan(pointCount, constituentCount);
+    phase = nan(pointCount, constituentCount);
+    inclination = nan(pointCount, constituentCount);
+
+    for index = 1:constituentCount
+        [u, v] = u_in(currentFile, constituentIndex(index));
+
+        if ~check_dim(modelFile, nLon, nLat, size(u, 1), size(u, 2))
+            error('TMD grid and current file dimensions do not match.')
+        end
+
+        u(u == 0) = NaN;
+        v(v == 0) = NaN;
+        targetU = BLinterp(currentX, gridY, u, targetX, targetY, isCartesian) ./ targetDepth * 100;
+        targetV = BLinterp(gridX, currentY, v, targetX, targetY, isCartesian) ./ targetDepth * 100;
+        [majorAxis(:, index), minorAxis(:, index), inclination(:, index), phase(:, index)] = TideEl(targetU, targetV);
+    end
 end

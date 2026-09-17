@@ -49,11 +49,13 @@ function test_preuvh2_bounds()
     depth = reshape(1:(36 * 18), [36, 18]);
     gridFile = fullfile(sourceDir, 'grid_tpxo10_atlas_30_v2.nc');
     grd_out(gridFile, gridLimits, depth, ones(size(depth)), [], 12);
-    value = ones(size(depth));
-    h_out(fullfile(sourceDir, 'h_m2_tpxo10_atlas_30_v2.nc'), value, ...
-        gridLimits(3:4), gridLimits(1:2), 'M2  ');
-    uv_out(fullfile(sourceDir, 'u_m2_tpxo10_atlas_30_v2.nc'), value, value, ...
-        gridLimits(3:4), gridLimits(1:2), 'M2  ');
+    for constituent = ["k1", "m2"]
+        value = ones(size(depth)) * find(constituent == ["k1", "m2"]);
+        h_out(fullfile(sourceDir, "h_" + constituent + "_tpxo10_atlas_30_v2.nc"), value, ...
+            gridLimits(3:4), gridLimits(1:2), pad(upper(constituent), 4));
+        uv_out(fullfile(sourceDir, "u_" + constituent + "_tpxo10_atlas_30_v2.nc"), value, value, ...
+            gridLimits(3:4), gridLimits(1:2), pad(upper(constituent), 4));
+    end
 
     cases = {
         [170, -170], [-10, 10], [150; 210; -30; 30];
@@ -70,11 +72,38 @@ function test_preuvh2_bounds()
     end
 
     times = datetime(2026, 1, 1) + hours(0:5);
-    tide = preuvh2(cases{1, 1}, cases{1, 2}, times, "M2", [], ...
+    tideList = ["M2", "K1"];
+    areaDir = fullfile(testDir, 'area_1');
+    tide = preuvh2(cases{1, 1}, cases{1, 2}, times, tideList, [], ...
         fullfile(testDir, 'area_1'), 'Vname', 'all');
     assert(all(isfinite(tide.h), 'all'));
     assert(all(isfinite(tide.u), 'all'));
     assert(all(isfinite(tide.v), 'all'));
+
+    referenceControl = fullfile(testDir, 'reference_model');
+    writelines([fullfile(areaDir, 'h_area'); fullfile(areaDir, 'uv_area'); fullfile(areaDir, 'grid_area')], referenceControl);
+    referenceVelocity = complex(zeros(numel(cases{1, 1}), numel(times)));
+
+    for pointIndex = 1:numel(cases{1, 1})
+        major = zeros(1, numel(tideList)); minor = major; phase = major; inclination = major;
+
+        for tideIndex = 1:numel(tideList)
+            [major(tideIndex), minor(tideIndex), phase(tideIndex), inclination(tideIndex)] = ...
+                tmd_ellipse(char(referenceControl), cases{1, 2}(pointIndex), cases{1, 1}(pointIndex), char(tideList(tideIndex)));
+        end
+
+        referenceStruct = create_tidestruc(tideList, major / 100, minor / 100, inclination, phase);
+        referenceVelocity(pointIndex, :) = t_predic(datenum(times), referenceStruct, ...
+            'latitude', cases{1, 2}(pointIndex), 'synthesis', 0);
+    end
+
+    assert(max(abs(tide.u(:) - real(referenceVelocity(:)))) < 1e-12);
+    assert(max(abs(tide.v(:) - imag(referenceVelocity(:)))) < 1e-12);
+
+    parallelTide = preuvh2(cases{1, 1}, cases{1, 2}, times, tideList, [], ...
+        areaDir, 'Vname', 'uv', 'INFO', 'none', 'Parallel', 2);
+    assert(isequaln(parallelTide.u, tide.u));
+    assert(isequaln(parallelTide.v, tide.v));
 end
 
 function test_atlas_crop()
