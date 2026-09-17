@@ -80,18 +80,12 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
     dy = (ll_lims(4)-ll_lims(3))/m;
     lon = ll_lims(1)+dx/2:dx:ll_lims(2)-dx/2;
     lat = ll_lims(3)+dy/2:dy:ll_lims(4)-dy/2;
-    ii=find(lon>=lon_lims(1) & lon<=lon_lims(2));
+    lon1=lon+360*ceil((mean(lon_lims)-lon-180)/360);
+    ii=find(lon1>=lon_lims(1) & lon1<=lon_lims(2));
+    [~,isort]=sort(lon1(ii));ii=ii(isort);
     jj=find(lat>=lat_lims(1) & lat<=lat_lims(2));
-    th_lim1(1)=lat(jj(1))-1/60;th_lim1(2)=lat(jj(end))+1/60;
-    if lon_lims(1)<0 & lon_lims(2)<0,lon_lims=lon_lims+360;end
-    ph_lim1(2)=lon(ii(end))+1/60;
-    if lon_lims(1)>0,
-        ph_lim1(1)=lon(ii(1))-1/60;
-    else, % passing through 0
-        ii1=find(lon>lon_lims(1)+360);
-        ii=[ii1,ii];
-        ph_lim1(1)=lon(ii1(1))-1/60-360;
-    end
+    th_lim1(1)=lat(jj(1))-dy/2;th_lim1(2)=lat(jj(end))+dy/2;
+    ph_lim1(1)=lon1(ii(1))-dx/2;ph_lim1(2)=lon1(ii(end))+dx/2;
     n1=length(ii);m1=length(jj);
     ll_lims1=[ph_lim1 th_lim1];
     fprintf('Your area limits aligned to TPXO9-atlas grid are\n');
@@ -159,9 +153,9 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
     k1=1;cid=[];
     clear h h0;
     u=zeros(n1,m1,nf1);v=u;
-    for k=1:nf
-        if k>1,k1=ind(k-1)+1;end
-        uname=ufiles(k1:ind(k)-1);
+    for k=1:nf1
+        if k>1,k1=indu(k-1)+1;end
+        uname=ufiles(k1:indu(k)-1);
         fprintf('Reading %s...',uname);
         [u0,v0,th_lim0,ph_lim0]=u_in(uname,1);
         u(:,:,k)=u0(ii,jj);v(:,:,k)=v0(ii,jj);
@@ -186,4 +180,3 @@ function []=tpxo_atlas2local(atlas_modfile,out_modfile,lat_lims,lon_lims);
     fprintf('done\n');
     return
 end
-

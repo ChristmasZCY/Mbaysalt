@@ -32,6 +32,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       2025-01-03:     Get amp pha, no need to get z,  by Christmas;
     %       2026-09-17:     Keep requested tide order,       by Christmas;
     %       2026-09-17:     Validate cache, files and tides, by Christmas;
+    %       2026-09-17:     Fix TPXO subset boundaries,      by Christmas;
     % =================================================================================================================
     % Reerences:
     %       tpxo7.2只有9个分潮。是从所有潮总分离出来9个，其他的都掺杂在这9个里面
@@ -112,20 +113,6 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     requestedAllTides = isempty(tideList);
     requestedTides = sort(strip(upper(string(tideList(:)))));
 
-    if isscalar(lon) % 单点
-        xdiff = 0.1;
-        ydiff = 0.1;
-    elseif numel(lon) == length(lon) % 散点
-        xdiff = mean(diff(lon(:)));
-        ydiff = mean(diff(lat(:)));
-    else % 网格
-        xdiff = max(diff(lon(:)));
-        ydiff = max(diff(lat(:)));
-    end
-
-    xlims = [min(lon(:)) - 2 * xdiff, max(lon(:)) + 2 * xdiff];
-    ylims = [min(lat(:)) - 2 * ydiff, max(lat(:)) + 2 * ydiff];
-
     %% AreaBin
     % check TPXO_fileDir
     if exist(TPXO_fileDir, "dir")
@@ -189,6 +176,18 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         sourceGrid = string(gFile);
 
     end
+
+    if SWITCH.create
+        boundsGridFile = gFile;
+    elseif isfile(gFile_area)
+        boundsGridFile = gFile_area;
+    else
+        error('''%s'' and ''%s'' are not exist !!!', TPXO_fileDir, gFile_area);
+    end
+
+    [gridLimits, gridDepth] = grd_in(boundsGridFile);
+    [xlims, ylims, lon] = tpxo_subset_bounds(lon, lat, gridLimits, size(gridDepth));
+    clear boundsGridFile gridLimits gridDepth
 
     cacheCompatible = true;
 
@@ -298,7 +297,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         writelines(jsonencode(areaMeta, 'PrettyPrint', true), metaFile_area)
     end
 
-    clear xlims xdiff ylims ydiff ll_lims
+    clear xlims ylims ll_lims
     clear hFile uFile gFile
     clear hFile_area uFile_area gFile_area metaFile_area
     clear box_new box_old in on
@@ -546,3 +545,48 @@ end
 %     end
 % end
 % clear j k conList
+
+function [lonLimits, latLimits, lon] = tpxo_subset_bounds(lon, lat, gridLimits, gridSize)
+    %       Get the smallest TPXO-aligned bounds containing the target points
+    % =================================================================================================================
+    % Parameters:
+    %       lon:            target longitude              || required: True || type: double || format: matrix
+    %       lat:            target latitude               || required: True || type: double || format: matrix
+    %       gridLimits:     TPXO grid limits              || required: True || type: double || format: [lon1 lon2 lat1 lat2]
+    %       gridSize:       TPXO grid size                || required: True || type: double || format: [nlon nlat]
+    % =================================================================================================================
+    % Returns:
+    %       lonLimits:      padded longitude limits       || type: double || format: [min max]
+    %       latLimits:      padded latitude limits        || type: double || format: [min max]
+    %       lon:            unwrapped target longitude    || type: double || format: same as input lon
+    % =================================================================================================================
+    % Updates:
+    %       2026-09-17:     Created, by Christmas;
+    % =================================================================================================================
+    % Examples:
+    %       gridLimits = [0; 360; -90; 90];
+    %       gridSize = [10800, 5400];
+    %       [lonLimits, latLimits, lon] = tpxo_subset_bounds([170, -170], [20, 21], gridLimits, gridSize);
+    % =================================================================================================================
+
+    lonStep = abs(diff(gridLimits(1:2))) / gridSize(1);
+    latStep = abs(diff(gridLimits(3:4))) / gridSize(2);
+    wrappedLon = sort(mod(lon(:), 360));
+    gaps = diff([wrappedLon; wrappedLon(1) + 360]);
+    gapIndex = find(gaps == max(gaps), 1, 'last');
+
+    if gapIndex == numel(wrappedLon)
+        lonLimits = [wrappedLon(1), wrappedLon(end)];
+    else
+        lonLimits = [wrappedLon(gapIndex + 1), wrappedLon(gapIndex) + 360];
+    end
+
+    lonLimits = lonLimits + [-2 * lonStep, 2 * lonStep];
+    gridCenter = mean(gridLimits(1:2));
+    lonLimits = lonLimits + 360 * ceil((gridCenter - mean(lonLimits) - 180) / 360);
+    lon = lon + 360 * ceil((mean(lonLimits) - lon - 180) / 360);
+
+    sourceLatLimits = sort(gridLimits(3:4));
+    latLimits = [max(sourceLatLimits(1), min(lat(:)) - 2 * latStep), ...
+                 min(sourceLatLimits(2), max(lat(:)) + 2 * latStep)];
+end
