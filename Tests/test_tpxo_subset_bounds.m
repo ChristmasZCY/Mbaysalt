@@ -40,6 +40,7 @@ function test_tide_template()
 end
 
 function test_preuvh2_bounds()
+    repoRoot = fileparts(fileparts(mfilename('fullpath')));
     testDir = string(tempname);
     cleanup = onCleanup(@() cleanup_dir(testDir));
     sourceDir = fullfile(testDir, 'source');
@@ -50,7 +51,8 @@ function test_preuvh2_bounds()
     gridFile = fullfile(sourceDir, 'grid_tpxo10_atlas_30_v2.nc');
     grd_out(gridFile, gridLimits, depth, ones(size(depth)), [], 12);
     for constituent = ["k1", "m2"]
-        value = ones(size(depth)) * find(constituent == ["k1", "m2"]);
+        constituentIndex = find(constituent == ["k1", "m2"]);
+        value = ones(size(depth)) * constituentIndex * exp(1i * constituentIndex * pi / 6);
         h_out(fullfile(sourceDir, "h_" + constituent + "_tpxo10_atlas_30_v2.nc"), value, ...
             gridLimits(3:4), gridLimits(1:2), pad(upper(constituent), 4));
         uv_out(fullfile(sourceDir, "u_" + constituent + "_tpxo10_atlas_30_v2.nc"), value, value, ...
@@ -80,6 +82,12 @@ function test_preuvh2_bounds()
     assert(all(isfinite(tide.u), 'all'));
     assert(all(isfinite(tide.v), 'all'));
 
+    explicitTtide = preuvh2(cases{1, 1}, cases{1, 2}, times, tideList, [], ...
+        areaDir, 'Vname', 'all', 'Predictor', 'ttide');
+    assert(isequaln(explicitTtide.h, tide.h));
+    assert(isequaln(explicitTtide.u, tide.u));
+    assert(isequaln(explicitTtide.v, tide.v));
+
     referenceControl = fullfile(testDir, 'reference_model');
     writelines([fullfile(areaDir, 'h_area'); fullfile(areaDir, 'uv_area'); fullfile(areaDir, 'grid_area')], referenceControl);
     referenceVelocity = complex(zeros(numel(cases{1, 1}), numel(times)));
@@ -104,6 +112,40 @@ function test_preuvh2_bounds()
         areaDir, 'Vname', 'uv', 'INFO', 'none', 'Parallel', 2);
     assert(isequaln(parallelTide.u, tide.u));
     assert(isequaln(parallelTide.v, tide.v));
+
+    if exist('tmd_harp', 'file') ~= 2
+        try
+            preuvh2(cases{1, 1}, cases{1, 2}, times, tideList, [], areaDir, 'Predictor', 'tmd3');
+            error('test_tpxo_subset_bounds:ExpectedError', 'Missing TMD3 dependency was accepted.');
+        catch exception
+            assert(strcmp(exception.identifier, 'preuvh2:TMD3NotFound'));
+        end
+    end
+
+    tmd3Dir = fullfile(repoRoot, 'Exfunctions', 'TMDToolbox_v3_0');
+    if ~any(strcmp(strsplit(path, pathsep), tmd3Dir))
+        addpath(tmd3Dir, '-end');
+        cleanupTmd3Path = onCleanup(@() rmpath(tmd3Dir)); %#ok<NASGU>
+    end
+
+    tmd3Lon = [170, -170];
+    tmd3Lat = [0, 1];
+    tmd3Tide = preuvh2(tmd3Lon, tmd3Lat, times, tideList, [], areaDir, ...
+        'Vname', 'all', 'Predictor', 'tmd3', 'Parallel', 2);
+    assert(all(isfinite(tmd3Tide.h), 'all'));
+    assert(all(isfinite(tmd3Tide.u), 'all'));
+    assert(all(isfinite(tmd3Tide.v), 'all'));
+    assert(max(abs(tmd3Tide.u(:) - tmd3Tide.v(:))) < 1e-12);
+
+    tmdConstituents = {'m2', 'k1'};
+    timeDatenum = datenum(times); %#ok<DATNM>
+    [~, ~, tmdPhase, tmdOmega] = tmd_constit(tmdConstituents);
+    [~, ~, tmdPerigee, tmdNode] = tmd_astrol(timeDatenum);
+    expectedHeight = tmd_harp(timeDatenum(:), ...
+        [2 * exp(1i * pi / 3); exp(1i * pi / 6)], tmdConstituents, ...
+        tmdPerigee(:), tmdNode(:), tmdPhase, tmdOmega);
+    assert(max(abs(squeeze(tmd3Tide.h(1, 1, :)) - expectedHeight)) < 1e-6);
+    assert(max(abs(squeeze(tmd3Tide.h(1, 2, :)) - expectedHeight)) < 1e-6);
 end
 
 function test_atlas_crop()

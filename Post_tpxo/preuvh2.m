@@ -11,7 +11,8 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       varargin:   (options)   as follow:
     %           INFO:           display mode                || required: False|| type: namevalue || example: 'INFO','disp'
     %           Vname:          extract value name          || required: False|| type: namevalue || example: 'Vname','u'
-    %           Parallel:       Parallel switch             || required: False|| type: namevalue || example: 'Parallel', 20
+    %           Parallel:       T_Tide parallel switch      || required: False|| type: namevalue || example: 'Parallel', 20
+    %           Predictor:      prediction backend          || required: False|| type: namevalue || example: 'Predictor','tmd3'
     %           tideconS:       Output tidecon switch       || required: False|| type: flag      || example: 'tideconS'
     %           createOnly:     create combined file only   || required: False|| type: flag      || example: 'createOnly'
     % =================================================================================================================
@@ -34,6 +35,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       2026-09-17:     Validate cache, files and tides, by Christmas;
     %       2026-09-17:     Fix TPXO subset boundaries,      by Christmas;
     %       2026-09-17:     Reduce grid I/O and loop work,    by Christmas;
+    %       2026-09-17:     Add optional TMD3 prediction,     by Christmas;
     % =================================================================================================================
     % Reerences:
     %       tpxo7.2只有9个分潮。是从所有潮总分离出来9个，其他的都掺杂在这9个里面
@@ -57,6 +59,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       TIDE = preuvh2(Lon, Lat, dmt, tideList, TPXO_fileDir, './AreaBin', 'Vname','all');
     %       TIDE = preuvh2(Lon, Lat, dmt, tideList, TPXO_fileDir, './AreaBin', 'Vname','all', 'INFO', 'disp');
     %       TIDE = preuvh2(Lon, Lat, dmt, tideList, TPXO_fileDir, './AreaBin', 'Vname','all', 'INFO', 'disp','Parallel',20);
+    %       TIDE = preuvh2(Lon, Lat, dmt, tideList, TPXO_fileDir, './AreaBin', 'Predictor','tmd3');
     %
     %   **CASE2**:
     %       hcon = preuvh2(fn.x, fn.y, Ttimes.Times, tide_name, TPXO_filepath, din_tide, 'INFO','none','Vname','z','tideconS').hcon;
@@ -78,10 +81,30 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     varargin = read_varargin(varargin, {'INFO'}, {'none'});
     varargin = read_varargin(varargin, {'Vname'}, {'all'});
     varargin = read_varargin(varargin, {'Parallel'}, {[]}); %#ok<*NASGU>
+    varargin = read_varargin(varargin, {'Predictor'}, {'ttide'});
     varargin = read_varargin2(varargin, {'tideconS'});
     varargin = read_varargin2(varargin, {'createOnly'});
     INFO = lower(INFO); %#ok<*NODEF> % beacause of parfor
     Vname = lower(Vname);
+    Predictor = lower(string(Predictor));
+
+    if ~isscalar(Predictor) || ~ismember(Predictor, ["ttide", "tmd3"])
+        error('preuvh2:InvalidPredictor', 'Predictor must be ''ttide'' or ''tmd3''.')
+    end
+
+    if Predictor == "tmd3" && isempty(createOnly)
+        requiredFunctions = ["tmd_harp", "tmd_astrol", "tmd_constit", "tmd_nodal"];
+        missingFunctions = requiredFunctions(cellfun(@(name) exist(name, 'file') ~= 2, cellstr(requiredFunctions)));
+
+        if ~isempty(missingFunctions)
+            tmd3Dir = fullfile(fileparts(fileparts(mfilename('fullpath'))), 'Exfunctions', 'TMDToolbox_v3_0');
+            error('preuvh2:TMD3NotFound', ...
+                'TMD3 functions not found: %s. Add ''%s'' to the MATLAB path before using Predictor=''tmd3''.', ...
+                strjoin(missingFunctions, ', '), tmd3Dir)
+        end
+
+    end
+
     needsElevation = any(strcmp(Vname, {'all', 'z', 'zeta', 'h'}));
     needsCurrent = any(strcmp(Vname, {'all', 'uv', 'u', 'v', 'current'}));
 
@@ -376,7 +399,21 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
         clear isIncluded
     end
 
-    if ~isempty(Parallel)
+    if Predictor == "tmd3"
+        tmdConstituents = cellstr(lower(tideList(:).'));
+
+        try
+            [~, ~, tmdPhase, tmdOmega] = tmd_constit(tmdConstituents);
+            [~, ~, tmdPerigee, tmdNode] = tmd_astrol(dmtDatenum);
+            tmd_nodal(tmdConstituents, tmdPerigee(1), tmdNode(1));
+        catch exception
+            error('preuvh2:TMD3Constituent', ...
+                'TMD3 cannot predict the requested constituents [%s]: %s', strjoin(tideList, ', '), exception.message)
+        end
+
+    end
+
+    if Predictor == "ttide" && ~isempty(Parallel)
         p = gcp('nocreate');
 
         if isempty(p)
@@ -390,56 +427,64 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     switch Vname
         case {'all', 'z', 'zeta', 'h'}
             Cid = I_conList;
-            tide_zeta = nan(num, length(dmt));
             [amp, pha, ~] = tmd_extract_HC(hug_filepath, lat(:), lon(:), 'z', Cid);
             amp = amp';
             pha = pha';
-            tide_zeta_template = create_tidestruc(tideList, zeros(1, length(tideList)), zeros(1, length(tideList)));
-            [templateTidesFound, templateTideIndex] = ismember(strtrim(string(tide_zeta_template.name)), tideList);
 
-            if ~all(templateTidesFound)
-                error('Failed to create elevation tide prediction template.')
-            end
+            if Predictor == "tmd3"
+                elevationHC = (amp .* exp(-1i * deg2rad(pha))).';
+                tide_zeta = predict_tmd3_harmonics(dmtDatenum, elevationHC, tmdConstituents, ...
+                    tmdPerigee, tmdNode, tmdPhase, tmdOmega);
+            else
+                tide_zeta = nan(num, length(dmt));
+                tide_zeta_template = create_tidestruc(tideList, zeros(1, length(tideList)), zeros(1, length(tideList)));
+                [templateTidesFound, templateTideIndex] = ismember(strtrim(string(tide_zeta_template.name)), tideList);
 
-            if ~isempty(Parallel)
-                hbar = [];
-
-                if ~strcmp(INFO, 'none')
-                    hbar = parfor_pgb(num);
+                if ~all(templateTidesFound)
+                    error('Failed to create elevation tide prediction template.')
                 end
 
-                parfor i = 1:num
-                    tide_zeta_struct = tide_zeta_template;
-                    tide_zeta_struct.tidecon(:, 1) = amp(i, templateTideIndex).';
-                    tide_zeta_struct.tidecon(:, 3) = pha(i, templateTideIndex).';
-                    tide_zeta(i, :) = t_predic(dmtDatenum, tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0);
+                if ~isempty(Parallel)
+                    hbar = [];
 
-                    if mod(i, 100) == 0 & ~strcmp(INFO, 'none')
-                        hbar.iterate(100);
+                    if ~strcmp(INFO, 'none')
+                        hbar = parfor_pgb(num);
                     end
 
-                end
+                    parfor i = 1:num
+                        tide_zeta_struct = tide_zeta_template;
+                        tide_zeta_struct.tidecon(:, 1) = amp(i, templateTideIndex).';
+                        tide_zeta_struct.tidecon(:, 3) = pha(i, templateTideIndex).';
+                        tide_zeta(i, :) = t_predic(dmtDatenum, tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0);
 
-                if ~strcmp(INFO, 'none')
-                    hbar.close;
-                end
+                        if mod(i, 100) == 0 & ~strcmp(INFO, 'none')
+                            hbar.iterate(100);
+                        end
 
-            else
+                    end
 
-                for i = 1:num
-                    tide_zeta_struct = tide_zeta_template;
-                    tide_zeta_struct.tidecon(:, 1) = amp(i, templateTideIndex).';
-                    tide_zeta_struct.tidecon(:, 3) = pha(i, templateTideIndex).';
-                    tide_zeta(i, :) = t_predic(dmtDatenum, tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0);
+                    if ~strcmp(INFO, 'none')
+                        hbar.close;
+                    end
 
-                    if mod(i, 100) == 0
-                        txt = sprintf('Predicting tide elevation: %4.4d / %4.4d', i, num);
+                else
 
-                        switch INFO
-                            case 'osprint2'
-                                osprint2("INFO", txt);
-                            case 'disp'
-                                fprintf('%s\n', txt);
+                    for i = 1:num
+                        tide_zeta_struct = tide_zeta_template;
+                        tide_zeta_struct.tidecon(:, 1) = amp(i, templateTideIndex).';
+                        tide_zeta_struct.tidecon(:, 3) = pha(i, templateTideIndex).';
+                        tide_zeta(i, :) = t_predic(dmtDatenum, tide_zeta_struct, 'latitude', lat(i), 'synthesis', 0);
+
+                        if mod(i, 100) == 0
+                            txt = sprintf('Predicting tide elevation: %4.4d / %4.4d', i, num);
+
+                            switch INFO
+                                case 'osprint2'
+                                    osprint2("INFO", txt);
+                                case 'disp'
+                                    fprintf('%s\n', txt);
+                            end
+
                         end
 
                     end
@@ -464,72 +509,81 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %% uv
     switch Vname
         case {'all', 'uv', 'u', 'v', 'current'}
-            tide_uv = nan(num, length(dmt));
-            [fmaj, fmin, pha, finc] = tmd_ellipse_batch(hug_filepath, lat(:), lon(:), I_uvConList);
-            % Convert unit from cm/s to m/s
-            fmaj = fmaj / 100;
-            fmin = fmin / 100;
-            tide_uv_template = create_tidestruc(tideList, zeros(1, length(tideList)), zeros(1, length(tideList)), ...
-                zeros(1, length(tideList)), zeros(1, length(tideList)));
-            [templateTidesFound, templateTideIndex] = ismember(strtrim(string(tide_uv_template.name)), tideList);
+            if Predictor == "tmd3"
+                [~, ~, ~, ~, currentUHC, currentVHC] = tmd_ellipse_batch(hug_filepath, lat(:), lon(:), I_uvConList);
+                tide_uv = predict_tmd3_harmonics(dmtDatenum, [currentUHC.' currentVHC.'], tmdConstituents, ...
+                    tmdPerigee, tmdNode, tmdPhase, tmdOmega);
+                tide_u = tide_uv(1:num, :);
+                tide_v = tide_uv(num + 1:end, :);
+            else
+                tide_uv = nan(num, length(dmt));
+                [fmaj, fmin, pha, finc] = tmd_ellipse_batch(hug_filepath, lat(:), lon(:), I_uvConList);
+                % Convert unit from cm/s to m/s
+                fmaj = fmaj / 100;
+                fmin = fmin / 100;
+                tide_uv_template = create_tidestruc(tideList, zeros(1, length(tideList)), zeros(1, length(tideList)), ...
+                    zeros(1, length(tideList)), zeros(1, length(tideList)));
+                [templateTidesFound, templateTideIndex] = ismember(strtrim(string(tide_uv_template.name)), tideList);
 
-            if ~all(templateTidesFound)
-                error('Failed to create current tide prediction template.')
-            end
-
-            if ~isempty(Parallel)
-                hbar = [];
-
-                if ~strcmp(INFO, 'none')
-                    hbar = parfor_pgb(num);
+                if ~all(templateTidesFound)
+                    error('Failed to create current tide prediction template.')
                 end
 
-                parfor i = 1:num
-                    tide_uv_struct = tide_uv_template;
-                    tide_uv_struct.tidecon(:, 1) = fmaj(i, templateTideIndex).';
-                    tide_uv_struct.tidecon(:, 3) = fmin(i, templateTideIndex).';
-                    tide_uv_struct.tidecon(:, 5) = finc(i, templateTideIndex).';
-                    tide_uv_struct.tidecon(:, 7) = pha(i, templateTideIndex).';
-                    tide_uv(i, :) = t_predic(dmtDatenum, tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
+                if ~isempty(Parallel)
+                    hbar = [];
 
-                    if mod(i, 100) == 0 & ~strcmp(INFO, 'none')
-                        hbar.iterate(100);
+                    if ~strcmp(INFO, 'none')
+                        hbar = parfor_pgb(num);
                     end
 
-                end
+                    parfor i = 1:num
+                        tide_uv_struct = tide_uv_template;
+                        tide_uv_struct.tidecon(:, 1) = fmaj(i, templateTideIndex).';
+                        tide_uv_struct.tidecon(:, 3) = fmin(i, templateTideIndex).';
+                        tide_uv_struct.tidecon(:, 5) = finc(i, templateTideIndex).';
+                        tide_uv_struct.tidecon(:, 7) = pha(i, templateTideIndex).';
+                        tide_uv(i, :) = t_predic(dmtDatenum, tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
 
-                if ~strcmp(INFO, 'none')
-                    hbar.close;
-                end
+                        if mod(i, 100) == 0 & ~strcmp(INFO, 'none')
+                            hbar.iterate(100);
+                        end
 
-            else
+                    end
 
-                for i = 1:num
-                    tide_uv_struct = tide_uv_template;
-                    tide_uv_struct.tidecon(:, 1) = fmaj(i, templateTideIndex).';
-                    tide_uv_struct.tidecon(:, 3) = fmin(i, templateTideIndex).';
-                    tide_uv_struct.tidecon(:, 5) = finc(i, templateTideIndex).';
-                    tide_uv_struct.tidecon(:, 7) = pha(i, templateTideIndex).';
-                    tide_uv(i, :) = t_predic(dmtDatenum, tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
+                    if ~strcmp(INFO, 'none')
+                        hbar.close;
+                    end
 
-                    if mod(i, 100) == 0
-                        txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
+                else
 
-                        switch INFO
-                            case 'osprint2'
-                                osprint2("INFO", txt);
-                            case 'disp'
-                                fprintf('%s\n', txt);
+                    for i = 1:num
+                        tide_uv_struct = tide_uv_template;
+                        tide_uv_struct.tidecon(:, 1) = fmaj(i, templateTideIndex).';
+                        tide_uv_struct.tidecon(:, 3) = fmin(i, templateTideIndex).';
+                        tide_uv_struct.tidecon(:, 5) = finc(i, templateTideIndex).';
+                        tide_uv_struct.tidecon(:, 7) = pha(i, templateTideIndex).';
+                        tide_uv(i, :) = t_predic(dmtDatenum, tide_uv_struct, 'latitude', lat(i), 'synthesis', 0);
+
+                        if mod(i, 100) == 0
+                            txt = sprintf('Predicting tide velocity: %4.4d / % 4.4d', i, num);
+
+                            switch INFO
+                                case 'osprint2'
+                                    osprint2("INFO", txt);
+                                case 'disp'
+                                    fprintf('%s\n', txt);
+                            end
+
                         end
 
                     end
 
                 end
 
+                tide_u = real(tide_uv);
+                tide_v = imag(tide_uv);
             end
 
-            tide_u = real(tide_uv);
-            tide_v = imag(tide_uv);
             tide_u = reshape(tide_u, [size_ll, length(dmt)]);
             tide_v = reshape(tide_v, [size_ll, length(dmt)]);
             TIDE.u = tide_u;
@@ -539,6 +593,29 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
 
     clear tide_zeta tide_u tide_v INFO tideList
 
+end
+
+function prediction = predict_tmd3_harmonics(time, harmonicConstants, constituents, perigee, node, phase, omega)
+    %       Predict all points from TMD3 complex harmonic constants
+    % =================================================================================================================
+
+    pointCount = size(harmonicConstants, 2);
+    timeCount = numel(time);
+    prediction = nan(pointCount, timeCount);
+    validPoints = all(isfinite(harmonicConstants), 1);
+
+    if timeCount == 0 || ~any(validPoints)
+        return
+    elseif nnz(validPoints) == 1
+        prediction(validPoints, :) = tmd_harp(time(:), harmonicConstants(:, validPoints), constituents, ...
+            perigee(:), node(:), phase, omega).';
+        return
+    end
+
+    for timeIndex = 1:timeCount
+        prediction(validPoints, timeIndex) = tmd_harp(time(timeIndex), harmonicConstants(:, validPoints), constituents, ...
+            perigee(timeIndex), node(timeIndex), phase, omega);
+    end
 end
 
 %% get id
@@ -638,7 +715,7 @@ function [gridLimits, gridSize] = read_tpxo_grid_header(gridFile)
     gridLimits = [lonLimits; latLimits];
 end
 
-function [majorAxis, minorAxis, phase, inclination] = tmd_ellipse_batch(modelFile, lat, lon, constituentIndex)
+function [majorAxis, minorAxis, phase, inclination, complexU, complexV] = tmd_ellipse_batch(modelFile, lat, lon, constituentIndex)
     %       Calculate tidal ellipses while loading the shared TPXO grid only once
     % =================================================================================================================
     % Parameters:
@@ -652,6 +729,8 @@ function [majorAxis, minorAxis, phase, inclination] = tmd_ellipse_batch(modelFil
     %       minorAxis:          ellipse minor axes            || type: double || unit: cm/s
     %       phase:              ellipse phases                || type: double || unit: degree
     %       inclination:        ellipse inclinations          || type: double || unit: degree
+    %       complexU:           zonal harmonic constants      || type: complex double || unit: m/s
+    %       complexV:           meridional harmonic constants || type: complex double || unit: m/s
     % =================================================================================================================
     % Updates:
     %       2026-09-17:         Created, by Christmas;
@@ -686,6 +765,13 @@ function [majorAxis, minorAxis, phase, inclination] = tmd_ellipse_batch(modelFil
     minorAxis = nan(pointCount, constituentCount);
     phase = nan(pointCount, constituentCount);
     inclination = nan(pointCount, constituentCount);
+    complexU = [];
+    complexV = [];
+
+    if nargout > 4
+        complexU = complex(nan(pointCount, constituentCount));
+        complexV = complex(nan(pointCount, constituentCount));
+    end
 
     for index = 1:constituentCount
         [u, v] = u_in(currentFile, constituentIndex(index));
@@ -698,6 +784,12 @@ function [majorAxis, minorAxis, phase, inclination] = tmd_ellipse_batch(modelFil
         v(v == 0) = NaN;
         targetU = BLinterp(currentX, gridY, u, targetX, targetY, isCartesian) ./ targetDepth * 100;
         targetV = BLinterp(gridX, currentY, v, targetX, targetY, isCartesian) ./ targetDepth * 100;
+
+        if nargout > 4
+            complexU(:, index) = targetU / 100; %#ok<AGROW>
+            complexV(:, index) = targetV / 100; %#ok<AGROW>
+        end
+
         [majorAxis(:, index), minorAxis(:, index), inclination(:, index), phase(:, index)] = TideEl(targetU, targetV);
     end
 end
