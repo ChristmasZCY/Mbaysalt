@@ -551,7 +551,7 @@
             "Exfunctions/Otherpkgs"]}},
  "git": {
      "path": "/usr/bin/git",
-     "mirror": "https://githubfast.com/",
+     "mirror": "https://ghfast.top/https://github.com/",
      "username": "None",
      "password": "None",
      "method": "AUTO",

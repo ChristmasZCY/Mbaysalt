@@ -33,6 +33,7 @@ function varargout = ST_Mbaysalt(varargin)
     %       2025-11-04:     Fixed zip rm cannot find checkOS,                       by Christmas;
     %       2025-11-04:     Fixed mexcdf toolbox,                                   by Christmas;
     %       2026-04-18:     Added improve:cftime,                                   by Christmas;
+    %       2026-10-21:     Use terminal proxy for native MATLAB gitclone,           by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -1094,6 +1095,18 @@ function CLONE = git_clone(Git, pkg_url, pkg_path, pkg)
             disp(txt)
             system(txt);
         case {'matlab'}
+            % 原生 Git 读取 https_proxy；按 HTTPS、HTTP、ALL 顺序兼容终端代理，结束后恢复原值。
+            proxyNames = {'https_proxy', 'HTTPS_PROXY', 'http_proxy', 'HTTP_PROXY', 'all_proxy', 'ALL_PROXY'};
+            proxyValues = cellfun(@(name) strtrim(getenv(name)), proxyNames, 'UniformOutput', false);
+            proxyIndex = find(~cellfun(@isempty, proxyValues), 1);
+
+            if ~isempty(proxyIndex)
+                proxy = proxyValues{proxyIndex};
+                previousProxy = getenv('https_proxy');
+                proxyCleanup = onCleanup(@() setenv('https_proxy', previousProxy)); %#ok<NASGU>
+                setenv('https_proxy', proxy);
+            end
+
             CLONE = gitclone(pkg_url, pkg_path, 'Depth', Depth);
     end
 
