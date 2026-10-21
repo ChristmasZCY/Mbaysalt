@@ -106,6 +106,12 @@ Callcodes/gzh2html/1.xlsx
 ######################
 .gitR.md
 !**/.gitkeep
+
+# 沿用现有 Docs 目录，仅跟踪开发计划和交付记录；参考资料继续忽略。
+!Docs/
+Docs/*
+!Docs/TODO.md
+!Docs/DONE.md
 **/*.m~
 **/*.asv
 

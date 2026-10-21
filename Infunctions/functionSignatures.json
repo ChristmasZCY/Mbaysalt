@@ -496,15 +496,16 @@
             {"name": "lat", "kind": "required", "type": ["numeric"], "purpose": "latitude vector"},
             {"name": "depth", "kind": "required", "type": ["numeric"], "purpose": "depth vector (m)"},
             {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature array: lon x lat x depth x time"},
-            {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity array: lon x lat x depth x time"},
+            {"name": "S", "kind": "required", "type": ["numeric"], "purpose": "salinity array: lon x lat x depth x time; may be empty when temperature_only is true"},
             {"name": "surface_depth_threshold", "kind": "namevalue", "type": ["numeric"], "purpose": "surface depth threshold (m), default 0.5"},
             {"name": "weight_temp", "kind": "namevalue", "type": ["numeric"], "purpose": "temperature gradient weight, default 0.6"},
-            {"name": "weight_salt", "kind": "namevalue", "type": ["numeric"], "purpose": "salinity gradient weight, default 0.6"}],
+            {"name": "weight_salt", "kind": "namevalue", "type": ["numeric"], "purpose": "salinity gradient weight, default 0.6"},
+            {"name": "temperature_only", "kind": "namevalue", "type": ["logical", "scalar"], "purpose": "return only temperature gradient; S may be empty; default false"}],
         "outputs": [
-            {"name": "combined_fronts", "type": ["numeric"], "purpose": "front mask: lon x lat x selected depth x time"},
-            {"name": "fronts_strength", "type": ["numeric"], "purpose": "normalized front strength: lon x lat x selected depth x time"},
+            {"name": "combined_fronts", "type": ["numeric"], "purpose": "front mask: lon x lat x selected depth x time; empty when temperature_only is true"},
+            {"name": "fronts_strength", "type": ["numeric"], "purpose": "normalized front strength: lon x lat x selected depth x time; empty when temperature_only is true"},
             {"name": "temp_gradient_magnitude", "type": ["numeric"], "purpose": "temperature gradient (degrees C/m): lon x lat x selected depth x time"},
-            {"name": "salt_gradient_magnitude", "type": ["numeric"], "purpose": "salinity gradient (PSU/m): lon x lat x selected depth x time"}]},
+            {"name": "salt_gradient_magnitude", "type": ["numeric"], "purpose": "salinity gradient (PSU/m): lon x lat x selected depth x time; empty when temperature_only is true"}]},
   "calc_sound_speed": {
         "inputs": [
             {"name": "T", "kind": "required", "type": ["numeric"], "purpose": "temperature array: lon x lat x depth x time"},

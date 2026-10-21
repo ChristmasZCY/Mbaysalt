@@ -1,154 +1,111 @@
 function [max_grad_total, thickness_total, upper_bound_total, lower_bound_total] = calc_thermocline(depth, T)
-    %       Calculate thermocline strength, thickness, upper bound, lower bound
-    % =================================================================================================================
-    % Parameters:
-    %       depth:  depth           || required: True  || type: 1D
-    %       T:      sea temperature || required: True  || type: 4D(lon-lat-depth-time)
-    % =================================================================================================================
-    % Returns:
-    %       max_grad_total: thermocline strength (Celsius/meter)
-    %                       the max grad of the sea water temperature   ||type: 3D(lon-lat-time) 温跃层强度
-    %       thickness_total: thermocline thickness (meter)
-    %                       thickness of the sea water thermocline      ||type: 3D(lon-lat-time) 温跃层厚度
-    %       upper_bound_total: thermocline upper bound (meter)
-    %                       Upper boundary of the sea water thermocline ||type: 3D(lon-lat-time) 温跃层上边界
-    %       lower_bound_total: thermocline lower bound (meter)
-    %                       Lower boundary of the sea water thermocline ||type: 3D(lon-lat-time) 温跃层下边界
-    % =================================================================================================================
-    % Updates:
-    %       ****-**-**:     Created,                by Jiaqi Dou;
-    %       2025-07-23:     Code Refactoring,       by Christmas;
-    % =================================================================================================================
-    % Examples:
-    %       depth = nr('./data/temperature_20250513.nc', 'depth');
-    %       T = nr('./data/temperature_20250513.nc', 'to');
-    %       [max_grad_total, thickness_total, upper_bound_total, lower_bound_total] = calc_thermocline(depth, T);
-    % =================================================================================================================
-    % References:
-    %       None
-    % =================================================================================================================
-
-    max_grad_total = nan(size(T, [1, 2, 4]));
-    thickness_total = nan(size(T, [1, 2, 4]));
-    upper_bound_total = nan(size(T, [1, 2, 4]));
-    lower_bound_total = nan(size(T, [1, 2, 4]));
-
-    for it = 1:size(T, 4)
-        % Thermocline Detection using Vertical Gradient Method
-        % This program calculates thermocline boundaries from 3D temperature data
-        % Based on the paper "A study of thermocline calculations in the China Sea"
-        % pcolor(thickness');
-        % shading interp;
-
-        upper_bound = nan(size(T, [1, 2]));
-        lower_bound = nan(size(T, [1, 2]));
-        thickness = nan(size(T, [1, 2]));
-        max_grad = nan(size(T, [1, 2]));
-
-        % Loop through each horizontal grid point
-        for i = 1:size(T, 1)
-
-            for j = 1:size(T, 2)
-                % Extract temperature profile at this location
-                profile = reshape(T(i, j, :, it), [], 1);
-
-                % Skip locations with NaN (land or missing data)
-                if all(isnan(profile))
-                    continue;
-                end
-
-                % Get maximum depth at this location
-                max_depth = depth(find(~isnan(profile), 1, 'last'));
-
-                % Set minimum gradient criterion based on depth as described in the paper
-                if max_depth <= 200
-                    min_grad = 0.2; % For depth <= 200m
-                else
-                    min_grad = 0.05; % For depth > 200m
-                end
-
-                % Find thermocline boundaries using vertical gradient method
-                [up, low, thick, m_grad] = find_thermocline_boundaries(profile, depth, min_grad);
-
-                upper_bound(i, j) = up;
-                lower_bound(i, j) = low;
-                thickness(i, j) = thick;
-                max_grad(i, j) = m_grad;
-            end
-
-        end
-
-        upper_bound_total(:, :, it) = upper_bound; % upper_bound_total
-        lower_bound_total(:, :, it) = lower_bound; % lower_bound_total
-        thickness_total(:, :, it) = thickness; % thickness
-        max_grad_total(:, :, it) = max_grad; % strength
-
+% CALC_THERMOCLINE 以原有 1 米 PCHIP 和最大平均梯度连续段计算温跃层。
+% Inputs:
+%   depth: single/double、严格递增的一维深度坐标，单位 m，正值向下。
+%   T: single/double、lon-lat-depth-time 温度数组，单位 degrees C；NaN 为缺测。
+% Outputs:
+%   max_grad_total: double、lon-lat-time，所选连续段的最大绝对梯度，单位 degrees C/m。
+%   thickness_total: double、lon-lat-time，所选连续段厚度，单位 m。
+%   upper_bound_total, lower_bound_total: double、lon-lat-time，所选段的上下边界，单位 m。
+%   全缺测剖面四项均为 NaN；未检出跃层时强度为 NaN，厚度为 0，上下边界取最深梯度中点。
+% Errors: 有效剖面不足以构成 1 米梯度区间时抛出，维度或 PCHIP 输入无效时透传 MATLAB 错误。
+% 同有效深度掩码的剖面分组、每批最多 256 条，限制 1 米插值临时数组的内存。
+% 候选区间只控制要计算的节点，未修改原有 0.2/0.05 degrees C/m 阈值和选段规则。
+nx=size(T,1); ny=size(T,2); nt=size(T,4); nz=size(T,3);
+profiles=reshape(permute(T,[3 1 2 4]),nz,[]);
+[patterns,~,groups]=unique(~isnan(profiles)','rows');
+out=nan(size(profiles,2),4);
+for group=1:size(patterns,1)
+    mask=patterns(group,:)';
+    if ~any(mask), continue; end
+    z=depth(mask);
+    zq=(ceil(min(z)):floor(max(z)))';
+    if numel(zq)<2, error('calc_thermocline:ShortProfile','有效深度不足以形成 1 米梯度区间。'); end
+    zmid=zq(1:end-1)+diff(zq)/2;
+    if max(z)<=200, cutoff=0.2; else, cutoff=0.05; end
+    indices=find(groups==group);
+    % 每池最多 4096 条剖面按最深候选区间排序，减少浅剖面随深剖面扩大插值范围。
+    % 仅调整批次成员，结果仍按 chosen 写回原空间/时间索引。
+    for poolFirst=1:4096:numel(indices)
+        poolRange=poolFirst:min(poolFirst+4095,numel(indices));
+        pool=indices(poolRange);
+        poolValues=profiles(mask,pool);
+        poolSecants=abs(diff(double(poolValues),1,1)./diff(double(z(:))));
+        poolRounding=32*double(eps(max(abs(poolValues),[],1)));
+        poolPossible=3*poolSecants+poolRounding>=cutoff;
+        deepest=max(poolPossible.*reshape(1:size(poolPossible,1),[],1),[],1);
+        [~,poolOrder]=sort(deepest);
+        indices(poolRange)=pool(poolOrder);
     end
-
+    for first=1:256:numel(indices)
+        chosen=indices(first:min(first+255,numel(indices)));
+        block=nan(numel(chosen),4);
+        block(:,2)=0; block(:,3)=zmid(end); block(:,4)=zmid(end);
+        values=profiles(mask,chosen);
+        % PCHIP 两端导数与区间割线同号、各不超过其 3 倍；Hermite 导数对
+        % 两端系数线性，系数范围四角的绝对值均不超过 3 倍割线，可安全筛除。
+        % 加入 32 个温度 ULP 的余量，覆盖 single 插值及相减的舍入。
+        secants=abs(diff(double(values),1,1)./diff(double(z(:))));
+        rounding=32*double(eps(max(abs(values),[],1)));
+        possible=any(3*secants+rounding>=cutoff,2);
+        if any(~isfinite(values(:))), possible(:)=true; end
+        candidates=false(numel(zq)-1,1);
+        for interval=reshape(find(possible),1,[])
+            left=max(1,double(floor(z(interval))-zq(1)+1));
+            right=min(numel(candidates),double(ceil(z(interval+1))-zq(1)));
+            if left<=right, candidates(left:right)=true; end
+        end
+        queryStarts=zq(find(candidates));
+        if isempty(queryStarts), out(chosen,:)=block; continue; end
+        queryPoints=unique([queryStarts;queryStarts+1]);
+        [~,left]=ismember(queryStarts,queryPoints);
+        [~,right]=ismember(queryStarts+1,queryPoints);
+        temperatures=interp1(z,values,queryPoints,'pchip');
+        gradients=abs(temperatures(right,:)-temperatures(left,:));
+        activeMid=queryStarts+0.5;
+        selected=gradients>=cutoff;
+        % 单候选区间时仍保持空连接数组和分段累计值为列向量。
+        connected=reshape(diff(queryStarts)==1,[],1);
+        starts=selected&~[false(1,numel(chosen));selected(1:end-1,:)&connected];
+        ends=selected&~[selected(2:end,:)&connected;false(1,numel(chosen))];
+        [beginRow,column]=find(starts);
+        beginRow=beginRow(:); column=column(:);
+        [endRow,~]=find(ends);
+        endRow=endRow(:);
+        if ~isempty(beginRow)
+            segment=cumsum(reshape(starts(selected),[],1));
+            values=reshape(double(gradients(selected)),[],1);
+            count=endRow-beginRow+1;
+            sums=accumarray(segment,values,[numel(beginRow),1]);
+            peaks=accumarray(segment,values,[numel(beginRow),1],@max);
+            averages=cast(sums./count,'like',gradients);
+            bestAverage=accumarray(column,double(averages),[numel(chosen),1],@max,-inf);
+            best=double(averages)==bestAverage(column);
+            winner=accumarray(column(best),find(best),[numel(chosen),1],@min,0);
+            % 段均值接近时回到原 mean 顺序，避免累计方式改变并列段选择。
+            roundoff=(count+4).*double(eps(cast(peaks,'like',gradients)));
+            maxRoundoff=accumarray(column,roundoff,[numel(chosen),1],@max,0);
+            near=(bestAverage(column)-double(averages))<=2*maxRoundoff(column);
+            ambiguous=find(accumarray(column,double(near),[numel(chosen),1])>1);
+            for k=reshape(ambiguous,1,[])
+                segments=find(column==k); exactBest=-inf;
+                for s=reshape(segments,1,[])
+                    average=mean(gradients(beginRow(s):endRow(s),k));
+                    if average>exactBest, winner(k)=s; exactBest=average; end
+                end
+            end
+            found=find(winner>0);
+            s=winner(found);
+            block(found,1)=peaks(s);
+            block(found,3)=activeMid(beginRow(s));
+            block(found,4)=activeMid(endRow(s));
+            block(found,2)=block(found,4)-block(found,3);
+        end
+        out(chosen,:)=block;
+    end
 end
-
-function [upper_bound, lower_bound, thickness, max_grad] = find_thermocline_boundaries(temp_profile, depth, min_grad)
-    % Calculate the temperature gradient profile
-    valid_points = ~isnan(temp_profile);
-    temp_valid = temp_profile(valid_points);
-    depth_valid = depth(valid_points);
-
-    % % Make sure we have at least 3 valid points
-    % if length(temp_valid) < 3
-    %     upper_bound = nan;
-    %     lower_bound = nan;
-    %     thickness = nan;
-    %     max_grad = nan;
-    %     return;
-    % end
-
-    % Interpolate to 1-meter resolution as mentioned in the paper
-    depth_interp = (ceil(min(depth_valid)):floor(max(depth_valid)))';
-    temp_interp = interp1(depth_valid, temp_valid, depth_interp, 'pchip');
-
-    % Calculate the vertical gradient (typically negative for thermocline)
-    grad = diff(temp_interp) ./ diff(depth_interp);
-    depth_grad = depth_interp(1:end - 1) + diff(depth_interp) / 2;
-
-    % Find segments where absolute gradient exceeds the threshold
-    thermo_indices = find(abs(grad) >= min_grad);
-
-    % Check if any thermocline was detected
-    if isempty(thermo_indices)
-        upper_bound = max(depth_grad);
-        lower_bound = max(depth_grad);
-        thickness = 0;
-        max_grad = nan;
-        return;
-    end
-
-    % Find the continuous segment with the largest average gradient.
-    best_start = thermo_indices(1);
-    best_end = best_start;
-    best_average = -inf;
-    segment_start = 1;
-
-    for k = 2:(length(thermo_indices) + 1)
-
-        if k > length(thermo_indices) || thermo_indices(k) ~= thermo_indices(k - 1) + 1
-            segment_end = k - 1;
-            start_index = thermo_indices(segment_start);
-            end_index = thermo_indices(segment_end);
-            average_gradient = mean(abs(grad(start_index:end_index)));
-
-            if average_gradient > best_average
-                best_average = average_gradient;
-                best_start = start_index;
-                best_end = end_index;
-            end
-
-            segment_start = k;
-        end
-
-    end
-
-    upper_bound = depth_grad(best_start);
-    lower_bound = depth_grad(best_end);
-    thickness = lower_bound - upper_bound;
-    max_grad = max(abs(grad(best_start:best_end)));
+max_grad_total=reshape(out(:,1),nx,ny,nt);
+thickness_total=reshape(out(:,2),nx,ny,nt);
+upper_bound_total=reshape(out(:,3),nx,ny,nt);
+lower_bound_total=reshape(out(:,4),nx,ny,nt);
 end

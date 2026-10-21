@@ -9,7 +9,10 @@ function [combined_fronts, ...
     %       lat:    latitude        || required: True  || type: 1D
     %       depth:  depth           || required: True  || type: 1D
     %       T:      sea temperature || required: True  || type: 4D(lon-lat-depth-time)
-    %       S:      sea salinity    || required: True  || type: 4D(lon-lat-depth-time)
+    %       S:      sea salinity, numeric, 4D(lon-lat-depth-time); temperature_only=true 时可为空
+    %       temperature_only: logical scalar 名称-值参数，默认 false；true 时只返回第三项温度梯度
+    %       surface_depth_threshold: numeric scalar 名称-值参数，表层深度上限，默认 0.5 m
+    %       weight_temp, weight_salt: numeric scalar 名称-值参数，锋面权重，默认均为 0.6
     % =================================================================================================================
     % Returns:
     %       combined_fronts: Ocean Fronts Detection                 ||type: 3D(lon-lat-time) 锋面位置
@@ -20,6 +23,8 @@ function [combined_fronts, ...
     %                       Horizontal temperature gradient magnitude (degrees_C/m)
     %       salt_gradient_magnitude: Salinity Gradient Magnitude    ||type: 3D(lon-lat-time) 盐度梯度
     %                       Horizontal salinity gradient magnitude (PSU/m)
+    %       temperature_only=true 时第一、二、四项为空，第三项形状保持。
+    % Errors: 未识别或不完整选项、非 logical scalar 的 temperature_only、无效输入维度时抛出。
     % =================================================================================================================
     % Updates:
     %       ****-**-**:     Created,                by Jiaqi Dou;
@@ -48,15 +53,21 @@ function [combined_fronts, ...
     % 使用加权平均，温度梯度权重更高
     weight_temp = 0.6;
     weight_salt = 0.6;
+    % true 时仅计算温度梯度；S 可为空，其余三项返回空数组。
+    temperature_only = false;
 
     if ~isempty(varargin)
         varargin = parse_varargin(varargin, ...
-            {'surface_depth_threshold', 'weight_temp', 'weight_salt'}, ...
-            {surface_depth_threshold, weight_temp, weight_salt});
+            {'surface_depth_threshold', 'weight_temp', 'weight_salt', 'temperature_only'}, ...
+            {surface_depth_threshold, weight_temp, weight_salt, temperature_only});
 
         if ~isempty(varargin)
             error('calc_weather_front:InvalidOption', 'Unknown or incomplete name-value option.');
         end
+    end
+
+    if ~islogical(temperature_only) || ~isscalar(temperature_only)
+        error('calc_weather_front:InvalidTemperatureOnly', 'temperature_only 必须为 logical scalar。');
     end
 
     % 找到表层深度索引
@@ -66,9 +77,14 @@ function [combined_fronts, ...
     % 初始化结果数组
     [nx, ny, ~, nt] = size(T);
     temp_gradient_magnitude = zeros(nx, ny, length(surface_depth_idx), nt);
-    salt_gradient_magnitude = zeros(nx, ny, length(surface_depth_idx), nt);
-    combined_fronts = zeros(nx, ny, length(surface_depth_idx), nt);
-    fronts_strength = zeros(nx, ny, length(surface_depth_idx), nt);
+    salt_gradient_magnitude = [];
+    combined_fronts = [];
+    fronts_strength = [];
+    if ~temperature_only
+        salt_gradient_magnitude = zeros(nx, ny, length(surface_depth_idx), nt);
+        combined_fronts = zeros(nx, ny, length(surface_depth_idx), nt);
+        fronts_strength = zeros(nx, ny, length(surface_depth_idx), nt);
+    end
 
     % 计算网格间距（假设为规则网格）
     dx = abs(lon(2) - lon(1)) * 111000; % 转换为米（近似）
@@ -80,23 +96,29 @@ function [combined_fronts, ...
     for it = 1:nt
 
         t0 = T(:, :, surface_depth_idx, it);
-        s0 = S(:, :, surface_depth_idx, it);
+        if ~temperature_only
+            s0 = S(:, :, surface_depth_idx, it);
+        end
 
         % 逐深度层处理
         for ih = 1:length(surface_depth_idx)
-            salt_layer = squeeze(s0(:, :, ih));
             temp_layer = squeeze(t0(:, :, ih));
 
             % 计算温度梯度
             [temp_grad_x, temp_grad_y] = gradient(temp_layer, dx, dy);
             temp_grad_mag = sqrt(temp_grad_x.^2 + temp_grad_y.^2);
 
+            temp_gradient_magnitude(:, :, ih, it) = temp_grad_mag;
+            if temperature_only
+                continue;
+            end
+
             % 计算盐度梯度
+            salt_layer = squeeze(s0(:, :, ih));
             [salt_grad_x, salt_grad_y] = gradient(salt_layer, dx, dy);
             salt_grad_mag = sqrt(salt_grad_x.^2 + salt_grad_y.^2);
 
             % 存储梯度幅值
-            temp_gradient_magnitude(:, :, ih, it) = temp_grad_mag;
             salt_gradient_magnitude(:, :, ih, it) = salt_grad_mag;
 
             % 标准化梯度值
