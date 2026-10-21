@@ -33,6 +33,7 @@ function test_science_array_reuse()
         end
         assert(all(isnan(barrierLayer(1, 1, :))));
         assert(all(isnan(barrierLayer(1, 2, :))));
+        test_barrier_layer_threshold_edges(precision{1});
 
         expandedDepth = repmat(reshape(depth, 1, 1, [], 1), 4, 3, 1, 4);
         vectorSound = calc_sound_speed(temperature, salinity, depth);
@@ -55,6 +56,7 @@ function test_science_array_reuse()
         test_thermocline_single_interval(precision{1});
         test_thermocline_index_restoration(precision{1});
         test_thermocline_depth_threshold(precision{1});
+        test_thermocline_disjoint_queries(precision{1});
         test_sound_speed_polynomial_precision(precision{1});
 
     end
@@ -193,4 +195,84 @@ function test_sound_speed_polynomial_precision(precision)
         assert(strcmp(class(actual), precision));
         assert(all(abs(double(actual) - expected) <= tolerance));
     end
+end
+
+function test_barrier_layer_threshold_edges(precision)
+    % TEST_BARRIER_LAYER_THRESHOLD_EDGES 验证逐层密度的首交点、缺测及最深有效层回退。
+    % Input: precision，char，single 或 double，指定温盐和坐标的数值类型。
+    % Outputs: none. Throws assertion errors on threshold, missing-data or output-class regression.
+    depth = cast([0.5, 5, 10, 20, 50, 100, 500], precision);
+    lon = cast(100:109, precision);
+    lat = cast([-45, 15], precision);
+    temperature = repmat(cast(28, precision), 10, 2, 7);
+    % 十条剖面依次覆盖首层、普通交点、无交点、交点前缺测、内部缺测、
+    % 全缺测、参考温度缺测、参考盐度缺测、盐度全缺测和厚度截零。
+    salinityProfiles = [36, 35, 35, 35, 35, 35, 35;
+        34, 34, 35, 36, 36, 36, 36;
+        35, 35, 35, 34, 32, 31, nan;
+        34, 34, 35, nan, 36, 36, 36;
+        nan, 34, 35, 34, 36, 36, 36;
+        nan, nan, nan, nan, nan, nan, nan;
+        35, 35, 35, 35, 35, 35, 35;
+        35, 35, nan, 35, 35, 35, 35;
+        nan, nan, nan, nan, nan, nan, nan;
+        35, 35, 35, 30, 30, 30, 30];
+    salinity = repmat(reshape(cast(salinityProfiles, precision), 10, 1, []), 1, 2, 1);
+    temperature(6, :, :) = nan;
+    temperature(7, :, 3) = nan;
+    temperature(10, :, 4:end) = 27;
+
+    [mixedLayer, barrierLayer] = calc_barrierlayer(lon, lat, depth, temperature, salinity);
+    expectedMixed = repmat(500, 10, 2);
+    expectedMixed([6, 7, 9], :) = nan;
+    referenceTemperature = temperature(10, 1, 3);
+    expectedMixed(10, :) = depth(3) + (depth(4) - depth(3)) .* ((referenceTemperature - 0.2) - referenceTemperature) ./ (temperature(10, 1, 4) - referenceTemperature);
+    expectedBarrier = nan(10, 2);
+    expectedBarrier(1, :) = 499.5;
+    expectedBarrier(3, :) = 400;
+    expectedBarrier(10, :) = 0;
+    pressure = sw_pres(repmat(reshape(depth, [], 1), 1, 2), repmat(lat, numel(depth), 1));
+    for latitudeIndex = 1:2
+        for caseIndex = [2, 5]
+            if caseIndex == 2
+                crossingIndex = 4;
+            else
+                crossingIndex = 5;
+            end
+            threshold = sw_dens(salinity(caseIndex, latitudeIndex, 3), temperature(caseIndex, latitudeIndex, 3) - 0.2, double(pressure(3, latitudeIndex)));
+            previous = double(sw_dens(salinity(caseIndex, latitudeIndex, crossingIndex - 1), temperature(caseIndex, latitudeIndex, crossingIndex - 1), double(pressure(crossingIndex - 1, latitudeIndex))));
+            current = double(sw_dens(salinity(caseIndex, latitudeIndex, crossingIndex), temperature(caseIndex, latitudeIndex, crossingIndex), double(pressure(crossingIndex, latitudeIndex))));
+            assert(previous < threshold && current >= threshold);
+            crossingDepth = depth(crossingIndex - 1) + (depth(crossingIndex) - depth(crossingIndex - 1)) .* (threshold - previous) ./ (current - previous);
+            expectedBarrier(caseIndex, latitudeIndex) = 500 - double(crossingDepth);
+        end
+    end
+    assert(isequaln(mixedLayer, expectedMixed));
+    assert(isequaln(barrierLayer, expectedBarrier));
+    assert(strcmp(class(mixedLayer), 'double') && strcmp(class(barrierLayer), 'double'));
+
+    % 无交点时取最大有效深度，不能退化成最后遍历到的有效层。
+    order = [1, 2, 3, 5, 7, 6, 4];
+    [mixedLayer, barrierLayer] = calc_barrierlayer(lon(3), lat, depth(order), temperature(3, :, order), salinity(3, :, order));
+    assert(all(mixedLayer(:) == 500) && all(barrierLayer(:) == 400));
+    [mixedLayer, barrierLayer] = calc_barrierlayer(lon(1), lat(1), depth, temperature(1, 1, :), salinity(1, 1, :));
+    assert(isequal(mixedLayer, 500) && isequal(barrierLayer, 499.5));
+end
+
+function test_thermocline_disjoint_queries(precision)
+    % TEST_THERMOCLINE_DISJOINT_QUERIES 验证分离米段查询和并列选首段的节点索引。
+    % Input: precision，char，single 或 double，指定深度及温度类型。
+    % Outputs: none. Throws assertion errors on query-node or segment-selection regression.
+    depth = cast(0:20, precision);
+    profile = cast([repmat(28, 1, 3), repmat(27, 1, 15), repmat(26, 1, 3)], precision);
+    temperature = repmat(reshape(profile, 1, 1, [], 1), 2, 2, 1, 3);
+    temperature(2, 2, 19:end, :) = 25;
+    [strength, thickness, upper, lower] = calc_thermocline(depth, temperature);
+    expectedStrength = ones(2, 2, 3);
+    expectedStrength(2, 2, :) = 2;
+    expectedBounds = repmat(2.5, 2, 2, 3);
+    expectedBounds(2, 2, :) = 17.5;
+    assert(isequaln(strength, expectedStrength));
+    assert(all(thickness(:) == 0));
+    assert(isequaln(upper, expectedBounds) && isequaln(lower, expectedBounds));
 end

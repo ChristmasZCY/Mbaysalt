@@ -31,23 +31,48 @@ function [MLD_total, BLT_total] = calc_barrierlayer(lon, lat, depth, T, S)
     for timeIndex = 1:nTime
         temperature = T(:, :, :, timeIndex);
         salinity = S(:, :, :, timeIndex);
-        density = nan(nLon, nLat, nDepth);
-        for depthIndex = 1:nDepth
-            layerPressure = double(repmat(pressure(depthIndex, :), nLon, 1));
-            density(:, :, depthIndex) = sw_dens(salinity(:, :, depthIndex), temperature(:, :, depthIndex), layerPressure);
-        end
-
         referenceTemperature = temperature(:, :, referenceIndex);
         referenceDensity = sw_dens(salinity(:, :, referenceIndex), referenceTemperature - 0.2, referencePressure);
         temperatureProfiles = reshape(temperature, [], nDepth);
         salinityProfiles = reshape(salinity, [], nDepth);
         validTemperature = ~all(isnan(temperatureProfiles), 2) & ~all(isnan(salinityProfiles), 2) & ~isnan(referenceTemperature(:));
-        temperatureDepth = first_threshold_crossing(temperatureProfiles, referenceTemperature(:) - 0.2, depth, false);
+        temperatureDepth = first_threshold_crossing(temperatureProfiles, referenceTemperature(:) - 0.2, depth);
         temperatureDepth(~validTemperature) = nan;
 
-        densityProfiles = reshape(density, [], nDepth);
-        densityDepth = first_threshold_crossing(densityProfiles, referenceDensity(:), depth, true);
-        densityDepth(all(isnan(densityProfiles), 2) | isnan(referenceDensity(:))) = nan;
+        % 逐层计算未找到首个交点的剖面，避免保存完整三维密度场。
+        thresholds = referenceDensity(:);
+        densityDepth = nan(nLon * nLat, 1);
+        previousDensity = nan(nLon * nLat, 1);
+        deepestValid = nan(nLon * nLat, 1);
+        active = find(~isnan(thresholds));
+        for depthIndex = 1:nDepth
+            if isempty(active)
+                break;
+            end
+            layerTemperature = temperature(:, :, depthIndex);
+            layerSalinity = salinity(:, :, depthIndex);
+            layerPressure = double(repmat(pressure(depthIndex, :), nLon, 1));
+            % 原整块密度场为 double，显式转换保留 single 输入时的插值精度。
+            current = double(sw_dens(layerSalinity(active), layerTemperature(active), layerPressure(active)));
+            current = current(:);
+            isValid = ~isnan(current);
+            validRows = active(isValid);
+            isDeeper = isnan(deepestValid(validRows)) | double(depth(depthIndex)) > deepestValid(validRows);
+            deepestValid(validRows(isDeeper)) = double(depth(depthIndex));
+            hasCrossing = current >= thresholds(active);
+            found = active(hasCrossing);
+            if depthIndex == 1
+                densityDepth(found) = depth(1);
+            else
+                before = previousDensity(found);
+                now = current(hasCrossing);
+                densityDepth(found) = depth(depthIndex - 1) + (depth(depthIndex) - depth(depthIndex - 1)) .* (thresholds(found) - before) ./ (now - before);
+            end
+            previousDensity(active) = current;
+            % 前一层缺测时交点仍为 NaN，也必须停止，不能改选更深的交点。
+            active = active(~hasCrossing);
+        end
+        densityDepth(active) = deepestValid(active);
 
         barrierThickness = temperatureDepth - densityDepth;
         barrierThickness(barrierThickness < 0) = 0;
@@ -56,22 +81,17 @@ function [MLD_total, BLT_total] = calc_barrierlayer(lon, lat, depth, T, S)
     end
 end
 
-function crossingDepth = first_threshold_crossing(profiles, thresholds, depth, isDensity)
-    % FIRST_THRESHOLD_CROSSING 批量寻找每条剖面的第一个阈值交点。
+function crossingDepth = first_threshold_crossing(profiles, thresholds, depth)
+    % FIRST_THRESHOLD_CROSSING 批量寻找每条温度剖面的第一个 <= 阈值交点。
     % Inputs:
     %   profiles: single/double、profile-depth，每行一条按原深度顺序排列的剖面。
     %   thresholds: numeric、profile-1，每条剖面自己的阈值。
     %   depth: numeric 深度向量，单位 m，与 profiles 列数一致。
-    %   isDensity: logical scalar；true 使用 >=，false 使用 <=。
     % Output:
     %   crossingDepth: double 列向量，线性插值后的交点深度；未越界时取最大有效深度。
     %   前一层缺测保留 NaN；调用者负责剔除无效参考层及温盐全缺测剖面。
     % Errors: 输入维度不匹配时由 MATLAB 数组运算抛出。
-    if isDensity
-        beyond = profiles >= thresholds;
-    else
-        beyond = profiles <= thresholds;
-    end
+    beyond = profiles <= thresholds;
     [hasCrossing, firstIndex] = max(beyond, [], 2);
     crossingDepth = nan(size(firstIndex));
     firstLayer = hasCrossing & firstIndex == 1;

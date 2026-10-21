@@ -35,73 +35,78 @@ for group=1:size(patterns,1)
         poolPossible=3*poolSecants+poolRounding>=cutoff;
         deepest=max(poolPossible.*reshape(1:size(poolPossible,1),[],1),[],1);
         [~,poolOrder]=sort(deepest);
-        indices(poolRange)=pool(poolOrder);
-    end
-    for first=1:256:numel(indices)
-        chosen=indices(first:min(first+255,numel(indices)));
-        block=nan(numel(chosen),4);
-        block(:,2)=0; block(:,3)=zmid(end); block(:,4)=zmid(end);
-        values=profiles(mask,chosen);
-        % PCHIP 两端导数与区间割线同号、各不超过其 3 倍；Hermite 导数对
-        % 两端系数线性，系数范围四角的绝对值均不超过 3 倍割线，可安全筛除。
-        % 加入 32 个温度 ULP 的余量，覆盖 single 插值及相减的舍入。
-        secants=abs(diff(double(values),1,1)./diff(double(z(:))));
-        rounding=32*double(eps(max(abs(values),[],1)));
-        possible=any(3*secants+rounding>=cutoff,2);
-        if any(~isfinite(values(:))), possible(:)=true; end
-        candidates=false(numel(zq)-1,1);
-        for interval=reshape(find(possible),1,[])
-            left=max(1,double(floor(z(interval))-zq(1)+1));
-            right=min(numel(candidates),double(ceil(z(interval+1))-zq(1)));
-            if left<=right, candidates(left:right)=true; end
-        end
-        queryStarts=zq(find(candidates));
-        if isempty(queryStarts), out(chosen,:)=block; continue; end
-        queryPoints=unique([queryStarts;queryStarts+1]);
-        [~,left]=ismember(queryStarts,queryPoints);
-        [~,right]=ismember(queryStarts+1,queryPoints);
-        temperatures=interp1(z,values,queryPoints,'pchip');
-        gradients=abs(temperatures(right,:)-temperatures(left,:));
-        activeMid=queryStarts+0.5;
-        selected=gradients>=cutoff;
-        % 单候选区间时仍保持空连接数组和分段累计值为列向量。
-        connected=reshape(diff(queryStarts)==1,[],1);
-        starts=selected&~[false(1,numel(chosen));selected(1:end-1,:)&connected];
-        ends=selected&~[selected(2:end,:)&connected;false(1,numel(chosen))];
-        [beginRow,column]=find(starts);
-        beginRow=beginRow(:); column=column(:);
-        [endRow,~]=find(ends);
-        endRow=endRow(:);
-        if ~isempty(beginRow)
-            segment=cumsum(reshape(starts(selected),[],1));
-            values=reshape(double(gradients(selected)),[],1);
-            count=endRow-beginRow+1;
-            sums=accumarray(segment,values,[numel(beginRow),1]);
-            peaks=accumarray(segment,values,[numel(beginRow),1],@max);
-            averages=cast(sums./count,'like',gradients);
-            bestAverage=accumarray(column,double(averages),[numel(chosen),1],@max,-inf);
-            best=double(averages)==bestAverage(column);
-            winner=accumarray(column(best),find(best),[numel(chosen),1],@min,0);
-            % 段均值接近时回到原 mean 顺序，避免累计方式改变并列段选择。
-            roundoff=(count+4).*double(eps(cast(peaks,'like',gradients)));
-            maxRoundoff=accumarray(column,roundoff,[numel(chosen),1],@max,0);
-            near=(bestAverage(column)-double(averages))<=2*maxRoundoff(column);
-            ambiguous=find(accumarray(column,double(near),[numel(chosen),1])>1);
-            for k=reshape(ambiguous,1,[])
-                segments=find(column==k); exactBest=-inf;
-                for s=reshape(segments,1,[])
-                    average=mean(gradients(beginRow(s):endRow(s),k));
-                    if average>exactBest, winner(k)=s; exactBest=average; end
-                end
+        pool=pool(poolOrder);
+        poolPossible=poolPossible(:,poolOrder);
+        % 每个小池复用候选区间和舍入余量，避免在256条子批次内重复计算。
+        for first=1:256:numel(pool)
+            poolColumns=first:min(first+255,numel(pool));
+            chosen=pool(poolColumns);
+            block=nan(numel(chosen),4);
+            block(:,2)=0; block(:,3)=zmid(end); block(:,4)=zmid(end);
+            values=profiles(mask,chosen);
+            % PCHIP 两端导数与区间割线同号、各不超过其 3 倍；Hermite 导数对
+            % 两端系数线性，系数范围四角的绝对值均不超过 3 倍割线，可安全筛除。
+            % 加入 32 个温度 ULP 的余量，覆盖 single 插值及相减的舍入。
+            possible=any(poolPossible(:,poolColumns),2);
+            if any(~isfinite(values(:))), possible(:)=true; end
+            candidates=false(numel(zq)-1,1);
+            for interval=reshape(find(possible),1,[])
+                left=max(1,double(floor(z(interval))-zq(1)+1));
+                right=min(numel(candidates),double(ceil(z(interval+1))-zq(1)));
+                if left<=right, candidates(left:right)=true; end
             end
-            found=find(winner>0);
-            s=winner(found);
-            block(found,1)=peaks(s);
-            block(found,3)=activeMid(beginRow(s));
-            block(found,4)=activeMid(endRow(s));
-            block(found,2)=block(found,4)-block(found,3);
+            startsIndex=find(candidates);
+            queryStarts=zq(startsIndex);
+            if isempty(queryStarts), out(chosen,:)=block; continue; end
+            % 米段端点作逻辑并集并累计编号，保持原查询节点及先后顺序。
+            isQueryPoint=[candidates;false]|[false;candidates];
+            queryPoints=zq(isQueryPoint);
+            queryIndex=cumsum(isQueryPoint);
+            left=queryIndex(startsIndex);
+            right=queryIndex(startsIndex+1);
+            temperatures=interp1(z,values,queryPoints,'pchip');
+            gradients=abs(temperatures(right,:)-temperatures(left,:));
+            activeMid=queryStarts+0.5;
+            selected=gradients>=cutoff;
+            % 单候选区间时仍保持空连接数组和分段累计值为列向量。
+            connected=reshape(diff(queryStarts)==1,[],1);
+            starts=selected&~[false(1,numel(chosen));selected(1:end-1,:)&connected];
+            ends=selected&~[selected(2:end,:)&connected;false(1,numel(chosen))];
+            [beginRow,column]=find(starts);
+            beginRow=beginRow(:); column=column(:);
+            [endRow,~]=find(ends);
+            endRow=endRow(:);
+            if ~isempty(beginRow)
+                segment=cumsum(reshape(starts(selected),[],1));
+                values=reshape(double(gradients(selected)),[],1);
+                count=endRow-beginRow+1;
+                sums=accumarray(segment,values,[numel(beginRow),1]);
+                peaks=accumarray(segment,values,[numel(beginRow),1],@max);
+                averages=cast(sums./count,'like',gradients);
+                bestAverage=accumarray(column,double(averages),[numel(chosen),1],@max,-inf);
+                best=double(averages)==bestAverage(column);
+                winner=accumarray(column(best),find(best),[numel(chosen),1],@min,0);
+                % 段均值接近时回到原 mean 顺序，避免累计方式改变并列段选择。
+                roundoff=(count+4).*double(eps(cast(peaks,'like',gradients)));
+                maxRoundoff=accumarray(column,roundoff,[numel(chosen),1],@max,0);
+                near=(bestAverage(column)-double(averages))<=2*maxRoundoff(column);
+                ambiguous=find(accumarray(column,double(near),[numel(chosen),1])>1);
+                for k=reshape(ambiguous,1,[])
+                    segments=find(column==k); exactBest=-inf;
+                    for s=reshape(segments,1,[])
+                        average=mean(gradients(beginRow(s):endRow(s),k));
+                        if average>exactBest, winner(k)=s; exactBest=average; end
+                    end
+                end
+                found=find(winner>0);
+                s=winner(found);
+                block(found,1)=peaks(s);
+                block(found,3)=activeMid(beginRow(s));
+                block(found,4)=activeMid(endRow(s));
+                block(found,2)=block(found,4)-block(found,3);
+            end
+            out(chosen,:)=block;
         end
-        out(chosen,:)=block;
     end
 end
 max_grad_total=reshape(out(:,1),nx,ny,nt);
