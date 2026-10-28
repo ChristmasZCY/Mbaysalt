@@ -54,6 +54,7 @@ function test_science_array_reuse()
         assert(isempty(frontMask) && isempty(frontStrength) && isempty(saltGradient));
         test_thermocline_segment_selection(precision{1});
         test_thermocline_single_interval(precision{1});
+        test_thermocline_short_profiles(precision{1});
         test_thermocline_index_restoration(precision{1});
         test_thermocline_depth_threshold(precision{1});
         test_thermocline_disjoint_queries(precision{1});
@@ -103,6 +104,40 @@ function test_thermocline_single_interval(precision)
         assert(all(strength(:) == 1));
         assert(all(thickness(:) == 0));
         assert(all(upper(:) == 4.5) && all(lower(:) == 4.5));
+    end
+end
+
+function test_thermocline_short_profiles(precision)
+    % TEST_THERMOCLINE_SHORT_PROFILES 验证局部短剖面保持缺测且不影响正常剖面。
+    % Input: precision，char，single 或 double，指定深度及温度类型。
+    % Outputs: none. Throws assertion errors on missing-value, shape or numeric regression.
+    depth = cast([0.494025, 1.541375, 2.645669, 3.819495, 5.078224], precision);
+    profile = cast(28 - double(depth) * 0.5, precision);
+    temperature = repmat(reshape(profile, 1, 1, [], 1), 4, 2, 1, 2);
+    temperature(1, :, :, :) = nan;
+    temperature(2, :, 2:end, :) = nan; % 仅一个有效层。
+    temperature(3, :, 3:end, :) = nan; % 两层之间只有一个整数米节点。
+    temperature(1, 2, :, 2) = reshape(profile, 1, 1, [], 1);
+    actual = cell(1, 4);
+    expected = cell(1, 4);
+    [actual{:}] = calc_thermocline(depth, temperature);
+    [expected{:}] = calc_thermocline(depth, reshape(profile, 1, 1, [], 1));
+    assert(isfinite(expected{1}));
+    for outputIndex = 1:4
+        result = actual{outputIndex};
+        assert(isequal(size(result), [4, 2, 2]));
+        assert(strcmp(class(result), 'double'));
+        assert(all(isnan(result(1, 1, :)), 'all'));
+        assert(isnan(result(1, 2, 1)));
+        assert(all(isnan(result(2:3, :, :)), 'all'));
+        assert(all(result(4, :, :) == expected{outputIndex}, 'all'));
+        assert(isequaln(result(1, 2, 2), expected{outputIndex}));
+    end
+    % 整批仅含短剖面时，四项输出也保持 NaN，不能以 0 伪造未检出跃层。
+    [actual{:}] = calc_thermocline(depth(1), repmat(profile(1), 2, 1, 1, 2));
+    for outputIndex = 1:4
+        assert(all(isnan(actual{outputIndex}), 'all'));
+        assert(isequal(size(actual{outputIndex}), [2, 1, 2]));
     end
 end
 

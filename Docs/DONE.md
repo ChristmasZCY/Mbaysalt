@@ -1,5 +1,16 @@
 # Mbaysalt 已完成记录
 
+<a id="thermocline-short-profile-20261028"></a>
+
+## 2026-10-28 温跃层局部短剖面缺测修复（本地完成）
+
+时间口径：Asia/Shanghai / CST (+08:00)。当前版本 v2.6.0。
+
+- 复用 `Infunctions/calc_thermocline.m` 的有效深度分组及 NaN 输出初始化：不足两个整数米查询节点的组直接保留四项 NaN，不再由 `ShortProfile` 异常中断其他剖面。没有新增模块、依赖、配置或调用接口；正常剖面的 1 米 PCHIP、阈值、连续段选择、四项 double 输出和空间/时间顺序不变。
+- 扩展既有 `Tests/test_science_array_reuse.m`，覆盖单层有效值、两层但只有一个整数米节点、全缺测、与正常剖面混合、不同时间掩码及整批短剖面。single/double 均校验四项输出，正常剖面与独立调用精确一致。
+- 同一原生 MATLAB R2026a 测试在修改前复现 `calc_thermocline:ShortProfile`，修改后完整科学数组回归通过（`SCIENCE_REGRESSION_PASS`）；`git diff --check` 通过。测试前检查相关 Infunctions、Tests、Docs 目录，无 macOS 隐藏元数据需要删除。
+- 仅修改独立 Mbaysalt 仓库，未部署服务器或重跑生产任务，未修改 MakeTilesService、上游插值数据或 GPU 配置。线上温跃层失败任务及原始/插值文件缺测差异仍需单独验收，见[待办](TODO.md)。保留已有 `Exfunctions/irfu-matlab` 子模块变更。
+
 <a id="science-hotspot-block-test-20261022"></a>
 
 ## 2026-10-22 温跃层热点候选复测与服务器集成

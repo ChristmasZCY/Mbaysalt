@@ -7,8 +7,9 @@ function [max_grad_total, thickness_total, upper_bound_total, lower_bound_total]
 %   max_grad_total: double、lon-lat-time，所选连续段的最大绝对梯度，单位 degrees C/m。
 %   thickness_total: double、lon-lat-time，所选连续段厚度，单位 m。
 %   upper_bound_total, lower_bound_total: double、lon-lat-time，所选段的上下边界，单位 m。
-%   全缺测剖面四项均为 NaN；未检出跃层时强度为 NaN，厚度为 0，上下边界取最深梯度中点。
-% Errors: 有效剖面不足以构成 1 米梯度区间时抛出，维度或 PCHIP 输入无效时透传 MATLAB 错误。
+%   全缺测或不足一个整数米梯度区间的剖面四项均为 NaN。
+%   可计算但未检出跃层时强度为 NaN，厚度为 0，上下边界取最深梯度中点。
+% Errors: 维度或 PCHIP 输入无效时透传 MATLAB 错误；局部短剖面不抛错。
 % 同有效深度掩码的剖面分组、每批最多 256 条，限制 1 米插值临时数组的内存。
 % 候选区间只控制要计算的节点，未修改原有 0.2/0.05 degrees C/m 阈值和选段规则。
 nx=size(T,1); ny=size(T,2); nt=size(T,4); nz=size(T,3);
@@ -20,7 +21,8 @@ for group=1:size(patterns,1)
     if ~any(mask), continue; end
     z=depth(mask);
     zq=(ceil(min(z)):floor(max(z)))';
-    if numel(zq)<2, error('calc_thermocline:ShortProfile','有效深度不足以形成 1 米梯度区间。'); end
+    % 短剖面无法计算梯度，保留四项 NaN，不中断其他空间点。
+    if numel(zq)<2, continue; end
     zmid=zq(1:end-1)+diff(zq)/2;
     if max(z)<=200, cutoff=0.2; else, cutoff=0.05; end
     indices=find(groups==group);
