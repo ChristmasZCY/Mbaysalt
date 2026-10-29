@@ -120,7 +120,8 @@
 
 [submodule "Exfunctions/Course"]
 	path = Exfunctions/Course
-	url = http://www.iocean.cn:12345/mirror/Course.git
+	# Course 统一从自托管镜像获取；与 Configurefiles/INSTALL.json 保持一致。
+	url = https://gitea.alaea.cn:16385/mirrorB/SiqiliOcean__course.git
 
 [submodule "Exfunctions/googleearthtoolbox"]
 	path = Exfunctions/googleearthtoolbox

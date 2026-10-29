@@ -196,7 +196,7 @@
             "SETPATH": false,
             "DEPTH": 0,
             "BRANCH": "main",
-            "URL": "https://github.com/SiqiLiOcean/Course.git",
+            "URL": "https://gitea.alaea.cn:16385/mirrorB/SiqiliOcean__course.git",
             "PATH": "Exfunctions/Course",
             "CHECK": ["Course","dir","7"]},
         "nctoolbox": {

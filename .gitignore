@@ -18,54 +18,8 @@ Thumbs.db
 
 # Exfunctions files #
 ######################
-Exfunctions/matFigure
-Exfunctions/matFVCOM
-Exfunctions/matNC
-Exfunctions/matWRF
-Exfunctions/HYCOM2FVCOM
-Exfunctions/WRF2FVCOM
-Exfunctions/OceanData
-Exfunctions/FVCOM_NML
-Exfunctions/Course
-Exfunctions/nctoolbox
-Exfunctions/cdt
-Exfunctions/vtkToolbox
-Exfunctions/TMDToolbox_v2_5
-Exfunctions/TMDToolbox_v3_0
-Exfunctions/kmz2struct
-Exfunctions/inpolygons-pkg
-Exfunctions/JSONLab
-Exfunctions/OceanMesh2D
-Exfunctions/ann_wrapper
-Exfunctions/ZoomPlot
-Exfunctions/htool
-Exfunctions/export_fig
-Exfunctions/plot_google_map
-Exfunctions/genpath2
-Exfunctions/irfu-matlab
-Exfunctions/WW3-tools
-Exfunctions/funcsign
-Exfunctions/kml-toolbox
-Exfunctions/MATLAB-PLOT-CHEAT-SHEET
-Exfunctions/matlabPlotCheatsheet
-Exfunctions/visualization-cheat-sheet
-Exfunctions/googleearthtoolbox
-Exfunctions/mitgcm_toolbox
-Exfunctions/ParforProgMon
-Exfunctions/ocean_data_tools
-Exfunctions/gcmfaces
-Exfunctions/RPSstuff
-Exfunctions/kriging
-Exfunctions/variogramfit
-Exfunctions/topotoolbox
 Exfunctions/Mesh2d
 Exfunctions/MESH2D
-Exfunctions/ipi4d
-Exfunctions/inpoly
-Exfunctions/FVCOMToolbox_v2
-Exfunctions/matlab-schemer
-Exfunctions/freezeColors
-Exfunctions/yaml
 
 
 Exfunctions/m_map
