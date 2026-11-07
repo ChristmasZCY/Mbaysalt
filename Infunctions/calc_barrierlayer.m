@@ -36,7 +36,7 @@ function [MLD_total, BLT_total] = calc_barrierlayer(lon, lat, depth, T, S)
         temperatureProfiles = reshape(temperature, [], nDepth);
         salinityProfiles = reshape(salinity, [], nDepth);
         validTemperature = ~all(isnan(temperatureProfiles), 2) & ~all(isnan(salinityProfiles), 2) & ~isnan(referenceTemperature(:));
-        temperatureDepth = first_threshold_crossing(temperatureProfiles, referenceTemperature(:) - 0.2, depth);
+        temperatureDepth = first_threshold_crossing(temperatureProfiles, referenceTemperature(:) - 0.2, depth, validTemperature);
         temperatureDepth(~validTemperature) = nan;
 
         % 逐层计算未找到首个交点的剖面，避免保存完整三维密度场。
@@ -49,11 +49,10 @@ function [MLD_total, BLT_total] = calc_barrierlayer(lon, lat, depth, T, S)
             if isempty(active)
                 break;
             end
-            layerTemperature = temperature(:, :, depthIndex);
-            layerSalinity = salinity(:, :, depthIndex);
-            layerPressure = double(repmat(pressure(depthIndex, :), nLon, 1));
+            latitudeIndex = floor((active - 1) / nLon) + 1;
+            layerPressure = double(pressure(depthIndex, latitudeIndex));
             % 原整块密度场为 double，显式转换保留 single 输入时的插值精度。
-            current = double(sw_dens(layerSalinity(active), layerTemperature(active), layerPressure(active)));
+            current = double(sw_dens(salinityProfiles(active, depthIndex), temperatureProfiles(active, depthIndex), layerPressure(:)));
             current = current(:);
             isValid = ~isnan(current);
             validRows = active(isValid);
@@ -81,12 +80,13 @@ function [MLD_total, BLT_total] = calc_barrierlayer(lon, lat, depth, T, S)
     end
 end
 
-function crossingDepth = first_threshold_crossing(profiles, thresholds, depth)
+function crossingDepth = first_threshold_crossing(profiles, thresholds, depth, validProfiles)
     % FIRST_THRESHOLD_CROSSING 批量寻找每条温度剖面的第一个 <= 阈值交点。
     % Inputs:
     %   profiles: single/double、profile-depth，每行一条按原深度顺序排列的剖面。
     %   thresholds: numeric、profile-1，每条剖面自己的阈值。
     %   depth: numeric 深度向量，单位 m，与 profiles 列数一致。
+    %   validProfiles: logical 列向量，调用方已计算的温盐及参考层有效性。
     % Output:
     %   crossingDepth: double 列向量，线性插值后的交点深度；未越界时取最大有效深度。
     %   前一层缺测保留 NaN；调用者负责剔除无效参考层及温盐全缺测剖面。
@@ -107,7 +107,7 @@ function crossingDepth = first_threshold_crossing(profiles, thresholds, depth)
     end
 
     % 无交点的剖面逐层确认最大有效深度，避免构造整块 double 深度索引矩阵。
-    remaining = find(~hasCrossing);
+    remaining = find(~hasCrossing & validProfiles);
     [~, depthOrder] = sort(depth, 'descend');
     for layer = reshape(depthOrder, 1, [])
         if isempty(remaining)
