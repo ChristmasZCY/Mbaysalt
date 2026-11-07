@@ -1,5 +1,9 @@
 # Mbaysalt 待办
 
+<a id="thermocline-mask-keys-20261107"></a>
+
+- [ ] 用户发布温跃层字节分组键优化后，结合MakeTilesService正常多日批次核验四项科学输出、输入等待、主机内存及端到端墙钟。双海域函数均值减少9.8%／12.5%，隔离逐值及资源观测见[记录](DONE.md#thermocline-mask-keys-20261107)。
+
 当前版本：v2.6.0。只记录未完成的发布、验证和决策。
 
 <a id="barrier-profile-index-reuse-20261107"></a>

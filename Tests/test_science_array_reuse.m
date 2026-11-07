@@ -70,6 +70,7 @@ function test_science_array_reuse()
         test_thermocline_single_interval(precision{1});
         test_thermocline_short_profiles(precision{1});
         test_thermocline_index_restoration(precision{1});
+        test_thermocline_mask_group_boundaries(precision{1});
         test_thermocline_depth_threshold(precision{1});
         test_thermocline_disjoint_queries(precision{1});
         test_sound_speed_polynomial_precision(precision{1});
@@ -193,6 +194,43 @@ function test_thermocline_index_restoration(precision)
         [hour{:}] = calc_thermocline(cast(0:10, precision), temperature(:, :, :, timeIndex));
         for outputIndex = 1:4
             assert(isequaln(actual{outputIndex}(:, :, timeIndex), hour{outputIndex}));
+        end
+    end
+end
+
+function test_thermocline_mask_group_boundaries(precision)
+    % TEST_THERMOCLINE_MASK_GROUP_BOUNDARIES 验证8字节键边界、超过64层及任意缺层的分组。
+    % Input: precision，char，single或double，指定温度及坐标精度。
+    % Outputs: none. Throws assertion errors on grouping collisions or reordered profiles.
+    for depthCount = [7, 8, 9, 50, 64, 65, 130]
+        depth = cast((0:depthCount-1) * 4.25 + 0.5, precision);
+        profile = cast(27 - 0.15 * double(depth) + sin(double(depth) / 4), precision);
+        temperature = repmat(reshape(profile, 1, 1, [], 1), 4, 3, 1, 2);
+        for point = 1:12
+            x = mod(point-1, 4) + 1; y = ceil(point/4);
+            temperature(x, y, mod(1:depthCount, point+2) == 1, :) = nan;
+        end
+        temperature(1, 1, :, :) = nan;
+        temperature(2, 1, 2:end, 1) = nan;
+        temperature(:, :, :, 2) = temperature(:, :, :, 2) + cast(0.125, precision);
+        actual = cell(1, 4);
+        [actual{:}] = calc_thermocline(depth, temperature);
+        for x = 1:4
+            for y = 1:3
+                for timeIndex = 1:2
+                    expected = cell(1, 4);
+                    [expected{:}] = calc_thermocline(depth, temperature(x, y, :, timeIndex));
+                    for outputIndex = 1:4
+                        assert(isequaln(actual{outputIndex}(x, y, timeIndex), expected{outputIndex}));
+                    end
+                end
+            end
+        end
+        % 空水平网格保留形状和输出类型，分组键不能因零剖面产生reshape歧义。
+        [actual{:}] = calc_thermocline(depth, zeros(0, 3, depthCount, 2, precision));
+        for outputIndex = 1:4
+            assert(isequal(size(actual{outputIndex}), [0, 3, 2]));
+            assert(strcmp(class(actual{outputIndex}), 'double'));
         end
     end
 end
