@@ -34,6 +34,20 @@ function test_science_array_reuse()
         assert(all(isnan(barrierLayer(1, 1, :))));
         assert(all(isnan(barrierLayer(1, 2, :))));
         test_barrier_layer_threshold_edges(precision{1});
+        % 大片无效参考层及缺盐剖面应直接保留NaN，有效稀疏点与单独调用一致。
+        sparseTemperature = nan(31, 7, numel(depth), 2, precision{1});
+        sparseSalinity = sparseTemperature;
+        sparseTemperature(27, 6, :, :) = temperature(4, 3, :, 1:2);
+        sparseSalinity(27, 6, :, :) = salinity(4, 3, :, 1:2);
+        sparseTemperature(5, 2, :, :) = temperature(4, 3, :, 1:2);
+        [sparseMixed, sparseBarrier] = calc_barrierlayer(1:31, -3:3, depth, sparseTemperature, sparseSalinity);
+        [singleMixed, singleBarrier] = calc_barrierlayer(27, 2, depth, sparseTemperature(27, 6, :, :), sparseSalinity(27, 6, :, :));
+        assert(isequaln(sparseMixed(27, 6, :), singleMixed));
+        assert(isequaln(sparseBarrier(27, 6, :), singleBarrier));
+        sparseMixed(27, 6, :) = nan;
+        sparseBarrier(27, 6, :) = nan;
+        assert(all(isnan(sparseMixed), 'all') && all(isnan(sparseBarrier), 'all'));
+
 
         expandedDepth = repmat(reshape(depth, 1, 1, [], 1), 4, 3, 1, 4);
         vectorSound = calc_sound_speed(temperature, salinity, depth);
