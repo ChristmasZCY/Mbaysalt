@@ -7,3 +7,4 @@
 - 新增 GitHub Actions 回归测试与 `Tests/run_all_tests.m`：干净路径下由 ST_Mbaysalt 安装测试依赖后运行全部用例。
 - matFVCOM、matFigure、nctoolbox 子模块指针改回上游提交，修复递归克隆找不到本机补丁提交的问题。
 - ST_Mbaysalt 不再依赖 Mapping Toolbox 的 `struct2array`，未装该工具箱时也能安装依赖。
+- preuvh2 在无法使用 Parallel Computing Toolbox 时提示并改为串行计算，不再报错。

@@ -36,6 +36,7 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
     %       2026-09-17:     Fix TPXO subset boundaries,      by Christmas;
     %       2026-09-17:     Reduce grid I/O and loop work,    by Christmas;
     %       2026-09-17:     Add optional TMD3 prediction,     by Christmas;
+    %       2026-11-19:     Fall back to serial without PCT,  by Christmas;
     % =================================================================================================================
     % Reerences:
     %       tpxo7.2只有9个分潮。是从所有潮总分离出来9个，其他的都掺杂在这9个里面
@@ -411,6 +412,12 @@ function TIDE = preuvh2(lon, lat, dmt, tideList, TPXO_fileDir, data_midDir, vara
                 'TMD3 cannot predict the requested constituents [%s]: %s', strjoin(tideList, ', '), exception.message)
         end
 
+    end
+
+    if Predictor == "ttide" && ~isempty(Parallel) && ~canUseParallelPool
+        % 未安装或无法使用 Parallel Computing Toolbox 时改为串行，结果与并行一致
+        warning('preuvh2:NoParallelPool', 'Parallel pool is unavailable (Parallel Computing Toolbox not installed or licensed), running T_Tide serially.');
+        Parallel = [];
     end
 
     if Predictor == "ttide" && ~isempty(Parallel)

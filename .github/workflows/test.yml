@@ -2,26 +2,35 @@
 # 测试依赖由 ST_Mbaysalt 按 Configurefiles/INSTALL.json 安装，不单独拉取子模块。
 name: test
 
+# 只改文档、许可证和参考资料时不运行；.m 文件只改注释仍会运行。
 on:
   push:
+    paths-ignore: ['**.md', 'Docs/**', 'Htmls/**', 'References/**', 'LICENSE']
   pull_request:
+    paths-ignore: ['**.md', 'Docs/**', 'Htmls/**', 'References/**', 'LICENSE']
 
 jobs:
   matlab:
-    runs-on: ubuntu-latest
+    # MATLAB 官方支持的 Ubuntu 版本；ubuntu-latest 已是 26.04，不在支持列表内
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        # R2025b 为 Contents.m 声明的构建版本，latest 为 MathWorks 当前最新版本
-        release: [R2025b, latest]
+        include:
+          # Contents.m 声明的构建版本，只装基础 MATLAB，覆盖无工具箱时的串行回退
+          - release: R2025b
+            products: ''
+          # MathWorks 当前最新版本，加装 Parallel Computing Toolbox，覆盖并行路径
+          - release: latest
+            products: Parallel_Computing_Toolbox
+    name: matlab (${{ matrix.release }})
     steps:
       - uses: actions/checkout@v7
 
       - uses: matlab-actions/setup-matlab@v3
         with:
           release: ${{ matrix.release }}
-          # preuvh2 的 Parallel 选项用 gcp/parpool，测试用例会启用
-          products: Parallel_Computing_Toolbox
+          products: ${{ matrix.products }}
 
       - uses: matlab-actions/run-command@v3
         with:
