@@ -5,7 +5,10 @@ function test_tpxo_subset_bounds()
     addpath(fullfile(repoRoot, 'Exfunctions', 'matFVCOM'));
     addpath(fullfile(repoRoot, 'Exfunctions', 'Otherpkgs'));
     addpath(fullfile(repoRoot, 'Exfunctions', 'SupplementFiles', 'matFVCOM'));
+    addpath(fullfile(repoRoot, 'Exfunctions', 'TMDToolbox_v2_5', 'TMD'));
     addpath(fullfile(repoRoot, 'Exfunctions', 'TMDToolbox_v2_5', 'TMD', 'FUNCTIONS'));
+    addpath(fullfile(repoRoot, 'Exfunctions', 't_tide'));
+    addpath(fullfile(repoRoot, 'Exfunctions', 'cprintf'));
 
     test_tide_template();
     test_preuvh2_bounds();

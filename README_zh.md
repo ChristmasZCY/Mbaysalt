@@ -31,6 +31,14 @@ build_python_package({'calc_weather_front.m','calc_thermocline.m','calc_sound_sp
 
 目标机安装与构建版本、系统、架构一致的 MATLAB Runtime 后 `cd build/python && python -m pip install .`，调用方式：`mbaysalt.initialize()` → `toolbox.<函数>` → `toolbox.terminate()`。
 
+## 测试
+
+```matlab
+addpath('Tests'); run_all_tests
+```
+
+依赖 `matFVCOM`、`funcsign`、`TMDToolbox_v2_5` 子模块及 `seawater`、`t_tide`。每次推送由 GitHub Actions 自动运行（`.github/workflows/test.yml`）。
+
 ## 目录
 
 `Functions/` 科学函数、`Exfunctions/` 可选子模块（第三方）、`Configurefiles/` 安装清单、`Docs/` 说明与记录、`Examples/`、`Scripts/`。
