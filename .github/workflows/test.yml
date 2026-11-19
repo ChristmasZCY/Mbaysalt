@@ -9,12 +9,17 @@ on:
 jobs:
   matlab:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # R2025b 为 Contents.m 声明的构建版本，latest 为 MathWorks 当前最新版本
+        release: [R2025b, latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: matlab-actions/setup-matlab@v2
         with:
-          release: R2025b
+          release: ${{ matrix.release }}
 
       - uses: matlab-actions/run-command@v2
         with:

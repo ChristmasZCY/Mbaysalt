@@ -837,7 +837,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
         clearvars pkg pkg_url pkg_path
     end
 
-    STATUS_gitclone = any(struct2array(STATUS1));
+    STATUS_gitclone = any(cell2mat(struct2cell(STATUS1))); % struct2array 属于 Mapping Toolbox，改用基础函数
 
     clearvars STATUS1
     % END <-- packages.gitclone
@@ -929,7 +929,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
         clearvars field field_cell pkg local_file pkg_url pkg_localfile
     end
 
-    STATUS_download = any(struct2array(STATUS1));
+    STATUS_download = any(cell2mat(struct2cell(STATUS1))); % struct2array 属于 Mapping Toolbox，改用基础函数
     clearvars STATUS1
     % END <-- packages.download
 
