@@ -15,12 +15,14 @@ jobs:
         # R2025b 为 Contents.m 声明的构建版本，latest 为 MathWorks 当前最新版本
         release: [R2025b, latest]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: matlab-actions/setup-matlab@v2
+      - uses: matlab-actions/setup-matlab@v3
         with:
           release: ${{ matrix.release }}
+          # preuvh2 的 Parallel 选项用 gcp/parpool，测试用例会启用
+          products: Parallel_Computing_Toolbox
 
-      - uses: matlab-actions/run-command@v2
+      - uses: matlab-actions/run-command@v3
         with:
           command: addpath('Tests'); run_all_tests
