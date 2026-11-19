@@ -37,7 +37,7 @@ build_python_package({'calc_weather_front.m','calc_thermocline.m','calc_sound_sp
 addpath('Tests'); run_all_tests
 ```
 
-依赖 `matFVCOM`、`funcsign`、`TMDToolbox_v2_5` 子模块及 `seawater`、`t_tide`。每次推送由 GitHub Actions 自动运行（`.github/workflows/test.yml`）。
+在干净的 MATLAB 路径下运行：先由 `ST_Mbaysalt` 按 `Configurefiles/INSTALL.json` 只安装测试依赖，再运行全部 `Tests/test_*.m`，结束后恢复原路径。每次推送由 GitHub Actions 自动运行（`.github/workflows/test.yml`）。
 
 ## 目录
 

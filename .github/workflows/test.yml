@@ -1,4 +1,5 @@
 # Mbaysalt 回归测试：推送和 PR 时在 GitHub Actions 上运行 Tests/run_all_tests.m。
+# 测试依赖由 ST_Mbaysalt 按 Configurefiles/INSTALL.json 安装，不单独拉取子模块。
 name: test
 
 on:
@@ -11,22 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 只拉取测试用到的第三方子模块，其余子模块与 LFS 文件不需要。
-      - name: Checkout test submodules
-        run: git submodule update --init --depth 1 Exfunctions/matFVCOM Exfunctions/funcsign Exfunctions/TMDToolbox_v2_5
-
-      # seawater 与 t_tide 不随仓库分发，地址与 Configurefiles/INSTALL.json 一致。
-      - name: Download seawater and t_tide
-        run: |
-          curl -fsSL -o /tmp/seawater.zip https://www.marine.csiro.au/datacentre/projects/seawater/seawater_ver3_3.1.zip
-          unzip -q /tmp/seawater.zip -d Exfunctions/seawater_ver3_3.1
-          curl -fsSL -o /tmp/t_tide.zip https://www.eoas.ubc.ca/~rich/t_tide/t_tide_v1.5beta.zip
-          unzip -q /tmp/t_tide.zip -d Exfunctions/t_tide
-
       - uses: matlab-actions/setup-matlab@v2
         with:
           release: R2025b
 
       - uses: matlab-actions/run-command@v2
         with:
-          command: restoredefaultpath; addpath('Tests'); run_all_tests
+          command: addpath('Tests'); run_all_tests

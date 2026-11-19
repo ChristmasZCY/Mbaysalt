@@ -4,4 +4,5 @@
 
 - 发行版本升级到 v3.0.0，v2.6.0 功能概述并入 [DONE](Docs/DONE.md)。
 - README 与 README_zh 恢复 Contains 第三方组件清单。
-- 新增 GitHub Actions 回归测试与 `Tests/run_all_tests.m`，推送后自动运行全部用例；TPXO 用例补齐依赖路径。
+- 新增 GitHub Actions 回归测试与 `Tests/run_all_tests.m`：干净路径下由 ST_Mbaysalt 安装测试依赖后运行全部用例。
+- matFVCOM、matFigure、nctoolbox 子模块指针改回上游提交，修复递归克隆找不到本机补丁提交的问题。

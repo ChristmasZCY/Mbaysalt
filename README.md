@@ -37,7 +37,7 @@ build_python_package({'calc_weather_front.m','calc_thermocline.m','calc_sound_sp
 addpath('Tests'); run_all_tests
 ```
 
-Needs the `matFVCOM`, `funcsign`, `TMDToolbox_v2_5` submodules plus `seawater` and `t_tide`. GitHub Actions runs it on every push (`.github/workflows/test.yml`).
+Runs on a clean MATLAB path: `ST_Mbaysalt` installs only the test dependencies listed in `Configurefiles/INSTALL.json`, then all `Tests/test_*.m` run and the original path is restored. GitHub Actions runs it on every push (`.github/workflows/test.yml`).
 
 ## 目录
 

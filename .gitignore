@@ -74,3 +74,6 @@ build/
 
 # CodeGraph 本机代码索引，由 codegraph 生成，可随时重建。
 .codegraph/
+
+# run_all_tests 生成的测试安装清单
+Tests/INSTALL_test.json
