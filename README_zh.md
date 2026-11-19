@@ -1,139 +1,39 @@
-<!--
- * @ -*- coding:UTF-8 -*-: 
- * @#########################: 
- * @Author: Christmas
- * @Date: 2023-09-18 21:13:00
- * @LastEditTime: 2024-02-22 11:30:13
- * @Description: 
--->
+# Mbaysalt 工具箱
 
-# Mbaysalt Toolbox
+**[English](README.md) | [中文](README_zh.md)**
 
----
-[![问问 DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ChristmasZCY/Mbaysalt)
-
-
-## Mbaysalt means Matlab-baysalt-toolbox
-
-   **[English](README.md)  |  [中文](README_zh.md)**
+Matlab-baysalt-toolbox：MATLAB 海洋科学函数库（温跃层、障碍层、声速、锋面等），可选 Exfunctions 子模块，可编译为 Python 包或共享库。任务记录见 [Docs/TODO.md](Docs/TODO.md)、[Docs/DONE.md](Docs/DONE.md)。
 
 ## 安装
 
-1. Shell/Powershell/Command Prompt.
+```shell
+git clone https://github.com/ChristmasZCY/Mbaysalt.git   # 或 --depth=1
+```
 
-   如果您打算使用它而不推送代码，那么只需从命令行运行中下载代码
+编辑 `Configurefiles/INSTALL.json` 选择要装的 Exfunctions 子模块（`packages:gitclone:*:INSTALL`），然后在 MATLAB：
 
-   ```shell
-   git clone https://github.com/ChristmasZCY/Mbaysalt.git
-   ```
+```matlab
+addpath('Mbaysalt')
+ST_Mbaysalt()                                        % 安装并加入路径
+ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init')   % 自定义清单
+ST_Mbaysalt('rm')                                    % 移除路径
+```
 
-   如果您只想要最新版本而不是完整的存储库，请运行以下命令：
-
-   ```shell
-    git clone --depth=1 https://github.com/ChristmasZCY/Mbaysalt.git
-   ```
-
-   任何时候要将代码更新到最新版本，都可以从命令行运行以下命令：
-
-   ```shell
-   git pull (--unshallow)
-   ```
-2. 打开你想安装的额外模块的开关。
-
-   ```shell
-   cd /path/to/Mbaysalt
-   vim Mbaysalt/Configurefiles/INSTALL.json
-   ```
-
-   - 如果你想安装子模块，将`INSTALL.json`中的`INSTALL`的值更改为`true`
-     例如，如果您想安装子模块`matFigure`，可以将`packages:gitclone:matFigure:INSTALL`更改为`true`。
-   - 如果`git`不在你的系统路径中，你可以在`INSTALL.json`中的`git:path`设置你的git-path。
-   - 如果你希望在github镜像上克隆，你可以在`INSTALL.json`中的`git:mirror`设置你的镜像。
-     它将替换`INSTALL.json`中的`packages:gitclone:*:URL`中的`https://www.github.com`为你的镜像。
-3. Matlab
-
-   ```matlab
-   addpath('Mbaysalt')
-   ST_Mbaysalt()
-   ```
-
-   或者如果您想要基本模块而不是所有模块，您可以运行
-
-   ```matlab
-   ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init')
-   ```
-   如果需要删除路径，可以执行命令
-
-   ```matlab
-   ST_Mbaysalt('rm')
-   ```
-
-   它将保留基本路径，并删除所有其他路径。
+`INSTALL.json` 还可设置 `git:path`（git 程序路径）与 `git:mirror`（GitHub 镜像）。
 
 ## 构建 Python 包或共享库
 
-构建脚本会自动分析入口函数依赖。`Target` 支持以下取值：
-
-- `ctf`：默认值，使用 MATLAB Compiler SDK 生成 Python 包和 CTF，输出到 `build/python`。
-- `so`：使用 MATLAB Compiler SDK 生成依赖 MATLAB Runtime 的 C 共享库，输出到 `build/shared`。Linux 产物为 `.so`，macOS 为 `.dylib`，Windows 为 `.dll`。
-- `coder`：使用 MATLAB Coder 生成不依赖 MATLAB Runtime 的本地共享库，输出到 `build/coder`；必须通过 `CoderArgs` 指定每个入口函数的输入类型和维度。
-
-三种目标构建成功后都会在输出目录生成 `api.json`。该文件只列出本次选中的公开入口函数，包含输入输出、维度和单位、预期产物、平台架构，以及是否需要 MATLAB Runtime 或额外 Python 绑定。
-
-生成 Python/CTF 包：
+`Scripts/build_python_package.m`，`Target` 支持：`ctf`（默认，Python 包与 CTF）、`so`（MATLAB Runtime 依赖的共享库）、`coder`（独立原生库，需 `CoderArgs` 固定接口）。产物写入 `build/{python,shared,coder}` 并附带 `api.json`。
 
 ```matlab
-repoRoot = fileparts(which('ST_Mbaysalt'));
-addpath(fullfile(repoRoot, 'Scripts'));
-build_python_package({'calc_weather_front.m', ...
-                      'calc_thermocline.m', ...
-                      'calc_sound_speed.m'}, ...
-                     'Target', 'ctf');
+build_python_package({'calc_weather_front.m','calc_thermocline.m','calc_sound_speed.m'}, 'Target', 'ctf');
 ```
 
-生成 Compiler SDK 共享库：
+目标机安装与构建版本、系统、架构一致的 MATLAB Runtime 后 `cd build/python && python -m pip install .`，调用方式：`mbaysalt.initialize()` → `toolbox.<函数>` → `toolbox.terminate()`。
 
-```matlab
-build_python_package({'calc_weather_front.m', ...
-                      'calc_thermocline.m', ...
-                      'calc_sound_speed.m'}, ...
-                     'Target', 'so');
-```
+## 目录
 
-MATLAB Coder 必须固定或限定接口类型。以下示例会构建全部三个函数：
-
-```matlab
-vector = coder.typeof(0, [Inf 1], [1 0]);
-array4d = coder.typeof(0, [Inf Inf Inf Inf], [1 1 1 1]);
-build_python_package({'calc_weather_front.m', ...
-                      'calc_thermocline.m', ...
-                      'calc_sound_speed.m'}, ...
-                     'Target', 'coder', ...
-                     'CoderArgs', {{vector, vector, vector, array4d, array4d}, ...
-                                   {vector, array4d}, ...
-                                   {array4d, array4d, vector}});
-```
-
-在目标机器安装与构建版本、操作系统和 CPU 架构匹配的 MATLAB Runtime，然后安装生成的 Python 包：
-
-```shell
-cd build/python
-python -m pip install .
-```
-
-Python 调用示例：
-
-```python
-import mbaysalt
-
-toolbox = mbaysalt.initialize()
-try:
-    sound_speed = toolbox.calc_sound_speed(10.0, 35.0, 100.0, nargout=1)
-finally:
-    toolbox.terminate()
-```
-
-CTF 仅包含纯 MATLAB 代码时可在其声明支持的平台间使用，但目标机器仍需安装与构建版本一致、适合目标系统和 CPU 架构的 MATLAB Runtime；如果依赖包含 MEX 或其他本地库，则应按平台重新构建并验证。macOS 必须按照生成目录中的 `readme.txt` 使用 MATLAB/Runtime 提供的 `mwpython`。数组输入请使用 Runtime 提供的 `matlab.double` 等 MATLAB 数组类型。共享库目标只生成库、头文件及示例，不会自动生成可 `import` 的 Python 模块；Python 需要根据生成接口另写 `ctypes`、C 扩展或其他绑定。Linux 和 macOS 的默认共享库文件名以 `lib` 开头。
+`Functions/` 科学函数、`Exfunctions/` 可选子模块（第三方）、`Configurefiles/` 安装清单、`Docs/` 说明与记录、`Examples/`、`Scripts/`。
 
 ## Contains
 

@@ -344,8 +344,8 @@
             "PATH": "Exfunctions/funcsign",
             "CHECK": ["hs_signfunc.m","file","2"]},
         "kml_toolbox": {
-            "INSTALL": false,
-            "SETPATH": false,
+            "INSTALL": true,
+            "SETPATH": true,
             "DEPTH": 0,
             "BRANCH": "master",
             "URL": "https://github.com/theolivenbaum/kml-toolbox.git",

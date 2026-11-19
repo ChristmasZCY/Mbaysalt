@@ -1,139 +1,39 @@
-<!--
- * @ -*- coding:UTF-8 -*-: 
- * @#########################: 
- * @Author: Christmas
- * @Date: 2023-09-18 21:13:00
- * @LastEditTime: 2024-02-22 11:30:13
- * @Description: 
--->
-
 # Mbaysalt Toolbox
 
----
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ChristmasZCY/Mbaysalt)
+**[English](README.md) | [中文](README_zh.md)**
 
-
-## Mbaysalt means Matlab-baysalt-toolbox
-
-   **[English](README.md)  |  [中文](README_zh.md)**
+Matlab-baysalt-toolbox: MATLAB 海洋科学函数库（温跃层、障碍层、声速、锋面等），可选 Exfunctions 子模块，可编译为 Python/共享库。任务记录见 [Docs/TODO.md](Docs/TODO.md)、[Docs/DONE.md](Docs/DONE.md)。
 
 ## Installation
 
-1. Shell/Powershell/Command Prompt.
+```shell
+git clone https://github.com/ChristmasZCY/Mbaysalt.git   # 或 --depth=1
+```
 
-   If you intend to use it without pushing code then to simply download the code from the command line run
+Edit `Configurefiles/INSTALL.json` to select Exfunctions submodules (`packages:gitclone:*:INSTALL`), then in MATLAB:
 
-   ```shell
-   git clone https://github.com/ChristmasZCY/Mbaysalt.git
-   ```
+```matlab
+addpath('Mbaysalt')
+ST_Mbaysalt()                                        % install + addpath
+ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init')   % 自定义清单
+ST_Mbaysalt('rm')                                    % 移除路径
+```
 
-   If you want only the latest version and not the full repository run
-
-   ```shell
-    git clone --depth=1 https://github.com/ChristmasZCY/Mbaysalt.git
-   ```
-
-   Any time you want to update the code to the latest version, run from the command line
-
-   ```shell
-   git pull (--unshallow)
-   ```
-2. Change Exfunctions install switch which you want to open.
-
-   ```shell
-   cd /path/to/Mbaysalt
-   vim Mbaysalt/Configurefiles/INSTALL.json
-   ```
-
-   - If you want to install submodule, change value of `INSTALL` in `INSTALL.json`  to `true`
-     Such as if you want to install submodule `matFigure`, you can change `packages:gitclone:matFigure:INSTALL` to `true`.
-   - If `git` is not in your system path, you can set your git-path in `INSTALL.json` at `git:path`.
-   - If you want to clone at github mirror, you can set your mirror in `INSTALL.json` at `git:mirror`.
-     It will replace `https://www.github.com` in `INSTALL.json` at `packages:gitclone:*:URL` to your mirror.
-3. Matlab
-
-   ```matlab
-   addpath('Mbaysalt')
-   ST_Mbaysalt()
-   ```
-
-   Or if you want the basic module not all module, you can run
-
-   ```matlab
-   ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init')
-   ```
-   If you want to delete the path, you can run
-
-   ```matlab
-   ST_Mbaysalt('rm')
-   ```
-
-   It will reserve basepath, and remove all other paths.
+`INSTALL.json` 也可设 `git:path` 与 `git:mirror`（镜像替换 github.com）。
 
 ## Build a Python package or shared library
 
-The build script resolves entry-function dependencies automatically. `Target` supports:
-
-- `ctf`: Default. Build a Python package and CTF with MATLAB Compiler SDK in `build/python`.
-- `so`: Build a MATLAB Runtime-dependent C shared library with MATLAB Compiler SDK in `build/shared`. The native file is `.so` on Linux, `.dylib` on macOS, and `.dll` on Windows.
-- `coder`: Build a standalone native shared library with MATLAB Coder in `build/coder`. `CoderArgs` must define the input type and dimensions for each entry function.
-
-Every successful target also writes `api.json` to its output directory. The manifest lists only the selected public entry functions, their inputs and outputs, dimensions and units, the expected artifact, platform architecture, and whether MATLAB Runtime or a separate Python binding is required.
-
-Build the Python/CTF package:
+`Scripts/build_python_package.m`，`Target`：`ctf`（Python 包，默认）、`so`（MATLAB Runtime 依赖库）、`coder`（独立原生库，需 `CoderArgs` 固定接口）。产物在 `build/{python,shared,coder}` 并附 `api.json`。
 
 ```matlab
-repoRoot = fileparts(which('ST_Mbaysalt'));
-addpath(fullfile(repoRoot, 'Scripts'));
-build_python_package({'calc_weather_front.m', ...
-                      'calc_thermocline.m', ...
-                      'calc_sound_speed.m'}, ...
-                     'Target', 'ctf');
+build_python_package({'calc_weather_front.m','calc_thermocline.m','calc_sound_speed.m'}, 'Target', 'ctf');
 ```
 
-Build a MATLAB Compiler SDK shared library:
+目标机安装匹配版本的 MATLAB Runtime 后 `cd build/python && python -m pip install .`，使用 `mbaysalt.initialize()` / `toolbox.<func>` / `toolbox.terminate()`。
 
-```matlab
-build_python_package({'calc_weather_front.m', ...
-                      'calc_thermocline.m', ...
-                      'calc_sound_speed.m'}, ...
-                     'Target', 'so');
-```
+## 目录
 
-MATLAB Coder requires a fixed or bounded interface. This example builds all three functions:
-
-```matlab
-vector = coder.typeof(0, [Inf 1], [1 0]);
-array4d = coder.typeof(0, [Inf Inf Inf Inf], [1 1 1 1]);
-build_python_package({'calc_weather_front.m', ...
-                      'calc_thermocline.m', ...
-                      'calc_sound_speed.m'}, ...
-                     'Target', 'coder', ...
-                     'CoderArgs', {{vector, vector, vector, array4d, array4d}, ...
-                                   {vector, array4d}, ...
-                                   {array4d, array4d, vector}});
-```
-
-On the target machine, install a MATLAB Runtime matching the build release, operating system, and CPU architecture, then install the generated Python package:
-
-```shell
-cd build/python
-python -m pip install .
-```
-
-Python example:
-
-```python
-import mbaysalt
-
-toolbox = mbaysalt.initialize()
-try:
-    sound_speed = toolbox.calc_sound_speed(10.0, 35.0, 100.0, nargout=1)
-finally:
-    toolbox.terminate()
-```
-
-A CTF containing only MATLAB code can be used across its declared supported platforms, but the target still needs a MATLAB Runtime matching the build release and the target operating system and CPU architecture. Rebuild and verify per platform if dependencies include MEX files or other native libraries. On macOS, use the MATLAB/Runtime `mwpython` command described in the generated `readme.txt`. For array inputs, use MATLAB array types such as `matlab.double`. Shared-library targets generate the library, headers, and examples only; they do not create an importable Python module. Python needs a separate `ctypes`, C-extension, or other binding for the generated interface. On Linux and macOS, the default shared-library filename starts with `lib`.
+`Functions/` 科学函数、`Exfunctions/` 可选子模块（第三方，不随本仓文档管理）、`Configurefiles/` 安装清单、`Docs/` 说明与记录、`Examples/`、`Scripts/`。
 
 ## Contains
 

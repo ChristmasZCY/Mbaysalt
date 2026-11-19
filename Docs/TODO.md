@@ -1,15 +1,17 @@
 # Mbaysalt 待办
 
-<a id="thermocline-mask-keys-20261107"></a>
+按状态分组，每项一行；已完成事项移入 [DONE](DONE.md)。
 
-- [ ] 用户发布温跃层字节分组键优化后，结合MakeTilesService正常多日批次核验四项科学输出、输入等待、主机内存及端到端墙钟。双海域函数均值减少9.8%／12.5%，隔离逐值及资源观测见[记录](DONE.md#thermocline-mask-keys-20261107)。
+## 待发布
 
-当前版本：v2.6.0。只记录未完成的发布、验证和决策。
+- **科学计算配套发布**：发布阈值批处理、障碍层逐层密度、温跃层细化筛选/有界分组、候选区间与节点索引复用、纯温度模式与声速 Horner 分组，以及 MakeTilesService 表层读取、垂向诊断分块与提前预取；前提：用户授权发布。
 
-<a id="barrier-profile-index-reuse-20261107"></a>
+## 待线上验收
 
-- [ ] 用户发布障碍层数组复用后，在完整多日制瓦中核验两项科学输出、输入等待、CPU及端到端墙钟。双海域短块函数均值减少15.0%／26.2%，批量PCHIP候选已测试撤回。[本地实现与隔离比测](DONE.md#barrier-profile-index-reuse-20261107)
+- <a id="thermocline-mask-keys-20261107"></a><a id="barrier-profile-index-reuse-20261107"></a>**温跃层与障碍层优化验收**：发布后结合 MakeTilesService 正常多日批次核验科学输出、输入等待、主机内存与端到端墙钟；阻塞：待发布。
+- <a id="thermocline-short-profile-20261028"></a>**短剖面缺测验收**：部署 NaN 修复后重跑失败温跃层任务并校验正常海域与缺测掩码，核查上游版本差异；阻塞：待发布。
+- <a id="science-batch-20261021"></a><a id="barrier-layer-streaming-20261021"></a><a id="science-hotspot-block-test-20261022"></a>**批处理生产验收**：正式 ST 初始化、API/队列与完整生产验收，完整多日制瓦跟踪见 IOCEAN 父仓 `docs/TODO.md#matlab-science-batch-20261021`；阻塞：待发布。
 
-- [ ] 部署温跃层短剖面 NaN 修复，重跑失败的温跃层任务并校验正常海域与缺测掩码；独立核查上游原始/插值文件版本和缺测差异。本轮不修改下载数据、GPU 配置或线上服务，见[本地修复记录](DONE.md#thermocline-short-profile-20261028)。
+## 长期约束
 
-- [ ] 配套发布本仓的阈值批处理及障碍层逐层密度、温跃层细化筛选/有界分组、候选区间及节点索引复用、单区间修复、纯温度模式和声速 Horner 分组，以及 MakeTilesService 的表层读取、垂向诊断读取前纬度分块与提前预取。2026-10-22 缓存尺寸修复后，服务器原生/Engine、四项全球四小时真实包装调用、块大小逐值对照及全天声速内存测量已通过；额外温跃层候选更慢未采用，详见[最新记录](DONE.md#science-hotspot-block-test-20261022)。正式ST初始化、API/队列及完整生产验收仍待配套发布。完整多日制瓦、并发内存和耗时验收统一跟踪于 IOCEAN 父仓 `docs/TODO.md#matlab-science-batch-20261021`，本地与服务器临时验证见 [批处理记录](DONE.md#science-batch-20261021)及[逐层密度实施记录](DONE.md#barrier-layer-streaming-20261021)。
+- **本地验证不作上线证明**：数据库执行、部署与验收各自取得实际结果后才移入 DONE。

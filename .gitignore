@@ -71,3 +71,6 @@ Docs/*
 
 # Python 包构建生成物 #
 build/
+
+# CodeGraph 本机代码索引，由 codegraph 生成，可随时重建。
+.codegraph/

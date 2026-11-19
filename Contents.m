@@ -1,5 +1,5 @@
 % Mbaysalt Toolbox
-% Version 2.6.0 (R2025b) 2026-04-01
+% Version 3.0.0 (R2025b) 2026-11-19
 % =================================================================================================================
 % Version 0.1   (R2023b) 2023-03-01   (Created by Christmas, Dovelet, Qidi Ma)
 % Version 1.0   (R2023b) 2023-10-18   (Fixed by Christmas)
