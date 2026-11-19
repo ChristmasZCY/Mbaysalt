@@ -31,6 +31,8 @@ jobs:
         with:
           release: ${{ matrix.release }}
           products: ${{ matrix.products }}
+          # 缓存装好的 MATLAB，版本或工具箱不变时下次直接取用
+          cache: true
 
       - uses: matlab-actions/run-command@v3
         with:
