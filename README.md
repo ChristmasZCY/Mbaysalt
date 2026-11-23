@@ -41,7 +41,7 @@ Runs on a clean MATLAB path: `ST_Mbaysalt` installs only the test dependencies l
 
 ## 目录
 
-`Functions/` 科学函数、`Exfunctions/` 可选子模块（第三方，不随本仓文档管理）、`Configurefiles/` 安装清单、`Docs/` 说明与记录、`Examples/`、`Scripts/`。
+`*functions/` 科学与工具函数（`Infunctions/`、`Ncfunctions/`、`Gridfunctions/` 等）、`Post_*/` 各模式后处理、`Callcodes/` 业务算例、`Exfunctions/` 可选子模块（第三方，不随本仓文档管理）、`Configurefiles/` 安装清单、`Docs/` 任务记录、`Examples/`、`Scripts/`、`Tests/`。
 
 ## Contains
 
