@@ -10,7 +10,9 @@ classdef parfor_pgb < handle
     %       None
     % =================================================================================================================
     % Update:
-    %       2024-12-20:     Created,    by Christmas;
+    %       2024-12-20:     Created,                     by Christmas;
+    %       2026-11-22:     Unique ipcfile per instance, by Christmas;
+    %       2026-11-22:     Fixed iterate default,       by Christmas;
     % =================================================================================================================
     % Example:
     %       clm
@@ -28,25 +30,29 @@ classdef parfor_pgb < handle
         N; % 总迭代次数
         Nnum = 0; % 迭代次数
         widthBar = 50; % 宽度
-        ipcfile = fullfile(tempdir, sprintf('%s%d.txt', mfilename, round(rand * 1000))); % Path to temporary file for inter-process communication
         percent = 0; % 0.99
         LineN = true;
+    end
+
+    properties (SetAccess = private)
+        ipcfile % Workers for this instance append to the same, exclusively created file.
     end
 
     methods
 
         function obj = parfor_pgb(N, varargin)
+            % N is the iteration count; returns an instance or throws if its file cannot be created.
             varargin = read_varargin(varargin, {'LineN'}, {obj.LineN});
             obj.LineN = LineN;
             obj.N = N;
-            rmfiles(obj.ipcfile);
-            touch(obj.ipcfile);
+            progressFile = java.io.File.createTempFile('parfor_pgb-', '.txt', java.io.File(tempdir));
+            obj.ipcfile = char(progressFile.getAbsolutePath());
             disp(['[>', repmat(' ', 1, obj.widthBar), ']   0.0%']);
         end
 
         function iterate(obj, num)
 
-            if nargin == 0
+            if nargin < 2
                 num = 1; % default
             end
 

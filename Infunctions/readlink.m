@@ -15,6 +15,7 @@ function [YN, Ofile] = readlink(file)
     %       2024-05-13:     Fixed opposite output, judge'file not found',   by Christmas;
     %       2024-09-19:     Use isSymbolicLink(>=R2024b),                   by Christmas;
     %       2026-03-30:     Dealing with ~/ in input file,                  by Christmas;
+    %       2026-11-22:     Legacy branch reads links without shell,        by Christmas;
     % =================================================================================================================
     % Example:
     %       [YN, Ofile] = readlink('D:\data\mask.nc')
@@ -48,38 +49,21 @@ function [YN, Ofile] = readlink(file)
         return
     end
 
-    switch checkOS
-        case {'WIN'}
-            % $lnkPath = "D:\Beihai(lonlat3).2dm.lnk"; $shell = New-Object -ComObject WScript.Shell; $shortcut = $shell.CreateShortcut($lnkPath); Write-Host "$($shortcut.TargetPath)"
-            cmd = sprintf("powershell -Command ""$lnkPath = '%s'; " + ...
-                "$shell = New-Object -ComObject WScript.Shell; " + ...
-                "$shortcut = $shell.CreateShortcut($lnkPath); " + ...
-                "Write - Host $shortcut.TargetPath""", file);
-
-            if endsWith(file, ".lnk")
-                YN = true;
-                [~, Ofile] = system(cmd);
-                Ofile = strip(Ofile);
-            else
-                YN = false;
-                Ofile = file;
-            end
-
-        case {'MAC', 'LNX'}
-            cmd = ['readlink -f ', file];
-            [~, Ofile] = system(cmd);
-            Ofile = strip(Ofile);
-
-            if ~strcmp(file, Ofile)
-                YN = true;
-            else
-                YN = false;
-            end
-
-        otherwise
-            error('platform error')
+    Ofile = file;
+    linkPath = java.io.File(pwd).toPath().resolve(java.io.File(file).toPath());
+    if ispc
+        % % $lnkPath = "D:\Beihai(lonlat3).2dm.lnk"; $shell = New-Object -ComObject WScript.Shell; $shortcut = $shell.CreateShortcut($lnkPath); Write-Host "$($shortcut.TargetPath)"
+        YN = endsWith(file, '.lnk', 'IgnoreCase', true);
+        if YN
+            shell = actxserver('WScript.Shell');
+            cleanup = onCleanup(@() delete(shell)); %#ok<NASGU>
+            shortcut = invoke(shell, 'CreateShortcut', char(linkPath.toString()));
+            Ofile = char(shortcut.TargetPath);
+        end
+    else
+        YN = java.nio.file.Files.isSymbolicLink(linkPath);
+        if YN
+            Ofile = char(linkPath.toRealPath(javaArray('java.nio.file.LinkOption', 0)).toString());
+        end
     end
-
-    return
-
 end

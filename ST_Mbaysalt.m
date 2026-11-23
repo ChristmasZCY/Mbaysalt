@@ -14,6 +14,14 @@ function varargout = ST_Mbaysalt(varargin)
     %       varargout: (optional)
     %               'cd' && nargout == 1:    current path         || type: char || format: '/Users/christmas/Mbaysalt'
     % =================================================================================================================
+    % Environment:
+    %       https_proxy, HTTPS_PROXY, http_proxy, HTTP_PROXY, all_proxy, ALL_PROXY: read for native gitclone;
+    %           https_proxy is set during the clone and restored
+    %       https_proxy, http_proxy, all_proxy: set from MATLAB web proxy preferences when downloading files
+    %           (kept for the session)
+    %       PATH: git.path is prepended when git.method is CMD (kept for the session)
+    %       GIT_SSL_NO_VERIFY: set to 1 when AUTO selects CMD on MATLAB < R2023b (kept for the session)
+    % =================================================================================================================
     % Updates:
     %       ****-**-**:     See Mainpath.m
     %       2024-04-26:     Code Refactoring,                                       by Christmas;
@@ -34,6 +42,9 @@ function varargout = ST_Mbaysalt(varargin)
     %       2025-11-04:     Fixed mexcdf toolbox,                                   by Christmas;
     %       2026-04-18:     Added improve:cftime,                                   by Christmas;
     %       2026-10-21:     Use terminal proxy for native MATLAB gitclone,           by Christmas;
+    %       2026-11-22:     Explicit *.json takes precedence over ./INSTALL.json,   by Christmas;
+    %       2026-11-22:     CLI clone: credential-free origin, warn on failure,     by Christmas;
+    %       2026-11-22:     Fixed get_git_method error paths,                       by Christmas;
     % =================================================================================================================
     % Examples:
     %       ST_Mbaysalt                             % Add all path
@@ -83,6 +94,10 @@ function varargout = ST_Mbaysalt(varargin)
         init = true;
     end
 
+    if isfile('./INSTALL.json')
+        Jfile = './INSTALL.json';
+    end
+
     for i = 1:length(varargin)
 
         switch lower(varargin{i})
@@ -99,10 +114,6 @@ function varargout = ST_Mbaysalt(varargin)
     end
 
     clear i
-
-    if exist('./INSTALL.json', 'file')
-        Jfile = './INSTALL.json';
-    end
 
     Jstruct = jsondecode(fileread(Jfile)); Jstruct.FILEPATH = Jfile;
     PATH.modules = fullfile(PATH.basepath, Jstruct.packages.modules.PATH); % modules
@@ -397,8 +408,7 @@ function STATUS = supplement_matFVCOM(Jstruct)
 
             if check_MacBookProChristmas()
                 % only for MacBook test
-                str = sprintf('ln -sf %s %s', file_in, file_out);
-                system(str, "-echo");
+                createSymbolicLink(file_out, file_in, "ReplacementRule", "overwrite");
             else
                 copyfile(file_in, file_out);
             end
@@ -417,8 +427,7 @@ function STATUS = supplement_matFVCOM(Jstruct)
 
                     if check_MacBookProChristmas()
                         % only for MacBook test
-                        str = sprintf('ln -sf %s %s', file_in, file_out);
-                        system(str, "-echo");
+                        createSymbolicLink(file_out, file_in, "ReplacementRule", "overwrite");
                     else
                         copyfile(file_in, file_out);
                     end
@@ -467,8 +476,7 @@ function STATUS = supplement_matFigure(Jstruct)
 
             if checkOS("MAC") & strcmp(getHome(), '/Users/christmas')
                 % only for MacBook test
-                str = sprintf('ln -sf %s %s', file_in, file_out);
-                system(str, "-echo");
+                createSymbolicLink(file_out, file_in, "ReplacementRule", "overwrite");
             else
                 copyfile(file_in, file_out);
                 STATUS_list(i) = 1;
@@ -529,8 +537,7 @@ function STATUS = supplement_cdt(Jstruct)
 
             if checkOS("MAC") & strcmp(getHome(), '/Users/christmas')
                 % only for MacBook test
-                str = sprintf('ln -sf %s %s', file_in, file_out);
-                system(str, "-echo");
+                createSymbolicLink(file_out, file_in, "ReplacementRule", "overwrite");
             else
                 copyfile(file_in, file_out);
                 STATUS_list(i) = 1;
@@ -778,7 +785,7 @@ function [STATUS, PATH] = install_pkgs(PATH, Jstruct, control)
     % packages.gitclone --> START
     fields_gitclone = fieldnames(Jstruct.packages.gitclone)';
     Git = Jstruct.git;
-    Git = get_git_method(Git); %get git是CMD还是MATLAB自带 | add .CHECK
+    Git = get_git_method(Git, Jstruct.FILEPATH); %get git是CMD还是MATLAB自带 | add .CHECK
     CLONES = struct('');
     PATH.exfunctions.gitclone = [];
 
@@ -1070,6 +1077,8 @@ function STATUS = ungz_file(fileIn, dirOut)
 end
 
 function CLONE = git_clone(Git, pkg_url, pkg_path, pkg)
+    % Clone pkg into pkg_path; a CLI clone with credentials resets origin to the credential-free URL.
+    % Returns the native clone handle or empty text; command failures warn Mbaysalt:CloneFailed.
     CLONE = '';
     method = Git.method;
     username = Git.username;
@@ -1084,16 +1093,23 @@ function CLONE = git_clone(Git, pkg_url, pkg_path, pkg)
                 Depth = 99999999;
             end
 
+            % Keep origin free of HTTP userinfo from either the URL or Git settings.
+            origin = regexprep(pkg_url, '(?i)(https?://)[^/@?#]+@', '$1');
             if ~strcmp(username, 'None') && ~strcmp(password, 'None')
                 % https://blog.csdn.net/qq_45859054/article/details/108036754
-                username = replace(username, '@', '%40');
-                password = replace(password, '@', '%40');
-                pkg_url = replace(pkg_url, '://', sprintf('://%s:%s@', username, password));
+                username = strrep(char(java.net.URLEncoder.encode(username, 'UTF-8')), '+', '%20');
+                password = strrep(char(java.net.URLEncoder.encode(password, 'UTF-8')), '+', '%20');
+                pkg_url = replace(origin, '://', sprintf('://%s:%s@', username, password));
             end
 
-            txt = sprintf('git clone -b %s --depth %d %s %s', Branch, Depth, pkg_url, pkg_path);
+            txt = sprintf('git clone -b "%s" --depth %d -- "%s" "%s"', Branch, Depth, pkg_url, pkg_path);
             disp(txt)
-            system(txt);
+            % Git saves the clone URL as origin; a successful clone replaces it with the credential-free URL.
+            if system(txt) ~= 0
+                warning('Mbaysalt:CloneFailed', 'Git clone failed for %s.', origin);
+            elseif ~strcmp(pkg_url, origin) && system(sprintf('git -C "%s" remote set-url origin "%s"', pkg_path, origin)) ~= 0
+                warning('Mbaysalt:OriginNotCleaned', 'Could not remove credentials from origin in %s.', pkg_path);
+            end
         case {'matlab'}
             % 原生 Git 读取 https_proxy；按 HTTPS、HTTP、ALL 顺序兼容终端代理，结束后恢复原值。
             proxyNames = {'https_proxy', 'HTTPS_PROXY', 'http_proxy', 'HTTP_PROXY', 'all_proxy', 'ALL_PROXY'};
@@ -1112,40 +1128,50 @@ function CLONE = git_clone(Git, pkg_url, pkg_path, pkg)
 
 end
 
-function Git = get_git_method(Git)
+function Git = get_git_method(Git, Jfile)
 
-    if isfield(Git, 'method') && ~isempty(Git.method) && isa(Git.method, "char")
-
-        switch lower(Git.method)
-            case {'cmd'}
-
-                if isfield(Git, 'path') && ~isempty(Git.path) && isa(Git.path, "char")
-                    setenv('PATH', [Git.path, pathsep, getenv('PATH')]);
-                end
-
-            case {'auto'}
-
-                if ~isMATLABReleaseOlderThan("R2023b")
-                    Git.method = 'MATLAB';
-                else
-                    Git.method = 'cmd';
-                    setenv('GIT_SSL_NO_VERIFY', '1'); % export GIT_SSL_NO_VERIFY=1
-                end
-
-            case {'matlab'}
-
-                if ~isMATLABReleaseOlderThan("R2023b")
-                else
-                    [list_content, line_id] = grep(Jstruct.FILEPATH, '"method"');
-                    error([' MATLAB version less than R2023b! \n ' ...
-                               'Please set "method" at line %d, in "INSTALL.json" to "AUTO" or "CMD"! \n ' ...
-                           'You set --> %s'], line_id(1), char(list_content))
-                end
-
-            otherwise
-                warning('Wrong git.method at %s !!!', Jstruct.FILEPATH);
+    if ~(isfield(Git, 'method') && ~isempty(Git.method) && isa(Git.method, "char") && ...
+            any(strcmpi(Git.method, {'auto', 'cmd', 'matlab'})))
+        [~, line_id] = grep(Jfile, '"method"');
+        if isempty(line_id)
+            line_id = 0;
+        else
+            line_id = line_id(1);
         end
+        if isfield(Git, 'method') && ~isempty(Git.method)
+            methodText = char(string(Git.method));
+        else
+            methodText = '<missing>';
+        end
+        error('Mbaysalt:InvalidGitMethod', 'Invalid git.method in %s at line %d: "%s". Use AUTO, CMD or MATLAB.', ...
+            Jfile, line_id, methodText);
+    end
 
+    switch lower(Git.method)
+        case {'cmd'}
+
+            if isfield(Git, 'path') && ~isempty(Git.path) && isa(Git.path, "char")
+                setenv('PATH', [Git.path, pathsep, getenv('PATH')]);
+            end
+
+        case {'auto'}
+
+            if ~isMATLABReleaseOlderThan("R2023b")
+                Git.method = 'MATLAB';
+            else
+                Git.method = 'cmd';
+                setenv('GIT_SSL_NO_VERIFY', '1'); % export GIT_SSL_NO_VERIFY=1
+            end
+
+        case {'matlab'}
+
+            if ~isMATLABReleaseOlderThan("R2023b")
+            else
+                [list_content, line_id] = grep(Jfile, '"method"');
+                error([' MATLAB version less than R2023b! \n ' ...
+                           'Please set "method" at line %d, in "INSTALL.json" to "AUTO" or "CMD"! \n ' ...
+                       'You set --> %s'], line_id(1), char(list_content))
+            end
     end
 
     switch lower(Git.method)

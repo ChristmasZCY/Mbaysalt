@@ -7,6 +7,9 @@ function osprint(varargin)
     % Returns:
     %       None
     % =================================================================================================================
+    % Update:
+    %       2026-11-22:     Print literally with time zone and UTC offset, by Christmas;
+    % =================================================================================================================
     % Example:
     %       osprint('hello world1', 'hello world2')
     % =================================================================================================================
@@ -16,5 +19,7 @@ function osprint(varargin)
     end
 
     for i = 1:nargin
-        system(['echo `date "+%Y-%m-%d %T"` "--->" "', convertStringsToChars(varargin{i}), '"']);
+        stamp = datetime('now', 'TimeZone', 'local', 'Format', 'yyyy-MM-dd HH:mm:ss z Z');
+        fprintf('%s ---> %s\n', char(stamp), varargin{i});
     end
+end
