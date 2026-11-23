@@ -43,14 +43,14 @@ addpath('Tests'); run_all_tests
 
 `*functions/` 科学与工具函数（`Infunctions/`、`Ncfunctions/`、`Gridfunctions/` 等）、`Post_*/` 各模式后处理、`Callcodes/` 业务算例、`Exfunctions/` 可选子模块（第三方）、`Configurefiles/` 安装清单、`Docs/` 任务记录、`Examples/`、`Scripts/`、`Tests/`。
 
-## Contains
+## 包含组件
 
 <details> <summary> 点击展开查看更多</summary>
 
 - [Mbaysalt](https://github.com/ChristmasZCY/Mbaysalt)
 
 ----
-Github
+GitHub
 ----
 
 - [ann_wrapper](https://github.com/shaibagon/ann_wrapper.git)
@@ -102,7 +102,7 @@ Github
 - [ZoomPlot](https://github.com/iqiukp/ZoomPlot-MATLAB)
 
 ----
-Download
+下载获取
 ----
 
 - [dace](https://www.omicron.dk/dace.html)
@@ -121,7 +121,7 @@ Download
 - [UTide](https://www.po.gso.uri.edu/~codiga/utide/utide.htm)
 
 ----
-Builtin
+内置
 ----
 
 - [cprintf](https://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window)

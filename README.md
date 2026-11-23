@@ -2,34 +2,34 @@
 
 **[English](README.md) | [中文](README_zh.md)**
 
-Matlab-baysalt-toolbox: MATLAB 海洋科学函数库（温跃层、障碍层、声速、锋面等），可选 Exfunctions 子模块，可编译为 Python/共享库。任务记录见 [Docs/TODO.md](Docs/TODO.md)、[Docs/DONE.md](Docs/DONE.md)。
+Matlab-baysalt-toolbox: a MATLAB library for ocean science (thermocline, barrier layer, sound speed, fronts and more) with optional Exfunctions submodules; selected functions can be compiled into a Python package or a shared library. Task records: [Docs/TODO.md](Docs/TODO.md), [Docs/DONE.md](Docs/DONE.md).
 
 ## Installation
 
 ```shell
-git clone https://github.com/ChristmasZCY/Mbaysalt.git   # 或 --depth=1
+git clone https://github.com/ChristmasZCY/Mbaysalt.git   # or --depth=1
 ```
 
 Edit `Configurefiles/INSTALL.json` to select Exfunctions submodules (`packages:gitclone:*:INSTALL`), then in MATLAB:
 
 ```matlab
 addpath('Mbaysalt')
-ST_Mbaysalt()                                        % install + addpath
-ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init')   % 自定义清单
-ST_Mbaysalt('rm')                                    % 移除路径
+ST_Mbaysalt()                                        % install and add to path
+ST_Mbaysalt('add','./Examples/INSTALL_custom.json','init')   % custom manifest
+ST_Mbaysalt('rm')                                    % remove from path
 ```
 
-`INSTALL.json` 也可设 `git:path` 与 `git:mirror`（镜像替换 github.com）。
+`INSTALL.json` can also set `git:path` (path to the git executable) and `git:mirror` (GitHub mirror).
 
 ## Build a Python package or shared library
 
-`Scripts/build_python_package.m`，`Target`：`ctf`（Python 包，默认）、`so`（MATLAB Runtime 依赖库）、`coder`（独立原生库，需 `CoderArgs` 固定接口）。产物在 `build/{python,shared,coder}` 并附 `api.json`。
+`Scripts/build_python_package.m` supports these `Target` values: `ctf` (default, Python package with CTF), `so` (shared library that depends on MATLAB Runtime) and `coder` (standalone native library; `CoderArgs` must fix the interface). Output goes to `build/{python,shared,coder}` together with `api.json`.
 
 ```matlab
 build_python_package({'calc_weather_front.m','calc_thermocline.m','calc_sound_speed.m'}, 'Target', 'ctf');
 ```
 
-目标机安装匹配版本的 MATLAB Runtime 后 `cd build/python && python -m pip install .`，使用 `mbaysalt.initialize()` / `toolbox.<func>` / `toolbox.terminate()`。
+On the target machine, install a MATLAB Runtime that matches the build's version, OS and architecture, then run `cd build/python && python -m pip install .`. Call `mbaysalt.initialize()` → `toolbox.<function>` → `toolbox.terminate()`.
 
 ## Tests
 
@@ -39,9 +39,9 @@ addpath('Tests'); run_all_tests
 
 Runs on a clean MATLAB path: `ST_Mbaysalt` installs only the test dependencies listed in `Configurefiles/INSTALL.json`, then all `Tests/test_*.m` run and the original path is restored. GitHub Actions runs it on every push (`.github/workflows/test.yml`).
 
-## 目录
+## Layout
 
-`*functions/` 科学与工具函数（`Infunctions/`、`Ncfunctions/`、`Gridfunctions/` 等）、`Post_*/` 各模式后处理、`Callcodes/` 业务算例、`Exfunctions/` 可选子模块（第三方，不随本仓文档管理）、`Configurefiles/` 安装清单、`Docs/` 任务记录、`Examples/`、`Scripts/`、`Tests/`。
+`*functions/` scientific and utility functions (`Infunctions/`, `Ncfunctions/`, `Gridfunctions/`, etc.), `Post_*/` model post-processing, `Callcodes/` project case scripts, `Exfunctions/` optional third-party submodules (not covered by this repository's docs), `Configurefiles/` install manifests, `Docs/` task records, `Examples/`, `Scripts/`, `Tests/`.
 
 ## Contains
 
@@ -50,7 +50,7 @@ Runs on a clean MATLAB path: `ST_Mbaysalt` installs only the test dependencies l
 - [Mbaysalt](https://github.com/ChristmasZCY/Mbaysalt)
 
 ----
-Github
+GitHub
 ----
 
 - [ann_wrapper](https://github.com/shaibagon/ann_wrapper.git)
