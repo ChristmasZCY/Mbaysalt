@@ -37,20 +37,31 @@ function varargout = json_to_struct(text, varargin)
         key = convertStringsToChars(varargin{1});
     end
 
-    parts_cell = strsplit(text(2:end - 1), ',');
-    parts_cell = cellfun(@strip, parts_cell, 'UniformOutput', false);
-    parts_cell = cellfun(@(x) strsplit(x, ':'), parts_cell, 'UniformOutput', false);
+    body = text(2:end);
+    if ~isempty(body) && body(end) == '}'
+        body = body(1:end - 1);
+    end
+    parts_cell = strsplit(body, ',');
     parts_cell = cellfun(@strip, parts_cell, 'UniformOutput', false);
 
-    keys = cell(1, length(parts_cell));
-    value = cell(1, length(parts_cell));
+    keys = {};
+    value = {};
 
     for i = 1:length(parts_cell)
-        keys{i} = del_quotation(parts_cell{i}{1});
-        value{i} = del_quotation(parts_cell{i}{2});
+        item = parts_cell{i};
+        colon = find(item == ':', 1);
+        if isempty(colon)
+            continue;
+        end
+        keys{end + 1} = del_quotation(strip(item(1:colon - 1)));
+        value{end + 1} = del_quotation(strip(item(colon + 1:end)));
     end
 
-    varargout{1} = KeyValue2Struct(keys, value);
+    if isempty(keys)
+        varargout{1} = struct();
+    else
+        varargout{1} = KeyValue2Struct(keys, value);
+    end
 
     if nargin > 1
 

@@ -27,19 +27,58 @@ function test_config()
         "c = [[1 -2]; [3 4]]"; "d = ['x,y', 'z']"; "e = [1e-3 +2.5]"; "range = [-1:.2:1]"; "depth = [[0,300]]"; ...
         "f = [temp, salt]"; "g = ['a b', c_1]"; "h = []"; "k = [温度, 盐度]"; "p = [pi, Inf]"; "t = [true, false]"; ...
         "n = [1, NaN]"; "x = [not_supported(2)]"; "q = [1a, b]"; "s = [system('touch pwned.txt')]"; ...
-        "1day = 5"; "2d = [1,2]"; "3flag = .True."], 'test.conf');
+        "1day = 5"; "2d = [1,2]"; "3flag = .True."; ...
+        "u = [1:1,4]"; "col = [1;2;3]"; "emptyrange = [1:0]"; "w = /data/path/"; "z = ""'mixed"""; ...
+        "empty ="; "s1 = NaN"; "s2 = 1E5"; "s8 = 1."; "sp = 1 2 3"; "flag = .True."; ...
+        "dict = {'KK':'sds', 'YY':2}"; "links = {'A':'http://x:8080/p', 'B':'v'}"; ...
+        "FILEPATH = /custom/dir/"; "DEFAULT = keepme"; ...
+        "u1 = ١٢٣"; "ieee = [1/0, -1/0, 0/0, 2^1e300, -2^1e300]"; "cplx = [(-1)^0.5]"; ...
+        "bc1 = [1:Inf]"; "bc2 = [0:NaN:1]"; "d1 = {}"; "d2 = {abc, 'k':'v'}"; "d3 = {a:1}b"; ...
+        "p1 = [(-2)^1026]"; "p2 = [(-2)^1025]"; "p3 = [(-0)^-1]"; "p4 = [(-0)^-2]"; "p5 = [0^-1]"; "p6 = [(-8)^(1/3)]"; ...
+        "deep64 = " + repmat('[',1,64) + "1" + repmat(']',1,64); ...
+        "deep65 = " + repmat('[',1,65) + "1" + repmat(']',1,65); ...
+        "deepB = " + repmat('[',1,3000) + "1" + repmat(']',1,3000); ...
+        "deepP = [" + repmat('(',1,3000) + "1" + repmat(')',1,3000) + "]"; ...
+        "deepU = [" + repmat('-',1,3000) + "1]"; ...
+        "! c1 = 1"; "// c2 = 1"; "; c3 = 1"; "abc"; " = 7"], 'test.conf');
     c = read_conf('test.conf');
     assert(isequal(c.a, [0 10 16 -4 0.125]));
     assert(isequal(c.b, [0 0.5 1]) && isequal(c.c, [1 -2; 3 4]));
     assert(isequal(c.range, -1:.2:1) && isequal(c.depth, [0 300]));
     assert(isequal(c.d, {'x', 'y', 'z'}) && isequal(c.e, [1e-3 2.5]));
     assert(isequal(c.f, {'temp', 'salt'}) && isequal(c.g, {'a b', 'c_1'}));
-    assert(isnan(c.h));
+    assert(isempty(c.h) && isempty(c.emptyrange) && isempty(c.empty));
     assert(isequal(c.k, {'温度', '盐度'}));
     assert(isequal(c.p, [pi Inf]) && isequal(c.t, [1 0]));
-    assert(isequal(c.n, {'1', 'NaN'}) && isequal(c.x, {'not_supported(2)'}) && isequal(c.q, {'1a', 'b'}));
+    assert(isequaln(c.n, [1 NaN]) && isequal(c.x, {'not_supported(2)'}) && isequal(c.q, {'1a', 'b'}));
     assert(iscell(c.s) && ~isfile('pwned.txt'));
     assert(c.f1day == 5 && isequal(c.f2d, [1 2]) && isequal(c.f3flag, true));
+    assert(isequal(c.u, [1 4]) && isequal(c.col, [1; 2; 3]));
+    assert(strcmp(c.w, '/data/path/') && strcmp(c.z, '''mixed'));
+    assert(isnan(c.s1) && c.s2 == 100000 && c.s8 == 1);
+    assert(strcmp(c.sp, '1 2 3') && isequal(c.flag, true));
+    assert(strcmp(c.dict.KK, 'sds') && strcmp(c.dict.YY, '2'));
+    assert(strcmp(c.links.A, 'http://x:8080/p') && strcmp(c.links.B, 'v'));
+    assert(strcmp(c.FILEPATH, '/custom/dir/') && strcmp(c.DEFAULT, 'keepme'));
+    assert(~isfield(c, 'c1') && ~isfield(c, 'c2') && ~isfield(c, 'c3'));
+    assert(strcmp(c.u1, '١٢٣'));
+    assert(isequaln(c.ieee, [Inf -Inf NaN Inf -Inf]));
+    assert(isequal(c.cplx, {'(-1)^0.5'}) && isequal(c.bc1, {'1:Inf'}) && isequal(c.bc2, {'0:NaN:1'}));
+    assert(isempty(fieldnames(c.d1)) && strcmp(c.d2.k, 'v') && numel(fieldnames(c.d2)) == 1);
+    assert(strcmp(c.d3.a, '1}b'));
+    assert(c.p1 == Inf && c.p2 == -Inf && c.p3 == -Inf && c.p4 == Inf && c.p5 == Inf);
+    assert(isequal(c.p6, {'(-8)^(1/3)'}));
+    assert(isequal(c.deep64, 1));
+    assert(strcmp(c.deep65{1}, repmat('[',1,64) + "1" + repmat(']',1,64)));
+    assert(strcmp(c.deepB{1}, repmat('[',1,2999) + "1" + repmat(']',1,2999)));
+    assert(strcmp(c.deepP{1}, repmat('(',1,3000) + "1" + repmat(')',1,3000)));
+    assert(strcmp(c.deepU{1}, repmat('-',1,3000) + "1"));
+    writelines(["A = 1"; "A = 2"; "A_1 = 3"; "A = 4"; "A_dup1 = 9"], 'dup.conf');
+    d = read_conf('dup.conf');
+    assert(d.A == 1 && d.A_dup2 == 2 && d.A_1 == 3 && d.A_dup3 == 4 && d.A_dup1 == 9);
+    writelines([char(65279) 'B = 2'], 'bom.conf');
+    b = read_conf('bom.conf');
+    assert(isfield(b, 'B') && b.B == 2);
 end
 
 function test_progress()

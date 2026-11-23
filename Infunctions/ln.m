@@ -14,6 +14,7 @@ function ln(fin, fout, varargin)
     %       2024-07-03:     Created,                            by Christmas;
     %       2024-09-19:     Added createSymbolicLink(>=R2024b), by Christmas;
     %       2026-11-22:     Legacy links without shell,         by Christmas;
+    %       2026-11-22:     Not append .lnk twice on Windows,   by Christmas;
     % =================================================================================================================
     % Example:
     %       ln('/Users/christmas/Downloads/1.txt', '/Users/christmas/Downloads/2.txt')
@@ -48,7 +49,7 @@ function ln(fin, fout, varargin)
     fout = convertStringsToChars(fout);
 
     legacy = isMATLABReleaseOlderThan("R2024b");
-    if ispc && (~legacy || ~endsWith(fout, '.lnk', 'IgnoreCase', true))
+    if ispc && ~endsWith(fout, '.lnk', 'IgnoreCase', true)
         fout = [fout, '.lnk'];
     end
     protect = strcmpi(mode, 'P');

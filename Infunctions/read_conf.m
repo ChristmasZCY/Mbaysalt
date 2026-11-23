@@ -23,6 +23,7 @@ function varargout = read_conf(confin, varargin)
     %       2026-01-06:     Fixed strfind maybe >1, by Christmas;
     %       2026-11-22:     Safe array parsing,     by Christmas;
     %       2026-11-22:     Fixed digit key values, by Christmas;
+    %       2026-11-23:     Unified value rules,     by Christmas;
     % =================================================================================================================
     % Example:
     %       conf = read_conf(confin)
@@ -47,24 +48,33 @@ function varargout = read_conf(confin, varargin)
 
     l_num = 1;
     kv_conf = cell(0);
+    first_line = true;
 
     while ~feof(fid)
         line = strip(fgetl(fid));
 
-        if contains(line, '=')
-
-            if ~startsWith(line, "#")
-                F = strfind(line, "#"); % 可能有多个
-
-                if ~isempty(F)
-                    line = strip(line(1:F(1) - 1));
-                end
-
-                kv_conf{l_num} = line;
-                l_num = l_num + 1;
-            end
-
+        if first_line
+            line = strip(line, char(65279)); % UTF-8 BOM
+            first_line = false;
         end
+
+        if isempty(line) || startsWith(line, '#') || startsWith(line, '!') || startsWith(line, '//') || startsWith(line, ';')
+            continue;
+        end
+
+        F = strfind(line, "#"); % 可能有多个
+
+        if ~isempty(F)
+            line = strip(line(1:F(1) - 1));
+        end
+
+        if ~contains(line, '=')
+            warning('read_conf:NoAssignment', '配置行缺少等号，已跳过: %s', line);
+            continue;
+        end
+
+        kv_conf{l_num} = line;
+        l_num = l_num + 1;
 
     end
 
@@ -78,7 +88,35 @@ function varargout = read_conf(confin, varargin)
     %-str2mat: 将字符串转换为矩阵
     [key, value] = cellfun(@parse_line, kv_conf, 'UniformOutput', false);
 
-    if ~ismember('FILEPATH', key)
+    valid = ~cellfun(@isempty, key);
+    key = key(valid);
+    value = value(valid);
+
+    % 重复键改名为 <key>_dup<N>；手写键名与已分配名永不作为候选
+    original = key;
+    seen = {};
+    used = {};
+    for i = 1:numel(key)
+        k = key{i};
+        if ismember(k, seen)
+            n = 1;
+            while true
+                cand = sprintf('%s_dup%d', k, n);
+                n = n + 1;
+                if ~ismember(cand, original) && ~ismember(cand, used)
+                    break
+                end
+            end
+            key{i} = cand;
+        else
+            seen{end + 1} = k; %#ok<AGROW>
+        end
+        used{end + 1} = key{i}; %#ok<AGROW>
+    end
+
+    if ismember('FILEPATH', key)
+        warning('read_conf:ReservedKey', '配置文件已定义 FILEPATH，保留配置值');
+    else
         key = [key, {'FILEPATH'}];
         value = [value, {confin}];
     end
@@ -110,8 +148,11 @@ function [key, value] = parse_line(line)
     key = strip(line(1:separator - 1));
     value = strip(line(separator + 1:end));
 
-    if size(key, 1) == 0
-        key = 'NaN';
+    if isempty(key)
+        warning('read_conf:EmptyKey', '配置行键为空，已跳过: %s', line);
+        key = '';
+        value = [];
+        return
     end
 
     value = del_quotation(value);
@@ -120,7 +161,9 @@ function [key, value] = parse_line(line)
         key = ['f', key];
     end
 
-    if strcmpi(value, '.True.') % 不区分大小写
+    if isempty(value)
+        value = [];
+    elseif strcmpi(value, '.True.') % 不区分大小写
         value = true;
     elseif strcmpi(value, '.False.')
         value = false;
@@ -128,7 +171,7 @@ function [key, value] = parse_line(line)
 
         [array, ok] = parse_conf_array(value);
 
-        if ok && ~isempty(array) && ~any(isnan(array(:)))
+        if ok
             value = array;
         else
             value = listStr_to_cell(value);
@@ -136,12 +179,8 @@ function [key, value] = parse_line(line)
 
     elseif startsWith(value, '{')
         value = json_to_struct(value);
-    elseif is_number(value)
+    elseif is_conf_number(value)
         value = str2double(value);
-    end
-
-    if size(value, 1) == 0
-        value = NaN;
     end
 
 end
@@ -156,6 +195,8 @@ function [result, ok] = parse_conf_array(source)
     [first, last, tokens] = regexp(source, pattern, 'start', 'end', 'match');
     tokens{end + 1} = ''; % End marker for lookahead.
     pos = 2; % read_conf already recognized the opening bracket.
+    max_depth = 64; % [, ( 与一元符号共用的最大嵌套层数，单位：层；超出按解析失败处理。
+    depth = 1; % 嵌套深度，外层 [ 计为第 1 层。
     ok = false;
     result = [];
     try
@@ -177,7 +218,12 @@ function [result, ok] = parse_conf_array(source)
         while ~strcmp(tokens{pos}, ']')
             if strcmp(tokens{pos}, '[')
                 pos = pos + 1;
+                depth = depth + 1;
+                if depth > max_depth
+                    invalid();
+                end
                 block = matrix();
+                depth = depth - 1;
             else
                 block = expression(0, true);
                 if strcmp(tokens{pos}, ':')
@@ -185,9 +231,9 @@ function [result, ok] = parse_conf_array(source)
                     second = expression(0, true);
                     if strcmp(tokens{pos}, ':')
                         pos = pos + 1;
-                        block = block:second:expression(0, true);
+                        block = colon_operand(block):colon_operand(second):colon_operand(expression(0, true));
                     else
-                        block = block:second;
+                        block = colon_operand(block):colon_operand(second);
                     end
                 end
             end
@@ -232,10 +278,20 @@ function [result, ok] = parse_conf_array(source)
         token = tokens{pos};
         pos = pos + 1;
         if strcmp(token, '(')
+            depth = depth + 1;
+            if depth > max_depth
+                invalid();
+            end
             out = expression(0, false);
             require(')');
+            depth = depth - 1;
         elseif any(strcmp(token, {'+', '-'}))
+            depth = depth + 1;
+            if depth > max_depth
+                invalid();
+            end
             out = expression(3, inRow); % Unary signs bind below exponentiation.
+            depth = depth - 1;
             if strcmp(token, '-')
                 out = -out;
             end
@@ -244,6 +300,8 @@ function [result, ok] = parse_conf_array(source)
                 out = pi;
             elseif strcmp(token, 'Inf')
                 out = Inf;
+            elseif strcmp(token, 'NaN')
+                out = NaN;
             elseif strcmp(token, 'true')
                 out = 1;
             elseif strcmp(token, 'false')
@@ -286,6 +344,9 @@ function [result, ok] = parse_conf_array(source)
                     out = out / rhs;
                 case '^'
                     out = out ^ rhs;
+                    if ~isreal(out)
+                        invalid();
+                    end
             end
         end
     end
@@ -298,6 +359,17 @@ function [result, ok] = parse_conf_array(source)
         pos = pos + 1;
     end
 
+    function s = colon_operand(v)
+        % MATLAB colon uses the first element of array operands and requires finite scalars.
+        if isempty(v) || ~isnumeric(v)
+            invalid();
+        end
+        s = v(1);
+        if ~isreal(s) || ~isfinite(s)
+            invalid();
+        end
+    end
+
     function invalid()
         error('parse_conf_array:Invalid', 'Unsupported array syntax.');
     end
@@ -305,5 +377,15 @@ end
 
 function Struct = make_DEFAULT(structIn)
     Struct = structIn;
-    Struct.DEFAULT = structIn;
+    if isfield(Struct, 'DEFAULT')
+        warning('read_conf:ReservedKey', '配置文件已定义 DEFAULT，保留配置值');
+    else
+        Struct.DEFAULT = structIn;
+    end
+end
+
+function tf = is_conf_number(value)
+    % Local scalar-number check for read_conf values; shared is_number.m is unchanged.
+    tf = ~isempty(regexp(value, '^[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)?$', 'once')) ...
+        || ~isempty(regexp(value, '^[+-]?(nan|inf)$', 'once', 'ignorecase'));
 end
